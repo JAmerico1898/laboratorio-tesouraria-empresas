@@ -15,7 +15,7 @@ const MODULES: ModuleInfo[] = [
     title: "Fundamentos do capital de giro",
     href: "/modulo-1",
   },
-  { id: "m2", number: 2, title: "Orçamento de caixa", href: null },
+  { id: "m2", number: 2, title: "Orçamento de caixa", href: "/modulo-2" },
   { id: "m3", number: 3, title: "Gestão de estoques", href: null },
   { id: "m4", number: 4, title: "Gestão de contas a receber", href: null },
   {
