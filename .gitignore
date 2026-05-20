@@ -55,3 +55,5 @@ next-env.d.ts
 /assets/
 /b3_active_tickers.txt
 ~$*
+
+.vercel

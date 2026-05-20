@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { strings } from "@/lib/strings";
 
 export function Footer() {
@@ -15,12 +16,12 @@ export function Footer() {
             {strings.footerCopyright2}
           </div>
         </div>
-        <a
-          href="mailto:tesouraria.rj@gmail.com"
+        <Link
+          href="/contato"
           className="text-lg font-semibold text-white hover:text-emerald-300 transition-colors underline decoration-emerald-500/50 underline-offset-4"
         >
           {strings.footerContact}
-        </a>
+        </Link>
       </div>
     </footer>
   );
