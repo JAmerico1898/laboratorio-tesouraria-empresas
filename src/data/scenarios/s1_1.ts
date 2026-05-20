@@ -152,7 +152,7 @@ export const S1_1: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Liquidez e prazos médios.** Para 2025, qual é o **PMRE (prazo médio de estocagem)**?",
+        "**Etapa 1 — Liquidez e prazos médios.** Para 2025, qual é o **PMRE (prazo médio de renovação de estoques)**?",
       choices: [
         {
           id: "e1_a",
@@ -160,7 +160,7 @@ export const S1_1: Scenario = {
           correct: true,
           score: 20,
           feedback:
-            "Correto. **PMRE = (Estoque / CMV) × 360 = (12,0 / 57,6) × 360 = 75 dias**. O estoque permanece em média **75 dias** antes de ser consumido — alongamento expressivo frente a 2023 (55 dias) e 2024 (65 dias). Esse alongamento é a **principal causa do crescimento da NCG** e do consumo de caixa. Conceito reforçado: o PMRE usa **CMV** no denominador (custo, não preço de venda) porque é com esse fluxo que o estoque é dado baixa.",
+            "Correto. **PMRE = (Estoque / CMV) × 360 = (12,0 / 57,6) × 360 = 75 dias**. O estoque permanece em média **75 dias** antes de ser consumido — alongamento expressivo frente a 2023 (55 dias) e 2024 (65 dias). Esse alongamento é a **principal causa do crescimento da NCG** e do consumo de caixa. Conceito reforçado: o PMRE usa **CMV** no denominador (custo, não preço de venda) porque é com base nesse fluxo que o estoque é baixado.",
         },
         {
           id: "e1_b",
@@ -200,7 +200,7 @@ export const S1_1: Scenario = {
           correct: true,
           score: 20,
           feedback:
-            "Diagnóstico correto. **Ciclo financeiro = PMRE + PMRV − PMPF**: 2023 = 55+50−35 = 70 dias; 2025 = 75+65−28 = 112 dias. Cada dia adicional de ciclo equivale a aproximadamente **R$ 80M/360 = R$ 0,22M** de necessidade adicional de financiamento. 42 dias × R$ 0,22M ≈ **R$ 9,3M** — coerente com o aumento de NCG observado (de 11,1 para 20,9 = +9,8M). Conceito reforçado: **alongar prazos a receber sem alongar prazos a pagar é o caminho mais rápido para o efeito tesoura**.",
+            "Diagnóstico correto. **Cálculos** (base 360 dias): **PMRV = (Clientes / Receita) × 360**: 2023 = (9,4/68,0)×360 = **50d**; 2025 = (14,4/80,0)×360 = **65d**. **PMRE = (Estoque / CMV) × 360**: 2023 = (6,8/44,2)×360 = **55d**; 2025 = (12,0/57,6)×360 = **75d**. **PMPF = (Fornecedores / CMV) × 360**: 2023 = (4,3/44,2)×360 = **35d**; 2025 = (4,5/57,6)×360 = **28d** — note que o denominador do PMPF é o **CMV** (compras como proxy), pela mesma lógica do PMRE. **Ciclo financeiro = PMRE + PMRV − PMPF**: 2023 = 55+50−35 = 70d; 2025 = 75+65−28 = **112d**. Cada dia adicional ≈ **R$ 80M/360 = R$ 0,22M** de necessidade extra. 42 dias × R$ 0,22M ≈ **R$ 9,3M** — coerente com a alta da NCG (11,1 → 20,9 = +9,8M). Conceito-chave: **alongar prazos a receber sem alongar prazos a pagar é o caminho mais rápido para o efeito tesoura**.",
         },
         {
           id: "e2_b",
@@ -233,7 +233,7 @@ export const S1_1: Scenario = {
     {
       id: "etapa_3",
       prompt:
-        "**Etapa 3 — Diagnóstico Fleuriet.** Qual conjunto está correto e o que ele revela?",
+        "**Etapa 3 — Diagnóstico Fleuriet — 2025.** Qual conjunto está correto e o que ele revela?",
       choices: [
         {
           id: "e3_a",

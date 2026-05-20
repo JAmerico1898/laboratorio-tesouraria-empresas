@@ -132,7 +132,7 @@ function RowLine({ row }: { row: StatementRow }) {
       <td className={cn("py-1.5", padLeft)}>{row.label}</td>
       {row.values.map((v, i) => (
         <td key={i} className="py-1.5 pl-4 text-right num">
-          {formatBRNumber(v)}
+          {formatBRNumber(v, 1)}
         </td>
       ))}
     </tr>

@@ -261,7 +261,7 @@ export const S1_3: Scenario = {
           {
             id: "branch_a_r_a",
             label:
-              "**Porque a dívida exigiria EBITDA suficiente para pagar juros e amortização**, e a startup ainda está em fase de queima — o serviço de dívida sufocaria o caixa exatamente quando ele precisa estar livre para crescer.",
+              "Porque a dívida exigiria EBITDA suficiente para pagar juros e amortização, e a startup ainda está em fase de queima — o serviço de dívida sufocaria o caixa exatamente quando ele precisa estar livre para crescer.",
             correct: true,
             score: 25,
             feedback:

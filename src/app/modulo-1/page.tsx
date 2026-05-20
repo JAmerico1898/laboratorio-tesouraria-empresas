@@ -11,7 +11,7 @@ import type { Scenario, CompletedScenario } from "@/types/scenario";
 
 const OBJECTIVES = [
   "Compreender o conceito de capital de giro e sua importância na gestão financeira.",
-  "Distinguir capital de giro líquido, necessidade de capital de giro e tesouraria.",
+  "Distinguir capital de giro líquido, necessidade de capital de giro e saldo de tesouraria.",
   "Calcular e interpretar o ciclo operacional e o ciclo financeiro de uma empresa.",
   "Identificar os fatores que influenciam o capital de giro em diferentes setores.",
 ];

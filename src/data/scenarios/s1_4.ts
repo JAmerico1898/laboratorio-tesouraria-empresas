@@ -36,6 +36,7 @@ export const S1_4: Scenario = {
     keyFacts: [
       ["Receita Ano 5", "R$ 400 M"],
       ["Crescimento 5 anos", "Dobrou (CAGR ≈ 18,9% em 4 períodos)"],
+      ["CAGR", "Taxa composta anual: (Vf/Vi)^(1/n) − 1, com n = nº de períodos"],
       ["Ciclo financeiro", "~240 dias"],
       ["ST Ano 5", "−R$ 160 M"],
       ["Dívida CP Ano 5", "R$ 280 M (64% da dívida total)"],
@@ -132,7 +133,7 @@ export const S1_4: Scenario = {
         {
           id: "etapa_1_a",
           label:
-            "**Receita CAGR ≈ 19% a.a., NCG CAGR ≈ 44% a.a., CCL CAGR ≈ 9% a.a.** — efeito tesoura clássico: a NCG cresce dramaticamente mais rápido que a capacidade de financiamento estrutural (CCL), abrindo o gap (ST cai).",
+            "Receita CAGR ≈ 19% a.a., NCG CAGR ≈ 44% a.a., CCL CAGR ≈ 9% a.a. — efeito tesoura clássico: a NCG cresce dramaticamente mais rápido que a capacidade de financiamento estrutural (CCL), abrindo o gap (ST cai).",
           correct: true,
           score: 20,
           feedback:
@@ -175,7 +176,7 @@ export const S1_4: Scenario = {
         {
           id: "etapa_2_a",
           label:
-            "**Alongamento do PMRV** (prazos comerciais mais longos pós-chaves) **combinado com inflação do estoque de obras em andamento** — ambos típicos em cenário de demanda fraca e custos de insumos em alta.",
+            "Alongamento do PMRV (prazos comerciais mais longos pós-chaves) combinado com inflação do estoque de obras em andamento — ambos típicos em cenário de demanda fraca e custos de insumos em alta.",
           correct: true,
           score: 20,
           feedback:
@@ -227,7 +228,7 @@ export const S1_4: Scenario = {
         {
           id: "etapa_3_b",
           label:
-            "**Pré-default técnico**: covenant já estourado (4,42× > 4,0×), R$ 280 M de Dívida CP a rolar em 12 meses sob condição desfavorável, ST profundamente negativo e caixa de R$ 20 M — a empresa tem **risco de liquidez iminente** se um banco recusar rolagem.",
+            "Pré-default técnico: covenant já estourado (4,42× > 4,0×), R$ 280 M de Dívida CP a rolar em 12 meses sob condição desfavorável, ST profundamente negativo e caixa de R$ 20 M — a empresa tem risco de liquidez iminente se um banco recusar rolagem.",
           correct: true,
           score: 20,
           feedback:
@@ -284,7 +285,7 @@ export const S1_4: Scenario = {
           {
             id: "branch_a_r_a",
             label:
-              "**Não reduz a alavancagem efetiva** (DL/EBITDA continua 4,4×) — apenas redistribui o mesmo passivo no tempo. O covenant continua estourado e o EBITDA insuficiente, então o problema estrutural persiste e voltará a se manifestar em 18-24 meses.",
+              "Não reduz a alavancagem efetiva (DL/EBITDA continua 4,4×) — apenas redistribui o mesmo passivo no tempo. O covenant continua estourado e o EBITDA insuficiente, então o problema estrutural persiste e voltará a se manifestar em 18-24 meses.",
             correct: true,
             score: 25,
             feedback:
@@ -339,7 +340,7 @@ export const S1_4: Scenario = {
           {
             id: "branch_b_r_a",
             label:
-              "Quando os ativos são **realmente não estratégicos** (não geram VGV/EBITDA relevante no plano de 3-5 anos), o **valor de mercado é próximo do contábil** (sem precisar vender a fire sale), e os **fundadores valorizam controle** (evitando diluição).",
+              "Quando os ativos são realmente não estratégicos (não geram VGV/EBITDA relevante no plano de 3-5 anos), o valor de mercado é próximo do contábil (sem precisar vender a fire sale), e os fundadores valorizam controle (evitando diluição).",
             correct: true,
             score: 25,
             feedback:
@@ -402,7 +403,7 @@ export const S1_4: Scenario = {
           {
             id: "branch_c_r_b",
             label:
-              "**Captar equity a valuation deprimido transfere valor permanentemente dos acionistas existentes para os novos.** Se a empresa tivesse resolvido a crise primeiro com reestruturação + venda de ativos (Branches A+B), o valuation seria mais alto e a captação posterior (se ainda necessária) diluiria menos. A **sequência das ações importa**: captar equity deve ser a última carta, não a primeira.",
+              "Captar equity a valuation deprimido transfere valor permanentemente dos acionistas existentes para os novos. Se a empresa tivesse resolvido a crise primeiro com reestruturação + venda de ativos (Branches A+B), o valuation seria mais alto e a captação posterior (se ainda necessária) diluiria menos. A sequência das ações importa: captar equity deve ser a última carta, não a primeira.",
             correct: true,
             score: 25,
             feedback:

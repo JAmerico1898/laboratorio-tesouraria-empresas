@@ -83,6 +83,10 @@ export const S1_2: Scenario = {
       ["Estoques", "R$ 105,0M"],
       ["Empr. rotativos", "R$ 35,0M"],
       ["Bench NCG/Rec setor", "14%"],
+      ["PMRE setor (bench)", "~60 dias"],
+      ["PMRV setor (bench)", "~25 dias"],
+      ["PMPF setor (bench)", "~28-30 dias"],
+      ["Sensibilidade NCG", "+10d PMRE ≈ +R$ 11,7M"],
     ],
   },
   statements: [
@@ -194,12 +198,12 @@ export const S1_2: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Reclassificação.** Qual é a classificação Fleuriet correta para o conjunto de contas abaixo?",
+        "**Etapa 1 — Reclassificação** (não consulte a aba *Reclassificação Fleuriet — Beta (2025)*). Qual é a classificação Fleuriet correta para o conjunto de contas abaixo?",
       choices: [
         {
           id: "et1_a",
           label:
-            "**Aplicações em CDB = ACF**, **Impostos a recuperar = ACO**, **Empréstimos rotativos = PCF**, **Fornecedores = PCO**.",
+            "Aplicações em CDB = ACF, Impostos a recuperar = ACO, Empréstimos rotativos = PCF, Fornecedores = PCO.",
           correct: true,
           score: 20,
           feedback:

@@ -297,7 +297,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
         {/* Etapa phase */}
         {phase === "etapa" && currentEtapa && (
           <div>
-            <h3 className="font-heading text-xl font-semibold mb-4 leading-snug">
+            <h3 className="font-heading text-lg font-semibold mb-4 leading-snug">
               <MarkdownText text={currentEtapa.prompt} />
             </h3>
             <div className="flex flex-col gap-2.5">
@@ -370,7 +370,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             <div className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-2">
               {strings.result}
             </div>
-            <h3 className="font-heading text-2xl font-semibold mb-1">
+            <h3 className="font-heading text-xl font-semibold mb-1 leading-snug">
               {chosenBranch.resultPanel.headline}
             </h3>
             <p className="text-sm text-muted mb-4">
@@ -389,7 +389,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
                     </div>
                     <div
                       className={cn(
-                        "text-lg font-semibold num",
+                        "text-base font-bold",
                         d.tone === "positive" && "text-success",
                         d.tone === "negative" && "text-danger",
                         d.tone === "neutral" && "text-ink"
@@ -424,7 +424,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             <div className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-2">
               {strings.reflection}
             </div>
-            <h3 className="font-heading text-xl font-semibold mb-4 leading-snug">
+            <h3 className="font-heading text-lg font-semibold mb-4 leading-snug">
               <MarkdownText text={chosenBranch.reflection.prompt} />
             </h3>
             <div className="flex flex-col gap-2.5">
@@ -464,7 +464,12 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             </div>
             <div className="flex gap-3 justify-center flex-wrap">
               <button
-                onClick={onBack}
+                onClick={() => {
+                  setChosenBranch(null);
+                  setReflectionChoice(null);
+                  setLastFeedback(null);
+                  setPhase("branch-pick");
+                }}
                 className="bg-surface border border-border-soft text-ink px-5 py-2.5 rounded-md text-sm font-semibold cursor-pointer hover:border-ink transition-colors"
               >
                 {strings.tryAnother}
