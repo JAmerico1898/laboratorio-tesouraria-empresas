@@ -118,7 +118,7 @@ export const S1_3: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Projetar a NCG no Ano 3.** A receita atual é R$ 12 M, o crescimento alvo é 40% a.a. por 3 anos e a relação NCG/Receita é estável em 25%. Qual será a NCG ao final do Ano 3?",
+        "**Etapa 1 — Projetar a NCG no Ano 3.** Qual será a NCG ao final do Ano 3?",
       choices: [
         {
           id: "etapa_1_a",
@@ -157,7 +157,7 @@ export const S1_3: Scenario = {
     {
       id: "etapa_2",
       prompt:
-        "**Etapa 2 — Calcular o autofinanciamento disponível para NCG.** O LL acumulado projetado nos 3 anos é R$ 5,86 M (payout = 0%). Porém, o capex de produto e GTM acumulado também é ~R$ 5,9 M. Quanto da geração interna fica **efetivamente disponível** para financiar a expansão da NCG?",
+        "**Etapa 2 — Calcular o autofinanciamento disponível para NCG.** Quanto da geração interna fica **efetivamente disponível** para financiar a expansão da NCG?",
       choices: [
         {
           id: "etapa_2_a",

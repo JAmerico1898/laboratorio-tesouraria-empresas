@@ -189,7 +189,7 @@ export const S2_1: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Projetar entradas.** Em **outubro**, a venda bruta projetada é de **R$ 7,8 M** (pico anual). Aplicando o modelo simplificado (**50% mês + 50% M+1**, líquido de inadimplência de **2%**) e considerando que a venda de setembro foi de **R$ 6,6 M**, qual é o **recebimento em caixa de outubro**?",
+        "**Etapa 1 — Projetar entradas.** Aplicando o modelo simplificado (**50% mês + 50% M+1**, líquido de inadimplência de **2%**) e considerando que a venda de setembro foi de **R$ 6,6 M**, qual é o **recebimento em caixa de outubro**?",
       choices: [
         {
           id: "e1_a",

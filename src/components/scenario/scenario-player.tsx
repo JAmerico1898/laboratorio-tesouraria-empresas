@@ -42,7 +42,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
   const [etapaAnswers, setEtapaAnswers] = useState<EtapaAnswer[]>([]);
   const [chosenBranch, setChosenBranch] = useState<Branch | null>(null);
   const [reflectionChoice, setReflectionChoice] = useState<Choice | null>(null);
-  const [feedback, setFeedback] = useState<Choice | null>(null);
+  const [lastFeedback, setLastFeedback] = useState<Choice | null>(null);
   const [fadeIn, setFadeIn] = useState(true);
 
   useEffect(() => {
@@ -107,29 +107,24 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
       }
       return [...prev, newAnswer];
     });
-    setFeedback(choice);
-    setTimeout(() => {
-      setFeedback(null);
-      if (etapaIndex < etapas.length - 1) {
-        setEtapaIndex(etapaIndex + 1);
-      } else {
-        setPhase("branch-pick");
-      }
-    }, 1200);
+    setLastFeedback(choice);
+    if (etapaIndex < etapas.length - 1) {
+      setEtapaIndex(etapaIndex + 1);
+    } else {
+      setPhase("branch-pick");
+    }
   }
 
   function handleBranchPick(branch: Branch) {
     setChosenBranch(branch);
+    setLastFeedback(null);
     setPhase("result");
   }
 
   function handleReflectionChoice(choice: Choice) {
     setReflectionChoice(choice);
-    setFeedback(choice);
-    setTimeout(() => {
-      setFeedback(null);
-      setPhase("complete");
-    }, 1200);
+    setLastFeedback(choice);
+    setPhase("complete");
   }
 
   function handleFinish() {
@@ -144,6 +139,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
   }
 
   function handleBackButton() {
+    setLastFeedback(null);
     if (phase === "etapa") {
       if (etapaIndex > 0) {
         setEtapaIndex(etapaIndex - 1);
@@ -163,7 +159,8 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
     }
   }
 
-  const showBackToHub = phase === "etapa" && etapaIndex === 0;
+  const canGoPrev =
+    !(phase === "etapa" && etapaIndex === 0) && phase !== "complete";
 
   return (
     <div className="min-h-screen px-4 py-10">
@@ -177,11 +174,19 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
         <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
           <div className="flex gap-2">
             <button
-              onClick={showBackToHub ? onBack : handleBackButton}
+              onClick={onBack}
               className="bg-transparent border border-border-soft text-muted hover:text-ink hover:border-ink px-3 py-1.5 rounded-md cursor-pointer text-xs transition-colors"
             >
-              {showBackToHub ? strings.backHub : strings.prevStep}
+              {strings.backHome}
             </button>
+            {canGoPrev && (
+              <button
+                onClick={handleBackButton}
+                className="bg-transparent border border-secondary/40 text-secondary hover:bg-secondary/10 px-3 py-1.5 rounded-md cursor-pointer text-xs transition-colors"
+              >
+                {strings.prevStep}
+              </button>
+            )}
           </div>
           <div className="text-right">
             <div className="text-[10px] text-muted uppercase tracking-wider mb-1">
@@ -203,7 +208,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             {scenario.difficulty}
           </span>
         </div>
-        <h2 className="font-serif text-3xl font-bold mb-6 leading-tight">
+        <h2 className="font-heading text-3xl font-bold mb-6 leading-tight">
           {scenario.title}
         </h2>
 
@@ -228,11 +233,11 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
 
         {/* Context */}
         {(phase === "etapa" || phase === "branch-pick") && (
-          <div className="bg-surface border border-border-soft rounded-lg p-6 mb-5">
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-2">
+          <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-6 mb-5 shadow-sm">
+            <div className="text-xs font-bold uppercase tracking-wider text-secondary mb-2">
               {strings.context}
             </div>
-            <p className="text-[15px] leading-relaxed text-ink m-0">
+            <p className="text-[15px] leading-relaxed text-on-surface m-0">
               <MarkdownText text={scenario.context.narrative} />
             </p>
             {scenario.context.keyFacts.length > 0 && (
@@ -240,12 +245,12 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
                 {scenario.context.keyFacts.map(([label, val]) => (
                   <div
                     key={label}
-                    className="rounded-md bg-paper border border-border-soft p-2.5"
+                    className="rounded-lg bg-secondary/10 p-2.5 text-center"
                   >
-                    <div className="text-[10px] text-muted uppercase tracking-wider">
+                    <div className="text-[10px] text-on-surface-variant uppercase tracking-wider">
                       {label}
                     </div>
-                    <div className="text-sm font-semibold text-ink num">
+                    <div className="text-sm font-bold text-secondary">
                       {val}
                     </div>
                   </div>
@@ -263,25 +268,25 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             </div>
           )}
 
-        {/* Feedback banner */}
-        {feedback && (
+        {/* Persistent feedback from previous choice */}
+        {lastFeedback && (phase === "etapa" || phase === "branch-pick" || phase === "complete") && (
           <div
             className={cn(
               "px-5 py-3.5 rounded-md mb-5 text-sm leading-relaxed border",
-              feedback.correct
+              lastFeedback.correct
                 ? "bg-green-50 border-green-200 text-green-900"
                 : "bg-red-50 border-red-200 text-red-900"
             )}
           >
             <span className="font-semibold">
-              {feedback.correct ? strings.correct : strings.canImprove} —{" "}
+              {lastFeedback.correct ? strings.correct : strings.canImprove} —{" "}
             </span>
-            <MarkdownText text={feedback.feedback} />
+            <MarkdownText text={lastFeedback.feedback} />
           </div>
         )}
 
         {/* Revisit banner */}
-        {phase === "etapa" && currentEtapaChoice && !feedback && (
+        {phase === "etapa" && currentEtapaChoice && !lastFeedback && (
           <div className="bg-paper border border-dashed border-accent/40 rounded-md px-4 py-2.5 mb-4 text-xs leading-relaxed text-muted">
             {strings.prevAnswer}:{" "}
             <strong className="text-accent">{currentEtapaChoice.label}</strong>{" "}
@@ -290,10 +295,10 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
         )}
 
         {/* Etapa phase */}
-        {phase === "etapa" && currentEtapa && !feedback && (
+        {phase === "etapa" && currentEtapa && (
           <div>
-            <h3 className="font-serif text-xl font-semibold mb-4">
-              {currentEtapa.prompt}
+            <h3 className="font-heading text-xl font-semibold mb-4 leading-snug">
+              <MarkdownText text={currentEtapa.prompt} />
             </h3>
             <div className="flex flex-col gap-2.5">
               {shuffledChoices.map((ch) => {
@@ -314,7 +319,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
                         {strings.currentAnswer}
                       </span>
                     )}
-                    {ch.label}
+                    <MarkdownText text={ch.label} />
                   </button>
                 );
               })}
@@ -328,7 +333,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             <div className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-2">
               {strings.branchPick}
             </div>
-            <h3 className="font-serif text-2xl font-semibold mb-2">
+            <h3 className="font-heading text-2xl font-semibold mb-2">
               {strings.chooseBranch}
             </h3>
             <p className="text-sm text-muted mb-5">{strings.branchInstructions}</p>
@@ -347,11 +352,11 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
                       {b.shortLabel}
                     </span>
                   </div>
-                  <h4 className="font-serif text-base font-semibold mb-2 leading-tight">
-                    {b.label}
+                  <h4 className="font-heading text-base font-semibold mb-2 leading-tight">
+                    <MarkdownText text={b.label} />
                   </h4>
                   <p className="text-sm text-muted leading-relaxed">
-                    {b.description}
+                    <MarkdownText text={b.description} />
                   </p>
                 </button>
               ))}
@@ -365,7 +370,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             <div className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-2">
               {strings.result}
             </div>
-            <h3 className="font-serif text-2xl font-semibold mb-1">
+            <h3 className="font-heading text-2xl font-semibold mb-1">
               {chosenBranch.resultPanel.headline}
             </h3>
             <p className="text-sm text-muted mb-4">
@@ -402,7 +407,10 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             </div>
 
             <button
-              onClick={() => setPhase("reflection")}
+              onClick={() => {
+                setLastFeedback(null);
+                setPhase("reflection");
+              }}
               className="bg-accent text-white px-5 py-2.5 rounded-md text-sm font-semibold cursor-pointer hover:opacity-90 transition-opacity"
             >
               Continuar para reflexão →
@@ -411,13 +419,13 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
         )}
 
         {/* Reflection */}
-        {phase === "reflection" && chosenBranch && !feedback && (
+        {phase === "reflection" && chosenBranch && (
           <div>
             <div className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-2">
               {strings.reflection}
             </div>
-            <h3 className="font-serif text-xl font-semibold mb-4">
-              {chosenBranch.reflection.prompt}
+            <h3 className="font-heading text-xl font-semibold mb-4 leading-snug">
+              <MarkdownText text={chosenBranch.reflection.prompt} />
             </h3>
             <div className="flex flex-col gap-2.5">
               {shuffledReflection.map((ch) => (
@@ -426,7 +434,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
                   onClick={() => handleReflectionChoice(ch)}
                   className="rounded-md border border-border-soft bg-surface p-4 text-left text-[15px] cursor-pointer transition-all hover:border-accent hover:bg-paper"
                 >
-                  {ch.label}
+                  <MarkdownText text={ch.label} />
                 </button>
               ))}
             </div>
@@ -439,7 +447,7 @@ export function ScenarioPlayer({ scenario, onFinish, onBack }: ScenarioPlayerPro
             <div className="text-[10px] font-semibold uppercase tracking-wider text-accent mb-2">
               {strings.complete}
             </div>
-            <h3 className="font-serif text-2xl font-semibold mb-2">
+            <h3 className="font-heading text-2xl font-semibold mb-2">
               {scenario.title}
             </h3>
             <p className="text-sm text-muted mb-6">{strings.completeIntro}</p>

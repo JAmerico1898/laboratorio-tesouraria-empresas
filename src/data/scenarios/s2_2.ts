@@ -111,7 +111,7 @@ export const S2_2: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Dimensionar o gap.** Três cenários estão sobre a mesa (otimista R$ 3 M, base R$ 8 M, pessimista R$ 14 M, com probabilidades 20% / 50% / 30%). Qual é o **valor de referência** correto para dimensionar o instrumento de financiamento?",
+        "**Etapa 1 — Dimensionar o gap.** Qual é o **valor de referência** correto para dimensionar o instrumento de financiamento?",
       choices: [
         {
           id: "e1_a",

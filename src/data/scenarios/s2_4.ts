@@ -167,7 +167,7 @@ export const S2_4: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Segmentar excedentes por horizonte.** Você precisa propor a divisão dos **R$ 25 milhões** entre caixa transacional, reserva operacional e excedente livre. Qual segmentação **mais coerente** com a teoria de gestão de caixa (Baumol/Miller-Orr) e governança madura?",
+        "**Etapa 1 — Segmentar excedentes por horizonte.** Qual segmentação **mais coerente** com a teoria de gestão de caixa (Baumol/Miller-Orr) e governança madura?",
       choices: [
         {
           id: "e1_a",
@@ -210,7 +210,7 @@ export const S2_4: Scenario = {
     {
       id: "etapa_2",
       prompt:
-        "**Etapa 2 — Definir o mix por segmento.** Considere o **excedente livre (R$ 12,5 M)**. A discussão do comitê é se incluir **corporate bonds AAA** e qual papel para **fundos DI**. Qual configuração é **mais consistente** com governança madura?",
+        "**Etapa 2 — Definir o mix por segmento.** Qual configuração é **mais consistente** com governança madura?",
       choices: [
         {
           id: "e2_a",
@@ -253,7 +253,7 @@ export const S2_4: Scenario = {
     {
       id: "etapa_3",
       prompt:
-        "**Etapa 3 — Limites e diversificação.** O comitê precisa definir limites quantitativos. Considerando R$ 25 M, governança madura e a recomendação de incluir corporate AAA, qual conjunto de limites é **defensável** e auditável?",
+        "**Etapa 3 — Limites e diversificação.** Considerando R$ 25 M, governança madura e a recomendação de incluir corporate AAA, qual conjunto de limites é **defensável** e auditável?",
       choices: [
         {
           id: "e3_a",

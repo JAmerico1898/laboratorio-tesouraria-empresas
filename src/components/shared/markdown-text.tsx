@@ -13,7 +13,7 @@ export function MarkdownText({ text, className }: MarkdownTextProps) {
           <span key={lineIdx}>
             {parts.map((p, i) =>
               p.startsWith("**") && p.endsWith("**") ? (
-                <strong key={i} className="font-semibold text-ink">
+                <strong key={i} className="font-bold text-secondary">
                   {p.slice(2, -2)}
                 </strong>
               ) : (

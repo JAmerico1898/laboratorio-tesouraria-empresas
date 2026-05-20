@@ -3,20 +3,21 @@
 import { useState } from "react";
 import Link from "next/link";
 import { strings } from "@/lib/strings";
-import { MODULE_2_SCENARIOS } from "@/data/scenarios";
+import { MODULE_5_SCENARIOS } from "@/data/scenarios";
 import { ScenarioPlayer } from "@/components/scenario/scenario-player";
 import { ScenarioCard } from "@/components/scenario/scenario-card";
 import { useCompletedScenarios } from "@/hooks/use-completed-scenarios";
 import type { Scenario, CompletedScenario } from "@/types/scenario";
 
 const OBJECTIVES = [
-  "Elaborar o orçamento de caixa para planejamento de necessidades imediatas e de curto prazo.",
-  "Gerenciar preventivamente os recursos necessários para cumprir necessidades táticas de tesouraria.",
-  "Selecionar instrumentos de captação e aplicação adequados ao horizonte de caixa.",
-  "Aplicar tecnologia (RPA, Open Finance) na operação de tesouraria.",
+  "Reconhecer o crédito comercial como funding implícito e gerenciar o relacionamento com fornecedores.",
+  "Negociar prazos e descontos com fornecedores como instrumento de tesouraria.",
+  "Distinguir instrumentos de financiamento de curto prazo (CG, conta garantida, ACC/ACE, vendor, antecipação).",
+  "Calcular e comparar alternativas pelo Custo Efetivo Total (CET).",
+  "Gerir covenants e o risco de crédito da própria empresa em ciclos adversos.",
 ];
 
-export default function Modulo2Page() {
+export default function Modulo5Page() {
   const [active, setActive] = useState<Scenario | null>(null);
   const { completedScenarios, addCompletedScenario } = useCompletedScenarios();
 
@@ -46,10 +47,10 @@ export default function Modulo2Page() {
         </Link>
 
         <div className="text-xs uppercase tracking-[0.18em] text-accent mb-3 font-semibold">
-          Módulo 2
+          Módulo 5
         </div>
         <h1 className="font-heading text-4xl md:text-5xl font-extrabold tracking-tight leading-tight mb-6">
-          Orçamento de caixa
+          Gestão de fornecedores e passivos de curto prazo
         </h1>
 
         <div className="bg-surface border border-border-soft rounded-lg p-6 mb-10">
@@ -70,7 +71,7 @@ export default function Modulo2Page() {
           {strings.scenariosTitle}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {MODULE_2_SCENARIOS.map((s) => (
+          {MODULE_5_SCENARIOS.map((s) => (
             <ScenarioCard
               key={s.id}
               scenario={s}
@@ -80,7 +81,6 @@ export default function Modulo2Page() {
           ))}
         </div>
       </div>
-
     </main>
   );
 }

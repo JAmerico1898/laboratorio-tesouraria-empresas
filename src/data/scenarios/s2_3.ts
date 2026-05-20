@@ -136,7 +136,7 @@ export const S2_3: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Mapear o processo manual.** Antes de propor automação, é preciso quantificar o **custo total atual**. A tesouraria gasta **14 h/semana** em conciliação, com **R$ 90/h** de custo de analista (com encargos) e **8% de taxa de exceção** sobre **4.000 lançamentos/mês**. Qual é a estimativa **mais defensável** do **custo total anual** do processo manual?",
+        "**Etapa 1 — Mapear o processo manual.** Qual é a estimativa **mais defensável** do **custo total anual** do processo manual?",
       choices: [
         {
           id: "e1_a",
@@ -179,7 +179,7 @@ export const S2_3: Scenario = {
     {
       id: "etapa_2",
       prompt:
-        "**Etapa 2 — Desenhar a arquitetura-alvo.** Você precisa decidir como o robô vai ler os extratos. As opções debatidas no time são: **(i) screen scraping** nos portais dos bancos, **(ii) APIs Open Finance reguladas pelo BACEN**, ou **(iii) SaaS especializado** que internaliza tudo. Qual é a leitura **tecnicamente mais correta** sobre essas alternativas?",
+        "**Etapa 2 — Desenhar a arquitetura-alvo.** Qual é a leitura **tecnicamente mais correta** sobre essas alternativas?",
       choices: [
         {
           id: "e2_a",
@@ -222,7 +222,7 @@ export const S2_3: Scenario = {
     {
       id: "etapa_3",
       prompt:
-        "**Etapa 3 — Calcular o ROI.** Considere as três alternativas tabuladas: **A) Piloto 1 banco** (invest. R$ 80k, OPEX R$ 96k/ano, economia bruta R$ 164k/ano), **B) Full 3 bancos** (R$ 200k, R$ 216k/ano OPEX, R$ 366k/ano bruta) e **C) SaaS** (R$ 15k, R$ 144k/ano, R$ 166,5k/ano bruta). Qual leitura de ROI é **financeiramente correta**?",
+        "**Etapa 3 — Calcular o ROI.** Qual leitura de ROI é **financeiramente correta**?",
       choices: [
         {
           id: "e3_a",

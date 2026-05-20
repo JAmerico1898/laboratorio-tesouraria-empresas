@@ -127,7 +127,7 @@ export const S1_4: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Análise histórica e CAGRs.** Receita dobrou em 5 anos (R$ 200 → R$ 400 M), NCG quadruplicou (R$ 80 → R$ 340 M) e CCL cresceu menos da metade em termos relativos (R$ 130 → R$ 180 M). Qual é a leitura **estruturalmente correta** desses CAGRs?",
+        "**Etapa 1 — Análise histórica e CAGRs.** Qual é a leitura **estruturalmente correta** desses CAGRs?",
       choices: [
         {
           id: "etapa_1_a",
@@ -170,7 +170,7 @@ export const S1_4: Scenario = {
     {
       id: "etapa_2",
       prompt:
-        "**Etapa 2 — Decompor as causas do alongamento da NCG.** NCG/Receita subiu de 40% para 85% em 5 anos. Considerando o setor (incorporadora, ciclo 240 dias), qual é o **driver provavelmente dominante**?",
+        "**Etapa 2 — Decompor as causas do alongamento da NCG.** Considerando o setor (incorporadora, ciclo 240 dias), qual é o **driver provavelmente dominante**?",
       choices: [
         {
           id: "etapa_2_a",
@@ -213,7 +213,7 @@ export const S1_4: Scenario = {
     {
       id: "etapa_3",
       prompt:
-        "**Etapa 3 — Avaliar gravidade incluindo covenants.** Dívida Líquida / EBITDA = 4,42× (covenant limite 4,0×), Dívida CP de R$ 280 M (64% do total) e caixa de R$ 20 M. Em que estado a empresa **realmente** está?",
+        "**Etapa 3 — Avaliar gravidade incluindo covenants.** Em que estado a empresa **realmente** está?",
       choices: [
         {
           id: "etapa_3_a",

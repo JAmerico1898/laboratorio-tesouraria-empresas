@@ -275,7 +275,7 @@ export const S1_2: Scenario = {
     {
       id: "etapa_3",
       prompt:
-        "**Etapa 3 — Comparação setorial.** Beta tem **NCG/Receita = 21,7%** contra média setorial de **14%**. Qual é a explicação mais robusta para a divergência de ~8 pontos percentuais (excesso de NCG ≈ R$ 46M)?",
+        "**Etapa 3 — Comparação setorial.** Qual é a explicação mais robusta para a divergência de ~8 pontos percentuais (excesso de NCG ≈ R$ 46M)?",
       choices: [
         {
           id: "et3_a",

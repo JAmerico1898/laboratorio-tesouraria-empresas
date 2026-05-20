@@ -152,7 +152,7 @@ export const S1_1: Scenario = {
     {
       id: "etapa_1",
       prompt:
-        "**Etapa 1 — Liquidez e prazos médios.** Para 2025, qual é o **PMRE (prazo médio de estocagem)**? Use base 360 dias e a fórmula **PMRE = (Estoque / CMV) × 360**.",
+        "**Etapa 1 — Liquidez e prazos médios.** Para 2025, qual é o **PMRE (prazo médio de estocagem)**?",
       choices: [
         {
           id: "e1_a",
@@ -233,7 +233,7 @@ export const S1_1: Scenario = {
     {
       id: "etapa_3",
       prompt:
-        "**Etapa 3 — Diagnóstico Fleuriet.** Para 2025, calcule **CCL, NCG e ST**. Qual conjunto está correto e o que ele revela?",
+        "**Etapa 3 — Diagnóstico Fleuriet.** Qual conjunto está correto e o que ele revela?",
       choices: [
         {
           id: "e3_a",

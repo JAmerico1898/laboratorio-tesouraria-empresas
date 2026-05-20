@@ -54,7 +54,7 @@ export function FinancialStatementTable({
 
           <div className="p-5">
             <div className="flex items-baseline justify-between mb-3">
-              <h4 className="font-serif text-base font-semibold text-ink">
+              <h4 className="font-heading text-base font-semibold text-ink">
                 {active.title}
               </h4>
               <span className="text-xs text-muted">{active.unit}</span>

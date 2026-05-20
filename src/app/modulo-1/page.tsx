@@ -5,6 +5,7 @@ import Link from "next/link";
 import { strings } from "@/lib/strings";
 import { MODULE_1_SCENARIOS } from "@/data/scenarios";
 import { ScenarioPlayer } from "@/components/scenario/scenario-player";
+import { ScenarioCard } from "@/components/scenario/scenario-card";
 import { useCompletedScenarios } from "@/hooks/use-completed-scenarios";
 import type { Scenario, CompletedScenario } from "@/types/scenario";
 
@@ -47,7 +48,7 @@ export default function Modulo1Page() {
         <div className="text-xs uppercase tracking-[0.18em] text-accent mb-3 font-semibold">
           Módulo 1
         </div>
-        <h1 className="font-serif text-4xl md:text-5xl font-bold leading-tight mb-6">
+        <h1 className="font-heading text-4xl md:text-5xl font-extrabold tracking-tight leading-tight mb-6">
           Fundamentos do capital de giro
         </h1>
 
@@ -68,43 +69,18 @@ export default function Modulo1Page() {
         <div className="text-xs uppercase tracking-[0.18em] text-accent mb-4 font-semibold">
           {strings.scenariosTitle}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {MODULE_1_SCENARIOS.map((s) => {
-            const completed = completedScenarios.find((c) => c.simId === s.id);
-            return (
-              <button
-                key={s.id}
-                onClick={() => setActive(s)}
-                className="text-left bg-surface border border-border-soft rounded-lg p-5 cursor-pointer transition-all hover:border-accent hover:shadow-sm"
-              >
-                <div className="flex items-baseline justify-between mb-2 gap-2">
-                  <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-accent">
-                    {s.code}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-wider text-muted">
-                    {s.difficulty} · {s.estimatedMinutes} {strings.estimatedMinutes}
-                  </span>
-                </div>
-                <h3 className="font-serif text-lg font-semibold leading-tight mb-1">
-                  {s.title}
-                </h3>
-                <p className="text-xs text-muted mb-3">{s.company}</p>
-                {completed && (
-                  <div className="text-[11px] font-semibold text-success">
-                    ✓ {strings.concluido} — {completed.score}/{completed.maxScore}
-                  </div>
-                )}
-              </button>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {MODULE_1_SCENARIOS.map((s) => (
+            <ScenarioCard
+              key={s.id}
+              scenario={s}
+              completed={completedScenarios.find((c) => c.simId === s.id)}
+              onClick={() => setActive(s)}
+            />
+          ))}
         </div>
       </div>
 
-      <footer className="border-t border-border-soft">
-        <div className="max-w-4xl mx-auto px-6 py-8 text-xs text-muted">
-          {strings.footer}
-        </div>
-      </footer>
     </main>
   );
 }
