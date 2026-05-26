@@ -75,6 +75,9 @@ export const S3_4: Scenario = {
       ["Cadeia local / importada", "60% / 40%"],
       ["EDI / portal fornecedor", "40% dos fornecedores"],
       ["Sponsor sênior", "CEO ativo"],
+      ["Estoque-alvo pós-projeto (A / B / C)", "10 d / 30 d / 64 d (−15%)"],
+      ["Custo de implantação (A / B / C)", "R$ 3,0 / 1,0 / 0,2 M"],
+      ["Concentração CMV no top 20% SKUs", "≈ 80%"],
     ],
   },
   statements: [

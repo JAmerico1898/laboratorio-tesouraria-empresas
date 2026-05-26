@@ -81,6 +81,9 @@ export const S4_2: Scenario = {
       ["Custo de capital — próprio", "18% a.a."],
       ["Aumento de receita projetado (60 d)", "+12%"],
       ["Aumento de inadimplência esperado (60 d)", "+1,0 pp (plena) / +0,3 pp (seletiva)"],
+      ["Composição da carteira (A/B vs C/D)", "60% / 40%"],
+      ["Custo administrativo de carteira", "0,4% do faturado"],
+      ["Adesão esperada ao desconto à vista (Cenário C)", "~20% da carteira"],
     ],
   },
   statements: [

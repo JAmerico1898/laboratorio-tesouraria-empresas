@@ -62,6 +62,7 @@ export const S5_1: Scenario = {
       ["Carteira para antecipar", "R$ 7 M disponível"],
       ["WACC", "14% a.a. (referência interna)"],
       ["Compromisso já contratado de funding", "R$ 0"],
+      ["Amortização CG (saldo médio)", "linear — saldo médio ~50% (duration ~6,5 meses)"],
     ],
   },
   statements: [

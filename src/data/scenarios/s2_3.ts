@@ -63,6 +63,7 @@ export const S2_3: Scenario = {
       ["Custo manual anual", "≈ R$ 85 mil"],
       ["Sponsor", "CFO autorizou piloto"],
       ["Horizonte de avaliação", "36 meses"],
+      ["Custo de capital (referência)", "~14% a.a."],
     ],
   },
   statements: [

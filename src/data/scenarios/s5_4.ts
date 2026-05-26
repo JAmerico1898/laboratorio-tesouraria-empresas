@@ -78,6 +78,10 @@ export const S5_4: Scenario = {
       ["EBITDA projetado (−20%)", "R$ 24 M"],
       ["DL/EBITDA projetado sem ação", "3,75x (violação)"],
       ["Covenant cap", "DL/EBITDA ≤ 3,5x"],
+      ["A: alavancas operacionais (DL)", "CAPEX −R$ 5 M + estoque −R$ 3 M = −R$ 8 M"],
+      ["A/B: custos de waiver / renegociação", "A: 0,5% × R$ 100 M + 50 bps; B: 1% × R$ 60 M + 75 bps (24m)"],
+      ["Parcela renegociável (debêntures)", "R$ 60 M"],
+      ["C: WACC equity (custo implícito)", "~18-20% a.a. sobre R$ 15 M"],
     ],
   },
   statements: [

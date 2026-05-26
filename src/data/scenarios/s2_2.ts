@@ -60,6 +60,8 @@ export const S2_2: Scenario = {
       ["Pagamentos negociáveis", "R$ 4,0 M"],
       ["CG pré-aprovada", "R$ 10,0 M (CDI + 7%)"],
       ["Janela de decisão", "30 dias"],
+      ["CAPEX adiável", "R$ 1,5 M"],
+      ["Probabilidades (otim / base / pess)", "20% / 50% / 30%"],
     ],
   },
   statements: [

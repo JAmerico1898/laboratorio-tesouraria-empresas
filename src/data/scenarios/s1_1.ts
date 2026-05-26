@@ -74,6 +74,8 @@ export const S1_1: Scenario = {
       ["Empréstimos CP 2025", "R$ 11,0M"],
       ["Margem CMV", "65% → 72%"],
       ["Despesas financeiras", "1,8M → 3,8M"],
+      ["Custo médio da dívida CP", "~14% a.a."],
+      ["Compras anuais (base)", "~R$ 40 M"],
     ],
   },
   statements: [

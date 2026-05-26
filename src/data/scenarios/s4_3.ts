@@ -78,6 +78,9 @@ export const S4_3: Scenario = {
       ["Custo financeiro do atraso (+30 d)", "R$ 350 mil/ano"],
       ["Equipe atual", "3 pessoas, R$ 360 mil/ano"],
       ["WACC", "14% a.a."],
+      ["Recuperação por faixa (D+1-30 / +31-60 / +61-90 / >+90)", "75% / 40% / 15% / 5%"],
+      ["Comissão cobrança terceirizada (cenário A)", "25% sobre o recuperado"],
+      ["Deságio cessão > D+90 (cenário C)", "50% do face"],
     ],
   },
   statements: [

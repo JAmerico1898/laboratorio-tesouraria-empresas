@@ -87,6 +87,8 @@ export const S1_2: Scenario = {
       ["PMRV setor (bench)", "~25 dias"],
       ["PMPF setor (bench)", "~28-30 dias"],
       ["Sensibilidade NCG", "+10d PMRE ≈ +R$ 11,7M"],
+      ["CAPEX da expansão (20 lojas)", "R$ 60 M (R$ 3 M/loja)"],
+      ["Elasticidade ΔACO/ΔReceita ; ΔPCO/ΔReceita", "≈ 30% ; ≈ 8%"],
     ],
   },
   statements: [

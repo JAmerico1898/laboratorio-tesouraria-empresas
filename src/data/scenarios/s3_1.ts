@@ -61,6 +61,8 @@ export const S3_1: Scenario = {
       ["Concentração esperada (top 20%)", "≈ 80% do valor"],
       ["Equipe de estoques", "4 pessoas, R$ 480 mil/ano"],
       ["Nível de serviço-alvo", "97% (A) / 92% (B/C)"],
+      ["Redução de estoque esperada (A / B / C)", "−10% / −5% / −13%"],
+      ["Custo de implantação (A / B / C)", "R$ 120 / 45 / 220 mil"],
     ],
   },
   statements: [

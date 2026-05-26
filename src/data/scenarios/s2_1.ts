@@ -78,6 +78,7 @@ export const S2_1: Scenario = {
       ["Folha mensal + 13º", "R$ 1,5 M + Jun/Nov"],
       ["CAPEX", "R$ 4,0 M em Março"],
       ["Saldo inicial / mínimo", "R$ 2,5 M / R$ 1,5 M"],
+      ["Carteira de cartão (antecipável)", "~R$ 5 M/mês"],
     ],
   },
   statements: [

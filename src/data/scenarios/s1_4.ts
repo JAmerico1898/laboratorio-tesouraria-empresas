@@ -43,6 +43,8 @@ export const S1_4: Scenario = {
       ["Dívida Líquida / EBITDA", "4,42× (covenant: ≤ 4,0×)"],
       ["Banco de terrenos não estratégico", "R$ 80 M acionáveis"],
       ["Prazo médio da dívida", "18 meses"],
+      ["EBITDA Ano 5 (margem 23,8%)", "R$ 95 M"],
+      ["Caixa Ano 5", "R$ 20 M"],
     ],
   },
   statements: [

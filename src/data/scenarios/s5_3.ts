@@ -81,6 +81,8 @@ export const S5_3: Scenario = {
       ["Multa de pré-pagamento", "2% sobre o saldo"],
       ["Projeto de estoque", "R$ 1 M investido → R$ 4 M liberados + R$ 880 k/ano"],
       ["Linha pré-aprovada (backup)", "R$ 6 M a CDI + 6%"],
+      ["Amortização da dívida", "linear ao longo de 18 m (duration ~9 m)"],
+      ["Aplicação ao CDI (líquido de IR)", "~10,2% a.a."],
     ],
   },
   statements: [
