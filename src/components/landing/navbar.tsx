@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { label: strings.navM3, href: "/modulo-3" },
   { label: strings.navM4, href: "/modulo-4" },
   { label: strings.navM5, href: "/modulo-5" },
+  { label: "Dashboards", href: "/dashboards" },
   { label: "Estudos de Caso", href: "/estudos-de-caso" },
 ] as const;
 
