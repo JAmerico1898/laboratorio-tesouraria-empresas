@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { label: strings.navM5, href: "/modulo-5" },
   { label: "Dashboards", href: "/dashboards" },
   { label: "Estudos de Caso", href: "/estudos-de-caso" },
+  { label: "Skill.md", href: "/skill" },
 ] as const;
 
 export function Navbar() {
