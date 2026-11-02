@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D3.1 · Estoque é dinheiro parado</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"t0","nome":"Horizonte T0","pme":100,"cdi":12,"armaz":3,"seguro":1,"obsol":2,"mult":1,"tau":40},{"id":"cdi","nome":"CDI alto","pme":100,"cdi":18,"armaz":3,"seguro":1,"obsol":2,"mult":1,"tau":40},{"id":"giro","nome":"Giro de distribuidor eficiente","pme":60,"cdi":12,"armaz":3,"seguro":1,"obsol":2,"mult":1,"tau":40},{"id":"moda","nome":"Moda / tecnologia","pme":100,"cdi":12,"armaz":3,"seguro":1,"obsol":10,"mult":1,"tau":40}]},"perfis":{"format":"json","data":[{"perfil":"horizonte","empresa":"Comercial Horizonte","setor":"Distribuição / varejo","receita":36000,"cmv":27000,"ebitda":2400,"estoque0":7500,"clientes":2000,"outrosACO":300,"pco":4300,"st":-2500,"mc":0.2,"f0":0.25,"temEstoque":1,"paradaLinha":0},{"perfil":"alfa","empresa":"Indústria Alfa","setor":"Indústria de transformação","receita":50000,"cmv":32000,"ebitda":6920,"estoque0":5300,"clientes":8300,"outrosACO":400,"pco":5100,"st":-1000,"mc":0.35,"f0":0.25,"temEstoque":1,"paradaLinha":1},{"perfil":"nuvem","empresa":"Nuvem Ltda.","setor":"Serviços / SaaS","receita":12000,"cmv":0,"ebitda":2400,"estoque0":0,"clientes":1800,"outrosACO":0,"pco":1000,"st":0,"mc":0,"f0":0,"temEstoque":0,"paradaLinha":0}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+</style>
+<style>
+.d31-pair { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 44rem) { .d31-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.d31-box { min-height: 270px; }
+.d31-curva { min-height: 300px; }
+.d31-leg { display: grid; gap: 3px; font-size: 13px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.d31-leg i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+.d31-leg .k-u { margin-left: 4px; }
+.d31-perfis { margin-top: 14px; border-top: 1px solid var(--color-border-line); padding-top: 10px; }
+.d31-pbar { min-height: 96px; }
+.d31-prow { display: grid; grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr) 3.4rem; align-items: center; gap: 8px; width: 100%; font: inherit; font-size: 13px; text-align: left; background: none; border: 1px solid transparent; border-radius: var(--cds-radius); padding: 3px 6px; color: var(--color-fg); cursor: pointer; }
+.d31-prow:hover { border-color: var(--color-border-line); }
+.d31-prow[aria-pressed="true"] { border-color: var(--k-navy); }
+.d31-prow .d31-track { height: 12px; background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 3px; overflow: hidden; }
+.d31-prow .d31-fill { height: 100%; background: var(--k-amber); }
+.d31-prow .d31-pct { text-align: right; font-variant-numeric: tabular-nums; }
+.d31-fixa { font-size: 13px; color: var(--color-fg-muted); margin: 10px 0 0; font-variant-numeric: tabular-nums; }
+.d31 .k-card .d31-val { font-family: var(--font-anthropic-serif); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.d31-adv { margin-top: 4px; font-size: 14px; }
+.d31-adv > summary { cursor: pointer; color: var(--color-fg-muted); font-size: 13px; margin-bottom: 6px; }
+</style>
+
+<div class="k d31" id="d31">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D3.1 · Estoque é dinheiro parado</h1>
+      <p class="k-sub">Quanto custa, por ano, cada dia que a mercadoria fica na prateleira — e quanto custa ela não estar lá?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d31-cen" data-cen="t0" aria-pressed="false">Horizonte T0</button>
+      <button class="k-btn d31-cen" data-cen="cdi" aria-pressed="false">CDI alto</button>
+      <button class="k-btn d31-cen" data-cen="giro" aria-pressed="false">Giro de distribuidor eficiente</button>
+      <button class="k-btn d31-cen" data-cen="moda" aria-pressed="false">Moda / tecnologia</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone" id="controles" data-source="perfis cenarios">
+      <h2 class="k-zt">Prateleira</h2>
+      <div class="k-ctl"><label for="c-pme">PME <span class="k-u">dias de estoque</span> <span class="k-info" tabindex="0">i<span class="k-tip">Estoque = CMV × PME ÷ 360. Clientes, outros ativos operacionais e o PCO ficam fixos: só o estoque se move.</span></span></label>
+        <div class="k-in"><input type="range" id="c-pme" data-k="pme" min="20" max="150" step="1"><input type="number" class="d31-pmenum" data-k="pme" min="20" max="150" step="1" aria-label="PME, dias"></div></div>
+
+      <h2 class="k-zt2">Custo de carregamento H <span class="k-u">% a.a. do valor estocado</span></h2>
+      <div class="k-ctl"><label for="c-cdi">Financeiro (CDI)</label>
+        <div class="k-in"><input type="range" id="c-cdi" data-k="cdi" min="5" max="20" step="0.5"><input type="number" data-k="cdi" min="5" max="20" step="0.5" aria-label="CDI, % a.a."></div></div>
+      <div class="k-ctl"><label for="c-armaz">Armazenagem</label>
+        <div class="k-in"><input type="range" id="c-armaz" data-k="armaz" min="1" max="5" step="0.5"><input type="number" data-k="armaz" min="1" max="5" step="0.5" aria-label="Armazenagem, % a.a."></div></div>
+      <div class="k-ctl"><label for="c-seg">Seguros e perdas</label>
+        <div class="k-in"><input type="range" id="c-seg" data-k="seguro" min="0" max="3" step="0.5"><input type="number" data-k="seguro" min="0" max="3" step="0.5" aria-label="Seguros e perdas, % a.a."></div></div>
+      <div class="k-ctl"><label for="c-obs">Obsolescência</label>
+        <div class="k-in"><input type="range" id="c-obs" data-k="obsol" min="0" max="10" step="0.5"><input type="number" data-k="obsol" min="0" max="10" step="0.5" aria-label="Obsolescência, % a.a."></div></div>
+      <p class="k-note">H total = <b data-draw="v" data-q="H">—</b></p>
+
+      <h2 class="k-zt2">Ruptura</h2>
+      <div class="k-ctl"><label for="c-mult">Multiplicador de perda de cliente <span class="k-info" tabindex="0">i<span class="k-tip">1,0 = só a margem da venda perdida. Acima de 1, a falta também afasta o cliente das compras seguintes.</span></span></label>
+        <div class="k-in"><input type="range" id="c-mult" data-k="mult" min="1" max="3" step="0.1"><input type="number" data-k="mult" min="1" max="3" step="0.1" aria-label="Multiplicador de perda de cliente"></div></div>
+      <details class="d31-adv">
+        <summary>Avançado</summary>
+        <div class="k-ctl"><label for="c-tau">Sensibilidade à ruptura τ <span class="k-u">dias</span> <span class="k-info" tabindex="0">i<span class="k-tip">Fração da receita perdida por falta = f₀ · e^(−PME/τ), com f₀ = 25%. Construção didática: τ maior = ruptura mais sensível a pouco estoque.</span></span></label>
+          <div class="k-in"><input type="range" id="c-tau" data-k="tau" min="20" max="80" step="1"><input type="number" data-k="tau" min="20" max="80" step="1" aria-label="τ, dias"></div></div>
+      </details>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="perfis cenarios">
+      <div class="k-tabs" role="tablist">
+        <button class="k-tab" id="tab-dinheiro" data-group="v" data-tab="dinheiro" role="tab" aria-selected="true">Dinheiro parado</button>
+        <button class="k-tab" id="tab-balanca" data-group="v" data-tab="balanca" role="tab" aria-selected="false">A balança</button>
+      </div>
+
+      <section data-group="v" data-pane="dinheiro" id="dinheiro">
+        <div class="d31-pair">
+          <div>
+            <div class="k-ch"><h3>Ativo × passivo operacional</h3><span>R$ mil · <b data-draw="v" data-q="empresa">—</b></span></div>
+            <div class="k-chart d31-box dash-skeleton" id="barras" data-draw="barras" role="img" aria-label="Barras do ACO e do PCO com a NCG anotada"></div>
+            <div class="k-legend">
+              <span><i style="background: var(--k-amber)"></i>Estoque</span>
+              <span><i style="background: var(--k-amber-l)"></i>Clientes</span>
+              <span><i style="background: var(--k-neutro)"></i>Outros ACO</span>
+              <span><i style="background: var(--k-amber-d)"></i>PCO</span>
+            </div>
+          </div>
+          <div>
+            <div class="k-ch"><h3>Custo de carregamento por ano</h3><span>R$ mil</span></div>
+            <div class="k-chart d31-box dash-skeleton" id="anel" data-draw="anel" role="img" aria-label="Anel do custo de carregamento nas quatro famílias"></div>
+            <div class="d31-leg">
+              <span><i style="background: var(--k-navy)"></i>Financeiro (CDI) · <b data-draw="v" data-q="fam-fin">—</b> <span class="k-u">não aparece na nota fiscal</span></span>
+              <span><i style="background: var(--k-blue)"></i>Armazenagem · <b data-draw="v" data-q="fam-armaz">—</b></span>
+              <span><i style="background: var(--k-blue-l)"></i>Seguros e perdas · <b data-draw="v" data-q="fam-seguro">—</b></span>
+              <span><i style="background: var(--k-neutro)"></i>Obsolescência · <b data-draw="v" data-q="fam-obsol">—</b></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="balanca" id="balanca" hidden>
+        <div class="k-ch"><h3>Carregamento × ruptura</h3><span>R$ mil por ano · PME em dias</span></div>
+        <p class="k-note d31-semest" hidden>Sem estoque: a NCG mora no prazo de recebimento e nos contratos — M4.</p>
+        <div class="k-chart d31-curva dash-skeleton" id="curva" data-draw="curva" role="img" aria-label="Custos de carregamento, ruptura e total em função do PME"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-amber)"></i>Carregamento</span>
+          <span><i style="background: var(--k-blue)"></i>Ruptura esperada</span>
+          <span><i style="background: var(--k-navy); height: 4px; vertical-align: 3px"></i>Total</span>
+        </div>
+        <div class="k-cards">
+          <div class="k-card" id="card-venda"><h4>Venda perdida</h4><span class="d31-val" data-draw="v" data-q="venda">—</span> <span class="k-u">R$ mil/ano</span><p class="k-note">Conta a margem de contribuição (<b data-draw="v" data-q="mc">—</b>), não o preço.</p></div>
+          <div class="k-card" id="card-cliente"><h4>Perda de cliente</h4><span class="d31-val" data-draw="v" data-q="perdaCli">—</span> <span class="k-u">R$ mil/ano</span><p class="k-note">Multiplicador <b data-draw="v" data-q="mult">—</b>: a falta de hoje custa compras futuras.</p></div>
+          <div class="k-card d31-parada" id="card-parada"><h4>Parada de linha</h4>
+            <p class="k-note d31-par-off">Não se aplica a distribuidor: falta de mercadoria não para fábrica.</p>
+            <p class="k-note d31-par-on" hidden>Capacidade ociosa: a fábrica para por falta de insumo e o custo fixo corre. Não entra no total desta curva.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="d31-perfis" id="perfis" data-source="perfis">
+        <h2 class="k-zt">Participação do estoque no ACO · clique para trocar de perfil</h2>
+        <div class="d31-pbar dash-skeleton" data-draw="perfis"></div>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="perfis cenarios">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">Estoque <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="est">—</span></div>
+      <div class="k-kpi"><span class="k-kl">NCG <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="ncg">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Carregamento/ano <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="carreg">—</span></div>
+      <p class="k-note"><b data-draw="v" data-q="pct">—</b> do EBITDA · ruptura <b data-draw="v" data-q="rup">—</b> · total <b data-draw="v" data-q="total">—</b></p>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="acima" hidden><b data-draw="v" data-q="pme">—</b> dias de prateleira custam R$ <b data-draw="v" data-q="carreg">—</b> mil por ano — <b data-draw="v" data-q="pct">—</b> do EBITDA. Cada 10 dias a menos de PME liberam R$ <b data-draw="v" data-q="dez">—</b> mil de NCG.</p>
+        <p data-frase="equilibrio" hidden>Perto do equilíbrio entre carregamento e ruptura (ótimo em <b data-draw="v" data-q="ot">—</b> dias). A partir daqui, reduzir estoque só vale com cadeia mais confiável (D3.4).</p>
+        <p data-frase="abaixo" hidden>Estoque baixo barateia o carregamento, mas a ruptura já custa R$ <b data-draw="v" data-q="rup">—</b> mil em margem perdida. O barato sai caro.</p>
+        <p data-frase="st" hidden>Com PME de <b data-draw="v" data-q="pme">—</b> dias, o ST da Horizonte sairia de <b data-draw="v" data-q="st0">—</b> para <b data-draw="v" data-q="stNovo">—</b>: <b data-draw="v" data-q="menosDias">—</b> dias de estoque a menos pagariam toda a dívida de curto prazo.</p>
+        <p data-frase="nuvem" hidden>Sem estoque, não há o que carregar: a NCG de <b data-draw="v" data-q="ncg">—</b> mora no prazo de recebimento e nos contratos — tema do M4.</p>
+      </div>
+      <p class="d31-fixa">Cada 10 dias de PME = R$ <b data-draw="v" data-q="dez">—</b> mil de estoque = R$ <b data-draw="v" data-q="dezCarreg">—</b> mil/ano de carregamento (a <b data-draw="v" data-q="H">—</b>).</p>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="perfis cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Quanto a Horizonte paga por ano para manter R$ <span data-draw="v" data-q="g-est">—</span> mil em estoque, e onde esse custo aparece na contabilidade?
+          <details><summary>mostrar resposta</summary><p>R$ <b data-draw="v" data-q="g-carreg">—</b> mil (<b data-draw="v" data-q="g-H">—</b>): R$ <b data-draw="v" data-q="g-fin">—</b> mil são custo financeiro — estão nos juros do CG rotativo e no rendimento que a aplicação não gerou, em nenhuma conta de estoque. Os outros R$ <b data-draw="v" data-q="g-outros">—</b> mil aparecem diluídos em aluguel, energia, seguro e perdas.</p></details>
+        </li>
+        <li>Leve o PME para <span data-draw="v" data-q="g-pme2">—</span> dias. O que acontece com a NCG e com o ST da Horizonte?
+          <details><summary>mostrar resposta</summary><p>Estoque cai para <b data-draw="v" data-q="g-est2">—</b>, NCG de <b data-draw="v" data-q="g-ncg">—</b> para <b data-draw="v" data-q="g-ncg2">—</b>: os R$ <b data-draw="v" data-q="g-lib">—</b> mil liberados mais que cobrem o ST de <b data-draw="v" data-q="st0">—</b> e ainda sobra caixa. O preço: a ruptura sobe de <b data-draw="v" data-q="g-rup">—</b> para <b data-draw="v" data-q="g-rup2">—</b>.</p></details>
+        </li>
+        <li>Na aba "A balança", o mínimo fica perto de <span data-draw="v" data-q="g-ot">—</span> dias. Por que então a Horizonte opera com <span data-draw="v" data-q="g-pme">—</span>?
+          <details><summary>mostrar resposta</summary><p>Porque a curva agrega 3.500 SKUs com comportamentos diferentes: itens C de giro lento puxam o PME médio para cima. O ótimo agregado esconde que a resposta certa é por classe — tema do D3.2.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+})();</script>
+<script>(function () {
+
+/* D3.1 · Estoque é dinheiro parado — funções puras (sem DOM).
+   E = perfil da empresa (dataset), C = controles. R$ mil, dias, % a.a. */
+(function (root) {
+  const M = {};
+  M.H = (C) => (C.cdi + C.armaz + C.seguro + C.obsol) / 100;
+  M.estoque = (E, pme) => (E.temEstoque ? E.cmv * pme / 360 : 0);
+  M.f = (E, C, pme) => E.f0 * Math.exp(-pme / C.tau);
+  M.ruptura = (E, C, pme) => (E.temEstoque ? E.receita * M.f(E, C, pme) * E.mc * C.mult : 0);
+  M.carreg = (E, C, pme) => M.H(C) * M.estoque(E, pme);
+  M.total = (E, C, pme) => M.carreg(E, C, pme) + M.ruptura(E, C, pme);
+  // argmin do custo total em [lo, hi], passo 0,01 dia
+  M.otimo = function (E, C, lo = 20, hi = 150) {
+    let best = lo, v = Infinity;
+    for (let p = lo; p <= hi + 1e-9; p += 0.01) { const t = M.total(E, C, p); if (t < v) { v = t; best = p; } }
+    return { pme: best, total: v };
+  };
+  M.estado = function (E, C) {
+    const pme = C.pme;
+    const est = M.estoque(E, pme), aco = est + E.clientes + E.outrosACO, ncg = aco - E.pco;
+    const H = M.H(C), carreg = H * est, rup = M.ruptura(E, C, pme);
+    const venda = E.temEstoque ? E.receita * M.f(E, C, pme) * E.mc : 0;
+    const ot = E.temEstoque ? M.otimo(E, C) : { pme: null, total: 0 };
+    return {
+      pme, est, aco, ncg, part: aco ? est / aco : 0, H, carreg, rup, venda, perdaCliente: rup - venda, total: carreg + rup,
+      pctEbitda: carreg / E.ebitda, ot,
+      familias: [['fin', C.cdi / 100 * est], ['armaz', C.armaz / 100 * est], ['seguro', C.seguro / 100 * est], ['obsol', C.obsol / 100 * est]],
+      dezDias: E.cmv * 10 / 360, stNovo: E.st + E.estoque0 - est,
+    };
+  };
+  M.curva = function (E, C, lo = 20, hi = 150, passo = 1) {
+    const out = [];
+    for (let p = lo; p <= hi; p += passo) out.push({ pme: p, carreg: M.carreg(E, C, p), rup: M.ruptura(E, C, p), total: M.total(E, C, p) });
+    return out;
+  };
+  root.M31 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D3.1 · Estoque é dinheiro parado
+   Testes de aderência (Spec §7), conferidos com M31.estado() em node:
+   Horizonte T0: estoque 7.500 · ACO 9.800 · 76,5% · NCG 5.500 · H 18% · carregamento 1.350 · 56% do EBITDA · ruptura 148 · total 1.498
+   PME 60: estoque 4.500 · NCG 2.500 · carregamento 810 · ruptura 402 · total 1.212 · ST novo 500
+   Ótimo: 48 dias · total 1.190 · CDI 18%: 1.800 · Obsolescência 10%: H 26% · 1.950
+   Alfa: estoque 5.300 (PME 59,6) · ACO 14.000 · 37,9% · NCG 8.900 · Nuvem: 0% · PME desabilitado
+   ============================================================ */
+const ST = window.D31 = { S: null, perfil: 'horizonte', cen: null, mexido: false };
+const IDS = ['perfis', 'cenarios'];
+const NOMES = ['barras', 'anel', 'curva', 'perfis', 'v', 'frase'];
+const FAIXA_OTIMO = 15;   // ± dias em torno do ótimo para a frase "equilíbrio" (Spec §4.3)
+const NCG_ST = 2500;      // NCG a partir da qual a frase do ST aparece (Spec §4.3)
+const Q2_PME = 60;        // PME sugerido na pergunta-guia 2
+
+/* ---------- dados ---------- */
+const perfis = () => K.num(dash.data('perfis').data);
+const perfil = (id) => perfis().find((r) => r.perfil === id);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const pme0 = (e) => (e.temEstoque ? e.estoque0 / e.cmv * 360 : 0);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const E = () => perfil(ST.perfil);
+const atual = () => M31.estado(E(), ST.S);
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const base = (extra) => M31.estado(perfil('horizonte'), { ...ctlDe(cenario('t0')), ...(extra || {}) });
+function ctlDe(r) { return { pme: r.pme, cdi: r.cdi, armaz: r.armaz, seguro: r.seguro, obsol: r.obsol, mult: r.mult, tau: r.tau }; }
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  const e = E();
+  document.querySelectorAll('.d31-pmenum').forEach((i) => { if (i !== document.activeElement) i.value = String(Math.round(ST.S.pme)); });
+  document.querySelectorAll('input[data-k="pme"]').forEach((i) => { i.disabled = !!e && !e.temEstoque; });
+  document.querySelectorAll('.d31-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+  document.querySelectorAll('.d31-semest').forEach((x) => { x.hidden = !e || !!e.temEstoque; });
+  document.querySelectorAll('.d31-par-off').forEach((x) => { x.hidden = !!e && !!e.paradaLinha; });
+  document.querySelectorAll('.d31-par-on').forEach((x) => { x.hidden = !e || !e.paradaLinha; });
+  document.querySelectorAll('.d31-parada').forEach((x) => { x.classList.toggle('k-dim', !e || !e.paradaLinha); });
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDe(r); ST.perfil = 'horizonte'; ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+function trocaPerfil(id) {
+  const e = perfil(id);
+  if (!e || !ST.S) return;
+  ST.perfil = id; ST.S.pme = e.temEstoque ? pme0(e) : ST.S.pme; ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  aplicar('t0');
+  K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), () => {
+  if (!ST.S) return;
+  ST.mexido = true; sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d31-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+K.tabs('v', () => K.redraw(['curva', 'barras', 'anel']));
+
+/* ---------- barras ACO × PCO ---------- */
+dash.draw('barras', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const e = E(), R = atual();
+  const { svg, W, H } = K.svg(el, 270, 260);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const maxV = Math.max(M31.estoque(e, 150) + e.clientes + e.outrosACO, e.pco) * 1.05;
+  const y = d3.scaleLinear([0, maxV], [H - 26, 14]);
+  const cw = Math.min(90, (W - 40) / 4), xA = W / 2 - cw - 18, xP = W / 2 + 18;
+  const ticks = y.ticks(5);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', 8).attr('x2', W - 8).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('x', 8).attr('y', (t) => y(t) - 3).text((t) => K.n(t));
+  const segs = [['Estoque', R.est, 'var(--k-amber)'], ['Clientes', e.clientes, 'var(--k-amber-l)'], ['Outros ACO', e.outrosACO, 'var(--k-neutro)']];
+  let acc = 0;
+  segs.forEach(([nome, v, cor]) => {
+    if (v <= 0) return;
+    svg.append('rect').attr('x', xA).attr('width', cw).attr('y', y(acc + v)).attr('height', Math.max(0, y(acc) - y(acc + v))).attr('fill', cor)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('ACO', [[cor, nome, K.n(v)]], px, py); }).on('mouseleave', () => tip.hide());
+    if (y(acc) - y(acc + v) > 18) svg.append('text').attr('class', 'k-svgt').style('fill', '#1a1a1a').attr('text-anchor', 'middle').attr('x', xA + cw / 2).attr('y', y(acc + v / 2) + 5).text(K.n(v));
+    acc += v;
+  });
+  svg.append('rect').attr('x', xP).attr('width', cw).attr('y', y(e.pco)).attr('height', Math.max(0, y(0) - y(e.pco))).attr('fill', 'var(--k-amber-d)')
+    .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('PCO', [['var(--k-amber-d)', 'Passivo operacional', K.n(e.pco)]], px, py); }).on('mouseleave', () => tip.hide());
+  svg.append('text').attr('class', 'k-svgt').style('fill', '#fff').attr('text-anchor', 'middle').attr('x', xP + cw / 2).attr('y', y(e.pco / 2) + 5).text(K.n(e.pco));
+  svg.append('line').attr('x1', 8).attr('x2', W - 8).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', xA + cw / 2).attr('y', H - 8).text('ACO ' + K.n(R.aco));
+  svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', xP + cw / 2).attr('y', H - 8).text('PCO ' + K.n(e.pco));
+  // NCG: colchete entre o topo do PCO e o topo do ACO
+  if (R.ncg > 0) {
+    const bx = xP + cw + 8, y1 = y(R.aco), y2 = y(e.pco);
+    svg.append('line').attr('x1', xA + cw).attr('x2', bx).attr('y1', y1).attr('y2', y1).attr('stroke', 'var(--color-fg)').attr('stroke-dasharray', '3 3');
+    svg.append('path').attr('d', `M${bx},${y1} h6 V${y2} h-6`).attr('fill', 'none').attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
+    const t = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', bx + 10).attr('y', (y1 + y2) / 2 - 2).text('NCG');
+    svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', bx + 10).attr('y', (y1 + y2) / 2 + 15).text(K.n(R.ncg));
+    if (bx + 10 + t.node().getComputedTextLength() > W) t.attr('x', W - t.node().getComputedTextLength());
+  }
+});
+
+/* ---------- anel do carregamento ---------- */
+dash.draw('anel', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const e = E(), R = atual();
+  const { svg, W, H } = K.svg(el, 270, 260);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const cx = W / 2, cy = H / 2, r = Math.min(W, H) / 2 - 10;
+  const cores = { fin: 'var(--k-navy)', armaz: 'var(--k-blue)', seguro: 'var(--k-blue-l)', obsol: 'var(--k-neutro)' };
+  const nomes = { fin: 'Financeiro (CDI)', armaz: 'Armazenagem', seguro: 'Seguros e perdas', obsol: 'Obsolescência' };
+  const g = svg.append('g').attr('transform', `translate(${cx},${cy})`);
+  const dados = R.familias.filter(([, v]) => v > 0);
+  if (!dados.length) {
+    g.append('circle').attr('r', r * 0.8).attr('fill', 'none').attr('stroke', 'var(--color-border-line)').attr('stroke-width', r * 0.36);
+  } else {
+    const arcs = d3.pie().sort(null).value((d) => d[1])(dados);
+    const arc = d3.arc().innerRadius(r * 0.62).outerRadius(r).padAngle(0.01).cornerRadius(2);
+    g.selectAll('path').data(arcs).join('path').attr('d', arc).attr('fill', (d) => cores[d.data[0]])
+      .on('mousemove', (ev, d) => { const [px, py] = d3.pointer(ev, el); tip.show(nomes[d.data[0]], [[cores[d.data[0]], 'R$ mil/ano', K.n(d.data[1])], [null, 'Participação', K.p(d.data[1] / R.carreg, 0)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+  }
+  g.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('y', -22).text('R$ mil/ano');
+  g.append('text').attr('text-anchor', 'middle').attr('y', 8).style('font-family', 'var(--font-anthropic-serif)').style('font-size', '30px').style('fill', 'var(--color-fg)').style('font-variant-numeric', 'tabular-nums').text(K.n(R.carreg));
+  g.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('y', 30).text('= ' + K.p(R.pctEbitda, 0) + ' do EBITDA');
+});
+
+/* ---------- a balança ---------- */
+dash.draw('curva', (el) => {
+  if (!pronto()) { falha(el); return; }
+  const e = E();
+  el.classList.remove('dash-skeleton');
+  if (!e.temEstoque) { el.replaceChildren(); return; }
+  const R = atual(), C = ST.S;
+  const pts = M31.curva(e, C, 20, 150, 1);
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const yMax = d3.max(pts, (p) => Math.max(p.total, p.carreg, p.rup)) * 1.05;
+  const y = d3.scaleLinear([0, yMax], [H - 28, 12]).nice();
+  const ticks = y.ticks(5);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t)); mL = Math.max(mL, meas.node().getComputedTextLength()); });
+  meas.text('Carregamento'); const mR = meas.node().getComputedTextLength() + 14; meas.remove();
+  const x = d3.scaleLinear([20, 150], [mL + 10, W - mR]);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x(20)).attr('x2', x(150)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  const xt = [20, 40, 60, 80, 100, 120, 150];
+  svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 8).text((t) => K.n(t));
+  svg.append('line').attr('x1', x(20)).attr('x2', x(150)).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  const series = [['carreg', 'var(--k-amber)', 2, 'Carregamento'], ['rup', 'var(--k-blue)', 2, 'Ruptura'], ['total', 'var(--k-navy)', 3.5, 'Total']];
+  series.forEach(([k, cor, w]) => {
+    svg.append('path').attr('d', d3.line().x((p) => x(p.pme)).y((p) => y(p[k]))(pts)).attr('fill', 'none').attr('stroke', cor).attr('stroke-width', w).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  });
+  // rótulos de fim de linha, afastados para não se tocarem
+  const fim = pts[pts.length - 1];
+  const labs = series.map(([k, cor, , nome]) => ({ y: y(fim[k]), cor, nome })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 15) labs[i].y = labs[i - 1].y + 15;
+  labs.forEach((l) => svg.append('text').attr('class', 'k-svgt').style('fill', l.cor).style('font-weight', 600).attr('x', x(150) + 6).attr('y', l.y + 4).text(l.nome));
+  // ótimo
+  const ot = R.ot;
+  svg.append('line').attr('x1', x(ot.pme)).attr('x2', x(ot.pme)).attr('y1', y(ot.total)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+  svg.append('circle').attr('cx', x(ot.pme)).attr('cy', y(ot.total)).attr('r', 5).attr('fill', 'var(--color-bg)').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2);
+  const tOt = svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', x(ot.pme)).attr('y', y(ot.total) - 10).text('ótimo ' + K.n(ot.pme) + ' d · ' + K.n(ot.total));
+  // atual
+  const pa = Math.min(150, Math.max(20, C.pme));
+  const tAt = M31.total(e, C, pa);
+  svg.append('line').attr('x1', x(pa)).attr('x2', x(pa)).attr('y1', 12).attr('y2', y(0)).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
+  svg.append('circle').attr('cx', x(pa)).attr('cy', y(tAt)).attr('r', 5).attr('fill', 'var(--k-navy)');
+  const tA = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', x(pa) + 6).attr('y', 24).text('atual ' + K.n(pa) + ' d');
+  if (x(pa) + 6 + tA.node().getComputedTextLength() > x(150)) tA.attr('text-anchor', 'end').attr('x', x(pa) - 6);
+  // evita o rótulo do ótimo sobre o do atual
+  const bO = tOt.node().getBBox(), bA = tA.node().getBBox();
+  if (bO.x < bA.x + bA.width && bA.x < bO.x + bO.width && bO.y < bA.y + bA.height && bA.y < bO.y + bO.height) tOt.attr('y', y(ot.total) + 22);
+  // tooltip
+  const hover = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-navy)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(20)).attr('width', x(150) - x(20)).attr('y', 12).attr('height', y(0) - 12).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const p = pts[Math.max(0, Math.min(pts.length - 1, Math.round(x.invert(d3.pointer(ev)[0]) - 20)))];
+      hover.attr('cx', x(p.pme)).attr('cy', y(p.total)).attr('opacity', 1);
+      tip.show('PME ' + K.n(p.pme) + ' dias', [['var(--k-amber)', 'Carregamento', K.n(p.carreg)], ['var(--k-blue)', 'Ruptura', K.n(p.rup)], ['var(--k-navy)', 'Total', K.n(p.total)]], px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hover.attr('opacity', 0); });
+});
+
+/* ---------- barra de perfis ---------- */
+dash.draw('perfis', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  el.replaceChildren();
+  perfis().forEach((p) => {
+    const R = M31.estado(p, { ...ST.S, pme: pme0(p) });
+    const b = document.createElement('button');
+    b.className = 'd31-prow'; b.type = 'button';
+    b.setAttribute('aria-pressed', String(p.perfil === ST.perfil));
+    const nome = document.createElement('span'); nome.textContent = p.empresa;
+    const tr = document.createElement('span'); tr.className = 'd31-track';
+    const fi = document.createElement('span'); fi.className = 'd31-fill'; fi.style.display = 'block'; fi.style.width = (R.part * 100) + '%'; tr.append(fi);
+    const pc = document.createElement('span'); pc.className = 'd31-pct'; pc.textContent = K.p(R.part, 1);
+    b.title = p.setor;
+    b.append(nome, tr, pc);
+    b.addEventListener('click', () => trocaPerfil(p.perfil));
+    el.append(b);
+  });
+});
+
+/* ---------- números ---------- */
+const VAL = {
+  empresa: () => E().empresa, H: (R) => K.p(R.H, 0), pme: (R) => K.n(R.pme), est: (R) => K.n(R.est), ncg: (R) => K.n(R.ncg),
+  carreg: (R) => K.n(R.carreg), pct: (R) => K.p(R.pctEbitda, 0), rup: (R) => K.n(R.rup), total: (R) => K.n(R.total),
+  venda: (R) => K.n(R.venda), perdaCli: (R) => K.n(R.perdaCliente), mc: () => K.p(E().mc, 0), mult: () => K.n(ST.S.mult, 1),
+  ot: (R) => (R.ot.pme == null ? null : K.n(R.ot.pme)), dez: (R) => K.n(R.dezDias), dezCarreg: (R) => K.n(R.dezDias * R.H),
+  stNovo: (R) => K.n(R.stNovo), st0: () => K.n(E().st), menosDias: (R) => K.n(pme0(E()) - R.pme),
+  'fam-fin': (R) => K.n(R.familias[0][1]), 'fam-armaz': (R) => K.n(R.familias[1][1]), 'fam-seguro': (R) => K.n(R.familias[2][1]), 'fam-obsol': (R) => K.n(R.familias[3][1]),
+  'g-est': () => K.n(base().est), 'g-carreg': () => K.n(base().carreg), 'g-H': () => K.p(base().H, 0), 'g-fin': () => K.n(base().familias[0][1]),
+  'g-outros': () => { const b = base(); return K.n(b.carreg - b.familias[0][1]); }, 'g-pme2': () => K.n(Q2_PME), 'g-est2': () => K.n(base({ pme: Q2_PME }).est),
+  'g-ncg': () => K.n(base().ncg), 'g-ncg2': () => K.n(base({ pme: Q2_PME }).ncg), 'g-lib': () => K.n(base().est - base({ pme: Q2_PME }).est),
+  'g-rup': () => K.n(base().rup), 'g-rup2': () => K.n(base({ pme: Q2_PME }).rup), 'g-ot': () => K.n(base().ot.pme), 'g-pme': () => K.n(base().pme),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() && E() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto() && E()) {
+    const e = E(), R = atual();
+    if (!e.temEstoque) keys.push('nuvem');
+    else {
+      keys.push(R.pme > R.ot.pme + FAIXA_OTIMO ? 'acima' : R.pme < R.ot.pme - FAIXA_OTIMO ? 'abaixo' : 'equilibrio');
+      if (ST.perfil === 'horizonte' && R.ncg <= NCG_ST) keys.push('st');
+    }
+  }
+  K.frases(el, keys);
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

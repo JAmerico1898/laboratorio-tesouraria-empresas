@@ -1,0 +1,15 @@
+{
+  "code": "D1.3",
+  "title": "D1.3 · Reclassificador Fleuriet",
+  "slug": "f406980b-431b-429a-842d-b771cdbac67c",
+  "datasets": {
+    "contas_circulantes": {
+      "file": "contas_circulantes.json",
+      "sha256": "d36f526471e75d3e5446a14e5078e8771d01c1851854dd5880e4139c8416e250"
+    },
+    "nao_circulantes": {
+      "file": "nao_circulantes.json",
+      "sha256": "b020f91185356ddf396713dc83a20143f51a4ffa6e9c935b7201c64c29ae1f3c"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+[
+  {"id": "bancaria", "nome": "Antecipação bancária", "taxa": 2.0, "taxaMin": 1.5, "taxaMax": 3.0, "fixo": 0, "regresso": "sempre", "prazoMeses": 2, "premioSemRegresso": 0, "aplica": "duplicatas"},
+  {"id": "fidc", "nome": "FIDC / securitização", "taxa": 1.5, "taxaMin": 1.0, "taxaMax": 2.5, "fixo": 600, "regresso": "com ou sem", "prazoMeses": 2, "premioSemRegresso": 0.5, "aplica": "duplicatas"},
+  {"id": "cartao", "nome": "Antecipação de cartão", "taxa": 2.0, "taxaMin": 1.5, "taxaMax": 3.0, "fixo": 0, "regresso": "não (adquirente é o devedor)", "prazoMeses": 1, "premioSemRegresso": 0, "aplica": "recebíveis de cartão"}
+]

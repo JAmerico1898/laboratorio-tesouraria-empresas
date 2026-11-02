@@ -1,0 +1,23 @@
+{
+  "code": "D2.2",
+  "title": "D2.2 · Da receita ao caixa",
+  "slug": "549b20cd-6f84-42ac-9812-8bae45c5b79a",
+  "datasets": {
+    "cenarios": {
+      "file": "cenarios.json",
+      "sha256": "71a2686009400ba21c67b6049be74cffd9fc52c8db2aae49969d448ab47e0b04"
+    },
+    "instrumentos": {
+      "file": "instrumentos.json",
+      "sha256": "cb105f84c3a5ac43b7f04b7ca75e6f41f090dcb997a7f1b56ef4920153ca56fd"
+    },
+    "parametros": {
+      "file": "parametros.json",
+      "sha256": "34e5c88b513d5b27e8afe03b628da84a6994f80666f5099517bc7f4c8e64ec3b"
+    },
+    "sazonalidade": {
+      "file": "sazonalidade.json",
+      "sha256": "2343bea02954730652eef3221a2762984e1b3bb7cb96705a5a9e552d27c51696"
+    }
+  }
+}

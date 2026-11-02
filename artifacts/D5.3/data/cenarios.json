@@ -1,0 +1,6 @@
+[
+ {"id":"horizonte","aba":"cardapio","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":300,"dias":45,"conv":"simples","spRot":5,"spCG":8,"tVendor":21,"desc":2},
+ {"id":"export","aba":"cardapio","gCresc":0,"gSaz":0,"gPric":0,"gHedge":1,"exporta":1,"valor":300,"dias":45,"conv":"simples","spRot":5,"spCG":8,"tVendor":21,"desc":2},
+ {"id":"slide","aba":"conta","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":500,"dias":60,"conv":"simples","spRot":5,"spCG":8,"tVendor":21,"desc":2},
+ {"id":"semacordo","aba":"vendor","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":300,"dias":45,"conv":"simples","spRot":5,"spCG":8,"tVendor":26,"desc":1}
+]

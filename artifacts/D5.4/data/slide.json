@@ -1,0 +1,38 @@
+[
+ {
+  "chave": "entradaSlide",
+  "valor": 976200
+ },
+ {
+  "chave": "parcelaSlide",
+  "valor": 91679
+ },
+ {
+  "chave": "nSlide",
+  "valor": 12
+ },
+ {
+  "chave": "tirSlide",
+  "valor": 1.46
+ },
+ {
+  "chave": "cetSlide",
+  "valor": 19.0
+ },
+ {
+  "chave": "taxaParcelaSlide",
+  "valor": 1.5
+ },
+ {
+  "chave": "face",
+  "valor": 100000
+ },
+ {
+  "chave": "dNom",
+  "valor": 5
+ },
+ {
+  "chave": "prazoDias",
+  "valor": 60
+ }
+]

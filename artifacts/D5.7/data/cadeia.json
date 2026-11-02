@@ -1,0 +1,18 @@
+[
+  {"chave": "fluxo", "valor": 6000, "descricao": "Vendas anuais Alfa → Horizonte (R$ mil)"},
+  {"chave": "prazo0", "valor": 60, "descricao": "Prazo da duplicata em T0 (dias)"},
+  {"chave": "fundAlfa", "valor": 17, "descricao": "Custo de carregar da Alfa (% a.a.)"},
+  {"chave": "fundHor", "valor": 20, "descricao": "Funding alternativo da Horizonte, CG rotativo (% a.a.)"},
+  {"chave": "perda", "valor": 2, "descricao": "Perda esperada da Alfa sobre a Horizonte (% das vendas)"},
+  {"chave": "taxaVendor", "valor": 21, "descricao": "Taxa do vendor finance, CDI + 9% (% a.a.)"},
+  {"chave": "cob", "valor": 100, "descricao": "Cobertura total de estoque dos produtos Alfa na cadeia (dias)"},
+  {"chave": "estDias0", "valor": 100, "descricao": "Estoque dos produtos Alfa na Horizonte em T0 (dias de compras)"},
+  {"chave": "custoPct", "valor": 64, "descricao": "Custo do produto na Alfa (% do preço; PA ao custo)"},
+  {"chave": "ncgAlfa", "valor": 8900, "descricao": "NCG da Alfa em T0 (R$ mil)"},
+  {"chave": "ncgHor", "valor": 5500, "descricao": "NCG da Horizonte em T0 (R$ mil)"},
+  {"chave": "acoAlfa", "valor": 14000, "descricao": "ACO da Alfa em T0 (R$ mil)"},
+  {"chave": "pcoAlfa", "valor": 5100, "descricao": "PCO da Alfa em T0 (R$ mil)"},
+  {"chave": "acoHor", "valor": 9800, "descricao": "ACO da Horizonte em T0 (R$ mil)"},
+  {"chave": "pcoHor", "valor": 4300, "descricao": "PCO da Horizonte em T0 (R$ mil)"},
+  {"chave": "stHor", "valor": -2500, "descricao": "ST da Horizonte em T0 (R$ mil)"}
+]

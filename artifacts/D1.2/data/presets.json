@@ -1,0 +1,30 @@
+[
+ {
+  "setor": "Indústria Alfa",
+  "pmre": 60,
+  "pmrv": 60,
+  "pmpf": 45,
+  "fonte": "V1.3/V1.4"
+ },
+ {
+  "setor": "Varejo de larga escala",
+  "pmre": 15,
+  "pmrv": 3,
+  "pmpf": 45,
+  "fonte": "V1.4 slide 3"
+ },
+ {
+  "setor": "Indústria pesada",
+  "pmre": 120,
+  "pmrv": 60,
+  "pmpf": 60,
+  "fonte": "V1.3 slide 4 (CO 90–180)"
+ },
+ {
+  "setor": "Construção civil",
+  "pmre": 240,
+  "pmrv": 90,
+  "pmpf": 60,
+  "fonte": "V1.3 slide 4 (CO 300+)"
+ }
+]

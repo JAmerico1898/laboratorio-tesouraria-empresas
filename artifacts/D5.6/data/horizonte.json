@@ -1,0 +1,19 @@
+[
+ {"chave":"ebitda","valor":2400,"descricao":"EBITDA anual (00_Convencoes §4.2)"},
+ {"chave":"dividaCP","valor":3500,"descricao":"Dívida bancária de curto prazo (PCF)"},
+ {"chave":"dividaLP","valor":2000,"descricao":"Exigível de longo prazo — parcela LP do CG linha"},
+ {"chave":"caixa","valor":1000,"descricao":"Caixa e bancos 400 + aplicações CP 600"},
+ {"chave":"capex","valor":600,"descricao":"CAPEX orçado do ano"},
+ {"chave":"aco","valor":9800,"descricao":"Ativo circulante operacional (fixo nas simulações)"},
+ {"chave":"pco","valor":4300,"descricao":"Passivo circulante operacional (fixo nas simulações)"},
+ {"chave":"despFin","valor":1000,"descricao":"Despesas financeiras anuais; proporção da dívida bruta mantida nas simulações"},
+ {"chave":"amortTri","valor":500,"descricao":"Amortização trimestral do CG linha (4.000/24 × 3)"},
+ {"chave":"pisoDivida","valor":1500,"descricao":"Dívida que não amortiza: CG rotativo 1.200 + conta garantida 300"},
+ {"chave":"principalCov","valor":4000,"descricao":"Principal sob covenant: CG linha 24 m, bancos A e B"},
+ {"chave":"crossDefault","valor":1500,"descricao":"Dívida alcançada pelo cross-default: rotativo + conta garantida"},
+ {"chave":"remanescente","valor":2,"descricao":"Prazo remanescente do CG linha, anos"},
+ {"chave":"renegBps","valor":100,"descricao":"Renegociação: acréscimo permanente de spread, pontos-base (faixa 50–150)"},
+ {"chave":"renegMinBps","valor":50,"descricao":"Renegociação: piso da faixa, pontos-base"},
+ {"chave":"renegMaxBps","valor":150,"descricao":"Renegociação: teto da faixa, pontos-base"},
+ {"chave":"ratingBps","valor":300,"descricao":"Quebra: perda de rating, pontos-base a mais nas linhas futuras"}
+]

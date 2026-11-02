@@ -1,0 +1,6 @@
+[
+ {"antecedencia":3,"momento":"3 trimestres antes","feePct":0.10},
+ {"antecedencia":2,"momento":"2 trimestres antes","feePct":0.15},
+ {"antecedencia":1,"momento":"1 trimestre antes","feePct":0.30},
+ {"antecedencia":0,"momento":"Após o fechamento","feePct":0.50}
+]

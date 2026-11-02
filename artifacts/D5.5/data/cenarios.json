@@ -1,0 +1,8 @@
+[
+ {"id":"hoje","aba":"tudo","pooling":"nenhum","esticar":0,"refin":24,"nBancos":3,"pA":"","pB":"","pC":"","pD":"","pE":""},
+ {"id":"fisico","aba":"tudo","pooling":"fisico","esticar":0,"refin":24,"nBancos":3,"pA":"","pB":"","pC":"","pD":"","pE":""},
+ {"id":"quitar","aba":"hierarquia","pooling":"nenhum","esticar":1,"refin":24,"nBancos":3,"pA":"","pB":"","pC":"","pD":"","pE":""},
+ {"id":"refin","aba":"hierarquia","pooling":"nenhum","esticar":0,"refin":60,"nBancos":3,"pA":"","pB":"","pC":"","pD":"","pE":""},
+ {"id":"slide","aba":"bancos","pooling":"nenhum","esticar":0,"refin":24,"nBancos":5,"pA":30,"pB":25,"pC":20,"pD":15,"pE":10},
+ {"id":"iguais","aba":"bancos","pooling":"nenhum","esticar":0,"refin":24,"nBancos":4,"pA":25,"pB":25,"pC":25,"pD":25,"pE":""}
+]

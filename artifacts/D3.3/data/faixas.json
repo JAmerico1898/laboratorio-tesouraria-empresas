@@ -1,0 +1,5 @@
+[
+ {"faixa":1,"lo":1,"hi":499,"desconto":0},
+ {"faixa":2,"lo":500,"hi":999,"desconto":0.025},
+ {"faixa":3,"lo":1000,"hi":"","desconto":0.05}
+]

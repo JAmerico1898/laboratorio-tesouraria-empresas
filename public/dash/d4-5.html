@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D4.5 · Score, cutoff e decisão</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cortes":{"format":"json","data":[{"corte":30,"padrao":0},{"corte":40,"padrao":0},{"corte":50,"padrao":1},{"corte":60,"padrao":0},{"corte":70,"padrao":0}]},"geradores":{"format":"json","data":[{"id":"base","N":2000,"semente":23,"alfa":-3.9,"gama":1.7,"intercepto":-3.82,"escalaBeta":1,"colBeta":"beta"},{"id":"paradoxo","N":2000,"semente":23,"alfa":-1.45,"gama":0.85,"intercepto":-1.5,"escalaBeta":0.3,"colBeta":"betaFraco"}]},"politica":{"format":"json","data":[{"id":"padrao","cVerde":3,"cVermelho":8,"spread":300,"limite":60,"garantia":"sim","sacado":1},{"id":"afrouxar","cVerde":6,"cVermelho":15,"spread":"","limite":"","garantia":"","sacado":""},{"id":"apertar","cVerde":1.5,"cVermelho":5,"spread":"","limite":"","garantia":"","sacado":""},{"id":"horizonte","cVerde":"","cVermelho":"","spread":"","limite":"","garantia":"","sacado":1}]},"pricing":{"format":"json","data":[{"faixa":"verde","rotulo":"Verde","acao":"Aprovação automática","spread":0,"limite":100,"garantia":"Não"},{"faixa":"warm","rotulo":"Warm","acao":"Análise manual (5 Cs)","spread":"","limite":"","garantia":""},{"faixa":"vermelho","rotulo":"Vermelho","acao":"Recusa","spread":"","limite":0,"garantia":"—"}]},"variaveis":{"format":"json","data":[{"ordem":1,"variavel":"Tempo de empresa","familia":"cadastral","alimenta":"Capital · Condições","unidade":"anos","rho":0.55,"beta":-0.26,"betaFraco":-0.5,"transf":"exp","media":1.9,"escala":0.7,"min":0,"max":1000,"arred":"int","horizonte":12},{"ordem":2,"variavel":"Atraso médio 12 m","familia":"comportamental","alimenta":"Caráter · Capacidade","unidade":"dias","rho":0.6,"beta":0.47,"betaFraco":0.9,"transf":"lin","media":6,"escala":8,"min":0,"max":1000,"arred":"no","horizonte":4},{"ordem":3,"variavel":"% pago no vencimento","familia":"comportamental","alimenta":"Caráter","unidade":"%","rho":0.5,"beta":-0.37,"betaFraco":-0.7,"transf":"lin","media":85,"escala":10,"min":30,"max":100,"arred":"no","horizonte":92},{"ordem":4,"variavel":"Score bureau","familia":"bureau","alimenta":"Caráter · Capacidade","unidade":"pontos","rho":0.65,"beta":-0.53,"betaFraco":-1,"transf":"lin","media":650,"escala":120,"min":300,"max":1000,"arred":"int","horizonte":740},{"ordem":5,"variavel":"Uso do limite","familia":"comportamental","alimenta":"Capacidade","unidade":"%","rho":0.45,"beta":0.32,"betaFraco":0.6,"transf":"lin","media":55,"escala":25,"min":0,"max":100,"arred":"no","horizonte":48}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+
+</style>
+<style>
+.d45-stages { display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr); margin-bottom: var(--cds-gap-md); }
+@container (min-width: 44rem) { .d45-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container (min-width: 70rem) { .d45-stages { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.25fr) minmax(0, .7fr) minmax(0, 1.1fr) minmax(0, .95fr); } }
+.d45-st { position: relative; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 8px 10px; min-width: 0; }
+.d45-st h3 { margin: 0 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.d45-st h3 span { color: var(--color-fg); margin-right: 4px; }
+.d45-st .k-table { font-size: 12.5px; }
+.d45-st .k-table th, .d45-st .k-table td { padding: 2px 4px; }
+.d45-pd { font-family: var(--font-anthropic-serif); font-size: 2.4rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.d45-regua { min-height: 78px; }
+.d45-hist { min-height: 280px; }
+.d45-funil { min-height: 132px; }
+.d45-faixa { font-weight: 600; }
+.d45-faixa.verde { color: var(--k-pos); } .d45-faixa.warm { color: var(--k-amber-d); } .d45-faixa.vermelho { color: var(--k-neg); }
+.d45-jumps { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.d45-jumps .k-btn { font-size: 12.5px; padding: 3px 8px; }
+.d45-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.d45-two .k-kn { font-size: 1.5rem; }
+.d45-mx { display: grid; grid-template-columns: auto 1fr 1fr; gap: 4px; font-size: 14px; margin-top: 10px; max-width: 26rem; }
+.d45-mx > span { padding: 6px 8px; }
+.d45-mx .h { color: var(--color-fg-muted); font-size: 13px; text-align: center; }
+.d45-mx .r { color: var(--color-fg-muted); font-size: 13px; align-self: center; }
+.d45-mx .c { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); text-align: center; font-variant-numeric: tabular-nums; }
+.d45-mx .c b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.5rem; display: block; }
+.d45-mx .c.ok { border-left: 4px solid var(--k-pos); } .d45-mx .c.err { border-left: 4px solid var(--k-neg); }
+.k-table tr.d45-on td { background: var(--color-bg); font-weight: 600; }
+.k-table tr.d45-on td:first-child { box-shadow: inset 4px 0 0 var(--k-navy); }
+</style>
+
+<div class="k d45" id="d45">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D4.5 · Score, cutoff e decisão</h1>
+      <p class="k-sub">O modelo estima o risco. A régua decide o crédito. Onde você põe a régua?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="politica">
+      <button class="k-btn d45-cen" data-cen="padrao" aria-pressed="false">Padrão</button>
+      <button class="k-btn d45-cen" data-cen="afrouxar" aria-pressed="false">Afrouxar</button>
+      <button class="k-btn d45-cen" data-cen="apertar" aria-pressed="false">Apertar</button>
+      <button class="k-btn d45-cen" data-cen="horizonte" aria-pressed="false">Horizonte em destaque</button>
+    </div>
+  </header>
+
+  <div class="k-tabs" role="tablist">
+    <button class="k-tab" id="tab-pipeline" data-group="t" data-tab="pipeline" role="tab" aria-selected="true">Pipeline</button>
+    <button class="k-tab" id="tab-paradoxo" data-group="t" data-tab="paradoxo" role="tab" aria-selected="false">Paradoxo da acurácia</button>
+  </div>
+
+  <!-- ===================== PIPELINE ===================== -->
+  <section data-group="t" data-pane="pipeline" id="pipeline">
+    <div class="d45-stages" id="estagios" data-source="variaveis geradores politica pricing">
+      <div class="d45-st" id="st-variaveis">
+        <h3><span>1</span>Variáveis</h3>
+        <table class="k-table"><thead><tr><th>Variável</th><th>Família</th><th>Valor</th></tr></thead><tbody data-draw="vars"></tbody></table>
+      </div>
+      <div class="d45-st" id="st-modelo">
+        <h3><span>2</span>Modelo <span class="k-info" tabindex="0">i<span class="k-tip">Regressão logística sobre as variáveis padronizadas: logit = β₀ + Σ βᵢ·x̃ᵢ; PD = 1 / (1 + e^(−logit)). Razão de chances e^β &lt; 1 protege; &gt; 1 agrava.</span></span></h3>
+        <table class="k-table"><thead><tr><th>Variável</th><th>β</th><th>e^β</th><th>β·x̃</th></tr></thead><tbody data-draw="modelo"></tbody></table>
+        <p class="k-note">Intercepto <b data-draw="v" data-q="b0">—</b> · logit <b data-draw="v" data-q="logit">—</b></p>
+      </div>
+      <div class="d45-st" id="st-score">
+        <h3><span>3</span>Score</h3>
+        <div class="k-u">PD do sacado</div>
+        <div class="d45-pd" data-draw="v" data-q="pd">—</div>
+        <p class="k-note" data-frases><span data-draw="fsac"></span><span data-frase="h" hidden>Comercial Horizonte</span><span data-frase="n" hidden>Sacado nº <b data-draw="v" data-q="sacado">—</b></span></p>
+      </div>
+      <div class="d45-st" id="st-cutoff">
+        <h3><span>4</span>Cutoff</h3>
+        <div class="k-chart d45-regua dash-skeleton" data-draw="regua" role="img" aria-label="Régua de PD com os dois cutoffs e o sacado em destaque"></div>
+      </div>
+      <div class="d45-st" id="st-decisao">
+        <h3><span>5</span>Decisão</h3>
+        <p class="d45-faixa-p" data-frases style="margin:0"><span data-draw="ffaixa"></span>
+          <span class="d45-faixa verde" data-frase="verde" hidden>Verde · aprovação automática</span>
+          <span class="d45-faixa warm" data-frase="warm" hidden>Warm · análise manual (5 Cs)</span>
+          <span class="d45-faixa vermelho" data-frase="vermelho" hidden>Vermelho · recusa</span></p>
+        <p class="k-note" data-frases><span data-draw="fprec"></span>
+          <span data-frase="ok" hidden>Spread +<b data-draw="v" data-q="sp-sac">—</b> bps · limite <b data-draw="v" data-q="lim-sac">—</b>% do máximo · garantia <b data-draw="v" data-q="gar-sac">—</b></span>
+          <span data-frase="rec" hidden>Crédito recusado.</span></p>
+        <p class="k-note" data-frases><span data-draw="freal"></span>
+          <span data-frase="pagou" hidden>Na carteira simulada este sacado pagou.</span>
+          <span data-frase="mau" hidden>Na carteira simulada este sacado inadimpliu.</span></p>
+      </div>
+    </div>
+
+    <div class="k-zones">
+      <div class="k-zone" id="controles" data-source="variaveis geradores politica">
+        <h2 class="k-zt">Régua</h2>
+        <div class="k-ctl"><label for="c-cv">Cutoff verde <span class="k-u">PD máx. para aprovação automática, %</span></label>
+          <div class="k-in"><input type="range" id="c-cv" data-k="cV" min="0.5" max="15" step="0.5"><input type="number" data-k="cV" min="0.5" max="15" step="0.5" aria-label="Cutoff verde, %"></div></div>
+        <div class="k-ctl"><label for="c-cr">Cutoff vermelho <span class="k-u">PD mín. para rejeição, %</span></label>
+          <div class="k-in"><input type="range" id="c-cr" data-k="cR" min="2" max="40" step="0.5"><input type="number" data-k="cR" min="2" max="40" step="0.5" aria-label="Cutoff vermelho, %"></div></div>
+        <p class="k-note">Um cutoff empurra o outro: verde fica sempre abaixo do vermelho.</p>
+
+        <h2 class="k-zt2">Pricing do warm</h2>
+        <div class="k-ctl"><label for="c-sp">Spread adicional <span class="k-u">bps</span></label>
+          <div class="k-in"><input type="range" id="c-sp" data-k="spread" min="0" max="800" step="25"><input type="number" data-k="spread" min="0" max="800" step="25" aria-label="Spread adicional no warm, bps"></div></div>
+        <div class="k-ctl"><label for="c-lim">Limite <span class="k-u">% do máximo</span></label>
+          <div class="k-in"><input type="range" id="c-lim" data-k="limite" min="30" max="100" step="5"><input type="number" data-k="limite" min="30" max="100" step="5" aria-label="Limite no warm, % do máximo"></div></div>
+        <label class="k-toggle"><input type="checkbox" data-k="garantia"> Exigir garantia no warm</label>
+
+        <h2 class="k-zt2">Sacado em destaque</h2>
+        <div class="k-ctl"><label for="c-sac">Sacado nº <span class="k-u">1 = Comercial Horizonte</span></label>
+          <div class="k-in"><input type="range" id="c-sac" data-k="sacado" min="1" max="2000" step="1"><input type="number" data-k="sacado" min="1" max="2000" step="1" aria-label="Número do sacado"></div></div>
+        <div class="d45-jumps">
+          <button class="k-btn d45-jump" data-jump="horizonte" type="button">Horizonte</button>
+          <button class="k-btn d45-jump" data-jump="mauverde" type="button">Um mau aprovado automaticamente</button>
+          <button class="k-btn d45-jump" data-jump="bomvermelho" type="button">Um bom recusado</button>
+        </div>
+      </div>
+
+      <div class="k-zone" id="visual" data-source="variaveis geradores">
+        <div class="k-ch"><h3>Distribuição da PD na carteira</h3><span><b data-draw="v" data-q="N">—</b> sacados · bins de 1 p.p.</span></div>
+        <div class="k-chart d45-hist dash-skeleton" id="hist" data-draw="hist" role="img" aria-label="Histograma da PD empilhado em bons e maus, com as zonas dos cutoffs"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-neutro)"></i>Bons</span>
+          <span><i style="background: var(--k-neg)"></i>Maus</span>
+          <span><i style="background: var(--k-pos); opacity: .35"></i>Zona verde</span>
+          <span><i style="background: var(--k-amber); opacity: .35"></i>Zona warm</span>
+          <span><i style="background: var(--k-neg); opacity: .25"></i>Zona vermelha</span>
+        </div>
+        <label class="k-toggle"><input type="checkbox" data-k="zoom"> Ampliar o eixo (corta as barras acima de <b data-draw="v" data-q="zoomCap">—</b> sacados)</label>
+        <p class="k-note" data-frases><span data-draw="fzoom"></span><span data-frase="corte" hidden>Barras cortadas: o bin mais cheio tem <b data-draw="v" data-q="binMax">—</b> sacados.</span></p>
+
+        <div class="k-ch" style="margin-top: 12px"><h3>Funil</h3><span>sacados por faixa · taxa de maus na faixa</span></div>
+        <div class="k-chart d45-funil dash-skeleton" id="funil" data-draw="funil" role="img" aria-label="Funil verde, warm e vermelho"></div>
+        <p class="k-note">Maus aprovados automaticamente: <b data-draw="v" data-q="mv">—</b> · bons rejeitados: <b data-draw="v" data-q="bv">—</b> · bons enviados ao analista: <b data-draw="v" data-q="bw">—</b></p>
+      </div>
+
+      <div class="k-zone" id="leitura" data-source="variaveis geradores pricing">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Aprovação automática <span class="k-u">% do funil</span></span><span class="k-kn" data-draw="v" data-q="apr">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Maus no verde <span class="k-u">nº</span></span><span class="k-kn k-neg" data-draw="v" data-q="mv">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Bons no vermelho <span class="k-u">nº</span></span><span class="k-kn" data-draw="v" data-q="bv">—</span></div>
+        <p class="k-note">Propriedades do modelo (não mudam com o cutoff): KS <b data-draw="v" data-q="ks">—</b> · AUC <b data-draw="v" data-q="auc">—</b> · taxa de maus da carteira <b data-draw="v" data-q="taxa">—</b></p>
+
+        <div class="k-tw">
+          <table class="k-table" id="pricing"><thead><tr><th>Faixa</th><th>Spread</th><th>Limite</th><th>Garantia</th></tr></thead><tbody data-draw="pricing"></tbody></table>
+        </div>
+        <p class="k-note">Spread em bps adicionais; limite em % do máximo.</p>
+
+        <div class="k-diag" data-frases>
+          <span data-draw="frase"></span>
+          <p data-frase="frouxa" hidden>Régua frouxa: <b data-draw="v" data-q="mv">—</b> maus entram sem análise. KS e AUC não mudaram — o modelo é o mesmo; mudou o apetite.</p>
+          <p data-frase="apertada" hidden>Régua apertada: <b data-draw="v" data-q="bwv">—</b> bons pagadores vão para análise manual ou recusa. Custo: analistas e vendas perdidas.</p>
+          <p data-frase="padrao" hidden>Régua padrão: <b data-draw="v" data-q="apr">—</b> aprovados em segundos, <b data-draw="v" data-q="pw">—</b> para o analista aplicar os 5 Cs, <b data-draw="v" data-q="pr">—</b> recusados. Taxa de maus no verde: <b data-draw="v" data-q="tv">—</b>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PARADOXO ===================== -->
+  <section data-group="t" data-pane="paradoxo" id="paradoxo" hidden>
+    <div class="k-zones">
+      <div class="k-zone" id="p-controles" data-source="geradores cortes">
+        <h2 class="k-zt">Cutoff único</h2>
+        <div class="k-ctl"><label for="c-cp">Prever mau se PD ≥ <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-cp" data-k="cP" min="10" max="90" step="5"><input type="number" data-k="cP" min="10" max="90" step="5" aria-label="Cutoff, %"></div></div>
+        <p class="k-note">Carteira desbalanceada: taxa de maus <b data-draw="v" data-q="p-taxa">—</b> e modelo fraco (AUC <b data-draw="v" data-q="p-auc">—</b>).</p>
+      </div>
+
+      <div class="k-zone" id="p-visual" data-source="variaveis geradores cortes">
+        <div class="k-ch"><h3>Cutoffs × métricas</h3><span>previsto mau se PD ≥ cutoff</span></div>
+        <div class="k-tw">
+          <table class="k-table" id="tab-cortes"><thead><tr><th>Cutoff</th><th>Acurácia</th><th>Recall dos maus</th><th>Aprovação</th></tr></thead><tbody data-draw="cortes"></tbody></table>
+        </div>
+        <div class="k-ch" style="margin-top: 14px"><h3>Matriz de confusão</h3><span>cutoff <b data-draw="v" data-q="p-c">—</b></span></div>
+        <div class="d45-mx" role="table" aria-label="Matriz de confusão">
+          <span></span><span class="h">Previsto bom (aprova)</span><span class="h">Previsto mau (recusa)</span>
+          <span class="r">Pagou</span><span class="c ok"><b data-draw="v" data-q="m-vn">—</b>acerto</span><span class="c err"><b data-draw="v" data-q="m-fp">—</b>bom recusado</span>
+          <span class="r">Inadimpliu</span><span class="c err"><b data-draw="v" data-q="m-fn">—</b>mau aprovado</span><span class="c ok"><b data-draw="v" data-q="m-vp">—</b>mau pego</span>
+        </div>
+      </div>
+
+      <div class="k-zone" id="p-leitura" data-source="variaveis geradores">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Acurácia</span><span class="k-kn" data-draw="v" data-q="p-acc">—</span></div>
+        <div class="k-kpi"><span class="k-kl">AUC</span><span class="k-kn" data-draw="v" data-q="p-auc">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Recall dos maus</span><span class="k-kn k-neg" data-draw="v" data-q="p-rec">—</span></div>
+        <div class="k-diag"><p>Aprovar quase todos acerta ~80% porque ~80% pagam. Acurácia isolada engana em base desbalanceada; recall dos maus é o que importa (V4.6.2).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <details class="k-help" id="perguntas" data-source="variaveis geradores politica">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Afrouxe o cutoff verde de <span data-draw="v" data-q="g-cv0">—</span>% para <span data-draw="v" data-q="g-cv6">—</span>%. O que muda em KS e AUC? E no funil?
+          <details><summary>mostrar resposta</summary><p>Nada em KS (<b data-draw="v" data-q="ks">—</b>) e AUC (<b data-draw="v" data-q="auc">—</b>) — são propriedades do modelo. O funil muda inteiro: a aprovação automática vai de <b data-draw="v" data-q="g-ap0">—</b> para <b data-draw="v" data-q="g-ap6">—</b> e os maus que entram sem análise de <b data-draw="v" data-q="g-mv0">—</b> para <b data-draw="v" data-q="g-mv6">—</b>. Cutoff é apetite a risco, decisão de tesouraria e comitê.</p></details>
+        </li>
+        <li>Qual variável mais pesa no modelo e qual família ela representa?
+          <details><summary>mostrar resposta</summary><p>Score bureau (β = <b data-draw="v" data-q="g-b4">—</b>; razão de chances <b data-draw="v" data-q="g-or4">—</b> — cada desvio-padrão a mais reduz a chance de default em <b data-draw="v" data-q="g-red4">—</b>), da família bureau externo. Entre as comportamentais, atraso médio (<b data-draw="v" data-q="g-or2">—</b>) é a mais forte — o sinal mais precoce.</p></details>
+        </li>
+        <li>Na aba Paradoxo, por que a acurácia quase não muda entre cutoff 50% e 70%?
+          <details><summary>mostrar resposta</summary><p>Em ambos o modelo aprova quase todos e acerta nos que pagam (acurácia <b data-draw="v" data-q="g-a50">—</b> e <b data-draw="v" data-q="g-a70">—</b>); o recall dos maus cai de <b data-draw="v" data-q="g-r50">—</b> para <b data-draw="v" data-q="g-r70">—</b>. O número que importa sumiu sem que a acurácia avisasse.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+
+})();</script>
+<script>(function () {
+
+/* D4.5 · Score, cutoff e decisão — funções puras (sem DOM).
+   V = linhas do dataset de variáveis (rho, beta, betaFraco, media, escala, transf, min, max, horizonte)
+   G = linha do dataset de geradores (N, semente, alfa, gama, intercepto, escalaBeta, colBeta). PD em fração (0–1). */
+(function (root) {
+  const M = {};
+  M.sig = (z) => 1 / (1 + Math.exp(-z));
+  // LCG (s·1664525 + 1013904223 mod 2³²) e normal por Box-Muller
+  M.rng = function (seed) {
+    let s = seed >>> 0, extra = null;
+    const u = () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; };
+    const n = () => {
+      if (extra != null) { const e = extra; extra = null; return e; }
+      const u1 = 1 - u(), u2 = u(), r = Math.sqrt(-2 * Math.log(u1));
+      extra = r * Math.sin(2 * Math.PI * u2);
+      return r * Math.cos(2 * Math.PI * u2);
+    };
+    return { u, n };
+  };
+  const sinal = (i) => (i === 1 || i === 4 ? 1 : -1);   // x̃ = (−z̃₁, +z̃₂, −z̃₃, −z̃₄, +z̃₅)
+  // valor exibido a partir da padronizada
+  M.exibe = (v, x) => {
+    const raw = v.transf === 'exp' ? Math.exp(v.media + v.escala * x) : v.media + v.escala * x;
+    const c = Math.min(v.max, Math.max(v.min, raw));
+    return v.arred === 'int' ? Math.round(c) : c;
+  };
+  // padronizada a partir do valor exibido (Horizonte)
+  M.inverte = (v, y) => (v.transf === 'exp' ? (Math.log(y) - v.media) / v.escala : (y - v.media) / v.escala);
+  M.logit = (x, V, G) => {
+    let z = G.intercepto;
+    for (let i = 0; i < V.length; i++) z += G.escalaBeta * V[i][G.colBeta] * x[i];
+    return z;
+  };
+  M.contrib = (x, V, G) => V.map((v, i) => G.escalaBeta * v[G.colBeta] * x[i]);
+  // carteira: sacado nº 1 = Comercial Horizonte (variáveis fixas, adimplente)
+  M.carteira = function (V, G) {
+    const R = M.rng(G.semente), out = [];
+    for (let k = 0; k < G.N; k++) {
+      const r = R.n();
+      const x = V.map((v, i) => sinal(i) * (v.rho * r + Math.sqrt(1 - v.rho * v.rho) * R.n()));
+      const u = R.u();
+      let mau = u < M.sig(G.alfa + G.gama * r) ? 1 : 0;
+      let xx = x;
+      if (k === 0) { xx = V.map((v) => M.inverte(v, v.horizonte)); mau = 0; }
+      out.push({ id: k + 1, x: xx, mau, pd: M.sig(M.logit(xx, V, G)) });
+    }
+    return out;
+  };
+  M.faixa = (pd, cV, cR) => (pd < cV ? 'verde' : pd < cR ? 'warm' : 'vermelho');
+  M.funil = function (C, cV, cR) {
+    const f = { verde: { n: 0, maus: 0 }, warm: { n: 0, maus: 0 }, vermelho: { n: 0, maus: 0 } };
+    C.forEach((s) => { const k = M.faixa(s.pd, cV, cR); f[k].n++; f[k].maus += s.mau; });
+    const N = C.length;
+    Object.keys(f).forEach((k) => { f[k].pct = f[k].n / N; f[k].taxa = f[k].n ? f[k].maus / f[k].n : 0; f[k].bons = f[k].n - f[k].maus; });
+    return f;
+  };
+  M.ks = function (C) {
+    const s = C.slice().sort((a, b) => a.pd - b.pd);
+    const nm = s.reduce((a, c) => a + c.mau, 0), nb = s.length - nm;
+    let fm = 0, fb = 0, ks = 0;
+    for (let i = 0; i < s.length; i++) {
+      if (s[i].mau) fm++; else fb++;
+      if (i === s.length - 1 || s[i + 1].pd !== s[i].pd) ks = Math.max(ks, Math.abs(fm / nm - fb / nb));
+    }
+    return ks;
+  };
+  M.auc = function (C) {
+    const s = C.map((c) => ({ pd: c.pd, mau: c.mau })).sort((a, b) => a.pd - b.pd);
+    let somaRank = 0, i = 0;
+    while (i < s.length) {
+      let j = i; while (j + 1 < s.length && s[j + 1].pd === s[i].pd) j++;
+      const rk = (i + j + 2) / 2;
+      for (let t = i; t <= j; t++) if (s[t].mau) somaRank += rk;
+      i = j + 1;
+    }
+    const nm = s.reduce((a, c) => a + c.mau, 0), nb = s.length - nm;
+    return (somaRank - nm * (nm + 1) / 2) / (nm * nb);
+  };
+  M.taxaMaus = (C) => C.reduce((a, c) => a + c.mau, 0) / C.length;
+  // histograma: nb bins de largura w (fração de PD) + bin final "acima"
+  M.hist = function (C, nb, w) {
+    const b = Array.from({ length: nb + 1 }, (_, i) => ({ i, lo: i * w, hi: i < nb ? (i + 1) * w : null, bons: 0, maus: 0 }));
+    C.forEach((s) => { const k = Math.min(nb, Math.floor(s.pd / w)); if (s.mau) b[k].maus++; else b[k].bons++; });
+    return b;
+  };
+  // paradoxo: previsto mau se PD ≥ c
+  M.confusao = function (C, c) {
+    let vp = 0, fn = 0, fp = 0, vn = 0;
+    C.forEach((s) => { const pm = s.pd >= c; if (s.mau) { if (pm) vp++; else fn++; } else if (pm) fp++; else vn++; });
+    const N = C.length;
+    return { vp, fn, fp, vn, acc: (vp + vn) / N, recall: vp + fn ? vp / (vp + fn) : 0, aprov: (fn + vn) / N };
+  };
+  // memo simples por chave
+  const memo = {};
+  M.carteiraMemo = (V, G) => { const k = JSON.stringify([V, G]); if (!memo[k]) { const C = M.carteira(V, G); memo[k] = { C, ks: M.ks(C), auc: M.auc(C), taxa: M.taxaMaus(C) }; } return memo[k]; };
+  root.M45 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D4.5 · Score, cutoff e decisão
+   Testes de aderência (Spec §7), conferidos com M45 em node (semente 23; 20 PASS / 0 FAIL):
+   Carteira base: N 2.000 · maus 5,45% · KS 0,49 · AUC 0,81
+   Faixas 3/8: verde 61,8% · warm 24,2% · vermelho 14,0% · maus no verde 19 · taxa de maus no vermelho 21,1%
+   Horizonte: x̃ (0,84 · −0,25 · 0,70 · 0,75 · −0,28) · logit −4,90 · PD 0,74% · verde
+   Paradoxo: maus 21,9% · AUC 0,68 · cutoff 50%: acurácia 0,79 · recall 0,06 · aprovação 0,98 · cutoff 70%: recall 0,01
+   ============================================================ */
+const ST = window.D45 = { S: null, cen: null, mexido: false };
+const IDS = ['variaveis', 'geradores', 'politica', 'pricing', 'cortes'];
+const NOMES = ['vars', 'modelo', 'regua', 'hist', 'funil', 'pricing', 'cortes', 'v', 'frase', 'fsac', 'ffaixa', 'fprec', 'freal', 'fzoom'];
+const NB = 40, WB = 0.01;        // 40 bins de 1 p.p. de PD (0–40%) + bin final "> 40%"
+const ZOOM = 60;                 // teto do eixo com "Ampliar"
+const FROUXA = 6, APERTADA = 1.5; // cutoff verde (%) das frases da Spec §4.4
+const PASSO = 0.5;               // distância mínima entre os cutoffs (p.p.)
+
+/* ---------- dados ---------- */
+const VV = () => K.num(dash.data('variaveis').data).sort((a, b) => a.ordem - b.ordem);
+const GG = (id) => K.num(dash.data('geradores').data).find((r) => r.id === id);
+const cenario = (id) => K.num(dash.data('politica').data).find((r) => r.id === id);
+const pricing = () => K.num(dash.data('pricing').data);
+const cortes = () => K.num(dash.data('cortes').data).sort((a, b) => a.corte - b.corte);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const base = () => M45.carteiraMemo(VV(), GG('base'));
+const para = () => M45.carteiraMemo(VV(), GG('paradoxo'));
+const fun = (cv, cr) => M45.funil(base().C, cv / 100, cr / 100);
+const sac = () => base().C[Math.max(0, Math.min(base().C.length - 1, Math.round(ST.S.sacado) - 1))];
+const faixaSac = () => M45.faixa(sac().pd, ST.S.cV / 100, ST.S.cR / 100);
+const pPad = () => cenario('padrao');
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  document.querySelectorAll('.d45-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+}
+function aplicar(id) {
+  const r = cenario(id); if (!r) return;
+  const S = ST.S || { zoom: true, cP: (cortes().find((c) => c.padrao === 1) || cortes()[0]).corte };
+  ['cVerde', 'cVermelho', 'spread', 'limite', 'sacado', 'garantia'].forEach((c) => {
+    const v = r[c]; if (v === '' || v == null) return;
+    const k = { cVerde: 'cV', cVermelho: 'cR' }[c] || c;
+    S[k] = c === 'garantia' ? String(v).toLowerCase() === 'sim' : v;
+  });
+  ST.S = S; ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  aplicar('padrao');
+  K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  const S = ST.S;
+  if (k === 'cV' && S.cR <= S.cV) S.cR = Math.min(40, S.cV + PASSO);
+  if (k === 'cR' && S.cV >= S.cR) S.cV = Math.max(0.5, S.cR - PASSO);
+  if (k === 'cV' || k === 'cR' || k === 'spread' || k === 'limite' || k === 'garantia') ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d45-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+document.querySelectorAll('.d45-jump').forEach((b) => b.addEventListener('click', () => {
+  if (!pronto()) return;
+  const C = base().C, cv = ST.S.cV / 100, cr = ST.S.cR / 100;
+  let s = null;
+  if (b.dataset.jump === 'horizonte') s = C[0];
+  else if (b.dataset.jump === 'mauverde') s = C.find((c) => c.mau && c.pd < cv);
+  else s = C.find((c) => !c.mau && c.pd >= cr);
+  if (s) { ST.S.sacado = s.id; sincroniza(); K.redraw(NOMES); }
+}));
+K.tabs('t', () => K.redraw(NOMES));
+
+/* ---------- tabelas dos estágios ---------- */
+const td = (tr, txt) => { const c = document.createElement('td'); c.textContent = txt; tr.append(c); return c; };
+dash.draw('vars', (tb) => {
+  tb.replaceChildren();
+  if (!pronto()) return;
+  const V = VV(), s = sac();
+  V.forEach((v, i) => {
+    const tr = document.createElement('tr');
+    const y = M45.exibe(v, s.x[i]);
+    td(tr, v.variavel); td(tr, v.familia);
+    td(tr, (v.arred === 'int' ? K.n(y) : K.n(y, 0)) + ' ' + v.unidade);
+    tb.append(tr);
+  });
+});
+dash.draw('modelo', (tb) => {
+  tb.replaceChildren();
+  if (!pronto()) return;
+  const V = VV(), G = GG('base'), ct = M45.contrib(sac().x, V, G);
+  V.forEach((v, i) => {
+    const tr = document.createElement('tr');
+    td(tr, v.variavel); td(tr, K.s(v.beta, 2)); td(tr, K.n(Math.exp(v.beta), 2));
+    const c = td(tr, K.s(ct[i], 2)); c.className = ct[i] > 0 ? 'k-neg' : 'k-pos';
+    tb.append(tr);
+  });
+});
+dash.draw('pricing', (tb) => {
+  tb.replaceChildren();
+  if (!pronto()) return;
+  pricing().forEach((p) => {
+    const tr = document.createElement('tr');
+    const w = p.faixa === 'warm';
+    td(tr, p.rotulo + ' · ' + p.acao);
+    td(tr, w ? '+' + K.n(ST.S.spread) : p.spread === '' ? '—' : '+' + K.n(p.spread));
+    td(tr, w ? K.n(ST.S.limite) + '%' : p.limite === '' ? '—' : K.n(p.limite) + '%');
+    td(tr, w ? (ST.S.garantia ? 'Sim' : 'Não') : p.garantia);
+    if (p.faixa === faixaSac()) tr.className = 'd45-on';
+    tb.append(tr);
+  });
+});
+
+/* ---------- régua do cutoff ---------- */
+dash.draw('regua', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const { svg, W, H } = K.svg(el, 78, 180);
+  el.replaceChildren(svg.node());
+  const x = d3.scaleLinear([0, 0.40], [8, W - 8]).clamp(true);
+  const cv = ST.S.cV / 100, cr = ST.S.cR / 100, s = sac();
+  const y0 = 30, h = 14;
+  [[0, cv, 'var(--k-pos)'], [cv, cr, 'var(--k-amber)'], [cr, 0.40, 'var(--k-neg)']].forEach(([a, b, c]) => svg.append('rect').attr('x', x(a)).attr('width', Math.max(0, x(b) - x(a))).attr('y', y0).attr('height', h).attr('fill', c).attr('opacity', 0.8));
+  [0, 0.1, 0.2, 0.3, 0.4].forEach((t) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', t === 0 ? 'start' : t === 0.4 ? 'end' : 'middle').attr('x', x(t)).attr('y', y0 + h + 14).text(K.n(t * 100) + '%'));
+  [[cv, 'end'], [cr, 'start']].forEach(([c, a]) => {
+    svg.append('line').attr('x1', x(c)).attr('x2', x(c)).attr('y1', y0 - 6).attr('y2', y0 + h + 2).attr('stroke', 'var(--color-fg)').attr('stroke-width', 2);
+    svg.append('text').attr('class', 'k-svgt').attr('text-anchor', a).attr('x', x(c) + (a === 'end' ? -3 : 3)).attr('y', y0 - 8).text(K.n(c * 100, 1) + '%');
+  });
+  svg.append('path').attr('d', `M${x(s.pd)},${y0 + h + 1} l-5,8 h10 z`).attr('fill', 'var(--k-navy)');
+  svg.append('circle').attr('cx', x(s.pd)).attr('cy', y0 + h / 2).attr('r', 4).attr('fill', 'var(--color-bg)').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2);
+});
+
+/* ---------- histograma ---------- */
+dash.draw('hist', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const C = base().C, bins = M45.hist(C, NB, WB), S = ST.S;
+  const { svg, W, H } = K.svg(el, 280);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const maxTot = d3.max(bins, (b) => b.bons + b.maus);
+  const yMax = S.zoom ? Math.min(ZOOM, maxTot) : maxTot;
+  const y = d3.scaleLinear([0, yMax], [H - 26, 14]).nice();
+  const ticks = y.ticks(5);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t)); mL = Math.max(mL, meas.node().getComputedTextLength()); }); meas.remove();
+  const x = d3.scaleLinear([0, (NB + 1) * WB], [mL + 10, W - 6]);
+  const top = y.range()[1];
+  const zonas = [[0, S.cV / 100, 'var(--k-pos)', 0.12], [S.cV / 100, S.cR / 100, 'var(--k-amber)', 0.16], [S.cR / 100, (NB + 1) * WB, 'var(--k-neg)', 0.10]];
+  zonas.forEach(([a, b, c, o]) => svg.append('rect').attr('x', x(a)).attr('width', Math.max(0, x(Math.min(b, (NB + 1) * WB)) - x(a))).attr('y', top).attr('height', y(0) - top).attr('fill', c).attr('opacity', o));
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x(0)).attr('x2', W - 6).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  const bw = Math.max(1, x(WB) - x(0) - 1.5);
+  const yc = (v) => y(Math.min(v, y.domain()[1]));
+  bins.forEach((b) => {
+    const x0 = x(b.lo) + 0.75, tot = b.bons + b.maus;
+    svg.append('rect').attr('x', x0).attr('width', bw).attr('y', yc(b.bons)).attr('height', Math.max(0, y(0) - yc(b.bons))).attr('fill', 'var(--k-neutro)');
+    svg.append('rect').attr('x', x0).attr('width', bw).attr('y', yc(tot)).attr('height', Math.max(0, yc(b.bons) - yc(tot))).attr('fill', 'var(--k-neg)');
+    if (tot > y.domain()[1]) svg.append('path').attr('d', `M${x0},${top + 6} l${bw},-4 M${x0},${top + 10} l${bw},-4`).attr('stroke', 'var(--color-bg)').attr('stroke-width', 2);
+  });
+  svg.append('line').attr('x1', x(0)).attr('x2', W - 6).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  [0, 0.1, 0.2, 0.3].forEach((t) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(t)).attr('y', H - 8).text(K.n(t * 100) + '%'));
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(NB * WB + WB / 2)).attr('y', H - 8).text('> ' + K.n(NB * WB * 100) + '%');
+  // cutoffs
+  [[S.cV, 'verde <'], [S.cR, 'vermelho ≥']].forEach(([c, lab], i) => {
+    const xc = x(c / 100);
+    svg.append('line').attr('x1', xc).attr('x2', xc).attr('y1', top - 4).attr('y2', y(0)).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3');
+    const t = svg.append('text').attr('class', 'k-svgt').attr('x', xc + 4).attr('y', top + 12 + i * 16).text(lab + ' ' + K.n(c, 1) + '%');
+    if (xc + 4 + t.node().getComputedTextLength() > W) t.attr('text-anchor', 'end').attr('x', xc - 4);
+  });
+  // sacado
+  const s = sac(), xs = x(Math.min(s.pd, NB * WB + WB / 2));
+  svg.append('path').attr('d', `M${xs},${y(0) + 2} l-5,8 h10 z`).attr('fill', 'var(--k-navy)');
+  // tooltip
+  svg.append('rect').attr('x', x(0)).attr('width', x((NB + 1) * WB) - x(0)).attr('y', top).attr('height', y(0) - top).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const i = Math.max(0, Math.min(NB, Math.floor(x.invert(d3.pointer(ev)[0]) / WB)));
+      const b = bins[i];
+      const head = b.hi == null ? 'PD > ' + K.n(b.lo * 100) + '%' : 'PD ' + K.n(b.lo * 100) + '–' + K.n(b.hi * 100) + '%';
+      tip.show(head, [['var(--k-neutro)', 'Bons', K.n(b.bons)], ['var(--k-neg)', 'Maus', K.n(b.maus)]], px, py);
+    })
+    .on('mouseleave', () => tip.hide());
+});
+
+/* ---------- funil ---------- */
+dash.draw('funil', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const f = fun(ST.S.cV, ST.S.cR), N = base().C.length;
+  const { svg, W, H } = K.svg(el, 132);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const rows = [['verde', 'Verde', 'var(--k-pos)'], ['warm', 'Warm', 'var(--k-amber)'], ['vermelho', 'Vermelho', 'var(--k-neg)']];
+  const meas = svg.append('text').attr('class', 'k-svgt');
+  let mL = 0; rows.forEach(([, n]) => { meas.text(n); mL = Math.max(mL, meas.node().getComputedTextLength()); }); meas.remove();
+  const x = d3.scaleLinear([0, N], [mL + 10, W - 4]);
+  rows.forEach(([k, nome, cor], i) => {
+    const r = f[k], yy = 8 + i * 42, bh = 22;
+    svg.append('text').attr('class', 'k-svgt').attr('x', 0).attr('y', yy + 16).text(nome);
+    svg.append('rect').attr('x', x(0)).attr('width', Math.max(0, x(r.bons) - x(0))).attr('y', yy).attr('height', bh).attr('fill', cor).attr('opacity', 0.75).attr('rx', 2);
+    svg.append('rect').attr('x', x(r.bons)).attr('width', Math.max(0, x(r.n) - x(r.bons))).attr('y', yy).attr('height', bh).attr('fill', 'var(--k-neg)');
+    const t = svg.append('text').attr('class', 'k-svgm').attr('x', x(r.n) + 6).attr('y', yy + 15)
+      .text(K.n(r.n) + ' · ' + K.p(r.pct, 1) + ' · maus ' + K.p(r.taxa, 1));
+    if (x(r.n) + 6 + t.node().getComputedTextLength() > W) t.attr('x', x(0) + 6).style('fill', '#1a1a1a');
+    svg.append('rect').attr('x', x(0)).attr('width', x(N) - x(0)).attr('y', yy).attr('height', bh).attr('fill', 'transparent')
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(nome, [[cor, 'Bons', K.n(r.bons)], ['var(--k-neg)', 'Maus', K.n(r.maus)], [null, 'Taxa de maus', K.p(r.taxa, 1)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+  });
+});
+
+/* ---------- paradoxo: tabela de cortes ---------- */
+dash.draw('cortes', (tb) => {
+  tb.replaceChildren();
+  if (!pronto()) return;
+  const C = para().C, lista = cortes().map((c) => c.corte);
+  if (!lista.includes(ST.S.cP)) lista.push(ST.S.cP);
+  lista.sort((a, b) => a - b).forEach((c) => {
+    const r = M45.confusao(C, c / 100), tr = document.createElement('tr');
+    td(tr, K.n(c) + '%'); td(tr, K.n(r.acc, 2)); td(tr, K.p(r.recall, 1)); td(tr, K.p(r.aprov, 1));
+    if (c === ST.S.cP) tr.className = 'd45-on';
+    tb.append(tr);
+  });
+});
+
+/* ---------- números ---------- */
+const g0 = () => fun(pPad().cVerde, pPad().cVermelho), g6 = () => fun(cenario('afrouxar').cVerde, cenario('afrouxar').cVermelho);
+const cz = (c) => M45.confusao(para().C, c / 100);
+const vb = (o) => VV().find((v) => v.ordem === o);
+const VAL = {
+  b0: () => K.n(GG('base').intercepto, 2),
+  logit: () => K.n(M45.logit(sac().x, VV(), GG('base')), 2),
+  pd: () => K.p(sac().pd, 2),
+  sacado: () => K.n(ST.S.sacado),
+  'sp-sac': () => { const k = faixaSac(); return k === 'warm' ? K.n(ST.S.spread) : K.n(pricing().find((p) => p.faixa === k).spread); },
+  'lim-sac': () => { const k = faixaSac(); return k === 'warm' ? K.n(ST.S.limite) : K.n(pricing().find((p) => p.faixa === k).limite); },
+  'gar-sac': () => { const k = faixaSac(); return k === 'warm' ? (ST.S.garantia ? 'sim' : 'não') : String(pricing().find((p) => p.faixa === k).garantia).toLowerCase(); },
+  N: () => K.n(base().C.length),
+  zoomCap: () => K.n(ZOOM),
+  binMax: () => K.n(d3.max(M45.hist(base().C, NB, WB), (b) => b.bons + b.maus)),
+  apr: () => K.p(fun(ST.S.cV, ST.S.cR).verde.pct, 1),
+  pw: () => K.p(fun(ST.S.cV, ST.S.cR).warm.pct, 1),
+  pr: () => K.p(fun(ST.S.cV, ST.S.cR).vermelho.pct, 1),
+  tv: () => K.p(fun(ST.S.cV, ST.S.cR).verde.taxa, 1),
+  mv: () => K.n(fun(ST.S.cV, ST.S.cR).verde.maus),
+  bv: () => K.n(fun(ST.S.cV, ST.S.cR).vermelho.bons),
+  bw: () => K.n(fun(ST.S.cV, ST.S.cR).warm.bons),
+  bwv: () => { const f = fun(ST.S.cV, ST.S.cR); return K.n(f.vermelho.bons + f.warm.bons); },
+  ks: () => K.n(base().ks, 2), auc: () => K.n(base().auc, 2), taxa: () => K.p(base().taxa, 1),
+  'p-taxa': () => K.p(para().taxa, 1), 'p-auc': () => K.n(para().auc, 2), 'p-c': () => K.n(ST.S.cP) + '%',
+  'p-acc': () => K.n(cz(ST.S.cP).acc, 2), 'p-rec': () => K.p(cz(ST.S.cP).recall, 1),
+  'm-vn': () => K.n(cz(ST.S.cP).vn), 'm-fp': () => K.n(cz(ST.S.cP).fp), 'm-fn': () => K.n(cz(ST.S.cP).fn), 'm-vp': () => K.n(cz(ST.S.cP).vp),
+  'g-cv0': () => K.n(pPad().cVerde, 0), 'g-cv6': () => K.n(cenario('afrouxar').cVerde, 0),
+  'g-ap0': () => K.p(g0().verde.pct, 0), 'g-ap6': () => K.p(g6().verde.pct, 0), 'g-mv0': () => K.n(g0().verde.maus), 'g-mv6': () => K.n(g6().verde.maus),
+  'g-b4': () => K.n(vb(4).beta, 2), 'g-or4': () => K.n(Math.exp(vb(4).beta), 2), 'g-red4': () => K.p(1 - Math.exp(vb(4).beta), 0), 'g-or2': () => K.n(Math.exp(vb(2).beta), 2),
+  'g-a50': () => K.n(cz(50).acc, 2), 'g-a70': () => K.n(cz(70).acc, 2), 'g-r50': () => K.p(cz(50).recall, 0), 'g-r70': () => K.p(cz(70).recall, 0),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn() : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+
+/* ---------- frases ---------- */
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) keys.push(ST.S.cV >= FROUXA ? 'frouxa' : ST.S.cV <= APERTADA ? 'apertada' : 'padrao');
+  K.frases(el, keys);
+});
+dash.draw('fsac', (el) => K.frases(el, pronto() ? [Math.round(ST.S.sacado) === 1 ? 'h' : 'n'] : []));
+dash.draw('ffaixa', (el) => K.frases(el, pronto() ? [faixaSac()] : []));
+dash.draw('fprec', (el) => K.frases(el, pronto() ? [faixaSac() === 'vermelho' ? 'rec' : 'ok'] : []));
+dash.draw('freal', (el) => K.frases(el, pronto() ? [sac().mau ? 'mau' : 'pagou'] : []));
+dash.draw('fzoom', (el) => K.frases(el, pronto() && ST.S.zoom && d3.max(M45.hist(base().C, NB, WB), (b) => b.bons + b.maus) > ZOOM ? ['corte'] : []));
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

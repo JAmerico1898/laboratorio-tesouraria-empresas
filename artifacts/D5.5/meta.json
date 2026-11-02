@@ -1,0 +1,12 @@
+{
+  "code": "D5.5",
+  "title": "D5.5 · Passivo integrado",
+  "slug": "19e37e6a-b72a-4b37-89a4-7bb8f6a6f36d",
+  "datasets": {
+    "bancos": { "file": "bancos.json", "sha256": "c7209cc8b1e19b7f32cdead2bc8495e8973079d8015d8d88c50f3a80b1ecc856" },
+    "cenarios": { "file": "cenarios.json", "sha256": "b75519d417ea8f61b66ade1b39599468ea7a0634766061a3c617298a11badd33" },
+    "hierarquia": { "file": "hierarquia.json", "sha256": "16fe9d5ef2155dfa494987040caf95bd7f39d8e615fc66fa987cb4a04839a93c" },
+    "historico": { "file": "historico.json", "sha256": "3ea59654195ee91343c409b3548b8c6ac72bee461e396cd422e6ddc4a72dd14c" },
+    "horizonte": { "file": "horizonte.json", "sha256": "76375def8142628dfd857b235f6df870db0a7d0780c6cbb9900aab1eecf7bdc8" }
+  }
+}

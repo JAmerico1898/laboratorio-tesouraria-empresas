@@ -1,0 +1,15 @@
+{
+  "code": "D1.2",
+  "title": "D1.2 · Linha do tempo do ciclo",
+  "slug": "2c68dc62-98b0-4b8c-a556-f46af1ab7d1f",
+  "datasets": {
+    "alfa_t0": {
+      "file": "alfa_t0.json",
+      "sha256": "09a71fb51e6a40891f0d79a13fe834e935199e307cd11780b21a86f16f47b9c7"
+    },
+    "presets": {
+      "file": "presets.json",
+      "sha256": "55d34313f4456c4d7204a0e93e5bacfe0f1e4e90058c8c088bf058eefe9de10e"
+    }
+  }
+}

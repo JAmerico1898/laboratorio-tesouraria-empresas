@@ -1,0 +1,11 @@
+[
+ {"chave":"cdi","valor":12,"descricao":"CDI de referência do cardápio (% a.a., base 252)"},
+ {"chave":"pricing","valor":18,"descricao":"Pricing embutido no preço do fornecedor (% a.a.) — gatilho 'pricing alto'"},
+ {"chave":"exportAlfa","valor":10,"descricao":"Exportação da Alfa (% da receita, em US$)"},
+ {"chave":"refSlideValor","valor":500,"descricao":"Comparativo do slide V5.3·4: valor (R$ mil)"},
+ {"chave":"refSlideDias","valor":60,"descricao":"Comparativo do slide V5.3·4: prazo (dias)"},
+ {"chave":"refSlideRot","valor":14000,"descricao":"Custo do CG rotativo citado no slide (R$)"},
+ {"chave":"refSlideCG","valor":16500,"descricao":"Custo da conta garantida citado no slide (R$)"},
+ {"chave":"cgHorizonte","valor":300,"descricao":"Saldo da Horizonte em conta garantida (R$ mil, banco A)"},
+ {"chave":"diasHorizonte","valor":45,"descricao":"Dias em uso da conta garantida da Horizonte"}
+]

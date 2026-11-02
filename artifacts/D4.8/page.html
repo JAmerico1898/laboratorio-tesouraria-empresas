@@ -1,0 +1,440 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<style>
+.d48-curva { min-height: 310px; }
+.d48-casc { min-height: 290px; }
+.d48 .k-card .d48-val { font-family: var(--font-anthropic-serif); font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.d48-star { margin-top: 10px; }
+.d48-arv { display: grid; gap: 6px; }
+.d48-q { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-navy); border-radius: var(--cds-radius); padding: 8px 10px; background: var(--color-bg); }
+.d48-q h4 { margin: 0 0 6px; font-size: 15px; font-weight: var(--cds-font-weight-medium); }
+.d48-seta { text-align: center; color: var(--color-fg-muted); font-size: 14px; line-height: 1; }
+.d48-rec { border: 1px solid var(--k-navy); border-left: 6px solid var(--k-navy); border-radius: var(--cds-radius); padding: 10px 12px; background: var(--color-bg); margin-top: 4px; }
+.d48-rec h4 { margin: 0 0 4px; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.5rem; }
+.d48-rec p { margin: 0; font-size: 15px; }
+.d48-levar { margin-top: 10px; }
+.d48-cfg { font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; font-variant-numeric: tabular-nums; }
+.d48-legcard { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+</style>
+
+<div class="k d48" id="d48">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D4.8 · Antecipação, FIDC e cartão</h1>
+      <p class="k-sub">Volume define estrutura. Estrutura define custo. Custo define modalidade.</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d48-cen" data-cen="alfa" aria-pressed="false">Alfa hoje</button>
+      <button class="k-btn d48-cen" data-cen="escala" aria-pressed="false">FIDC em escala</button>
+      <button class="k-btn d48-cen" data-cen="bancocaro" aria-pressed="false">Banco caro</button>
+      <button class="k-btn d48-cen" data-cen="semreg" aria-pressed="false">Sem regresso</button>
+      <button class="k-btn d48-cen" data-cen="falta" aria-pressed="false">Só o que falta</button>
+    </div>
+  </header>
+
+  <div class="k-tabs" role="tablist">
+    <button class="k-tab" id="tab-custo" data-group="v" data-tab="custo" role="tab" aria-selected="true">Custo por volume</button>
+    <button class="k-tab" id="tab-perguntas" data-group="v" data-tab="perguntas" role="tab" aria-selected="false">Quatro perguntas</button>
+    <button class="k-tab" id="tab-cascata" data-group="v" data-tab="cascata" role="tab" aria-selected="false">Cascata do FIDC</button>
+  </div>
+
+  <div class="k-zones">
+    <!-- ===================== CONTROLES ===================== -->
+    <div class="k-zone" id="controles" data-source="alfa modalidades cenarios cascata">
+      <section data-group="v" data-pane="custo">
+        <h2 class="k-zt">Volumes</h2>
+        <div class="k-ctl"><label for="c-V">Duplicatas antecipadas <span class="k-u">R$ mil/mês</span> <span class="k-info" tabindex="0">i<span class="k-tip">Default = tudo o que a Alfa fatura a prazo por mês (vendas a prazo ÷ 12). Prazo médio antecipável das duplicatas 30/60/90: <b data-draw="v" data-q="prazoDup">—</b> dias.</span></span></label>
+          <div class="k-in"><input type="range" id="c-V" data-k="V" min="0" max="6000" step="1"><input type="number" data-k="V" min="0" max="6000" step="1" aria-label="Duplicatas antecipadas, R$ mil por mês"></div></div>
+        <div class="k-ctl"><label for="c-Vc">Cartão antecipado <span class="k-u">R$ mil/mês</span> <span class="k-info" tabindex="0">i<span class="k-tip">Recebíveis de cartão da Alfa, D+<b data-draw="v" data-q="prazoCartao">—</b>. O teto do slider é o que a Alfa vende no cartão por mês.</span></span></label>
+          <div class="k-in"><input type="range" id="c-Vc" data-k="Vc" min="0" max="417" step="1"><input type="number" data-k="Vc" min="0" max="417" step="1" aria-label="Cartão antecipado, R$ mil por mês"></div></div>
+
+        <h2 class="k-zt2">Taxas <span class="k-u">% a.m.</span></h2>
+        <div class="k-ctl"><label for="c-rb">Bancária <span class="k-u">regresso sempre</span></label>
+          <div class="k-in"><input type="range" id="c-rb" data-k="rb" min="1.5" max="3" step="0.05"><input type="number" data-k="rb" min="1.5" max="3" step="0.05" aria-label="Taxa bancária, % a.m."></div></div>
+        <div class="k-ctl"><label for="c-rf">FIDC</label>
+          <div class="k-in"><input type="range" id="c-rf" data-k="rf" min="1" max="2.5" step="0.05"><input type="number" data-k="rf" min="1" max="2.5" step="0.05" aria-label="Taxa FIDC, % a.m."></div>
+          <label class="k-toggle"><input type="checkbox" data-k="sr"> Sem regresso no FIDC (+<b data-draw="v" data-q="prem">—</b> p.p.)</label></div>
+        <div class="k-ctl"><label for="c-F">Custo fixo do FIDC <span class="k-u">R$ mil/ano</span> <span class="k-info" tabindex="0">i<span class="k-tip">Administrador, gestor, custodiante, auditor, rating e advogados (valor construído para o curso).</span></span></label>
+          <div class="k-in"><input type="range" id="c-F" data-k="F" min="200" max="1500" step="10"><input type="number" data-k="F" min="200" max="1500" step="10" aria-label="Custo fixo do FIDC, R$ mil por ano"></div></div>
+        <div class="k-ctl"><label for="c-rc">Cartão <span class="k-u">sem regresso: o devedor é a adquirente</span></label>
+          <div class="k-in"><input type="range" id="c-rc" data-k="rc" min="1.5" max="3" step="0.05"><input type="number" data-k="rc" min="1.5" max="3" step="0.05" aria-label="Taxa cartão, % a.m."></div></div>
+      </section>
+
+      <section data-group="v" data-pane="perguntas" hidden>
+        <h2 class="k-zt">Como usar</h2>
+        <p class="k-note">Responda às quatro perguntas na ordem. A recomendação muda a cada resposta; o botão leva a configuração coerente para a aba de custo.</p>
+      </section>
+
+      <section data-group="v" data-pane="cascata" hidden>
+        <h2 class="k-zt">Estrutura do FIDC</h2>
+        <div class="k-ctl"><label for="c-cart">Carteira cedida <span class="k-u">R$ mil</span></label>
+          <div class="k-in"><input type="range" id="c-cart" data-k="cart" min="2000" max="20000" step="100"><input type="number" data-k="cart" min="2000" max="20000" step="100" aria-label="Carteira cedida, R$ mil"></div></div>
+        <div class="k-ctl"><label for="c-sub">Cota subordinada <span class="k-u">% · retida pela Alfa</span></label>
+          <div class="k-in"><input type="range" id="c-sub" data-k="pSub" min="5" max="25" step="1"><input type="number" data-k="pSub" min="5" max="25" step="1" aria-label="Cota subordinada, %"></div></div>
+        <div class="k-ctl"><label for="c-mez">Cota mezanino <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-mez" data-k="pMez" min="0" max="15" step="1"><input type="number" data-k="pMez" min="0" max="15" step="1" aria-label="Cota mezanino, %"></div></div>
+        <p class="k-note">Sênior = o restante: <b data-draw="v" data-q="pSen">—</b> da carteira.</p>
+        <h2 class="k-zt2">Choque</h2>
+        <div class="k-ctl"><label for="c-inad">Inadimplência da carteira <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-inad" data-k="inad" min="0" max="30" step="0.5"><input type="number" data-k="inad" min="0" max="30" step="0.5" aria-label="Inadimplência da carteira, %"></div></div>
+      </section>
+    </div>
+
+    <!-- ===================== VISUAL ===================== -->
+    <div class="k-zone" id="visual" data-source="alfa modalidades cenarios cascata">
+      <section data-group="v" data-pane="custo" id="custo">
+        <div class="k-ch"><h3>Custo anual por volume antecipado</h3><span>R$ mil/ano · volume em R$ mil/mês</span></div>
+        <div class="k-chart d48-curva dash-skeleton" id="curva" data-draw="curva" role="img" aria-label="Custo anual da antecipação bancária e do FIDC em função do volume mensal, com o ponto de equilíbrio"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-blue)"></i>Bancária</span>
+          <span><i style="background: var(--k-navy)"></i>FIDC</span>
+          <span><i style="background: var(--k-amber)"></i>Cartão (até o que a Alfa vende)</span>
+          <span><i style="background: var(--k-navy); opacity: .15"></i>FIDC mais barato</span>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="perguntas" id="perguntas4" hidden>
+        <div class="d48-arv">
+          <div class="d48-q"><h4>1 · Volume?</h4>
+            <div class="k-seg" role="group" aria-label="Volume"><button data-k="vol" data-v="baixo">Baixo</button><button data-k="vol" data-v="alto">Alto e recorrente</button></div></div>
+          <div class="d48-seta" aria-hidden="true">↓</div>
+          <div class="d48-q"><h4>2 · Recorrência?</h4>
+            <div class="k-seg" role="group" aria-label="Recorrência"><button data-k="rec" data-v="pontual">Pontual</button><button data-k="rec" data-v="continua">Contínua</button></div></div>
+          <div class="d48-seta" aria-hidden="true">↓</div>
+          <div class="d48-q"><h4>3 · Apetite por estruturação?</h4>
+            <div class="k-seg" role="group" aria-label="Apetite por estruturação"><button data-k="ap" data-v="nao">Não</button><button data-k="ap" data-v="sim">Sim, com time dedicado</button></div></div>
+          <div class="d48-seta" aria-hidden="true">↓</div>
+          <div class="d48-q"><h4>4 · Perfil da carteira?</h4>
+            <div class="k-seg" role="group" aria-label="Perfil da carteira"><button data-k="perfil" data-v="cartao">Cartão</button><button data-k="perfil" data-v="b2b">Duplicata B2B</button><button data-k="perfil" data-v="div">Diversificada e madura</button></div></div>
+          <div class="d48-seta" aria-hidden="true">↓</div>
+          <div class="d48-rec" data-frases>
+            <span data-draw="frase" data-grp="rec"></span>
+            <div data-frase="cartao" hidden><h4>Antecipação de cartão</h4><p>A adquirente é a devedora: risco quase nulo, sem regresso, D+30 vira D+0 sem estrutura nenhuma.</p></div>
+            <div data-frase="banc_pontual" hidden><h4>Antecipação bancária</h4><p>Volume baixo ou necessidade pontual: o custo fixo de um FIDC não se dilui. Antecipe no banco só o que falta.</p></div>
+            <div data-frase="banc_estrut" hidden><h4>Antecipação bancária</h4><p>Há volume, mas sem time para estruturar e manter um fundo (cessão, lastro, relatórios, rating) o FIDC não sai do papel.</p></div>
+            <div data-frase="banc_carteira" hidden><h4>Antecipação bancária</h4><p>Duplicata B2B concentrada em poucos sacados ainda não tem a pulverização e o histórico que o investidor do FIDC exige. Volta à mesa quando a carteira amadurecer.</p></div>
+            <div data-frase="fidc" hidden><h4>FIDC</h4><p>Volume alto e contínuo, time para estruturar e carteira diversificada e madura: o custo fixo se dilui e a cota sênior sai barata.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="cascata" id="cascata" hidden>
+        <div class="k-ch"><h3>Quem absorve a inadimplência</h3><span>R$ mil · a perda sobe da base: subordinada → mezanino → sênior</span></div>
+        <div class="k-chart d48-casc dash-skeleton" id="colunas" data-draw="cascata" role="img" aria-label="Três colunas de cotas com a perda em vermelho subindo da base"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-amber)"></i>Subordinada (Alfa)</span>
+          <span><i style="background: var(--k-blue-l)"></i>Mezanino</span>
+          <span><i style="background: var(--k-navy)"></i>Sênior (investidores)</span>
+          <span><i style="background: var(--k-neg)"></i>Perda absorvida</span>
+        </div>
+        <div class="k-tw" data-source="cascata">
+          <table class="k-table" aria-label="Perda por cota">
+            <thead><tr><th>Cota</th><th>Original</th><th>Perda absorvida</th><th>Remanescente</th><th>Quem segura</th></tr></thead>
+            <tbody data-draw="tabcasc"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== LEITURA ===================== -->
+    <div class="k-zone" id="leitura" data-source="alfa modalidades cenarios cascata">
+      <section data-group="v" data-pane="custo">
+        <h2 class="k-zt">Leitura · custo anual <span class="k-u">R$ mil/ano</span></h2>
+        <div class="k-cards">
+          <div class="k-card d48-card" data-mod="banc"><h4><span class="d48-legcard" style="background: var(--k-blue)"></span>Bancária</h4><span class="d48-val" data-draw="v" data-q="banc">—</span><p class="k-note"><b data-draw="v" data-q="rb">—</b> a.m. · com regresso</p></div>
+          <div class="k-card d48-card" data-mod="fidc"><h4><span class="d48-legcard" style="background: var(--k-navy)"></span>FIDC</h4><span class="d48-val" data-draw="v" data-q="fidc">—</span><p class="k-note"><b data-draw="v" data-q="rfE">—</b> a.m. + fixo <b data-draw="v" data-q="F">—</b></p></div>
+          <div class="k-card d48-card" data-mod="cart"><h4><span class="d48-legcard" style="background: var(--k-amber)"></span>Cartão</h4><span class="d48-val" data-draw="v" data-q="cart">—</span><p class="k-note"><b data-draw="v" data-q="rc">—</b> a.m. · outro recebível</p></div>
+        </div>
+        <div class="k-kpi d48-star"><span class="k-kl">V* <span class="k-u">R$ mil/mês</span> <span class="k-info" tabindex="0">i<span class="k-tip">Volume em que FIDC e bancária custam o mesmo: custo fixo ÷ (12 × prazo em meses × diferença de taxa).</span></span></span><span class="k-kn" data-draw="v" data-q="Vstar">—</span></div>
+        <p class="k-note" data-frases><span data-draw="frase" data-grp="star"></span><span data-frase="fin" hidden>A partir de <b data-draw="v" data-q="Vstar">—</b>/mês o FIDC se paga.</span><span data-frase="inf" hidden>O FIDC nunca se paga: a taxa dele não é menor que a bancária.</span></p>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="custo"></span>
+          <p data-frase="pontual" hidden>Com <b data-draw="v" data-q="V">—</b>/mês, a estruturação de R$ <b data-draw="v" data-q="F">—</b> mil não se dilui: bancária custa <b data-draw="v" data-q="banc">—</b>, FIDC <b data-draw="v" data-q="fidc">—</b>. Operação pontual pede bancária.</p>
+          <p data-frase="escala" hidden>Em <b data-draw="v" data-q="V">—</b>/mês o custo fixo do FIDC já se diluiu: <b data-draw="v" data-q="fidc">—</b> contra <b data-draw="v" data-q="banc">—</b>. Volume recorrente pede estrutura.</p>
+          <p data-frase="semreg" hidden>Sem regresso transfere risco — e custa o spread: FIDC a <b data-draw="v" data-q="rfE">—</b> a.m. não fica abaixo da bancária, e o custo fixo nunca se dilui (<b data-draw="v" data-q="fidc">—</b> contra <b data-draw="v" data-q="banc">—</b>).</p>
+          <p data-frase="nunca" hidden>Taxa do FIDC igual ou maior que a bancária: as curvas não se cruzam e o fixo de R$ <b data-draw="v" data-q="F">—</b> mil é custo a mais em qualquer volume.</p>
+          <p data-frase="cartao" hidden>Cartão à parte: <b data-draw="v" data-q="cart">—</b>/ano para transformar D+<b data-draw="v" data-q="prazoCartao">—</b> em D+0, risco praticamente nulo — funding subestimado.</p>
+        </div>
+        <p class="k-note">Custo efetivo do deságio <span class="k-info" tabindex="0">i<span class="k-tip">A empresa recebe (1 − taxa × prazo) hoje e o banco ou fundo recebe 1 no vencimento: (1 ÷ (1 − d·n))^(12/n) − 1. Não inclui o custo fixo do FIDC. Detalhe na D5.4.</span></span>: bancária <b data-draw="v" data-q="efBanc">—</b> · FIDC <b data-draw="v" data-q="efFidc">—</b> · cartão <b data-draw="v" data-q="efCart">—</b> a.a.</p>
+      </section>
+
+      <section data-group="v" data-pane="perguntas" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Recomendação</span><span class="k-kn" data-frases><span data-draw="frase" data-grp="recnome"></span><span data-frase="cartao" hidden>Cartão</span><span data-frase="banc" hidden>Bancária</span><span data-frase="fidc" hidden>FIDC</span></span></div>
+        <p class="d48-cfg">Configuração para a aba de custo: duplicatas <b data-draw="v" data-q="cfgV">—</b>/mês · bancária <b data-draw="v" data-q="cfgRb">—</b> · FIDC <b data-draw="v" data-q="cfgRf">—</b> a.m.</p>
+        <button class="k-btn d48-levar" type="button">Levar para a aba de custo</button>
+      </section>
+
+      <section data-group="v" data-pane="cascata" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Perda da carteira <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="perda">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Sênior remanescente <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="senResta">—</span></div>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="casc"></span>
+          <p data-frase="sub" hidden>A perda de <b data-draw="v" data-q="inad">—</b> cabe na cota subordinada da Alfa: investidores sênior intactos — é isso que compra o deságio baixo.</p>
+          <p data-frase="mez" hidden>A subordinada acabou; o mezanino absorve <b data-draw="v" data-q="mezPerda">—</b>. Rating da sênior em observação.</p>
+          <p data-frase="sen" hidden>A sênior perde <b data-draw="v" data-q="senPerda">—</b>: a estrutura falhou — concentração ou originação ruim.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="k-help" id="guia" data-source="alfa modalidades cenarios cascata">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>A Alfa fatura <span data-draw="v" data-q="g-V">—</span>/mês a prazo. Por que o FIDC não compensa hoje, e o que teria de mudar?
+          <details><summary>mostrar resposta</summary><p>R$ <b data-draw="v" data-q="g-F">—</b> mil de estruturação só se diluem a partir de <b data-draw="v" data-q="g-Vstar">—</b>/mês (com <b data-draw="v" data-q="g-dif">—</b> p.p. de vantagem no deságio). Ou a Alfa dobra o volume, ou negocia deságio de <b data-draw="v" data-q="g-rfEsc">—</b> a.m. (V* cai para <b data-draw="v" data-q="g-VstarEsc">—</b>) — volume define estrutura.</p></details>
+        </li>
+        <li>Ligue "sem regresso". Por que a curva do FIDC deixa de cruzar a bancária?
+          <details><summary>mostrar resposta</summary><p>Sem regresso o fundo absorve a inadimplência e cobra por isso (+<b data-draw="v" data-q="g-prem">—</b> p.p.): a taxa vai a <b data-draw="v" data-q="g-rfSr">—</b>, igual à bancária (<b data-draw="v" data-q="g-rb">—</b>), e o custo fixo nunca se dilui. Transferir risco tem preço explícito.</p></details>
+        </li>
+        <li>Na cascata, suba a inadimplência de <span data-draw="v" data-q="g-inad0">—</span> para <span data-draw="v" data-q="g-inad3">—</span>. Quem perde primeiro e por que isso importa para a Alfa?
+          <details><summary>mostrar resposta</summary><p>A subordinada (<b data-draw="v" data-q="g-pSub">—</b>, retida pela Alfa) vai a zero e o mezanino perde <b data-draw="v" data-q="g-mezPerda">—</b>; a sênior fica intacta. A Alfa continua carregando o risco da sua originação — por isso a cota sênior sai barata e por isso "antecipar" não é se livrar do crédito mal concedido.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<script>
+/* ============================================================
+   D4.8 · Antecipação, FIDC e cartão
+   Testes de aderência (Spec §7), conferidos com M48 em node (38 PASS / 0 FAIL):
+   Reset: bancária 1.400 · FIDC 1.650 · cartão 100 · V* 5.000
+   r_f 1,0: FIDC 1.300 · V* 2.500 · r_b 2,5: bancária 1.750 · V* 2.500
+   Sem regresso: FIDC 2.000 · V* = ∞ · Só o que falta (V 1.000): 480 · 960 · 100
+   Custo efetivo do deságio: 27,8% · 20,1% · 27,4%
+   Cascata 15%: subordinada 1.200 → 0 · mezanino 800 → 500 · sênior 8.000
+   Cascata 25%: perda 2.500 · sênior 8.000 → 7.500
+   ============================================================ */
+const ST = window.D48 = { S: null, cen: null, mexido: false };
+const IDS = ['alfa', 'modalidades', 'cenarios', 'cascata'];
+const NOMES = ['curva', 'cascata', 'tabcasc', 'v', 'frase'];
+const XMAX = 6000;            // eixo do volume (R$ mil/mês), = teto do slider
+const Q3_INAD = 15;           // inadimplência sugerida na pergunta-guia 3 (%)
+const Q_DEFAULT = { vol: 'baixo', rec: 'continua', ap: 'nao', perfil: 'b2b' };
+const CASC_KEYS = ['cart', 'pSub', 'pMez', 'inad'];
+const Q_KEYS = ['vol', 'rec', 'ap', 'perfil'];
+
+/* ---------- dados ---------- */
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const alfa = () => K.obj(dash.data('alfa').data);
+const mod = (id) => K.num(dash.data('modalidades').data).find((r) => r.id === id);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const casc0 = () => K.num(dash.data('cascata').data)[0];
+const par = () => ({ mDup: mod('bancaria').prazoMeses, mCart: mod('cartao').prazoMeses, prem: mod('fidc').premioSemRegresso });
+const ctlDe = (r) => ({ V: r.V, Vc: r.Vc, rb: r.rb, rf: r.rf, sr: !!Number(r.sr), F: r.F, rc: r.rc });
+const atual = () => M48.estado(ST.S, par());
+const cascAtual = () => M48.cascata(ST.S.cart, ST.S.pSub, ST.S.pMez, ST.S.inad);
+const recAtual = () => M48.recomenda(ST.S);
+const pct = (v, d = 1) => K.n(v, d) + '%';
+const tx = (v) => K.n(v, 2).replace(/0$/, '') + '%';
+
+/* ---------- controles ---------- */
+function marca() {
+  const ok = pronto();
+  document.querySelectorAll('.d48-cen').forEach((b) => b.setAttribute('aria-pressed', String(ok && !ST.mexido && b.dataset.cen === ST.cen)));
+  const R = ok ? atual() : null;
+  document.querySelectorAll('.d48-card').forEach((c) => {
+    c.classList.toggle('k-on', !!R && c.dataset.mod === R.vence);
+    c.classList.toggle('k-dim', !!R && c.dataset.mod === 'cart' && ST.S.Vc <= 0);
+  });
+}
+function sincroniza() { K.sync(ST.S); marca(); }
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  const c0 = casc0();
+  const base = id === 'alfa' || !ST.S;
+  ST.S = { ...(ST.S || {}), ...ctlDe(r) };
+  if (base) Object.assign(ST.S, { cart: c0.carteira, pSub: c0.pSub, pMez: c0.pMez, inad: c0.inad }, Q_DEFAULT);
+  ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok') { marca(); return; }
+  if (!ST.S) { aplicar('alfa'); K.redraw(NOMES); }
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  if (!CASC_KEYS.includes(k) && !Q_KEYS.includes(k)) ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d48-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+const mostra = K.tabs('v', () => K.redraw(NOMES));
+document.querySelectorAll('.d48-levar').forEach((b) => b.addEventListener('click', () => {
+  if (!pronto()) return;
+  const r = cenario(recAtual());
+  if (!r) return;
+  Object.assign(ST.S, ctlDe(r));
+  ST.cen = null; ST.mexido = true;
+  sincroniza();
+  mostra('custo');
+  try { dash.setLink('custo'); } catch (e) { /* ok */ }
+}));
+
+/* ---------- curva de custo por volume ---------- */
+dash.draw('curva', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const C = ST.S, P = par(), R = atual();
+  const VcMax = alfa().Vcmes;
+  const custo = (v) => M48.custos({ ...C, V: v, Vc: Math.min(v, VcMax) }, P);
+  const pts = d3.range(0, XMAX + 1, 50).map((v) => { const c = custo(v); return { v, banc: c.banc, fidc: c.fidc }; });
+  const cartPts = d3.range(0, VcMax + 1, Math.max(1, VcMax / 20)).concat([VcMax]).map((v) => ({ v, cart: v * 12 * (C.rc / 100) * P.mCart }));
+  const { svg, W, H } = K.svg(el, 310);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const yMax = d3.max(pts, (p) => Math.max(p.banc, p.fidc)) * 1.05;
+  const y = d3.scaleLinear([0, yMax], [H - 30, 16]).nice();
+  const ticks = y.ticks(5);
+  const meas = svg.append('text').attr('class', 'k-svgt');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t)); mL = Math.max(mL, meas.node().getComputedTextLength()); });
+  meas.text('Bancária'); const mR = meas.node().getComputedTextLength() + 14; meas.remove();
+  const x = d3.scaleLinear([0, XMAX], [mL + 10, W - mR]);
+  // área em que o FIDC é mais barato
+  const vs = R.Vstar;
+  if (Number.isFinite(vs) && vs < XMAX) {
+    svg.append('rect').attr('x', x(vs)).attr('width', x(XMAX) - x(vs)).attr('y', 16).attr('height', y(0) - 16).attr('fill', 'var(--k-navy)').attr('opacity', 0.08);
+    const tf = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x(XMAX) - 4).attr('y', 30).text('FIDC mais barato');
+    if (x(XMAX) - x(vs) < tf.node().getComputedTextLength() + 8) tf.remove();
+  }
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x(0)).attr('x2', x(XMAX)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  const xt = W < 480 ? [0, 2000, 4000, 6000] : [0, 1000, 2000, 3000, 4000, 5000, 6000];
+  svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 10).text((t) => K.n(t));
+  svg.append('line').attr('x1', x(0)).attr('x2', x(XMAX)).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  const linha = (dados, k, cor, w) => svg.append('path').attr('d', d3.line().x((p) => x(p.v)).y((p) => y(p[k]))(dados)).attr('fill', 'none').attr('stroke', cor).attr('stroke-width', w).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  linha(pts, 'banc', 'var(--k-blue)', 2.5);
+  linha(pts, 'fidc', 'var(--k-navy)', 2.5);
+  linha(cartPts, 'cart', 'var(--k-amber)', 1.5);
+  // rótulos de fim de linha
+  const fim = pts[pts.length - 1];
+  const labs = [['Bancária', fim.banc, 'var(--k-blue)'], ['FIDC', fim.fidc, 'var(--k-navy)']].map(([n, v, c]) => ({ n, y: y(v), c })).sort((a, b) => a.y - b.y);
+  if (labs[1].y - labs[0].y < 15) labs[1].y = labs[0].y + 15;
+  labs.forEach((l) => svg.append('text').attr('class', 'k-svgt').style('fill', l.c).style('font-weight', 600).attr('x', x(XMAX) + 6).attr('y', l.y + 4).text(l.n));
+  // volume escolhido
+  const vv = Math.min(XMAX, Math.max(0, C.V));
+  svg.append('line').attr('x1', x(vv)).attr('x2', x(vv)).attr('y1', 16).attr('y2', y(0)).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3');
+  const cv = custo(vv);
+  svg.append('circle').attr('cx', x(vv)).attr('cy', y(cv.banc)).attr('r', 4.5).attr('fill', 'var(--k-blue)');
+  svg.append('circle').attr('cx', x(vv)).attr('cy', y(cv.fidc)).attr('r', 4.5).attr('fill', 'var(--k-navy)');
+  const tV = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', x(vv) + 6).attr('y', 14).text('V = ' + K.n(vv));
+  if (x(vv) + 6 + tV.node().getComputedTextLength() > x(XMAX)) tV.attr('text-anchor', 'end').attr('x', x(vv) - 6);
+  // ponto de equilíbrio
+  if (Number.isFinite(vs) && vs <= XMAX) {
+    const cy = y(custo(vs).banc);
+    svg.append('circle').attr('cx', x(vs)).attr('cy', cy).attr('r', 6).attr('fill', 'var(--color-bg)').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2.5);
+    const tS = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--k-navy)').attr('x', x(vs) - 8).attr('y', cy - 10).attr('text-anchor', 'end').text('V* = ' + K.n(vs) + '/mês');
+    if (x(vs) - 8 - tS.node().getComputedTextLength() < x(0)) tS.attr('text-anchor', 'start').attr('x', x(vs) + 8);
+    const bS = tS.node().getBBox(), bV = tV.node().getBBox();
+    if (bS.x < bV.x + bV.width && bV.x < bS.x + bS.width && bS.y < bV.y + bV.height && bV.y < bS.y + bS.height) tS.attr('y', cy + 22);
+  }
+  // tooltip
+  const hov = svg.append('line').attr('y1', 16).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(0)).attr('width', x(XMAX) - x(0)).attr('y', 16).attr('height', y(0) - 16).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const v = Math.max(0, Math.min(XMAX, Math.round(x.invert(d3.pointer(ev)[0]) / 50) * 50));
+      const c = custo(v);
+      hov.attr('x1', x(v)).attr('x2', x(v)).attr('opacity', 1);
+      const linhas = [['var(--k-blue)', 'Bancária', K.n(c.banc)], ['var(--k-navy)', 'FIDC', K.n(c.fidc)]];
+      if (v <= VcMax) linhas.push(['var(--k-amber)', 'Cartão', K.n(v * 12 * (C.rc / 100) * P.mCart)]);
+      tip.show('Volume ' + K.n(v) + '/mês · R$ mil/ano', linhas, px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hov.attr('opacity', 0); });
+});
+
+/* ---------- cascata de cotas ---------- */
+const COTA = { sub: ['Subordinada', 'var(--k-amber)'], mez: ['Mezanino', 'var(--k-blue-l)'], sen: ['Sênior', 'var(--k-navy)'] };
+dash.draw('cascata', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = cascAtual();
+  const { svg, W, H } = K.svg(el, 290);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const top = 34, base = H - 44, hc = base - top;
+  const n = R.cotas.length, gap = Math.min(60, W / 10), cw = Math.min(110, (W - gap * (n + 1)) / n);
+  const x0 = (W - (n * cw + (n - 1) * gap)) / 2;
+  R.cotas.forEach((c, i) => {
+    const [nome, cor] = COTA[c.id];
+    const cx = x0 + i * (cw + gap);
+    const fr = c.valor > 0 ? c.perda / c.valor : 0;
+    const g = svg.append('g');
+    g.append('rect').attr('x', cx).attr('y', top).attr('width', cw).attr('height', hc).attr('rx', 3).attr('fill', cor).attr('opacity', c.valor > 0 ? 1 : 0.2);
+    if (fr > 0) g.append('rect').attr('x', cx).attr('y', base - hc * fr).attr('width', cw).attr('height', hc * fr).attr('rx', 3).attr('fill', 'var(--k-neg)');
+    g.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('text-anchor', 'middle').attr('x', cx + cw / 2).attr('y', top - 8).text(K.n(c.valor));
+    const resto = svg.append('text').attr('class', 'k-svgb').attr('text-anchor', 'middle').attr('x', cx + cw / 2);
+    if (fr < 0.82) resto.style('fill', c.id === 'mez' || c.id === 'sub' ? '#1a1a1a' : '#fff').attr('y', top + 20).text(fr >= 1 ? '' : 'resta ' + K.n(c.resta));
+    else resto.style('fill', '#fff').attr('y', top + 20).text(fr >= 1 ? 'zerada' : 'resta ' + K.n(c.resta));
+    if (fr > 0 && hc * fr > 18) svg.append('text').attr('class', 'k-svgb').style('fill', '#fff').attr('text-anchor', 'middle').attr('x', cx + cw / 2).attr('y', base - Math.min(hc * fr, hc) / 2 + 5).text('−' + K.n(c.perda));
+    svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', cx + cw / 2).attr('y', base + 18).text(nome);
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cx + cw / 2).attr('y', base + 34).text(pct(c.valor / R.carteira * 100, 0) + ' da carteira');
+    if (i < n - 1) svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cx + cw + gap / 2).attr('y', base - hc / 2 + 4).text('→');
+    svg.append('rect').attr('x', cx).attr('y', top).attr('width', cw).attr('height', hc).attr('fill', 'transparent')
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(nome, [[cor, 'Original', K.n(c.valor)], ['var(--k-neg)', 'Perda absorvida', K.n(c.perda)], [null, 'Remanescente', K.n(c.resta)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+  });
+});
+dash.draw('tabcasc', (el) => {
+  if (!pronto()) { el.replaceChildren(); return; }
+  const R = cascAtual();
+  const quem = { sub: 'Alfa (skin in the game)', mez: 'Investidores mezanino', sen: 'Investidores sênior' };
+  const rows = R.cotas.map((c) => [COTA[c.id][0], K.n(c.valor), K.n(c.perda), K.n(c.resta), quem[c.id], c.perda > 0]);
+  rows.push(['Carteira', K.n(R.carteira), K.n(R.perda), K.n(R.carteira - R.perda), '', false]);
+  el.replaceChildren(...rows.map((r, i) => {
+    const tr = document.createElement('tr');
+    if (i === rows.length - 1) tr.className = 'k-strong';
+    r.slice(0, 5).forEach((v, j) => { const td = document.createElement('td'); td.textContent = v; if (j === 2 && r[5]) td.className = 'k-neg'; tr.append(td); });
+    return tr;
+  }));
+});
+
+/* ---------- números ---------- */
+const baseAlfa = () => M48.estado(ctlDe(cenario('alfa')), par());
+const VAL = {
+  prazoDup: () => K.n(alfa().prazoDup), prazoCartao: () => K.n(alfa().prazoCartao), prem: () => K.n(mod('fidc').premioSemRegresso, 1),
+  pSen: () => pct(100 - ST.S.pSub - ST.S.pMez, 0),
+  banc: (R) => K.n(R.banc), fidc: (R) => K.n(R.fidc), cart: (R) => K.n(R.cart), V: () => K.n(ST.S.V), F: () => K.n(ST.S.F),
+  rb: () => tx(ST.S.rb), rfE: (R) => tx(R.rfE), rc: () => tx(ST.S.rc),
+  Vstar: (R) => (Number.isFinite(R.Vstar) ? K.n(R.Vstar) : '∞'),
+  efBanc: (R) => K.p(R.efBanc, 1), efFidc: (R) => K.p(R.efFidc, 1), efCart: (R) => K.p(R.efCart, 1),
+  cfgV: () => { const r = cenario(recAtual()); return r ? K.n(r.V) : null; },
+  cfgRb: () => { const r = cenario(recAtual()); return r ? tx(r.rb) : null; },
+  cfgRf: () => { const r = cenario(recAtual()); return r ? tx(r.rf) : null; },
+  perda: () => K.n(cascAtual().perda), senResta: () => K.n(cascAtual().cotas[2].resta), inad: () => pct(ST.S.inad, 1),
+  mezPerda: () => K.n(cascAtual().cotas[1].perda), senPerda: () => K.n(cascAtual().cotas[2].perda),
+  'g-V': () => K.n(cenario('alfa').V), 'g-F': () => K.n(cenario('alfa').F), 'g-Vstar': () => K.n(baseAlfa().Vstar),
+  'g-dif': () => K.n(cenario('alfa').rb - cenario('alfa').rf, 1), 'g-rfEsc': () => tx(cenario('escala').rf),
+  'g-VstarEsc': () => K.n(M48.estado(ctlDe(cenario('escala')), par()).Vstar),
+  'g-prem': () => K.n(mod('fidc').premioSemRegresso, 1), 'g-rfSr': () => tx(M48.estado(ctlDe(cenario('semreg')), par()).rfE), 'g-rb': () => tx(cenario('semreg').rb),
+  'g-inad0': () => pct(casc0().inad, 0), 'g-inad3': () => pct(Q3_INAD, 0), 'g-pSub': () => pct(casc0().pSub, 0),
+  'g-mezPerda': () => { const c = casc0(); return K.n(M48.cascata(c.carteira, c.pSub, c.pMez, Q3_INAD).cotas[1].perda); },
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const R = atual(), grp = el.dataset.grp;
+    if (grp === 'custo') {
+      keys.push(!Number.isFinite(R.Vstar) ? (ST.S.sr ? 'semreg' : 'nunca') : ST.S.V < R.Vstar ? 'pontual' : 'escala');
+      if (ST.S.Vc > 0) keys.push('cartao');
+    } else if (grp === 'star') keys.push(Number.isFinite(R.Vstar) ? 'fin' : 'inf');
+    else if (grp === 'rec') keys.push(recAtual());
+    else if (grp === 'recnome') { const r = recAtual(); keys.push(r === 'cartao' ? 'cartao' : r === 'fidc' ? 'fidc' : 'banc'); }
+    else if (grp === 'casc') keys.push(cascAtual().faixa);
+  }
+  K.frases(el, keys);
+  marca();
+});
+</script>

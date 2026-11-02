@@ -1,0 +1,42 @@
+[
+ {
+  "trimestre": "T1 (mar)",
+  "disp": 3100,
+  "cli": 6900,
+  "est": 5000,
+  "oaco": 400,
+  "forn": 3700,
+  "opco": 1000,
+  "emp": 2800
+ },
+ {
+  "trimestre": "T2 (jun)",
+  "disp": 2700,
+  "cli": 7300,
+  "est": 5600,
+  "oaco": 400,
+  "forn": 4300,
+  "opco": 1000,
+  "emp": 3100
+ },
+ {
+  "trimestre": "T3 (set)",
+  "disp": 1900,
+  "cli": 7600,
+  "est": 6400,
+  "oaco": 400,
+  "forn": 4800,
+  "opco": 1000,
+  "emp": 3600
+ },
+ {
+  "trimestre": "T4 (dez = T0)",
+  "disp": 2500,
+  "cli": 8300,
+  "est": 5300,
+  "oaco": 400,
+  "forn": 4100,
+  "opco": 1000,
+  "emp": 3500
+ }
+]

@@ -1,0 +1,10 @@
+{
+  "code": "D3.3",
+  "title": "D3.3 · Lote econômico",
+  "slug": "ce8d619e-8373-44e6-89a7-721632a451da",
+  "datasets": {
+    "cenarios": { "file": "cenarios.json", "sha256": "3646e65fc44e366f84eadd1db4fae33fc653cf665847d58ac9ae183c251ad24e" },
+    "faixas": { "file": "faixas.json", "sha256": "ba65460db20ca51b30437494d5be4188cbd8d0f7079b6650590aaed5e0854085" },
+    "item": { "file": "item.json", "sha256": "577bf9df42b1bef884760a249ab3fdc2adc6bd6c14363a476464dc35c19241ad" }
+  }
+}

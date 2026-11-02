@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D4.4 · 5 Cs · dossiê Horizonte</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"hoje","nome":"Horizonte hoje","neg":0,"protestos":0,"processos":0,"semHist":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":0,"aval":0,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"cessao","nome":"Com cessão de recebíveis","neg":0,"protestos":0,"processos":0,"semHist":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":1,"aval":0,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"fraca","nome":"Colateral forte, capacidade fraca","neg":0,"protestos":0,"processos":0,"semHist":0,"pctVenc":92,"atraso":4,"ebitda":1200,"despFin":1200,"divBruta":9000,"pcf":3500,"pl":9000,"plCresc":1,"cessao":1,"aval":1,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"retracao","nome":"Retração setorial, Selic 14%","neg":0,"protestos":0,"processos":0,"semHist":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":0,"aval":0,"selic":14,"setor":"retracao","prazoPedido":60},{"id":"novo","nome":"Cliente novo sem histórico","neg":0,"protestos":0,"processos":0,"semHist":1,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":0,"aval":0,"selic":12,"setor":"neutro","prazoPedido":60}]},"dossie":{"format":"json","data":[{"chave":"ebitda","rotulo":"EBITDA","fonte":"DRE","valor":2400,"unidade":"R$ mil"},{"chave":"despFin","rotulo":"Despesas financeiras","fonte":"DRE","valor":1000,"unidade":"R$ mil"},{"chave":"ll","rotulo":"Lucro líquido","fonte":"DRE","valor":726,"unidade":"R$ mil"},{"chave":"ir","rotulo":"IR/CSLL","fonte":"DRE","valor":374,"unidade":"R$ mil"},{"chave":"capex","rotulo":"CAPEX (= depreciação)","fonte":"DRE","valor":400,"unidade":"R$ mil"},{"chave":"ac","rotulo":"Ativo circulante","fonte":"Balanço","valor":10800,"unidade":"R$ mil"},{"chave":"pc","rotulo":"Passivo circulante","fonte":"Balanço","valor":7800,"unidade":"R$ mil"},{"chave":"pcf","rotulo":"PCF (dívida financeira CP)","fonte":"Balanço","valor":3500,"unidade":"R$ mil"},{"chave":"divBruta","rotulo":"Dívida bruta","fonte":"Balanço","valor":5500,"unidade":"R$ mil"},{"chave":"caixaAplic","rotulo":"Caixa + aplicações","fonte":"Balanço","valor":1000,"unidade":"R$ mil"},{"chave":"pl","rotulo":"Patrimônio líquido","fonte":"Balanço","valor":9000,"unidade":"R$ mil"},{"chave":"anc","rotulo":"Ativo não circulante","fonte":"Balanço","valor":8000,"unidade":"R$ mil"},{"chave":"comprasAno","rotulo":"Compras da Alfa por ano","fonte":"Relação com a Alfa","valor":6000,"unidade":"R$ mil"},{"chave":"prazoAtual","rotulo":"Prazo vigente (30/60/90)","fonte":"Relação com a Alfa","valor":60,"unidade":"dias"},{"chave":"saldo","rotulo":"Saldo em aberto com a Alfa","fonte":"Relação com a Alfa","valor":1000,"unidade":"R$ mil"},{"chave":"pctVenc","rotulo":"% pago no vencimento","fonte":"Histórico interno (construído)","valor":92,"unidade":"%"},{"chave":"atraso","rotulo":"Atraso médio","fonte":"Histórico interno (construído)","valor":4,"unidade":"dias"},{"chave":"anosRel","rotulo":"Anos de relação","fonte":"Histórico interno (construído)","valor":7,"unidade":"anos"},{"chave":"scoreBureau","rotulo":"Score bureau","fonte":"Bureau (construído)","valor":740,"unidade":"pontos"},{"chave":"pl1","rotulo":"PL há 2 anos","fonte":"PL em 3 anos (construído)","valor":7600,"unidade":"R$ mil"},{"chave":"pl2","rotulo":"PL há 1 ano","fonte":"PL em 3 anos (construído)","valor":8300,"unidade":"R$ mil"},{"chave":"carteiraCessao","rotulo":"Carteira de clientes cedível","fonte":"Colateral (construído)","valor":2000,"unidade":"R$ mil"},{"chave":"pmrvCessao","rotulo":"PMRV da carteira cedível","fonte":"Colateral (construído)","valor":20,"unidade":"dias"}]},"regras":{"format":"json","data":[{"chave":"pctVencMin","c":"Caráter","regra":"amarelo se % pago no vencimento abaixo de","valor":80},{"chave":"atrasoMax","c":"Caráter","regra":"amarelo se atraso médio acima de (dias)","valor":15},{"chave":"fatorNovo","c":"Caráter","regra":"fator no limite com Caráter amarelo","valor":0.75},{"chave":"prazoNovo","c":"Caráter","regra":"prazo máximo de cliente sem histórico (dias)","valor":30},{"chave":"icjV","c":"Capacidade","regra":"ICJ verde a partir de","valor":2},{"chave":"icjA","c":"Capacidade","regra":"ICJ amarelo a partir de (abaixo: vermelho)","valor":1.2},{"chave":"dleV","c":"Capacidade","regra":"D.Líq/EBITDA verde até","valor":2.5},{"chave":"dleA","c":"Capacidade","regra":"D.Líq/EBITDA amarelo até (acima: vermelho)","valor":3.5},{"chave":"fcoV","c":"Capacidade","regra":"FCO/PCF verde a partir de","valor":1},{"chave":"fcoA","c":"Capacidade","regra":"FCO/PCF amarelo a partir de (abaixo: vermelho)","valor":0.5},{"chave":"fator0","c":"Capacidade","regra":"fator com tudo verde","valor":1},{"chave":"fator1","c":"Capacidade","regra":"fator com 1 amarelo","valor":0.8},{"chave":"fator2","c":"Capacidade","regra":"fator com 2 amarelos ou 1 vermelho","valor":0.6},{"chave":"capV","c":"Capital","regra":"Dív.bruta/PL verde até","valor":1},{"chave":"capA","c":"Capital","regra":"Dív.bruta/PL amarelo até (acima: vermelho)","valor":2},{"chave":"tetoV","c":"Capital","regra":"teto patrimonial com Capital verde (fração do PL)","valor":0.15},{"chave":"tetoA","c":"Capital","regra":"teto patrimonial com Capital amarelo","valor":0.1},{"chave":"tetoR","c":"Capital","regra":"teto patrimonial com Capital vermelho","valor":0.05},{"chave":"cessaoAdd","c":"Colateral","regra":"acréscimo no limite com cessão fiduciária registrada","valor":0.25},{"chave":"avalAdd","c":"Colateral","regra":"acréscimo no limite com aval dos sócios com bens","valor":0.1},{"chave":"selicLo","c":"Condições","regra":"Selic até (% a.a.): multiplicador cheio","valor":10},{"chave":"selicHi","c":"Condições","regra":"Selic até (% a.a.): multiplicador intermediário","valor":13},{"chave":"multLo","c":"Condições","regra":"multiplicador com Selic baixa","valor":1},{"chave":"multMid","c":"Condições","regra":"multiplicador com Selic intermediária","valor":0.95},{"chave":"multHi","c":"Condições","regra":"multiplicador com Selic alta","valor":0.85},{"chave":"multRetr","c":"Condições","regra":"multiplicador adicional com setor em retração","valor":0.9},{"chave":"prazoExp","c":"Condições","regra":"prazo máximo com setor em expansão (dias)","valor":90},{"chave":"prazoNeu","c":"Condições","regra":"prazo máximo com setor neutro (dias)","valor":60},{"chave":"prazoRetr","c":"Condições","regra":"prazo máximo com setor em retração (dias)","valor":45}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+
+</style>
+<style>
+.d44-cs { display: grid; gap: 0; }
+.d44-c { border: 1px solid var(--color-border-line); border-left: 6px solid var(--k-neutro); border-radius: var(--cds-radius); background: var(--color-bg); padding: 8px 12px; }
+.d44-c.d44-c-verde { border-left-color: var(--k-pos); }
+.d44-c.d44-c-amarelo { border-left-color: var(--k-amber); }
+.d44-c.d44-c-vermelho { border-left-color: var(--k-neg); }
+.d44-c.k-dim { opacity: .55; }
+.d44-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.d44-ch h3 { margin: 0; font-size: 15px; font-weight: var(--cds-font-weight-medium); }
+.d44-ch h3 .k-u { font-weight: 400; }
+.d44-c p { margin: 4px 0 0; font-size: 14px; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.d44 .d44-c b, .d44 .d44-lim b { font-variant-numeric: tabular-nums; }
+.d44-arrow { text-align: center; color: var(--color-fg-muted); font-size: 14px; line-height: 1; padding: 3px 0; }
+.d44-chip { display: inline-block; min-width: 4.6rem; text-align: center; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; background: var(--k-neutro); color: #fff; white-space: nowrap; }
+.d44-chip.d44-verde { background: var(--k-pos); color: #fff; }
+.d44-chip.d44-amarelo { background: var(--k-amber); color: #1a1a1a; }
+.d44-chip.d44-vermelho { background: var(--k-neg); color: #fff; }
+.d44-chip.d44-cinza { background: var(--k-neutro); color: #fff; }
+.d44-met { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 3px 10px; align-items: center; margin-top: 6px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.d44-met .d44-mv { font-weight: 600; text-align: right; }
+.d44-met .k-u { display: block; font-size: 12px; }
+.d44-barra { min-height: 100px; }
+.d44-dec { font-family: var(--font-anthropic-serif); font-size: 1.6rem; line-height: 1.15; text-align: right; }
+.d44-dec.k-pos { color: var(--k-pos); }
+.d44-dec.k-neg { color: var(--k-neg); }
+.d44-dec.d44-warn { color: var(--k-amber-d); }
+.d44-lim { margin-top: 10px; }
+.d44-blk { border-top: 1px solid var(--color-border-line); padding-top: 8px; margin-top: 10px; }
+.d44-blk:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+.d44 .k-in input:disabled { opacity: .45; }
+</style>
+
+<div class="k d44" id="d44">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D4.4 · 5 Cs · dossiê Horizonte</h1>
+      <p class="k-sub">Política diz quanto. Instrumento diz como. Os 5 Cs dizem a quem — e em que ordem.</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d44-cen" data-cen="hoje" aria-pressed="false">Horizonte hoje</button>
+      <button class="k-btn d44-cen" data-cen="cessao" aria-pressed="false">Com cessão de recebíveis</button>
+      <button class="k-btn d44-cen" data-cen="fraca" aria-pressed="false">Colateral forte, capacidade fraca</button>
+      <button class="k-btn d44-cen" data-cen="retracao" aria-pressed="false">Retração setorial, Selic 14%</button>
+      <button class="k-btn d44-cen" data-cen="novo" aria-pressed="false">Cliente novo sem histórico</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone k-scroll" id="controles" data-source="cenarios dossie">
+      <h2 class="k-zt">Dossiê <span class="k-u">R$ mil</span></h2>
+
+      <div class="d44-blk">
+        <h2 class="k-zt2">1 · Caráter</h2>
+        <label class="k-toggle"><input type="checkbox" data-k="neg"> Negativação ativa</label><br>
+        <label class="k-toggle"><input type="checkbox" data-k="processos"> Processos por inadimplência</label>
+        <div class="k-ctl" style="margin-top: 6px"><label for="c-prot">Protestos abertos <span class="k-u">nº</span></label>
+          <div class="k-in"><span></span><input type="number" id="c-prot" data-k="protestos" min="0" max="20" step="1"></div></div>
+        <label class="k-toggle"><input type="checkbox" data-k="semHist"> Cliente novo, sem histórico interno</label>
+        <div class="k-ctl" style="margin-top: 6px"><label for="c-venc">% pago no vencimento</label>
+          <div class="k-in"><input type="range" id="c-venc" class="d44-hist" data-k="pctVenc" min="50" max="100" step="1"><input type="number" class="d44-hist" data-k="pctVenc" min="50" max="100" step="1" aria-label="% pago no vencimento"></div></div>
+        <div class="k-ctl"><label for="c-atr">Atraso médio <span class="k-u">dias</span></label>
+          <div class="k-in"><input type="range" id="c-atr" class="d44-hist" data-k="atraso" min="0" max="60" step="1"><input type="number" class="d44-hist" data-k="atraso" min="0" max="60" step="1" aria-label="Atraso médio, dias"></div></div>
+      </div>
+
+      <div class="d44-blk">
+        <h2 class="k-zt2">2 · Capacidade</h2>
+        <div class="k-ctl"><label for="c-ebitda">EBITDA</label>
+          <div class="k-in"><input type="range" id="c-ebitda" data-k="ebitda" min="500" max="5000" step="50"><input type="number" data-k="ebitda" min="500" max="5000" step="50" aria-label="EBITDA, R$ mil"></div></div>
+        <div class="k-ctl"><label for="c-df">Despesas financeiras</label>
+          <div class="k-in"><input type="range" id="c-df" data-k="despFin" min="200" max="3000" step="50"><input type="number" data-k="despFin" min="200" max="3000" step="50" aria-label="Despesas financeiras, R$ mil"></div></div>
+        <div class="k-ctl"><label for="c-div">Dívida bruta</label>
+          <div class="k-in"><input type="range" id="c-div" data-k="divBruta" min="1000" max="12000" step="100"><input type="number" data-k="divBruta" min="1000" max="12000" step="100" aria-label="Dívida bruta, R$ mil"></div></div>
+        <div class="k-ctl"><label for="c-pcf">PCF <span class="k-u">dívida financeira CP</span></label>
+          <div class="k-in"><input type="range" id="c-pcf" data-k="pcf" min="500" max="8000" step="100"><input type="number" data-k="pcf" min="500" max="8000" step="100" aria-label="PCF, R$ mil"></div></div>
+      </div>
+
+      <div class="d44-blk">
+        <h2 class="k-zt2">3 · Capital</h2>
+        <div class="k-ctl"><label for="c-pl">Patrimônio líquido</label>
+          <div class="k-in"><input type="range" id="c-pl" data-k="pl" min="2000" max="20000" step="100"><input type="number" data-k="pl" min="2000" max="20000" step="100" aria-label="PL, R$ mil"></div></div>
+        <label class="k-toggle"><input type="checkbox" data-k="plCresc"> PL crescente há 3 anos</label>
+      </div>
+
+      <div class="d44-blk">
+        <h2 class="k-zt2">4 · Colateral</h2>
+        <label class="k-toggle"><input type="checkbox" data-k="cessao"> Cessão fiduciária de recebíveis registrada</label><br>
+        <label class="k-toggle"><input type="checkbox" data-k="aval"> Aval dos sócios com bens</label>
+      </div>
+
+      <div class="d44-blk">
+        <h2 class="k-zt2">5 · Condições</h2>
+        <div class="k-ctl"><label for="c-selic">Selic <span class="k-u">% a.a.</span></label>
+          <div class="k-in"><input type="range" id="c-selic" data-k="selic" min="6" max="18" step="0.25"><input type="number" data-k="selic" min="6" max="18" step="0.25" aria-label="Selic, % a.a."></div></div>
+        <div class="k-ctl"><span class="k-lab">Setor do tomador <span class="k-u">construção civil</span></span>
+          <div class="k-seg" role="group" aria-label="Setor do tomador">
+            <button type="button" data-k="setor" data-v="expansao" aria-pressed="false">expansão</button>
+            <button type="button" data-k="setor" data-v="neutro" aria-pressed="false">neutro</button>
+            <button type="button" data-k="setor" data-v="retracao" aria-pressed="false">retração</button>
+          </div></div>
+      </div>
+
+      <div class="d44-blk">
+        <h2 class="k-zt2">Proposta</h2>
+        <div class="k-ctl"><label for="c-prazo">Prazo pedido pela Horizonte <span class="k-u">dias</span></label>
+          <div class="k-in"><input type="range" id="c-prazo" data-k="prazoPedido" min="30" max="120" step="5"><input type="number" data-k="prazoPedido" min="30" max="120" step="5" aria-label="Prazo pedido, dias"></div></div>
+      </div>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="dossie regras cenarios">
+      <div class="k-ch"><h3>Os 5 Cs, na ordem de prioridade</h3><span>cada C só entra se o anterior deixar</span></div>
+      <div class="d44-cs" style="margin-top: 8px">
+        <section class="d44-c" id="card-carater">
+          <div class="d44-ch"><h3>1 · Caráter <span class="k-u">quer pagar?</span></h3><span class="d44-chip" data-draw="farol" data-c="carater">—</span></div>
+          <p>Negativação <b data-draw="v" data-q="neg">—</b> · protestos <b data-draw="v" data-q="protestos">—</b> · processos <b data-draw="v" data-q="processos">—</b></p>
+          <p class="d44-comhist">Pago no vencimento <b data-draw="v" data-q="pctVenc">—</b> · atraso médio <b data-draw="v" data-q="atraso">—</b> dias <span class="k-u">amarelo abaixo de <span data-draw="v" data-q="r-pctVencMin">—</span> ou acima de <span data-draw="v" data-q="r-atrasoMax">—</span> dias</span></p>
+          <p class="d44-semhist" hidden>Sem histórico interno: Caráter só pelo bureau (score <b data-draw="v" data-q="score">—</b>) — limite × <b data-draw="v" data-q="r-fatorNovo">—</b>, prazo até <b data-draw="v" data-q="r-prazoNovo">—</b> dias.</p>
+          <p class="d44-stop" hidden><b>STOP.</b> Os outros quatro Cs não entram em cena.</p>
+        </section>
+        <div class="d44-arrow" aria-hidden="true">↓</div>
+
+        <section class="d44-c d44-dep" id="card-capacidade">
+          <div class="d44-ch"><h3>2 · Capacidade <span class="k-u">pode pagar com o que gera?</span> <span class="k-info" tabindex="0">i<span class="k-tip">A regra "parcela ≤ 30% do fluxo livre" é de empréstimo bancário. Em crédito comercial de 60 dias, a parcela é o próprio giro de compras (<span data-draw="v" data-q="parcela">—</span>/mês), pago pelas vendas da Horizonte, não pelo fluxo livre (<span data-draw="v" data-q="fcl">—</span>/ano). Por isso o cartão usa ICJ, D.Líq/EBITDA e FCO/PCF.</span></span></h3><span class="d44-chip" data-draw="farol" data-c="capacidade">—</span></div>
+          <div class="d44-on">
+            <div class="d44-met">
+              <span>ICJ <span class="k-u">EBITDA ÷ desp. financeiras · verde ≥ <span data-draw="v" data-q="r-icjV">—</span>, vermelho &lt; <span data-draw="v" data-q="r-icjA">—</span></span></span>
+              <span class="d44-mv" data-draw="v" data-q="icj">—</span><span class="d44-chip" data-draw="farol" data-c="icj">—</span>
+              <span>D.Líq/EBITDA <span class="k-u">(dívida − caixa e aplicações) ÷ EBITDA · verde ≤ <span data-draw="v" data-q="r-dleV">—</span>, vermelho &gt; <span data-draw="v" data-q="r-dleA">—</span></span></span>
+              <span class="d44-mv" data-draw="v" data-q="dle">—</span><span class="d44-chip" data-draw="farol" data-c="dle">—</span>
+              <span>FCO/PCF <span class="k-u">(EBITDA − IR) ÷ dívida financeira CP · verde ≥ <span data-draw="v" data-q="r-fcoV">—</span>, vermelho &lt; <span data-draw="v" data-q="r-fcoA">—</span></span></span>
+              <span class="d44-mv" data-draw="v" data-q="fcoPcf">—</span><span class="d44-chip" data-draw="farol" data-c="fco">—</span>
+            </div>
+            <p>Fator de capacidade: <b data-draw="v" data-q="fator">—</b></p>
+          </div>
+          <p class="d44-off" hidden>Não avaliado — Caráter bloqueou.</p>
+        </section>
+        <div class="d44-arrow" aria-hidden="true">↓</div>
+
+        <section class="d44-c d44-dep" id="card-capital">
+          <div class="d44-ch"><h3>3 · Capital <span class="k-u">tem patrimônio se o fluxo falhar?</span></h3><span class="d44-chip" data-draw="farol" data-c="capital">—</span></div>
+          <div class="d44-on">
+            <p>Dív. bruta/PL <b data-draw="v" data-q="alav">—</b> · PL <b data-draw="v" data-q="plCresc">—</b> <span class="k-u">verde ≤ <span data-draw="v" data-q="r-capV">—</span>, vermelho &gt; <span data-draw="v" data-q="r-capA">—</span></span></p>
+            <p>Teto patrimonial: <b data-draw="v" data-q="tetoPct">—</b> do PL = <b data-draw="v" data-q="teto">—</b></p>
+          </div>
+          <p class="d44-off" hidden>Não avaliado — Caráter bloqueou.</p>
+        </section>
+        <div class="d44-arrow" aria-hidden="true">↓</div>
+
+        <section class="d44-c d44-dep" id="card-colateral">
+          <div class="d44-ch"><h3>4 · Colateral <span class="k-u">tem o que dar em garantia?</span></h3><span class="d44-chip" data-draw="farol" data-c="colateral">—</span></div>
+          <div class="d44-on">
+            <p>Cessão fiduciária <b data-draw="v" data-q="cessao">—</b> · aval com bens <b data-draw="v" data-q="aval">—</b> → limite × <b data-draw="v" data-q="colMult">—</b></p>
+            <p class="k-note">Disponível: cessão da carteira de clientes da Horizonte (<span data-draw="v" data-q="carteira">—</span>, PMRV <span data-draw="v" data-q="pmrvCessao">—</span> dias), registrável em CERC/Núclea.</p>
+          </div>
+          <p class="d44-arm" hidden><b>Mitigador de operação que já se sustenta — não substitui Capacidade.</b> As garantias marcadas não alteram nada.</p>
+          <p class="d44-off" hidden>Não avaliado — Caráter bloqueou.</p>
+        </section>
+        <div class="d44-arrow" aria-hidden="true">↓</div>
+
+        <section class="d44-c d44-dep" id="card-condicoes">
+          <div class="d44-ch"><h3>5 · Condições <span class="k-u">o cenário ajuda?</span></h3><span class="d44-chip" data-draw="farol" data-c="condicoes">—</span></div>
+          <div class="d44-on">
+            <p>Selic <b data-draw="v" data-q="selic">—</b> → × <b data-draw="v" data-q="mSelic">—</b> · setor <b data-draw="v" data-q="setor">—</b> → × <b data-draw="v" data-q="mSetor">—</b> e prazo máximo <b data-draw="v" data-q="prazoSetor">—</b> dias</p>
+          </div>
+          <p class="d44-off" hidden>Não avaliado — Caráter bloqueou.</p>
+        </section>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="dossie regras cenarios">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">Limite sugerido <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="limite">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Prazo máximo <span class="k-u">dias</span></span><span class="k-kn" data-draw="v" data-q="prazoMax">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Decisão sobre o pedido</span><span class="d44-dec" data-draw="dec">—</span></div>
+
+      <div class="d44-lim">
+        <div class="k-ch"><h3>Limite × exposição</h3><span>R$ mil</span></div>
+        <div class="k-chart d44-barra dash-skeleton" data-draw="barra" role="img" aria-label="Barra do limite sugerido com o saldo em aberto e o teto patrimonial"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-navy)"></i>Limite sugerido</span>
+          <span><i style="background: var(--k-amber-d)"></i>Saldo em aberto</span>
+          <span><i style="background: var(--k-neutro)"></i>Teto patrimonial</span>
+        </div>
+        <p class="k-note d44-conta">Base = compras <b data-draw="v" data-q="compras">—</b> × <b data-draw="v" data-q="prazo">—</b> dias ÷ 360 = <b data-draw="v" data-q="base">—</b> · × capacidade <b data-draw="v" data-q="fator">—</b> · × condições <b data-draw="v" data-q="mult">—</b> · × caráter <b data-draw="v" data-q="fatorCar">—</b> · × colateral <b data-draw="v" data-q="colMult">—</b> = <b data-draw="v" data-q="bruto">—</b> · teto <b data-draw="v" data-q="teto">—</b></p>
+      </div>
+
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="carater" hidden>STOP em Caráter. Protesto aberto ou negativação: os outros quatro Cs não entram em cena.</p>
+        <p data-frase="capacidade" hidden>Capacidade não sustenta a operação. Colateral não corrige isso — executar garantia custa tempo, dinheiro e o cliente.</p>
+        <p data-frase="aprovado" hidden>Aprovado. Limite <b data-draw="v" data-q="limite">—</b> para <b data-draw="v" data-q="prazo">—</b> dias; a Horizonte usa <b data-draw="v" data-q="uso">—</b> do limite.</p>
+        <p data-frase="prazo" hidden>O limite de <b data-draw="v" data-q="limite">—</b> cobre o saldo, mas o prazo máximo é <b data-draw="v" data-q="prazoMax">—</b> dias (pedido: <b data-draw="v" data-q="prazoPedido">—</b>). Aprovar com prazo reduzido.</p>
+        <p data-frase="excede" hidden>A exposição atual (<b data-draw="v" data-q="saldo">—</b>) excede o limite sugerido (<b data-draw="v" data-q="limite">—</b>). Opções: reduzir prazo para <b data-draw="v" data-q="prazoCabe">—</b> dias<span class="d44-sugcessao">, exigir cessão de recebíveis (limite vai a <b data-draw="v" data-q="comCessao">—</b>)</span> ou aceitar o excesso com decisão de comitê.</p>
+        <p data-frase="teto" hidden>Quem segura o limite é o teto patrimonial (<b data-draw="v" data-q="tetoPct">—</b> do PL): Capital limita antes de Capacidade.</p>
+        <p data-frase="novo" hidden>Cliente sem histórico: só o bureau fala por ele. Prazo curto e limite reduzido até haver histórico próprio.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="dossie regras cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Por que, com todos os índices razoáveis, o dashboard sugere <span data-draw="v" data-q="g-lim">—</span> e não os <span data-draw="v" data-q="g-saldo">—</span> que a Horizonte já usa?
+          <details><summary>mostrar resposta</summary><p>Porque FCO/PCF = <b data-draw="v" data-q="g-fco">—</b> é amarelo: a Horizonte gera <b data-draw="v" data-q="g-fcoR">—</b> de caixa operacional para <b data-draw="v" data-q="g-pcf">—</b> de dívida financeira de curto prazo — depende de rolagem. Capacidade dimensiona (fator <b data-draw="v" data-q="g-fator">—</b>) e a Selic de <b data-draw="v" data-q="g-selic">—</b> ainda aplica × <b data-draw="v" data-q="g-mSelic">—</b>.</p></details>
+        </li>
+        <li>Ligue a cessão de recebíveis no cenário "Colateral forte, capacidade fraca". Por que nada muda?
+          <details><summary>mostrar resposta</summary><p>Colateral é mitigador de uma operação que já se sustenta. Com ICJ <b data-draw="v" data-q="g2-icj">—</b> e D.Líq/EBITDA <b data-draw="v" data-q="g2-dle">—</b> a operação não se sustenta; executar garantia custa tempo e desgaste, e a garantia desvaloriza justamente quando o tomador piora.</p></details>
+        </li>
+        <li>No caso-base, mude só o setor para "retração". O que acontece com o prazo e por que o limite cai mais do que proporcionalmente?
+          <details><summary>mostrar resposta</summary><p>O prazo máximo cai de <b data-draw="v" data-q="g-prazo">—</b> para <b data-draw="v" data-q="g3-prazo">—</b> dias (base menor na mesma proporção) e o multiplicador de Condições ganha × <b data-draw="v" data-q="g3-mSetor">—</b>: o limite vai de <b data-draw="v" data-q="g-lim">—</b> para <b data-draw="v" data-q="g3-lim">—</b>. O 5º C não reprova, calibra — prazo e limite ao mesmo tempo.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+
+})();</script>
+<script>(function () {
+
+/* D4.4 · 5 Cs · dossiê Horizonte — funções puras (sem DOM).
+   D = dossiê (dataset, chave→valor), R = regras (dataset, chave→valor), C = controles. R$ mil, dias, % a.a. */
+(function (root) {
+  const M = {};
+  const ORD = { verde: 0, amarelo: 1, vermelho: 2 };
+  const PIORA = ['verde', 'amarelo', 'vermelho'];
+  M.faixaMin = (v, lv, la) => (v >= lv ? 'verde' : v >= la ? 'amarelo' : 'vermelho');   // maior é melhor
+  M.faixaMax = (v, lv, la) => (v <= lv ? 'verde' : v <= la ? 'amarelo' : 'vermelho');   // menor é melhor
+
+  // 1 · Caráter — passa/não passa
+  M.carater = function (C, R) {
+    if (C.neg || C.protestos > 0 || C.processos) return 'vermelho';
+    if (C.semHist || C.pctVenc < R.pctVencMin || C.atraso > R.atrasoMax) return 'amarelo';
+    return 'verde';
+  };
+
+  // 2 · Capacidade — define quanto
+  M.capacidade = function (C, D, R) {
+    const icj = C.ebitda / C.despFin;
+    const dle = (C.divBruta - D.caixaAplic) / C.ebitda;
+    const fco = C.ebitda - D.ir;
+    const fcoPcf = fco / C.pcf;
+    const f = [M.faixaMin(icj, R.icjV, R.icjA), M.faixaMax(dle, R.dleV, R.dleA), M.faixaMin(fcoPcf, R.fcoV, R.fcoA)];
+    const am = f.filter((x) => x === 'amarelo').length, vm = f.filter((x) => x === 'vermelho').length;
+    // pontos: amarelo 1, vermelho 2 → 0: 1,00 · 1: 0,80 · 2: 0,60 · ≥ 3: reprova
+    const pts = am + 2 * vm;
+    const fator = pts === 0 ? R.fator0 : pts === 1 ? R.fator1 : pts === 2 ? R.fator2 : 0;
+    const reprova = pts >= 3;
+    const farol = reprova ? 'vermelho' : pts === 0 ? 'verde' : 'amarelo';
+    return { icj, dle, fco, fcoPcf, faixas: f, amarelos: am, vermelhos: vm, fator, reprova, farol };
+  };
+
+  // 3 · Capital — colchão e teto patrimonial
+  M.capital = function (C, R) {
+    const alav = C.divBruta / C.pl;
+    const fAlav = M.faixaMax(alav, R.capV, R.capA);
+    const farol = C.plCresc ? fAlav : PIORA[Math.min(2, ORD[fAlav] + 1)];
+    const pct = farol === 'verde' ? R.tetoV : farol === 'amarelo' ? R.tetoA : R.tetoR;
+    return { alav, fAlav, farol, pct, teto: C.pl * pct };
+  };
+
+  // 5 · Condições — calibra prazo e limite
+  M.condicoes = function (C, R) {
+    const mSelic = C.selic <= R.selicLo ? R.multLo : C.selic <= R.selicHi ? R.multMid : R.multHi;
+    const mSetor = C.setor === 'retracao' ? R.multRetr : 1;
+    const prazoSetor = C.setor === 'expansao' ? R.prazoExp : C.setor === 'retracao' ? R.prazoRetr : R.prazoNeu;
+    // o 5º C não reprova, calibra: verde sem ajuste, amarelo com qualquer redução
+    const farol = mSelic * mSetor >= 1 && prazoSetor >= R.prazoNeu ? 'verde' : 'amarelo';
+    return { mSelic, mSetor, mult: mSelic * mSetor, prazoSetor, farol };
+  };
+
+  M.estado = function (D, R, C) {
+    const car = M.carater(C, R);
+    const cap = M.capacidade(C, D, R);
+    const kap = M.capital(C, R);
+    const cond = M.condicoes(C, R);
+    const bloqueio = car === 'vermelho' ? 'carater' : cap.reprova ? 'capacidade' : null;
+    const fatorCar = car === 'amarelo' ? R.fatorNovo : 1;
+    const prazoMax = C.semHist ? Math.min(cond.prazoSetor, R.prazoNovo) : cond.prazoSetor;
+    const prazo = Math.min(C.prazoPedido, prazoMax);
+    const base = D.comprasAno * prazo / 360;
+    const colAtivo = !bloqueio;
+    const colMult = colAtivo ? 1 + R.cessaoAdd * (C.cessao ? 1 : 0) + R.avalAdd * (C.aval ? 1 : 0) : 1;
+    const bruto = base * cap.fator * cond.mult * fatorCar * colMult;
+    const limite = bloqueio ? 0 : Math.min(kap.teto, bruto);
+    const tetoLimita = !bloqueio && bruto > kap.teto;
+    const saldo = D.saldo;
+    const temColateral = !!(C.cessao || C.aval);
+    let decisao;
+    if (bloqueio) decisao = 'recusado';
+    else if (limite >= saldo - 1e-9) decisao = C.prazoPedido > prazoMax ? 'condicao' : 'aprovado';
+    else decisao = temColateral ? 'condicao' : 'reduzir';
+    // prazo em que a exposição (compras × prazo / 360) cabe no limite
+    const prazoCabe = Math.floor(limite * 360 / D.comprasAno + 1e-9);
+    const comCessao = bloqueio || C.cessao ? null : Math.min(kap.teto, bruto / colMult * (colMult + R.cessaoAdd));
+    const farolCol = bloqueio ? 'cinza' : temColateral ? 'verde' : 'amarelo';
+    return {
+      car, cap, kap, cond, bloqueio, fatorCar, prazoMax, prazo, base, colAtivo, colMult, bruto, limite, tetoLimita,
+      saldo, uso: limite > 0 ? saldo / limite : null, decisao, prazoCabe, comCessao, farolCol, temColateral,
+    };
+  };
+
+  root.M44 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D4.4 · 5 Cs · dossiê Horizonte
+   Testes de aderência (Spec §7), conferidos com M44.estado() em node (43 PASS / 0 FAIL):
+   Reset: ICJ 2,40 · D.Líq/EBITDA 1,88 · FCO/PCF 0,58 · Dív.bruta/PL 0,61 · teto 1.350 · fator 0,80 · limite 760 · prazo 60
+   Reset + cessão: 950 · Colateral forte/capacidade fraca: 1,00 · 6,67 · 0,24 · limite 0
+   Retração + Selic 14: 459 · prazo 45 · Protesto = 1: Caráter vermelho, 4 cartões cinza, limite 0
+   Cliente novo: Caráter amarelo, × 0,75, prazo 30 → 285
+   ============================================================ */
+const ST = window.D44 = { S: null, cen: null, mexido: false };
+const IDS = ['dossie', 'regras', 'cenarios'];
+const NOMES = ['v', 'farol', 'dec', 'barra', 'frase'];
+const BOOL = ['neg', 'processos', 'semHist', 'plCresc', 'cessao', 'aval'];
+const CTL = ['neg', 'protestos', 'processos', 'semHist', 'pctVenc', 'atraso', 'ebitda', 'despFin', 'divBruta', 'pcf', 'pl', 'plCresc', 'cessao', 'aval', 'selic', 'setor', 'prazoPedido'];
+const SETOR = { expansao: 'expansão', neutro: 'neutro', retracao: 'retração' };
+const FAROL = { verde: 'verde', amarelo: 'amarelo', vermelho: 'vermelho', cinza: 'não avaliado' };
+
+/* ---------- dados ---------- */
+const D = () => K.obj(dash.data('dossie').data);
+const R = () => K.obj(dash.data('regras').data);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const atual = () => M44.estado(D(), R(), ST.S);
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+function ctlDe(r) { const o = {}; CTL.forEach((k) => { o[k] = BOOL.includes(k) ? !!Number(r[k]) : r[k]; }); return o; }
+const base = (id, extra) => M44.estado(D(), R(), { ...ctlDe(cenario(id)), ...(extra || {}) });
+
+/* ---------- controles e estado dos cartões ---------- */
+function sincroniza() {
+  if (!ST.S) return;
+  K.sync(ST.S);
+  document.querySelectorAll('.d44-hist').forEach((i) => { i.disabled = !!ST.S.semHist; });
+  document.querySelectorAll('.d44-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+  if (K.status(IDS) !== 'ok') return;
+  const E = atual();
+  const stop = E.bloqueio === 'carater';
+  const cls = { 'card-carater': E.car, 'card-capacidade': stop ? 'cinza' : E.cap.farol, 'card-capital': stop ? 'cinza' : E.kap.farol, 'card-colateral': E.farolCol, 'card-condicoes': stop ? 'cinza' : E.cond.farol };
+  Object.keys(cls).forEach((id) => document.querySelectorAll('#' + id).forEach((c) => {
+    ['verde', 'amarelo', 'vermelho'].forEach((f) => c.classList.toggle('d44-c-' + f, cls[id] === f));
+  }));
+  document.querySelectorAll('.d44-dep').forEach((c) => {
+    c.classList.toggle('k-dim', stop);
+    c.querySelectorAll('.d44-on').forEach((x) => { x.hidden = stop || (c.id === 'card-colateral' && E.bloqueio === 'capacidade'); });
+    c.querySelectorAll('.d44-off').forEach((x) => { x.hidden = !stop; });
+    c.querySelectorAll('.d44-arm').forEach((x) => { x.hidden = E.bloqueio !== 'capacidade'; });
+  });
+  document.querySelectorAll('.d44-comhist').forEach((x) => { x.hidden = !!ST.S.semHist; });
+  document.querySelectorAll('.d44-semhist').forEach((x) => { x.hidden = !ST.S.semHist; });
+  document.querySelectorAll('.d44-stop').forEach((x) => { x.hidden = !stop; });
+  document.querySelectorAll('.d44-conta').forEach((x) => { x.hidden = !!E.bloqueio; });
+  document.querySelectorAll('.d44-sugcessao').forEach((x) => { x.hidden = E.comCessao == null; });
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDe(r); ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok') return;
+  if (!ST.S) { aplicar('hoje'); K.redraw(NOMES); } else sincroniza();
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), () => {
+  if (!ST.S) return;
+  ST.mexido = true; sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d44-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+
+/* ---------- faróis (palavra + cor) ---------- */
+dash.draw('farol', (el) => {
+  let f = null;
+  if (pronto()) {
+    const E = atual(), stop = E.bloqueio === 'carater';
+    const m = {
+      carater: E.car,
+      capacidade: stop ? 'cinza' : E.cap.farol,
+      icj: E.cap.faixas[0], dle: E.cap.faixas[1], fco: E.cap.faixas[2],
+      capital: stop ? 'cinza' : E.kap.farol,
+      colateral: E.farolCol,
+      condicoes: stop ? 'cinza' : E.cond.farol,
+    };
+    f = m[el.dataset.c] || null;
+  }
+  ['verde', 'amarelo', 'vermelho', 'cinza'].forEach((c) => el.classList.toggle('d44-' + c, c === f));
+  el.classList.remove('dash-skeleton');
+  if (f == null) { el.textContent = '—'; return; }
+  if (el.dataset.c === 'capacidade' && f === 'vermelho') el.textContent = 'reprova';
+  else if (el.dataset.c === 'colateral' && f !== 'cinza') el.textContent = f === 'verde' ? 'com garantia' : 'sem garantia';
+  else if (el.dataset.c === 'colateral') el.textContent = atual().bloqueio === 'capacidade' ? 'não atua' : FAROL.cinza;
+  else el.textContent = FAROL[f];
+});
+
+/* ---------- decisão ---------- */
+const DEC = { aprovado: ['aprovado', 'k-pos'], condicao: ['aprovado com condição', 'd44-warn'], reduzir: ['reduzir', 'd44-warn'], recusado: ['recusado', 'k-neg'] };
+dash.draw('dec', (el) => {
+  const d = pronto() ? DEC[atual().decisao] : null;
+  ['k-pos', 'k-neg', 'd44-warn'].forEach((c) => el.classList.toggle(c, !!d && d[1] === c));
+  el.classList.remove('dash-skeleton');
+  el.textContent = d ? d[0] : '—';
+});
+
+/* ---------- barra do limite ---------- */
+dash.draw('barra', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const E = atual();
+  const { svg, W, H } = K.svg(el, 100, 260);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const maxV = Math.max(E.kap.teto, E.saldo, E.limite, 1) * 1.12;
+  const x = d3.scaleLinear([0, maxV], [6, W - 6]);
+  const yc = 50, bh = 24;
+  svg.append('rect').attr('x', x(0)).attr('y', yc - bh / 2).attr('width', x(maxV) - x(0)).attr('height', bh).attr('fill', 'var(--color-bg)').attr('stroke', 'var(--color-border-line)').attr('rx', 3);
+  if (E.limite > 0) svg.append('rect').attr('x', x(0)).attr('y', yc - bh / 2).attr('width', Math.max(0, x(E.limite) - x(0))).attr('height', bh).attr('fill', 'var(--k-navy)').attr('rx', 3);
+  // rótulo do limite
+  const tl = svg.append('text').attr('class', 'k-svgb').attr('y', yc + 5).text(K.n(E.limite));
+  const lw = tl.node().getComputedTextLength();
+  if (x(E.limite) - x(0) > lw + 12) tl.attr('x', x(E.limite) - 6).attr('text-anchor', 'end').style('fill', '#fff');
+  else tl.attr('x', x(E.limite) + 6).style('fill', 'var(--color-fg)');
+  const ancora = (t, px) => { const w = t.node().getComputedTextLength(); if (px + w / 2 > W - 2) t.attr('text-anchor', 'end').attr('x', W - 2); else if (px - w / 2 < 2) t.attr('text-anchor', 'start').attr('x', 2); };
+  // saldo em aberto (acima)
+  svg.append('line').attr('x1', x(E.saldo)).attr('x2', x(E.saldo)).attr('y1', yc - bh / 2 - 8).attr('y2', yc + bh / 2 + 2).attr('stroke', 'var(--k-amber-d)').attr('stroke-width', 3);
+  const ts = svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', x(E.saldo)).attr('y', yc - bh / 2 - 12).text('saldo ' + K.n(E.saldo));
+  ancora(ts, x(E.saldo));
+  // teto patrimonial (abaixo)
+  svg.append('line').attr('x1', x(E.kap.teto)).attr('x2', x(E.kap.teto)).attr('y1', yc - bh / 2 - 2).attr('y2', yc + bh / 2 + 8).attr('stroke', 'var(--k-neutro)').attr('stroke-width', 2).attr('stroke-dasharray', '4 3');
+  const tt = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(E.kap.teto)).attr('y', yc + bh / 2 + 22).text('teto ' + K.n(E.kap.teto));
+  ancora(tt, x(E.kap.teto));
+  svg.append('rect').attr('x', 0).attr('y', 0).attr('width', W).attr('height', H).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      tip.show('R$ mil', [['var(--k-navy)', 'Limite sugerido', K.n(E.limite)], ['var(--k-amber-d)', 'Saldo em aberto', K.n(E.saldo)], ['var(--k-neutro)', 'Teto patrimonial', K.n(E.kap.teto)]], px, py);
+    })
+    .on('mouseleave', () => tip.hide());
+});
+
+/* ---------- números ---------- */
+const simnao = (b) => (b ? 'sim' : 'não');
+const VAL = {
+  neg: () => simnao(ST.S.neg), processos: () => simnao(ST.S.processos), protestos: () => K.n(ST.S.protestos),
+  pctVenc: () => K.n(ST.S.pctVenc) + '%', atraso: () => K.n(ST.S.atraso), score: () => K.n(D().scoreBureau),
+  'r-pctVencMin': () => K.n(R().pctVencMin) + '%', 'r-atrasoMax': () => K.n(R().atrasoMax), 'r-fatorNovo': () => K.n(R().fatorNovo, 2), 'r-prazoNovo': () => K.n(R().prazoNovo),
+  'r-icjV': () => K.n(R().icjV, 1), 'r-icjA': () => K.n(R().icjA, 1), 'r-dleV': () => K.n(R().dleV, 1), 'r-dleA': () => K.n(R().dleA, 1),
+  'r-fcoV': () => K.n(R().fcoV, 1), 'r-fcoA': () => K.n(R().fcoA, 1), 'r-capV': () => K.n(R().capV, 1), 'r-capA': () => K.n(R().capA, 1),
+  parcela: () => K.n(D().comprasAno / 12), fcl: (E) => K.n(ST.S.ebitda - ST.S.despFin - D().ir - D().capex),
+  icj: (E) => K.n(E.cap.icj, 2), dle: (E) => K.n(E.cap.dle, 2), fcoPcf: (E) => K.n(E.cap.fcoPcf, 2),
+  fator: (E) => (E.cap.reprova ? 'reprova' : K.n(E.cap.fator, 2)),
+  alav: (E) => K.n(E.kap.alav, 2), plCresc: () => (ST.S.plCresc ? 'crescente há 3 anos' : 'não crescente'),
+  tetoPct: (E) => K.p(E.kap.pct, 0), teto: (E) => K.n(E.kap.teto),
+  cessao: () => simnao(ST.S.cessao), aval: () => simnao(ST.S.aval), colMult: (E) => K.n(E.colMult, 2),
+  carteira: () => K.n(D().carteiraCessao), pmrvCessao: () => K.n(D().pmrvCessao),
+  selic: () => K.n(ST.S.selic, 2) + '%', mSelic: (E) => K.n(E.cond.mSelic, 2), setor: () => SETOR[ST.S.setor] || ST.S.setor,
+  mSetor: (E) => K.n(E.cond.mSetor, 2), prazoSetor: (E) => K.n(E.cond.prazoSetor), mult: (E) => K.n(E.cond.mult, 3),
+  limite: (E) => K.n(E.limite), prazoMax: (E) => (E.bloqueio ? null : K.n(E.prazoMax)), prazo: (E) => K.n(E.prazo),
+  prazoPedido: () => K.n(ST.S.prazoPedido), saldo: (E) => K.n(E.saldo), uso: (E) => (E.uso == null ? null : K.p(E.uso, 0)),
+  prazoCabe: (E) => K.n(E.prazoCabe), comCessao: (E) => (E.comCessao == null ? null : K.n(E.comCessao)),
+  compras: () => K.n(D().comprasAno), base: (E) => K.n(E.base), fatorCar: (E) => K.n(E.fatorCar, 2), bruto: (E) => K.n(E.bruto),
+  'g-lim': () => K.n(base('hoje').limite), 'g-saldo': () => K.n(base('hoje').saldo), 'g-fco': () => K.n(base('hoje').cap.fcoPcf, 2),
+  'g-fcoR': () => K.n(base('hoje').cap.fco), 'g-pcf': () => K.n(cenario('hoje').pcf), 'g-fator': () => K.n(base('hoje').cap.fator, 2),
+  'g-selic': () => K.n(cenario('hoje').selic) + '%', 'g-mSelic': () => K.n(base('hoje').cond.mSelic, 2),
+  'g2-icj': () => K.n(base('fraca').cap.icj, 2), 'g2-dle': () => K.n(base('fraca').cap.dle, 1),
+  'g-prazo': () => K.n(base('hoje').prazoMax), 'g3-prazo': () => K.n(base('hoje', { setor: 'retracao' }).prazoMax),
+  'g3-mSetor': () => K.n(base('hoje', { setor: 'retracao' }).cond.mSetor, 2), 'g3-lim': () => K.n(base('hoje', { setor: 'retracao' }).limite),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const E = atual();
+    if (E.bloqueio === 'carater') keys.push('carater');
+    else if (E.bloqueio === 'capacidade') keys.push('capacidade');
+    else {
+      if (E.limite < E.saldo) keys.push('excede');
+      else keys.push(ST.S.prazoPedido > E.prazoMax ? 'prazo' : 'aprovado');
+      if (E.tetoLimita) keys.push('teto');
+      if (ST.S.semHist) keys.push('novo');
+    }
+  }
+  K.frases(el, keys);
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

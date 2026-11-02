@@ -1,0 +1,9 @@
+[
+ {"chave":"N","valor":3500,"descricao":"SKUs da Comercial Horizonte"},
+ {"chave":"cmv","valor":27000,"descricao":"CMV anual, R$ mil (valor de consumo total)"},
+ {"chave":"seed","valor":20261103,"descricao":"Semente do LCG do coeficiente de variação"},
+ {"chave":"cvMin","valor":0.1,"descricao":"CV = cvMin + cvAmp × u²"},
+ {"chave":"cvAmp","valor":1.6,"descricao":"CV = cvMin + cvAmp × u²"},
+ {"chave":"estoque","valor":7500,"descricao":"Estoque de balanço T0, R$ mil"},
+ {"chave":"hEstoque","valor":0.18,"descricao":"Custo de carregamento H, % a.a. (D3.1)"}
+]

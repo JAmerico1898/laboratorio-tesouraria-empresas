@@ -1,0 +1,11 @@
+{
+  "code": "D5.6",
+  "title": "D5.6 · Covenants com buffer",
+  "slug": "f85e66e3-12aa-47c2-a3fe-e5904bf382cc",
+  "datasets": {
+    "caminhos": { "file": "caminhos.json", "sha256": "eb4185de92aa14ca901ffd905e9026ff63bbd50cf840f08464fe4d7fea4d895a" },
+    "cenarios": { "file": "cenarios.json", "sha256": "73d4afc77ddd5bf5060e8e0f69436599b8cdfaee63f96439206e6b4116aad7e2" },
+    "covenants": { "file": "covenants.json", "sha256": "0a5691432609467ce3bd1eb677fdaf07cc5f1d3ca208d18803f2e9f70e0e6a7c" },
+    "horizonte": { "file": "horizonte.json", "sha256": "de636484101b26beadc1008f74635bf96f9eeb8a07ea973fac245f3407256860" }
+  }
+}

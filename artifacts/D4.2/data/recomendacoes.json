@@ -1,0 +1,14 @@
+[
+ {"perfil":"b2b","prioridade":"liquidez","id":"duplicata","justificativa":"Duplicata registrada é antecipável no banco ou em FIDC: vira caixa antes do vencimento."},
+ {"perfil":"b2b","prioridade":"garantia","id":"duplicata","justificativa":"Com aceite e protesto, a duplicata é título executivo: cobra-se sem ação de conhecimento."},
+ {"perfil":"b2b","prioridade":"custo","id":"duplicata","justificativa":"Boleto registrado custa poucos reais por título; o custo é o prazo, não o instrumento."},
+ {"perfil":"b2c","prioridade":"liquidez","id":"boleto_pix","justificativa":"Pix liquida em D+0 e o boleto compensa em D+1: o caixa chega quando o cliente paga."},
+ {"perfil":"b2c","prioridade":"garantia","id":"cartao","justificativa":"No cartão o risco de crédito é do emissor: a empresa troca garantia por MDR."},
+ {"perfil":"b2c","prioridade":"custo","id":"boleto_pix","justificativa":"Sem MDR: tarifa fixa baixa por boleto e Pix quase gratuito."},
+ {"perfil":"mpe","prioridade":"liquidez","id":"bndes","justificativa":"O banco emissor paga o vendedor em cerca de 30 dias; o comprador parcela em até 48 vezes."},
+ {"perfil":"mpe","prioridade":"garantia","id":"bndes","justificativa":"O risco do comprador fica com o banco emissor, não com o vendedor."},
+ {"perfil":"mpe","prioridade":"custo","id":"bndes","justificativa":"Taxa favorecida para o comprador; o vendedor paga só a comissão do emissor."},
+ {"perfil":"cartao","prioridade":"liquidez","id":"cartao","justificativa":"D+30 antecipável a D+0 com o adquirente, sem análise de crédito do cliente."},
+ {"perfil":"cartao","prioridade":"garantia","id":"cartao","justificativa":"O devedor é o adquirente: risco de crédito praticamente nulo."},
+ {"perfil":"cartao","prioridade":"custo","id":"cartao","justificativa":"Antecipe só a parcela que falta no caixa; o MDR já está pago."}
+]

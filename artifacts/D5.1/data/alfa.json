@@ -1,0 +1,4 @@
+[
+  {"chave": "receita", "valor": 50000, "descricao": "Receita líquida anual da Alfa em T0 (R$ mil)"},
+  {"chave": "clientes", "valor": 8300, "descricao": "Clientes da Alfa em T0 (R$ mil)"}
+]

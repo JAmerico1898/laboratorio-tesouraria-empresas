@@ -1,0 +1,4 @@
+[
+ {"id":"base","N":2000,"semente":23,"alfa":-3.9,"gama":1.7,"intercepto":-3.82,"escalaBeta":1,"colBeta":"beta"},
+ {"id":"paradoxo","N":2000,"semente":23,"alfa":-1.45,"gama":0.85,"intercepto":-1.5,"escalaBeta":0.3,"colBeta":"betaFraco"}
+]

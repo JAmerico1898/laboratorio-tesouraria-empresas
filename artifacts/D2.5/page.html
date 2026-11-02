@@ -1,0 +1,644 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<style>
+.d25-meters { display: grid; gap: 6px; margin-top: 6px; }
+.d25-mrow { display: grid; grid-template-columns: 7.5rem 1fr; gap: 8px; align-items: center; font-size: 14px; }
+.d25-meter { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.d25-mbar { height: 12px; border-radius: var(--cds-radius); background: var(--color-bg); border: 1px solid var(--color-border-line); overflow: hidden; }
+.d25-mfill { height: 100%; background: var(--k-navy); }
+.d25-mtxt { font-size: 13px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.d25-em { display: grid; grid-template-columns: minmax(0, 1.4fr) 4.2rem minmax(0, 1fr); gap: 6px; margin-bottom: 5px; }
+.d25-em input[type=text] { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.d25-emh { display: grid; grid-template-columns: minmax(0, 1.4fr) 4.2rem minmax(0, 1fr); gap: 6px; font-size: 12px; color: var(--color-fg-muted); margin-bottom: 2px; }
+.d25-regras { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; font-size: 14px; }
+.d25-regras b.k-pos, .d25-regras b.k-neg { display: inline-block; width: 1.1rem; }
+.d25-leg { display: grid; gap: 3px; font-size: 13px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.d25-leg div { display: grid; grid-template-columns: .8rem minmax(0, 1fr) auto auto; gap: 6px; align-items: center; }
+.d25-leg i { width: .8rem; height: .8rem; border-radius: 2px; }
+.d25-leg .d25-bad { color: var(--k-neg); }
+.d25-ab { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 8px; margin-bottom: 8px; background: var(--color-bg); }
+.d25-ab h4 { margin: 0 0 6px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.d25-tab th { text-align: left; font-weight: 400; color: var(--color-fg-muted); }
+</style>
+
+<div class="k" id="d25">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D2.5 · Excedentes</h1>
+      <p class="k-sub" data-source="caso">Sobraram <span data-draw="v" data-q="exc0">—</span> em <span data-draw="v" data-q="mesap">—</span>. Onde aplicar — e quanto sobra depois do imposto?</p>
+    </div>
+    <div class="k-cens" role="group" aria-label="Cenários" data-source="caso tiers emissores cenarios_taxa">
+      <button class="k-btn" data-cen="reset" aria-pressed="false">Alfa T0</button>
+      <button class="k-btn" data-cen="slide" aria-pressed="false">Slide V2.5</button>
+      <button class="k-btn" data-cen="degrau" aria-pressed="false">O degrau</button>
+      <button class="k-btn" data-cen="precoce" aria-pressed="false">Resgate precoce</button>
+      <button class="k-btn" data-cen="comecotas" aria-pressed="false">Come-cotas</button>
+      <button class="k-btn" data-cen="longo" aria-pressed="false">Longo prazo</button>
+    </div>
+  </header>
+
+  <div class="k-tabs" role="tablist">
+    <button class="k-tab" role="tab" data-group="aba" data-tab="tiers" id="aba-tiers" aria-selected="true">Tiers</button>
+    <button class="k-tab" role="tab" data-group="aba" data-tab="contraparte" id="aba-contraparte" aria-selected="false">Contraparte</button>
+    <button class="k-tab" role="tab" data-group="aba" data-tab="taxa" id="aba-taxa" aria-selected="false">Taxa líquida</button>
+  </div>
+
+  <!-- ===================== ABA 1 · TIERS ===================== -->
+  <section data-group="aba" data-pane="tiers" id="tiers">
+    <div class="k-zones">
+      <div class="k-zone" id="tiers-controles" data-source="caso tiers instrumentos saldo_d21">
+        <h2 class="k-zt">Excedente e camadas</h2>
+        <div class="k-ctl"><label for="c-exc">Excedente <span class="k-u">R$ mil</span></label>
+          <div class="k-in"><input type="range" id="c-exc" data-k="exc" min="500" max="20000" step="100"><input type="number" data-k="exc" min="500" max="20000" step="100" aria-label="Excedente, R$ mil"></div>
+          <p class="k-note">De onde vem: saldo de <span data-draw="v" data-q="mesap-c">—</span> no D2.1 (<span data-draw="v" data-q="sfev">—</span>) − saldo mínimo (<span data-draw="v" data-q="min">—</span>) = <span data-draw="v" data-q="exc-calc">—</span></p>
+        </div>
+        <div class="k-ctl"><label for="c-t1">Tier 1 · Transacional <span class="k-u">% do excedente</span></label>
+          <div class="k-in"><input type="range" id="c-t1" data-k="t1" min="0" max="100" step="1"><input type="number" data-k="t1" min="0" max="100" step="1" aria-label="Tier 1, %"></div>
+          <select class="k-select" data-draw="inst" data-tier="1" aria-label="Instrumento do Tier 1" data-source="instrumentos"></select></div>
+        <div class="k-ctl"><label for="c-t2">Tier 2 · Reserva estratégica <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-t2" data-k="t2" min="0" max="100" step="1"><input type="number" data-k="t2" min="0" max="100" step="1" aria-label="Tier 2, %"></div>
+          <select class="k-select" data-draw="inst" data-tier="2" aria-label="Instrumento do Tier 2" data-source="instrumentos"></select></div>
+        <div class="k-ctl"><label for="c-t3">Tier 3 · Excedente estrutural <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-t3" data-k="t3" min="0" max="100" step="1"><input type="number" data-k="t3" min="0" max="100" step="1" aria-label="Tier 3, %"></div>
+          <select class="k-select" data-draw="inst" data-tier="3" aria-label="Instrumento do Tier 3" data-source="instrumentos"></select></div>
+        <p class="k-note">Os três percentuais se ajustam para somar 100%.</p>
+      </div>
+
+      <div class="k-zone" id="tiers-visual" data-source="caso tiers instrumentos ir_regressivo iof_regressivo saldo_d21">
+        <div class="k-ch"><h3>O excedente em três camadas</h3><span>R$ mil · instrumento de cada tier</span></div>
+        <div class="k-chart dash-skeleton" data-draw="barra-tiers" style="min-height:96px" role="img" aria-label="Barra empilhada dos três tiers"></div>
+        <div class="k-legend"><span><i style="background:var(--k-blue-l)"></i>Tier 1 · liquidez</span><span><i style="background:var(--k-blue)"></i>Tier 2 · segurança</span><span><i style="background:var(--k-navy)"></i>Tier 3 · rentabilidade</span><span><i style="background:transparent;border:2px dashed var(--k-neg)"></i>vence depois do resgate necessário</span></div>
+        <h4 class="k-zt2">Tripé · quanto do excedente prioriza cada vértice</h4>
+        <div class="d25-meters">
+          <div class="d25-mrow"><span>Liquidez</span><span data-draw="tripe" data-v="liquidez">—</span></div>
+          <div class="d25-mrow"><span>Segurança</span><span data-draw="tripe" data-v="segurança">—</span></div>
+          <div class="d25-mrow"><span>Rentabilidade</span><span data-draw="tripe" data-v="rentabilidade">—</span></div>
+        </div>
+        <div class="k-ch" style="margin-top:14px"><h3>Saldo projetado da Alfa (D2.1)</h3><span>R$ mil · barras: até quando cada tier fica preso</span></div>
+        <div class="k-chart dash-skeleton" data-draw="saldo" style="min-height:236px" role="img" aria-label="Saldo projetado nos 12 meses com o mês de resgate necessário"></div>
+      </div>
+
+      <div class="k-zone" id="tiers-leitura" data-source="caso tiers instrumentos ir_regressivo iof_regressivo saldo_d21">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Rentabilidade líquida da carteira <span class="k-u">% a.a.</span></span><span class="k-kn dash-skeleton" data-draw="v" data-q="liq">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Ganho líquido até o resgate <span class="k-u">R$ mil</span> <span class="k-info" tabindex="0">i<span class="k-tip">Cada tier rende à sua taxa até o mês em que o caixa fica negativo, com resgate ao par e IR pela faixa desse prazo.</span></span></span><span class="k-kn dash-skeleton" data-draw="v" data-q="ganho">—</span></div>
+        <p class="k-note"><span data-draw="v" data-q="mesap-c">—</span> → <span data-draw="v" data-q="hz-mes">—</span> · <span data-draw="v" data-q="hz-dias">—</span> dias</p>
+        <div class="k-diag" data-frases>
+          <span data-draw="fr-tiers"></span>
+          <p>Com <b data-draw="v" data-q="t1">—</b>/<b data-draw="v" data-q="t2">—</b>/<b data-draw="v" data-q="t3">—</b>, a carteira rende <b data-draw="v" data-q="liq">—</b> a.a. líquidos.</p>
+          <p data-frase="aviso" hidden><b>Resgate antes do prazo:</b> o caixa fica negativo de <b data-draw="v" data-q="mesneg">—</b> a <b data-draw="v" data-q="mesfim">—</b> (D2.1). Vence depois disso: Tier <b data-draw="v" data-q="presos">—</b> — terá de ser resgatado na pior hora, perdendo alíquota ou pagando IOF.</p>
+          <p data-frase="ok" hidden>Todos os tiers vencem ou têm liquidez antes de <b data-draw="v" data-q="mesneg">—</b>, quando o caixa fica negativo.</p>
+        </div>
+        <p class="k-note" data-source="saldo_d21">O excedente de <span data-draw="v" data-q="mesap-c">—</span> é sazonal, não estrutural: o horizonte de cada tier vem do orçamento, não do apetite por taxa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABA 2 · CONTRAPARTE ===================== -->
+  <section data-group="aba" data-pane="contraparte" id="contraparte" hidden>
+    <div class="k-zones">
+      <div class="k-zone" id="cp-controles" data-source="caso emissores ratings">
+        <h2 class="k-zt">Alocação por emissor</h2>
+        <div class="k-ctl"><label for="c-total">Total aplicado <span class="k-u">R$ mil</span></label>
+          <input class="k-num" type="number" id="c-total" data-k="total" min="0" step="100"></div>
+        <div class="d25-emh"><span>Emissor</span><span>%</span><span>Rating</span></div>
+        <div class="d25-em"><input type="text" data-em="0" data-f="emissor" aria-label="Emissor 1"><input class="k-num" type="number" data-em="0" data-f="pct" min="0" max="100" step="1" aria-label="Emissor 1, %"><select class="k-select" data-draw="rating" data-em="0" aria-label="Rating do emissor 1" data-source="ratings"></select></div>
+        <div class="d25-em"><input type="text" data-em="1" data-f="emissor" aria-label="Emissor 2"><input class="k-num" type="number" data-em="1" data-f="pct" min="0" max="100" step="1" aria-label="Emissor 2, %"><select class="k-select" data-draw="rating" data-em="1" aria-label="Rating do emissor 2" data-source="ratings"></select></div>
+        <div class="d25-em"><input type="text" data-em="2" data-f="emissor" aria-label="Emissor 3"><input class="k-num" type="number" data-em="2" data-f="pct" min="0" max="100" step="1" aria-label="Emissor 3, %"><select class="k-select" data-draw="rating" data-em="2" aria-label="Rating do emissor 3" data-source="ratings"></select></div>
+        <div class="d25-em"><input type="text" data-em="3" data-f="emissor" aria-label="Emissor 4"><input class="k-num" type="number" data-em="3" data-f="pct" min="0" max="100" step="1" aria-label="Emissor 4, %"><select class="k-select" data-draw="rating" data-em="3" aria-label="Rating do emissor 4" data-source="ratings"></select></div>
+        <div class="d25-em"><input type="text" data-em="4" data-f="emissor" aria-label="Emissor 5"><input class="k-num" type="number" data-em="4" data-f="pct" min="0" max="100" step="1" aria-label="Emissor 5, %"><select class="k-select" data-draw="rating" data-em="4" aria-label="Rating do emissor 5" data-source="ratings"></select></div>
+        <p class="k-note">Soma dos percentuais: <span data-draw="v" data-q="soma">—</span> — a carteira usa as participações normalizadas.</p>
+        <div class="k-ctl" style="margin-top:8px"><label>Rating mínimo <span class="k-u">bancos privados</span></label>
+          <select class="k-select" data-draw="rating" data-em="min" aria-label="Rating mínimo" data-source="ratings caso"></select></div>
+      </div>
+
+      <div class="k-zone" id="cp-visual" data-source="caso emissores ratings">
+        <div class="k-ch"><h3>Alocação por emissor</h3><span>% do total aplicado</span></div>
+        <div class="k-chart dash-skeleton" data-draw="donut" style="min-height:210px" role="img" aria-label="Donut da alocação por emissor"></div>
+        <div class="d25-leg" data-draw="cp-leg"></div>
+        <ul class="d25-regras">
+          <li><b data-draw="regra" data-r="div">—</b> Entre <b data-draw="v" data-q="minEm">—</b> e <b data-draw="v" data-q="maxEm">—</b> emissores ativos <span class="k-u">(hoje <span data-draw="v" data-q="n-at">—</span>)</span></li>
+          <li><b data-draw="regra" data-r="teto">—</b> Nenhum emissor acima de <b data-draw="v" data-q="teto">—</b> do total</li>
+          <li><b data-draw="regra" data-r="rating">—</b> Todos com rating igual ou acima do mínimo</li>
+        </ul>
+      </div>
+
+      <div class="k-zone" id="cp-leitura" data-source="caso emissores ratings">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Maior exposição <span class="k-u">% do total</span></span><span class="k-kn dash-skeleton" data-draw="v" data-q="maior-pct" data-cls="teto">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Emissores ativos</span><span class="k-kn dash-skeleton" data-draw="v" data-q="n-at">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Intacto se o maior quebrar <span class="k-u">%</span></span><span class="k-kn dash-skeleton" data-draw="v" data-q="intacto">—</span></div>
+        <div class="k-diag" data-frases>
+          <span data-draw="fr-cp"></span>
+          <p>Maior exposição: <b data-draw="v" data-q="maior-nome">—</b> <b data-draw="v" data-q="maior-pct">—</b> — <span data-frase="dentro" hidden>dentro do limite.</span><span data-frase="fora" hidden>fora do limite de <b data-draw="v" data-q="teto">—</b>.</span></p>
+          <p data-frase="poucos" hidden>Menos emissores que o mínimo: um único evento de crédito pesa demais.</p>
+          <p data-frase="muitos" hidden>Mais emissores que o máximo: diversificar além disso só aumenta o trabalho de acompanhamento.</p>
+          <p data-frase="rating" hidden>Há emissor abaixo do rating mínimo: troque o banco ou reduza a fatia dele a zero.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABA 3 · TAXA LÍQUIDA ===================== -->
+  <section data-group="aba" data-pane="taxa" id="taxa" hidden>
+    <div class="k-zones">
+      <div class="k-zone" id="tx-controles" data-source="cenarios_taxa ir_regressivo iof_regressivo">
+        <h2 class="k-zt">Duas aplicações</h2>
+        <div class="d25-ab">
+          <h4>Aplicação A</h4>
+          <div class="k-ctl"><label for="c-ataxa">Taxa bruta <span class="k-u">% a.a.</span></label>
+            <div class="k-in"><input type="range" id="c-ataxa" data-k="aTaxa" min="5" max="20" step="0.1"><input type="number" data-k="aTaxa" min="5" max="20" step="0.1" aria-label="Taxa de A, % a.a."></div></div>
+          <div class="k-ctl"><label for="c-aprazo">Prazo <span class="k-u">dias corridos</span></label>
+            <div class="k-in"><input type="range" id="c-aprazo" data-k="aPrazo" min="1" max="1080" step="1" list="d25-degraus"><input type="number" data-k="aPrazo" min="1" max="1080" step="1" aria-label="Prazo de A, dias"></div></div>
+          <div class="k-seg" role="group" aria-label="Tipo de A"><button data-k="aTipo" data-v="cdb">CDB</button><button data-k="aTipo" data-v="lft">LFT</button><button data-k="aTipo" data-v="compromissada">Compromissada</button><button data-k="aTipo" data-v="fundo">Fundo DI</button></div>
+        </div>
+        <div class="d25-ab">
+          <h4>Aplicação B</h4>
+          <div class="k-ctl"><label for="c-btaxa">Taxa bruta <span class="k-u">% a.a.</span></label>
+            <div class="k-in"><input type="range" id="c-btaxa" data-k="bTaxa" min="5" max="20" step="0.1"><input type="number" data-k="bTaxa" min="5" max="20" step="0.1" aria-label="Taxa de B, % a.a."></div></div>
+          <div class="k-ctl"><label for="c-bprazo">Prazo <span class="k-u">dias corridos</span></label>
+            <div class="k-in"><input type="range" id="c-bprazo" data-k="bPrazo" min="1" max="1080" step="1" list="d25-degraus"><input type="number" data-k="bPrazo" min="1" max="1080" step="1" aria-label="Prazo de B, dias"></div></div>
+          <div class="k-seg" role="group" aria-label="Tipo de B"><button data-k="bTipo" data-v="cdb">CDB</button><button data-k="bTipo" data-v="lft">LFT</button><button data-k="bTipo" data-v="compromissada">Compromissada</button><button data-k="bTipo" data-v="fundo">Fundo DI</button></div>
+        </div>
+        <datalist id="d25-degraus" data-draw="degraus-list" data-source="ir_regressivo iof_regressivo"></datalist>
+        <p class="k-note">Degraus de imposto (dias): <span data-draw="v" data-q="deg-list">—</span></p>
+        <label class="k-toggle"><input type="checkbox" data-k="reinv"> Renovar A até o prazo de B</label>
+      </div>
+
+      <div class="k-zone" id="tx-visual" data-source="cenarios_taxa ir_regressivo iof_regressivo caso">
+        <div class="k-ch"><h3>Para onde vai o rendimento</h3><span>% do principal no período</span></div>
+        <div class="k-chart dash-skeleton" data-draw="barras" style="min-height:240px" role="img" aria-label="Barras empilhadas de rendimento líquido, IR, IOF e come-cotas de A e B"></div>
+        <div class="k-legend"><span><i style="background:var(--k-navy)"></i>Rendimento líquido</span><span><i style="background:var(--k-amber)"></i>IR</span><span><i style="background:var(--k-neg)"></i>IOF</span><span><i style="background:var(--k-neutro)"></i>Come-cotas <span class="k-info" tabindex="0">i<span class="k-tip">Fundo aberto: IR antecipado a cada semestre completo (maio e novembro) à alíquota mínima, cobrado em cotas, mais a capitalização que esse imposto deixa de render. Convenção: a aplicação começa logo após um evento.</span></span></span></div>
+        <div class="k-tw">
+          <table class="k-table d25-tab">
+            <thead><tr><th>No período</th><th>A</th><th>B</th></tr></thead>
+            <tbody>
+              <tr><th>Prazo (dias)</th><td data-draw="v" data-q="ta-dias-a"></td><td data-draw="v" data-q="ta-dias-b"></td></tr>
+              <tr><th>Bruto</th><td data-draw="v" data-q="ta-bruto-a"></td><td data-draw="v" data-q="ta-bruto-b"></td></tr>
+              <tr><th>IOF</th><td data-draw="v" data-q="ta-iof-a"></td><td data-draw="v" data-q="ta-iof-b"></td></tr>
+              <tr><th>IR (alíquota)</th><td data-draw="v" data-q="ta-ir-a"></td><td data-draw="v" data-q="ta-ir-b"></td></tr>
+              <tr><th>Come-cotas</th><td data-draw="v" data-q="ta-cc-a"></td><td data-draw="v" data-q="ta-cc-b"></td></tr>
+              <tr><th>Líquido no período</th><td data-draw="v" data-q="ta-liq-a"></td><td data-draw="v" data-q="ta-liq-b"></td></tr>
+              <tr class="k-strong"><th>Líquido anualizado</th><td data-draw="v" data-q="ta-anual-a"></td><td data-draw="v" data-q="ta-anual-b"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="k-zone" id="tx-leitura" data-source="cenarios_taxa ir_regressivo iof_regressivo caso">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">A · líquido <span class="k-u">% a.a.</span></span><span class="k-kn dash-skeleton" data-draw="v" data-q="la" data-cls="venc-a">—</span></div>
+        <div class="k-kpi"><span class="k-kl">B · líquido <span class="k-u">% a.a.</span></span><span class="k-kn dash-skeleton" data-draw="v" data-q="lb" data-cls="venc-b">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Diferença <span class="k-u">p.p.</span></span><span class="k-kn dash-skeleton" data-draw="v" data-q="dif">—</span></div>
+        <div class="k-diag" data-frases>
+          <span data-draw="fr-tx"></span>
+          <p>A rende <b data-draw="v" data-q="la">—</b> a.a. líquidos; B rende <b data-draw="v" data-q="lb">—</b>. <b data-draw="v" data-q="venc">—</b> <span data-frase="ganha" hidden>ganha por <b data-draw="v" data-q="dif">—</b> p.p. — </span><span data-frase="aliquota" hidden>alíquota de IR menor.</span><span data-frase="iof" hidden>o outro paga IOF.</span><span data-frase="comecotas" hidden>o come-cotas do fundo come a diferença.</span><span data-frase="taxa" hidden>taxa bruta maior.</span><span data-frase="empate" hidden>empatam.</span></p>
+          <p data-frase="reinv" hidden>A renovado <b data-draw="v" data-q="reinv-n">—</b>× (<b data-draw="v" data-q="reinv-d">—</b> dias, pagando IR a cada vez): <b data-draw="v" data-q="reinv-p">—</b> no período, contra <b data-draw="v" data-q="b-per">—</b> de B.</p>
+          <p data-frase="iof-a" hidden>IOF de <b data-draw="v" data-q="iof-a">—</b> sobre o rendimento: resgatar A em <b data-draw="v" data-q="da">—</b> dias devolve quase tudo ao fisco.</p>
+          <p data-frase="iof-b" hidden>IOF de <b data-draw="v" data-q="iof-b">—</b> sobre o rendimento: resgatar B em <b data-draw="v" data-q="db">—</b> dias devolve quase tudo ao fisco.</p>
+          <p data-frase="deg-a" hidden>A vence no último dia da faixa: um dia a mais e a alíquota cai de <b data-draw="v" data-q="deg-a-de">—</b> para <b data-draw="v" data-q="deg-a-para">—</b>. Planeje o vencimento no degrau.</p>
+          <p data-frase="deg-b" hidden>B vence no último dia da faixa: um dia a mais e a alíquota cai de <b data-draw="v" data-q="deg-b-de">—</b> para <b data-draw="v" data-q="deg-b-para">—</b>. Planeje o vencimento no degrau.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <details class="k-help" id="perguntas" data-source="caso tiers instrumentos ir_regressivo iof_regressivo saldo_d21 emissores ratings cenarios_taxa">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>CDB de <b data-draw="v" data-q="q1-ta">—</b> por <b data-draw="v" data-q="q1-da">—</b> dias ou CDB de <b data-draw="v" data-q="q1-tb">—</b> por <b data-draw="v" data-q="q1-db">—</b> dias?
+          <details><summary>mostrar resposta</summary><p>O de <b data-draw="v" data-q="q1-tb">—</b>: <b data-draw="v" data-q="q1-lb">—</b> a.a. líquidos contra <b data-draw="v" data-q="q1-la">—</b> (ou <b data-draw="v" data-q="q1-rr">—</b> se os <b data-draw="v" data-q="q1-da">—</b> dias forem renovados <b data-draw="v" data-q="q1-n">—</b> vezes, pagando <b data-draw="v" data-q="q1-ira">—</b> a cada vez). <b data-draw="v" data-q="q1-dt">—</b> p.p. de taxa bruta a mais não compensam <b data-draw="v" data-q="q1-dir">—</b> p.p. de alíquota.</p></details>
+        </li>
+        <li>No orçamento-base, a Alfa pode colocar <b data-draw="v" data-q="q2-t3">—</b> no Tier 3?
+          <details><summary>mostrar resposta</summary><p>Não. O caixa fica negativo de <b data-draw="v" data-q="mesneg">—</b> a <b data-draw="v" data-q="mesfim">—</b> (D2.1); o excedente de <b data-draw="v" data-q="mesap">—</b> é sazonal, não estrutural. Aplicar além de <b data-draw="v" data-q="q2-ate">—</b> dias obrigaria a resgatar em <b data-draw="v" data-q="mesneg">—</b> — pagando <b data-draw="v" data-q="q2-ir1">—</b> em vez de <b data-draw="v" data-q="q2-ir2">—</b> e, se for fundo, após o come-cotas de maio. O horizonte do tier vem do orçamento, não do apetite por taxa.</p></details>
+        </li>
+        <li>Por que a regra é <b data-draw="v" data-q="teto">—</b> por emissor mesmo quando o banco é sólido?
+          <details><summary>mostrar resposta</summary><p>Porque o custo da regra é quase zero (poucos pontos-base entre emissores AA) e o benefício é evitar perda total num evento de crédito. Com <b data-draw="v" data-q="q3-n">—</b> emissores a <b data-draw="v" data-q="q3-mix">—</b>, a perda de qualquer um deixa ao menos <b data-draw="v" data-q="q3-int">—</b> intactos.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>
+/* ============================================================
+   D2.5 · Excedentes — estado, controles e desenhos.
+   Testes de aderência (Spec §7), conferidos em test.js com M25:
+   Tiers 480 / 1.120 / 1.600 · Contraparte sem alertas; A = 40% → teto reprovado
+   Taxa líquida: A 9,97% × B 10,31% (B vence; A renovado 4× = 9,83%)
+   Degrau 10,00% × 10,34% · Resgate em 10 d: IOF 66%, ≈ 3,0% a.a.
+   Come-cotas (2 anos): CDB 21,62% × fundo 21,34% · Longo 9,99% × 10,28%
+   ============================================================ */
+const IDS = ['caso', 'tiers', 'instrumentos', 'ir_regressivo', 'iof_regressivo', 'saldo_d21', 'emissores', 'ratings', 'cenarios_taxa'];
+const D25 = window.D25 = { D: null, S: null, ver: 0, cache: null };
+const ALL = ['v', 'inst', 'rating', 'barra-tiers', 'tripe', 'saldo', 'fr-tiers', 'donut', 'cp-leg', 'regra', 'fr-cp', 'degraus-list', 'barras', 'fr-tx'];
+const TIER_COR = ['var(--k-blue-l)', 'var(--k-blue)', 'var(--k-navy)'];
+const ready = () => !!(D25.D && D25.S);
+
+function parse() {
+  const g = (id) => K.num(dash.data(id).data);
+  const caso = K.obj(dash.data('caso').data);
+  const T = M25.tabelas(g('ir_regressivo'), g('iof_regressivo'), caso);
+  const instL = g('instrumentos'), inst = {};
+  instL.forEach((r) => { inst[r.id] = r; });
+  const saldo = g('saldo_d21'), saldos = saldo.map((r) => r.saldo);
+  const escala = {}; const ratingsL = g('ratings').sort((a, b) => a.ordem - b.ordem);
+  ratingsL.forEach((r) => { escala[r.rating] = r.ordem; });
+  const cen = {}; g('cenarios_taxa').forEach((r) => { cen[r.id] = r; });
+  return { caso, T, inst, instL, tiers: g('tiers').sort((a, b) => a.tier - b.tier), saldo, saldos, minimo: saldo[0].minimo,
+    escala, ratingsL, em: g('emissores'), cen, hz: M25.horizonte(saldos, caso.mesAplicacao, caso.diasMes) };
+}
+function taxaDe(S, c) { Object.assign(S, { aTaxa: c.aTaxa, aPrazo: c.aPrazo, aTipo: c.aTipo, bTaxa: c.bTaxa, bPrazo: c.bPrazo, bTipo: c.bTipo }); }
+function defaults(D) {
+  const S = { exc: D.caso.excedente, total: D.caso.totalContraparte, ratingMin: D.caso.ratingMinimo, reinv: true, cen: 'reset',
+    em: D.em.map((e) => ({ emissor: String(e.emissor), pct: e.pct, rating: String(e.rating) })) };
+  D.tiers.forEach((t, j) => { S['t' + (j + 1)] = t.pct; S['i' + (j + 1)] = t.instrumento; });
+  taxaDe(S, D.cen.slide);
+  return S;
+}
+function calc() {
+  if (D25.cache && D25.cache.ver === D25.ver) return D25.cache;
+  const { D, S } = D25;
+  const tiers = [1, 2, 3].map((j) => ({ pct: S['t' + j], prioridade: D.tiers[j - 1].prioridade, nome: D.tiers[j - 1].nome, inst: D.inst[S['i' + j]] }));
+  const cart = M25.carteira(S.exc, tiers, D.T, D.hz);
+  const regras = { minEmissores: D.caso.minEmissores, maxEmissores: D.caso.maxEmissores, tetoEmissor: D.caso.tetoEmissor, ratingMinimo: S.ratingMin };
+  const cp = M25.contraparte(S.em, S.total, D.escala, regras);
+  const cmp = M25.comparar({ taxa: S.aTaxa, dias: S.aPrazo, tipo: S.aTipo }, { taxa: S.bTaxa, dias: S.bPrazo, tipo: S.bTipo }, D.T);
+  D25.cache = { ver: D25.ver, tiers, cart, tripe: M25.tripe(tiers), cp, cmp };
+  return D25.cache;
+}
+// números fixos do caso default (gabaritos)
+function gab() {
+  const D = D25.D, c = D.cen.slide;
+  const q1 = M25.comparar({ taxa: c.aTaxa, dias: c.aPrazo, tipo: c.aTipo }, { taxa: c.bTaxa, dias: c.bPrazo, tipo: c.bTipo }, D.T);
+  const R = { minEmissores: D.caso.minEmissores, maxEmissores: D.caso.maxEmissores, tetoEmissor: D.caso.tetoEmissor, ratingMinimo: D.caso.ratingMinimo };
+  const cp = M25.contraparte(D.em, D.caso.totalContraparte, D.escala, R);
+  const t3 = D.caso.excedente * D.tiers[2].pct / D.tiers.reduce((s, t) => s + t.pct, 0);
+  return { c, q1, cp, t3 };
+}
+
+/* ---------- controles ---------- */
+function syncAll() {
+  const S = D25.S;
+  K.sync(S);
+  document.querySelectorAll('input[data-em]').forEach((inp) => {
+    const e = S.em[Number(inp.dataset.em)]; if (!e || inp === document.activeElement) return;
+    inp.value = String(e[inp.dataset.f]);
+  });
+  document.querySelectorAll('.k-btn[data-cen]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === S.cen)));
+}
+function mudou() { D25.ver++; syncAll(); K.redraw(ALL); }
+function onChange(k) {
+  const S = D25.S;
+  if (k === 't1' || k === 't2' || k === 't3') {
+    const j = Number(k.slice(1)) - 1;
+    const w = M25.renorm([S.t1, S.t2, S.t3], j).map((x) => Math.round(x));
+    const outros = [0, 1, 2].filter((i) => i !== j);
+    w[outros[1]] = 100 - w[j] - w[outros[0]];
+    S.t1 = w[0]; S.t2 = w[1]; S.t3 = w[2];
+  }
+  S.cen = null;
+  mudou();
+}
+let ligado = false;
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || D25.D) return;
+  D25.D = parse();
+  D25.S = defaults(D25.D);
+  if (!ligado) {
+    ligado = true;
+    K.bind(D25.S, onChange);
+    document.querySelectorAll('input[data-em]').forEach((inp) => {
+      inp.addEventListener(inp.type === 'text' ? 'change' : 'input', () => {
+        const e = D25.S.em[Number(inp.dataset.em)]; if (!e) return;
+        if (inp.dataset.f === 'pct') { const v = Number(inp.value); if (inp.value === '' || !Number.isFinite(v)) return; e.pct = Math.min(100, Math.max(0, v)); }
+        else e.emissor = inp.value;
+        D25.S.cen = null; mudou();
+      });
+    });
+  }
+  syncAll();
+});
+document.querySelectorAll('.k-btn[data-cen]').forEach((b) => b.addEventListener('click', () => {
+  if (!ready()) return;
+  const id = b.dataset.cen, D = D25.D;
+  if (id === 'reset') { const keep = D25.S; D25.S = Object.assign(keep, defaults(D)); }
+  else if (D.cen[id]) { taxaDe(D25.S, D.cen[id]); D25.S.reinv = true; mostra('taxa'); }
+  D25.S.cen = id;
+  mudou();
+}));
+const mostra = K.tabs('aba', () => { if (ready()) K.redraw(ALL); });
+{
+  const alvo = location.hash.slice(1);
+  if (['tiers', 'contraparte', 'taxa'].includes(alvo)) mostra(alvo);
+}
+
+/* ---------- auxiliares de desenho ---------- */
+const naoPronto = (el) => { const s = K.status(IDS); if (s === 'ok' && ready()) return false; K.fail(el, s === 'ok' ? 'loading' : s); return true; };
+const pct2 = (x) => K.p(x, 2);
+const pcta = (x) => K.n(x * 100, Math.round(x * 1000) % 10 === 0 ? 0 : 1) + '%';   // alíquota: 15%, 22,5%
+function margemEsq(svg, labels) {
+  const t = svg.append('text').attr('class', 'k-svgm');
+  let w = 0; labels.forEach((l) => { t.text(l); w = Math.max(w, t.node().getComputedTextLength()); });
+  t.remove(); return Math.ceil(w) + 8;
+}
+
+/* ---------- valores ---------- */
+const V = {
+  exc0: (c, D) => K.n(D.caso.excedente), mesap: (c, D) => K.MESL[D.caso.mesAplicacao], 'mesap-c': (c, D) => K.MES[D.caso.mesAplicacao],
+  sfev: (c, D) => K.n(D.saldos[D.caso.mesAplicacao]), min: (c, D) => K.n(D.minimo), 'exc-calc': (c, D) => K.n(D.saldos[D.caso.mesAplicacao] - D.minimo),
+  liq: (c) => pct2(c.cart.liqAnual), ganho: (c) => (c.cart.ganhoHz == null ? null : K.n(c.cart.ganhoHz)),
+  'hz-mes': (c, D) => (D.hz.mesNeg < 1 ? null : K.MES[D.hz.mesNeg - 1]), 'hz-dias': (c, D) => K.n(D.hz.dias),
+  t1: (c, D, S) => K.n(S.t1), t2: (c, D, S) => K.n(S.t2), t3: (c, D, S) => K.n(S.t3),
+  mesneg: (c, D) => (D.hz.mesNeg < 0 ? null : K.MESL[D.hz.mesNeg]), mesfim: (c, D) => (D.hz.mesFimNeg < 0 ? null : K.MESL[D.hz.mesFimNeg]),
+  presos: (c) => c.cart.presos.join(' e '),
+  soma: (c) => K.n(c.cp.soma, 0) + '%', minEm: (c, D) => K.n(D.caso.minEmissores), maxEm: (c, D) => K.n(D.caso.maxEmissores),
+  'n-at': (c) => K.n(c.cp.nAtivos), teto: (c, D) => K.p(D.caso.tetoEmissor, 0),
+  'maior-pct': (c) => (c.cp.maior ? K.p(c.cp.maior.share, 0) : null), 'maior-nome': (c) => (c.cp.maior ? c.cp.maior.emissor : null),
+  intacto: (c) => (c.cp.intacto == null ? null : K.p(c.cp.intacto, 0)),
+  'deg-list': (c, D) => [D.T.iof.length].concat(D.T.ir.slice(0, -1).map((f) => f.ate)).map((d) => K.n(d)).join(' · '),
+  la: (c) => pct2(c.cmp.a.liqAnual), lb: (c) => pct2(c.cmp.b.liqAnual),
+  dif: (c) => K.n(Math.abs(Math.round(c.cmp.a.liqAnual * 1e4) - Math.round(c.cmp.b.liqAnual * 1e4)) / 100, 2), // diferença dos valores exibidos
+  venc: (c) => (c.cmp.dif < 5e-5 ? 'A e B' : c.cmp.venc),
+  'reinv-n': (c) => (c.cmp.reinv ? K.n(c.cmp.reinv.n) : null), 'reinv-d': (c) => (c.cmp.reinv ? K.n(c.cmp.reinv.dias) : null),
+  'reinv-p': (c) => (c.cmp.reinv ? pct2(c.cmp.reinv.periodo) : null), 'b-per': (c) => pct2(c.cmp.b.liquido),
+  'iof-a': (c) => K.p(c.cmp.a.iofPct, 0), 'iof-b': (c) => K.p(c.cmp.b.iofPct, 0), da: (c) => K.n(c.cmp.a.dias), db: (c) => K.n(c.cmp.b.dias),
+  'deg-a-de': (c, D) => { const g = M25.degrau(c.cmp.a.dias, D.T); return g ? pcta(g.de) : null; },
+  'deg-a-para': (c, D) => { const g = M25.degrau(c.cmp.a.dias, D.T); return g ? pcta(g.para) : null; },
+  'deg-b-de': (c, D) => { const g = M25.degrau(c.cmp.b.dias, D.T); return g ? pcta(g.de) : null; },
+  'deg-b-para': (c, D) => { const g = M25.degrau(c.cmp.b.dias, D.T); return g ? pcta(g.para) : null; },
+  // perguntas-guia (caso default)
+  'q1-ta': () => K.n(gab().c.aTaxa, 1) + '%', 'q1-tb': () => K.n(gab().c.bTaxa, 1) + '%', 'q1-da': () => K.n(gab().c.aPrazo), 'q1-db': () => K.n(gab().c.bPrazo),
+  'q1-la': () => pct2(gab().q1.a.liqAnual), 'q1-lb': () => pct2(gab().q1.b.liqAnual),
+  'q1-rr': () => (gab().q1.reinv ? pct2(gab().q1.reinv.periodo) : null), 'q1-n': () => (gab().q1.reinv ? K.n(gab().q1.reinv.n) : null),
+  'q1-ira': () => pcta(gab().q1.a.aliq), 'q1-dt': () => K.n(gab().c.aTaxa - gab().c.bTaxa, 1), 'q1-dir': () => K.n((gab().q1.a.aliq - gab().q1.b.aliq) * 100, 0),
+  'q2-t3': () => K.n(gab().t3), 'q2-ate': (c, D) => K.n(D.T.ir[0].ate), 'q2-ir1': (c, D) => pcta(D.T.ir[0].aliquota), 'q2-ir2': (c, D) => pcta(D.T.ir[1].aliquota),
+  'q3-n': () => K.n(gab().cp.nAtivos), 'q3-mix': () => gab().cp.lin.filter((l) => l.ativo).map((l) => K.n(l.share * 100)).join('/'),
+  'q3-int': () => K.p(gab().cp.intacto, 0),
+  // tabela da aba 3
+};
+['a', 'b'].forEach((k) => {
+  V['ta-dias-' + k] = (c) => K.n(c.cmp[k].dias);
+  V['ta-bruto-' + k] = (c) => pct2(c.cmp[k].bruto);
+  V['ta-iof-' + k] = (c) => (c.cmp[k].iof > 0 ? pct2(c.cmp[k].iof) + ' (' + K.p(c.cmp[k].iofPct, 0) + ')' : pct2(0));
+  V['ta-ir-' + k] = (c) => pct2(c.cmp[k].ir) + ' (' + pcta(c.cmp[k].aliq) + ')';
+  V['ta-cc-' + k] = (c) => pct2(c.cmp[k].cc);
+  V['ta-liq-' + k] = (c) => pct2(c.cmp[k].liquido);
+  V['ta-anual-' + k] = (c) => pct2(c.cmp[k].liqAnual);
+});
+dash.draw('v', (el) => {
+  el.classList.remove('dash-skeleton');
+  const fn = V[el.dataset.q];
+  let v = null;
+  if (fn && K.status(IDS) === 'ok' && ready()) { try { v = fn(calc(), D25.D, D25.S); } catch (e) { v = null; } }
+  el.textContent = v == null ? '—' : v;
+  const cls = el.dataset.cls;
+  if (cls && ready()) {
+    const c = calc();
+    if (cls === 'teto') { el.classList.toggle('k-neg', !c.cp.regraTeto); }
+    if (cls === 'venc-a') el.classList.toggle('k-pos', c.cmp.venc === 'A' && c.cmp.dif >= 5e-5);
+    if (cls === 'venc-b') el.classList.toggle('k-pos', c.cmp.venc === 'B' && c.cmp.dif >= 5e-5);
+  }
+});
+
+/* ---------- selects cujas opções são dados ---------- */
+dash.draw('inst', (sel) => {
+  if (!ready()) { sel.replaceChildren(); return; }
+  const k = 'i' + sel.dataset.tier;
+  sel.replaceChildren(...D25.D.instL.map((r) => new Option(r.nome, r.id)));
+  sel.value = D25.S[k];
+  sel.onchange = () => { D25.S[k] = sel.value; D25.S.cen = null; mudou(); };
+});
+dash.draw('rating', (sel) => {
+  if (!ready()) { sel.replaceChildren(); return; }
+  const i = sel.dataset.em, S = D25.S;
+  sel.replaceChildren(...D25.D.ratingsL.map((r) => new Option(r.rating, r.rating)));
+  sel.value = i === 'min' ? S.ratingMin : (S.em[Number(i)] || {}).rating;
+  sel.onchange = () => { if (i === 'min') S.ratingMin = sel.value; else S.em[Number(i)].rating = sel.value; S.cen = null; mudou(); };
+});
+dash.draw('degraus-list', (dl) => {
+  if (!ready()) { dl.replaceChildren(); return; }
+  const D = D25.D;
+  dl.replaceChildren(...[D.T.iof.length].concat(D.T.ir.slice(0, -1).map((f) => f.ate)).map((d) => new Option('', String(d))));
+});
+
+/* ---------- aba 1: barra dos tiers ---------- */
+dash.draw('barra-tiers', (el) => {
+  if (naoPronto(el)) return;
+  el.classList.remove('dash-skeleton');
+  const c = calc(), S = D25.S;
+  const { svg, W } = K.svg(el, 96);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const x = d3.scaleLinear([0, Math.max(1, S.exc)], [1, W - 1]);
+  let acc = 0;
+  c.cart.linhas.forEach((l, j) => {
+    const x0 = x(acc), x1 = x(acc + l.valor); acc += l.valor;
+    if (x1 - x0 < 0.5) return;
+    const g = svg.append('g');
+    const r = g.append('rect').attr('x', x0).attr('y', 6).attr('width', Math.max(0, x1 - x0 - 1)).attr('height', 42).attr('rx', 3).style('fill', TIER_COR[j]);
+    if (l.preso) r.style('stroke', 'var(--k-neg)').style('stroke-width', 2.5).style('stroke-dasharray', '5 3');
+    const t1 = g.append('text').attr('class', 'k-svgb').attr('x', x0 + 8).attr('y', 32).style('fill', j === 0 ? '#1a1a1a' : '#fff').text('T' + (j + 1) + ' · ' + K.n(l.valor));
+    if (t1.node().getComputedTextLength() > x1 - x0 - 12) t1.text(K.n(l.valor));
+    if (t1.node().getComputedTextLength() > x1 - x0 - 12) t1.remove();
+    const t2 = g.append('text').attr('class', 'k-svgm').attr('x', x0 + 2).attr('y', 66).text(c.tiers[j].inst.nome);
+    if (t2.node().getComputedTextLength() > x1 - x0 - 6) t2.text(c.tiers[j].inst.prazo + ' d');
+    if (t2.node().getComputedTextLength() > x1 - x0 - 6) t2.remove();
+    const t3 = g.append('text').attr('class', 'k-svgm').attr('x', x0 + 2).attr('y', 84).text(pct2(l.r.liqAnual) + ' a.a. líq.');
+    if (t3.node().getComputedTextLength() > x1 - x0 - 6) t3.remove();
+    g.append('rect').attr('x', x0).attr('y', 0).attr('width', Math.max(0, x1 - x0)).attr('height', 92).style('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [mx, my] = d3.pointer(ev, el);
+        tip.show('Tier ' + (j + 1) + ' · ' + c.tiers[j].nome, [[TIER_COR[j], 'Valor', 'R$ ' + K.n(l.valor) + ' mil (' + K.p(l.peso, 0) + ')'],
+          [null, c.tiers[j].inst.nome, c.tiers[j].inst.prazo + ' d · ' + K.n(c.tiers[j].inst.taxa, 1) + '% bruto'],
+          [null, 'Líquido', pct2(l.r.liqAnual) + ' a.a.']].concat(l.preso ? [[null, 'Vence depois do resgate necessário', null]] : []), mx, my);
+      })
+      .on('pointerleave', () => tip.hide());
+  });
+});
+
+/* ---------- aba 1: tripé ---------- */
+dash.draw('tripe', (el) => {
+  if (!ready() || K.status(IDS) !== 'ok') { el.textContent = '—'; return; }
+  const c = calc(), v = el.dataset.v, share = c.tripe[v] || 0;
+  const tiers = D25.D.tiers.filter((t) => t.prioridade === v).map((t) => 'Tier ' + t.tier).join(', ');
+  const wrap = document.createElement('span'); wrap.className = 'd25-meter';
+  const bar = document.createElement('span'); bar.className = 'd25-mbar';
+  const fill = document.createElement('span'); fill.className = 'd25-mfill'; fill.style.display = 'block'; fill.style.width = (share * 100).toFixed(1) + '%';
+  fill.style.background = v === 'liquidez' ? TIER_COR[0] : v === 'segurança' ? TIER_COR[1] : TIER_COR[2];
+  bar.append(fill);
+  const t = document.createElement('span'); t.className = 'd25-mtxt'; t.textContent = K.p(share, 0) + (tiers ? ' · ' + tiers : '');
+  wrap.append(bar, t);
+  el.replaceChildren(wrap);
+});
+
+/* ---------- aba 1: saldo projetado ---------- */
+dash.draw('saldo', (el) => {
+  if (naoPronto(el)) return;
+  el.classList.remove('dash-skeleton');
+  const D = D25.D, c = calc();
+  const presas = c.cart.linhas.map((l, j) => ({ l, j, inst: c.tiers[j].inst })).filter((o) => !o.inst.diaria && o.l.valor > 0);
+  const Hc = 180, H = Hc + 12 + presas.length * 18 + 4;
+  const { svg, W } = K.svg(el, H);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const ys = D.saldos;
+  const lo = Math.min(0, d3.min(ys)), hi = Math.max(D.minimo, d3.max(ys));
+  const y = d3.scaleLinear([lo, hi], [Hc - 22, 18]).nice();
+  const ticks = y.ticks(5);
+  const mL = margemEsq(svg, ticks.map((t) => K.n(t)));
+  const x = d3.scalePoint(d3.range(12), [mL + 10, W - 14]);
+  const step = x.step();
+  ys.forEach((s, m) => { if (s < 0) svg.append('rect').attr('x', x(m) - step / 2).attr('y', 18).attr('width', step).attr('height', Hc - 40).style('fill', 'var(--k-neg)').style('opacity', 0.08); });
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', mL).attr('x2', W - 6).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL - 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  svg.append('line').attr('x1', mL).attr('x2', W - 6).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+  svg.append('line').attr('x1', mL).attr('x2', W - 6).attr('y1', y(D.minimo)).attr('y2', y(D.minimo)).style('stroke', 'var(--k-neg)').style('stroke-dasharray', '5 4');
+  svg.append('text').attr('class', 'k-svgm').attr('x', W - 8).attr('y', y(D.minimo) - 4).attr('text-anchor', 'end').text('mínimo ' + K.n(D.minimo));
+  svg.append('path').datum(ys).attr('d', d3.line().x((d, i) => x(i)).y((d) => y(d))).style('fill', 'none').style('stroke', 'var(--k-navy)').style('stroke-width', 2).style('stroke-linejoin', 'round').style('stroke-linecap', 'round');
+  svg.append('g').selectAll('circle').data(ys).join('circle').attr('cx', (d, i) => x(i)).attr('cy', (d) => y(d)).attr('r', 3.5).style('fill', (d) => (d < 0 ? 'var(--k-neg)' : 'var(--k-navy)'));
+  svg.append('g').selectAll('text').data(d3.range(12)).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (m) => x(m)).attr('y', Hc - 6).text((m) => K.MES[m]);
+  const mA = D.caso.mesAplicacao;
+  svg.append('line').attr('x1', x(mA)).attr('x2', x(mA)).attr('y1', 14).attr('y2', Hc - 20).style('stroke', 'var(--k-pos)').style('stroke-width', 1.5);
+  svg.append('text').attr('class', 'k-svgt').attr('x', x(mA) + 4).attr('y', 28).style('fill', 'var(--k-pos)').text('aplica');
+  if (D.hz.mesNeg >= 0) {
+    const xn = x(D.hz.mesNeg);
+    svg.append('line').attr('x1', xn).attr('x2', xn).attr('y1', 14).attr('y2', H - 2).style('stroke', 'var(--k-neg)').style('stroke-width', 1.5);
+    const tt = svg.append('text').attr('class', 'k-svgt').attr('y', 12).style('fill', 'var(--k-neg)').text('resgate necessário em ' + K.MES[D.hz.mesNeg]);
+    const w = tt.node().getComputedTextLength();
+    tt.attr('x', xn + 4 + w > W ? xn - 4 - w : xn + 4);
+  }
+  // até quando cada tier com vencimento fica preso
+  presas.forEach((o, k) => {
+    const yy = Hc + 8 + k * 18, fimM = mA + o.inst.prazo / D.caso.diasMes;
+    const x1 = fimM > 11 ? W - 8 : x(mA) + (fimM - mA) * step;
+    svg.append('rect').attr('x', x(mA)).attr('y', yy).attr('width', Math.max(2, x1 - x(mA))).attr('height', 14).attr('rx', 2).style('fill', TIER_COR[o.j])
+      .style('stroke', o.l.preso ? 'var(--k-neg)' : 'none').style('stroke-width', 2).style('stroke-dasharray', '4 2');
+    const lab = svg.append('text').attr('class', 'k-svgm').attr('y', yy + 11).text('T' + (o.j + 1) + ' · ' + o.inst.prazo + ' d' + (fimM > 11 ? ' →' : ''));
+    const lw = lab.node().getComputedTextLength();
+    if (x1 + 4 + lw < W - 2) lab.attr('x', x1 + 4);
+    else if (x(mA) - 4 - lw > 0) lab.attr('x', x(mA) - 4 - lw);
+    else lab.attr('x', x(mA) + 4).style('fill', o.j === 0 ? '#1a1a1a' : '#fff');
+  });
+  svg.append('rect').attr('x', mL).attr('y', 0).attr('width', W - mL).attr('height', Hc).style('fill', 'transparent')
+    .on('pointermove', (ev) => {
+      const [mx, my] = d3.pointer(ev, el);
+      const m = Math.max(0, Math.min(11, Math.round((mx - x(0)) / step)));
+      tip.show(K.MESL[m], [[null, 'Saldo', 'R$ ' + K.n(ys[m]) + ' mil'], [null, 'Mínimo', 'R$ ' + K.n(D.minimo) + ' mil']], mx, my);
+    })
+    .on('pointerleave', () => tip.hide());
+});
+dash.draw('fr-tiers', (el) => {
+  if (!ready()) { K.frases(el, []); return; }
+  K.frases(el, [calc().cart.presos.length ? 'aviso' : 'ok']);
+});
+
+/* ---------- aba 2: donut ---------- */
+const EM_COR = ['var(--k-navy)', 'var(--k-blue)', 'var(--k-blue-l)', 'var(--k-amber)', 'var(--k-neutro)'];
+dash.draw('donut', (el) => {
+  if (naoPronto(el)) return;
+  el.classList.remove('dash-skeleton');
+  const c = calc(), S = D25.S;
+  const { svg, W, H } = K.svg(el, 210);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const R = Math.min(95, W / 2 - 10), cx = W / 2, cy = H / 2;
+  const g = svg.append('g').attr('transform', `translate(${cx},${cy})`);
+  const ativos = c.cp.lin.map((l, i) => ({ ...l, i })).filter((l) => l.ativo);
+  const arcs = d3.pie().sort(null).value((d) => d.share)(ativos);
+  const arc = d3.arc().innerRadius(R * 0.58).outerRadius(R);
+  g.selectAll('path').data(arcs).join('path').attr('d', arc)
+    .style('fill', (a) => (a.data.acimaTeto ? 'var(--k-neg)' : EM_COR[a.data.i]))
+    .style('stroke', 'var(--color-panel)').style('stroke-width', 2)
+    .on('pointermove', (ev, a) => {
+      const [mx, my] = d3.pointer(ev, el);
+      tip.show(a.data.emissor, [[null, 'Participação', K.p(a.data.share, 1)], [null, 'Valor', 'R$ ' + K.n(a.data.valor) + ' mil'], [null, 'Rating', a.data.rating]]
+        .concat(a.data.acimaTeto ? [[null, 'Acima do teto', null]] : []).concat(a.data.abaixoRating ? [[null, 'Abaixo do rating mínimo', null]] : []), mx, my);
+    })
+    .on('pointerleave', () => tip.hide());
+  g.selectAll('text.k-svgb').data(arcs).join('text').attr('class', 'k-svgb').attr('text-anchor', 'middle')
+    .attr('transform', (a) => `translate(${arc.centroid(a)})`).attr('dy', 5).style('fill', (a) => (a.data.i >= 2 && !a.data.acimaTeto ? '#1a1a1a' : '#fff'))
+    .text((a) => (a.endAngle - a.startAngle > 0.35 ? K.n(a.data.share * 100) + '%' : ''));
+  g.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('y', -6).text('total');
+  g.append('text').attr('class', 'k-svgb').attr('text-anchor', 'middle').attr('y', 14).text('R$ ' + K.n(S.total));
+});
+dash.draw('cp-leg', (el) => {
+  if (!ready() || K.status(IDS) !== 'ok') { el.replaceChildren(); return; }
+  const c = calc();
+  el.replaceChildren(...c.cp.lin.filter((l) => l.ativo).map((l) => {
+    const i = c.cp.lin.indexOf(l);
+    const row = document.createElement('div');
+    const sw = document.createElement('i'); sw.style.background = l.acimaTeto ? 'var(--k-neg)' : EM_COR[i];
+    const n = document.createElement('span'); n.textContent = l.emissor + ' · ' + l.rating;
+    if (l.abaixoRating) { const b = document.createElement('span'); b.className = 'd25-bad'; b.textContent = ' · abaixo do mínimo'; n.append(b); }
+    const p = document.createElement('span'); p.textContent = K.p(l.share, 1); if (l.acimaTeto) p.className = 'd25-bad';
+    const v = document.createElement('span'); v.className = 'k-u'; v.textContent = 'R$ ' + K.n(l.valor);
+    row.append(sw, n, p, v); return row;
+  }));
+});
+dash.draw('regra', (el) => {
+  if (!ready() || K.status(IDS) !== 'ok') { el.textContent = '—'; el.className = ''; return; }
+  const c = calc(), r = el.dataset.r;
+  const ok = r === 'div' ? c.cp.regraDiv : r === 'teto' ? c.cp.regraTeto : c.cp.regraRating;
+  el.textContent = ok ? '✓' : '✗';
+  el.className = ok ? 'k-pos' : 'k-neg';
+});
+dash.draw('fr-cp', (el) => {
+  if (!ready()) { K.frases(el, []); return; }
+  const c = calc(), D = D25.D, k = [c.cp.regraTeto ? 'dentro' : 'fora'];
+  if (c.cp.nAtivos < D.caso.minEmissores) k.push('poucos');
+  if (c.cp.nAtivos > D.caso.maxEmissores) k.push('muitos');
+  if (!c.cp.regraRating) k.push('rating');
+  K.frases(el, k);
+});
+
+/* ---------- aba 3: barras empilhadas ---------- */
+const SEG = [['liquido', 'Rendimento líquido', 'var(--k-navy)'], ['ir', 'IR', 'var(--k-amber)'], ['iof', 'IOF', 'var(--k-neg)'], ['cc', 'Come-cotas', 'var(--k-neutro)']];
+dash.draw('barras', (el) => {
+  if (naoPronto(el)) return;
+  el.classList.remove('dash-skeleton');
+  const c = calc();
+  const { svg, W, H } = K.svg(el, 240);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const top = Math.max(c.cmp.a.bruto, c.cmp.b.bruto, 1e-4) * 1.15;
+  const y = d3.scaleLinear([0, top], [H - 28, 26]).nice();
+  const ticks = y.ticks(5);
+  const mL = margemEsq(svg, ticks.map((t) => K.p(t, 1)));
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', mL).attr('x2', W - 6).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL - 4).attr('y', (t) => y(t) + 4).text((t) => K.p(t, 1));
+  const x = d3.scaleBand(['a', 'b'], [mL + 10, W - 10]).paddingInner(0.45).paddingOuter(0.35);
+  const bw = Math.min(110, x.bandwidth()), off = (x.bandwidth() - bw) / 2;
+  ['a', 'b'].forEach((k) => {
+    const r = c.cmp[k], x0 = x(k) + off;
+    let acc = 0;
+    SEG.forEach(([f, nome, cor]) => {
+      const v = Math.max(0, r[f]); if (v <= 0) return;
+      const y0 = y(acc), y1 = y(acc + v); acc += v;
+      svg.append('rect').attr('x', x0).attr('y', y1).attr('width', bw).attr('height', Math.max(0.5, y0 - y1)).style('fill', cor)
+        .on('pointermove', (ev) => { const [mx, my] = d3.pointer(ev, el); tip.show(k.toUpperCase() + ' · ' + nome, [[cor, '% do principal', pct2(v)], [null, '% do bruto', K.p(r.bruto > 0 ? v / r.bruto : 0, 1)]], mx, my); })
+        .on('pointerleave', () => tip.hide());
+      if (y0 - y1 > 18) svg.append('text').attr('class', 'k-svgt').attr('x', x0 + bw / 2).attr('y', (y0 + y1) / 2 + 5).attr('text-anchor', 'middle')
+        .style('fill', f === 'liquido' || f === 'iof' ? '#fff' : '#1a1a1a').style('pointer-events', 'none').text(pct2(v));
+    });
+    svg.append('text').attr('class', 'k-svgb').attr('x', x0 + bw / 2).attr('y', y(r.bruto) - 8).attr('text-anchor', 'middle').text('bruto ' + pct2(r.bruto));
+    svg.append('text').attr('class', 'k-svgb').attr('x', x0 + bw / 2).attr('y', H - 8).attr('text-anchor', 'middle')
+      .style('fill', c.cmp.venc === k.toUpperCase() && c.cmp.dif >= 5e-5 ? 'var(--k-pos)' : 'var(--color-fg)')
+      .text(k.toUpperCase() + ' · ' + K.n(r.dias) + ' d');
+  });
+  svg.append('line').attr('x1', mL).attr('x2', W - 6).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+});
+dash.draw('fr-tx', (el) => {
+  if (!ready()) { K.frases(el, []); return; }
+  const c = calc(), D = D25.D, S = D25.S, k = c.cmp.dif < 5e-5 ? ['empate'] : ['ganha', c.cmp.motivo];
+  if (S.reinv && c.cmp.reinv) k.push('reinv');
+  if (c.cmp.a.iofPct > 0) k.push('iof-a');
+  if (c.cmp.b.iofPct > 0) k.push('iof-b');
+  if (M25.degrau(c.cmp.a.dias, D.T)) k.push('deg-a');
+  if (M25.degrau(c.cmp.b.dias, D.T)) k.push('deg-b');
+  K.frases(el, k);
+});
+</script>

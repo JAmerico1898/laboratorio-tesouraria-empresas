@@ -1,0 +1,7 @@
+[
+ {"id":"dl","nome":"Dívida líquida / EBITDA","limite":3.0,"tipo":"teto"},
+ {"id":"icj","nome":"Cobertura de juros (EBITDA / desp. financeiras)","limite":2.0,"tipo":"piso"},
+ {"id":"lc","nome":"Liquidez corrente (AC / PC)","limite":1.3,"tipo":"piso"},
+ {"id":"capex","nome":"CAPEX anual","limite":600,"tipo":"teto"},
+ {"id":"div","nome":"Dividendos só se D.Líq/EBITDA abaixo de","limite":2.0,"tipo":"qualitativo"}
+]

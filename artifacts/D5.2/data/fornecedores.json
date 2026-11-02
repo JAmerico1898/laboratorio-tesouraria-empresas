@@ -1,0 +1,5 @@
+[
+ {"id":"fina","nome":"Fornecedor de margem fina","margem":4,"fundingMes":1.5,"volume":1200,"partCat":30},
+ {"id":"alfa","nome":"Alfa (cabos)","margem":35,"fundingMes":1.2,"volume":6000,"partCat":65},
+ {"id":"disj","nome":"Fornecedor de disjuntores","margem":8,"fundingMes":1.5,"volume":2400,"partCat":30}
+]

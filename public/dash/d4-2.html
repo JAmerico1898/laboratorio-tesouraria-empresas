@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D4.2 · Condições de venda</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"slide","cenario":"Slide V4.2","d":2,"k":10,"n":30,"venda":100,"m":35,"adesao":60,"i":1.2,"e":0.8,"cc":17,"descVista":2.5},{"id":"alfa","cenario":"Alfa → Horizonte","d":2,"k":10,"n":60,"venda":500,"m":35,"adesao":60,"i":1.2,"e":0.8,"cc":17,"descVista":2.5}]},"instrumentos":{"format":"json","data":[{"id":"duplicata","instrumento":"Duplicata + boleto","liquidez_dias":60,"garantia":2,"garantia_txt":"média (título executivo, protesto)","custo":1,"custo_txt":"baixo (tarifa por boleto)","uso":"B2B recorrente"},{"id":"boleto_pix","instrumento":"Boleto + Pix","liquidez_dias":1,"garantia":1,"garantia_txt":"fraca (sem aceite)","custo":1,"custo_txt":"baixo (tarifa fixa; Pix quase zero)","uso":"B2C"},{"id":"ccb","instrumento":"CCB","liquidez_dias":0,"garantia":3,"garantia_txt":"forte (título executivo + garantias)","custo":3,"custo_txt":"alto (juros + IOF)","uso":"empréstimo bancário"},{"id":"cartao","instrumento":"Recebível de cartão","liquidez_dias":30,"garantia":3,"garantia_txt":"forte (devedor é o adquirente)","custo":2,"custo_txt":"médio (MDR + antecipação)","uso":"fluxo de cartão, D+30 antecipável"},{"id":"bndes","instrumento":"Cartão BNDES","liquidez_dias":30,"garantia":3,"garantia_txt":"forte (risco do banco emissor)","custo":2,"custo_txt":"médio (comissão do emissor)","uso":"MPE bens de capital"},{"id":"np","instrumento":"Nota promissória","liquidez_dias":60,"garantia":2,"garantia_txt":"média (título executivo, sem lastro em venda)","custo":1,"custo_txt":"baixo","uso":"acordos e renegociações"}]},"praticas":{"format":"json","data":[{"id":"306090","pratica":"30/60/90","parcelas":"30|60|90","descricao":"três duplicatas de 1/3","venda":100},{"id":"283030","pratica":"28/30/30","parcelas":"0|30|60","descricao":"1/3 à vista + 30 + 60","venda":100},{"id":"net30","pratica":"Boleto único net 30","parcelas":"30","descricao":"um boleto em 30 dias","venda":100}]},"recomendacoes":{"format":"json","data":[{"perfil":"b2b","prioridade":"liquidez","id":"duplicata","justificativa":"Duplicata registrada é antecipável no banco ou em FIDC: vira caixa antes do vencimento."},{"perfil":"b2b","prioridade":"garantia","id":"duplicata","justificativa":"Com aceite e protesto, a duplicata é título executivo: cobra-se sem ação de conhecimento."},{"perfil":"b2b","prioridade":"custo","id":"duplicata","justificativa":"Boleto registrado custa poucos reais por título; o custo é o prazo, não o instrumento."},{"perfil":"b2c","prioridade":"liquidez","id":"boleto_pix","justificativa":"Pix liquida em D+0 e o boleto compensa em D+1: o caixa chega quando o cliente paga."},{"perfil":"b2c","prioridade":"garantia","id":"cartao","justificativa":"No cartão o risco de crédito é do emissor: a empresa troca garantia por MDR."},{"perfil":"b2c","prioridade":"custo","id":"boleto_pix","justificativa":"Sem MDR: tarifa fixa baixa por boleto e Pix quase gratuito."},{"perfil":"mpe","prioridade":"liquidez","id":"bndes","justificativa":"O banco emissor paga o vendedor em cerca de 30 dias; o comprador parcela em até 48 vezes."},{"perfil":"mpe","prioridade":"garantia","id":"bndes","justificativa":"O risco do comprador fica com o banco emissor, não com o vendedor."},{"perfil":"mpe","prioridade":"custo","id":"bndes","justificativa":"Taxa favorecida para o comprador; o vendedor paga só a comissão do emissor."},{"perfil":"cartao","prioridade":"liquidez","id":"cartao","justificativa":"D+30 antecipável a D+0 com o adquirente, sem análise de crédito do cliente."},{"perfil":"cartao","prioridade":"garantia","id":"cartao","justificativa":"O devedor é o adquirente: risco de crédito praticamente nulo."},{"perfil":"cartao","prioridade":"custo","id":"cartao","justificativa":"Antecipe só a parcela que falta no caixa; o MDR já está pago."}]},"tipicas":{"format":"json","data":[{"id":"1-10-30","condicao":"1/10 net 30","d":1,"k":10,"n":30},{"id":"2-10-30","condicao":"2/10 net 30","d":2,"k":10,"n":30},{"id":"2-10-60","condicao":"2/10 net 60","d":2,"k":10,"n":60},{"id":"3-10-30","condicao":"3/10 net 30","d":3,"k":10,"n":30}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+
+</style>
+<style>
+.d42-pair { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); margin-top: 12px; }
+@container (min-width: 44rem) { .d42-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.d42-regua { min-height: 92px; }
+.d42-casc { min-height: 230px; }
+.d42-med { min-height: 128px; }
+.d42-panel { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 10px; background: var(--color-bg); min-width: 0; }
+.d42-dec { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; font-size: 15px; border-bottom: 1px solid var(--color-border-line); }
+.d42 .d42-dec b { font-variant-numeric: tabular-nums; }
+.d42-tip { margin-top: 10px; font-size: 14px; }
+.d42-tip > summary { cursor: pointer; color: var(--color-fg-muted); font-size: 13px; }
+.d42-cards { min-height: 180px; }
+.d42-cards .k-card .d42-big { font-family: var(--font-anthropic-serif); font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.d42-rec { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-navy); border-radius: var(--cds-radius); padding: 12px; background: var(--color-bg); }
+.d42-rec h3 { margin: 0 0 4px; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.5rem; }
+.d42-trow { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 4px 10px; align-items: center; margin-top: 10px; font-size: 14px; }
+.d42-bar { min-height: 34px; }
+.d42-track { height: 12px; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 3px; overflow: hidden; }
+.d42-fill { height: 100%; background: var(--k-navy); }
+.d42-bval { font-size: 13px; color: var(--color-fg-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.d42-seglab { font-size: 14px; margin: 10px 0 4px; display: block; }
+.d42-kname { font-family: var(--font-anthropic-serif); font-size: 1.5rem; line-height: 1.2; padding: 6px 0; border-bottom: 1px solid var(--color-border-line); }
+.d42-todos { margin-top: 12px; }
+.d42-todos > summary { cursor: pointer; font-size: 14px; color: var(--color-fg-muted); }
+.d42-table tr.k-sel td { font-weight: 600; }
+.d42-table td.d42-left, .d42-table th.d42-left { text-align: left; white-space: normal; }
+</style>
+
+<div class="k d42" id="d42">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D4.2 · Condições de venda</h1>
+      <p class="k-sub">Toda condição esconde um preço. Para quem vale a pena o desconto?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios tipicas">
+      <button class="k-btn d42-cen" data-cen="slide" aria-pressed="false">Slide V4.2</button>
+      <button class="k-btn d42-cen" data-cen="alfa" aria-pressed="false">Alfa → Horizonte</button>
+      <button class="k-btn d42-tipb" data-tip="1-10-30" aria-pressed="false">1/10 net 30</button>
+      <button class="k-btn d42-tipb" data-tip="2-10-30" aria-pressed="false">2/10 net 30</button>
+      <button class="k-btn d42-tipb" data-tip="2-10-60" aria-pressed="false">2/10 net 60</button>
+      <button class="k-btn d42-tipb" data-tip="3-10-30" aria-pressed="false">3/10 net 30</button>
+    </div>
+  </header>
+
+  <div class="k-tabs" role="tablist">
+    <button class="k-tab" id="tab-condicao" data-group="v" data-tab="condicao" role="tab" aria-selected="true">A condição</button>
+    <button class="k-tab" id="tab-praticas" data-group="v" data-tab="praticas" role="tab" aria-selected="false">Práticas brasileiras</button>
+    <button class="k-tab" id="tab-veiculo" data-group="v" data-tab="veiculo" role="tab" aria-selected="false">O veículo</button>
+  </div>
+
+  <div class="k-zones">
+    <!-- ============ CONTROLES ============ -->
+    <div class="k-zone" id="controles">
+      <section data-group="v" data-pane="condicao" data-source="cenarios tipicas">
+        <h2 class="k-zt">Condição d/k net n</h2>
+        <div class="k-ctl"><label for="c-d">Desconto d <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-d" data-k="d" min="0" max="5" step="0.1"><input type="number" data-k="d" min="0" max="5" step="0.1" aria-label="Desconto, %"></div></div>
+        <div class="k-ctl"><label for="c-k">Janela k <span class="k-u">dias</span></label>
+          <div class="k-in"><input type="range" id="c-k" data-k="k" min="0" max="30" step="1"><input type="number" data-k="k" min="0" max="30" step="1" aria-label="Janela, dias"></div></div>
+        <div class="k-ctl"><label for="c-n">Prazo n <span class="k-u">dias</span></label>
+          <div class="k-in"><input type="range" id="c-n" data-k="n" min="15" max="120" step="1"><input type="number" data-k="n" min="15" max="120" step="1" aria-label="Prazo, dias"></div></div>
+
+        <h2 class="k-zt2">Vendedor · Alfa</h2>
+        <div class="k-ctl"><label for="c-venda">Venda mensal a prazo <span class="k-u">R$ mil</span></label>
+          <div class="k-in"><input type="range" id="c-venda" data-k="venda" min="50" max="5000" step="10"><input type="number" data-k="venda" min="50" max="5000" step="10" aria-label="Venda mensal, R$ mil"></div></div>
+        <div class="k-ctl"><label for="c-m">Margem de contribuição <span class="k-u">%</span> <span class="k-info" tabindex="0">i<span class="k-tip">Não entra no resultado: serve para ver quanto da margem o desconto consome.</span></span></label>
+          <div class="k-in"><input type="range" id="c-m" data-k="m" min="10" max="60" step="1"><input type="number" data-k="m" min="10" max="60" step="1" aria-label="Margem de contribuição, %"></div></div>
+        <div class="k-ctl"><label for="c-ad">Adesão ao desconto <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-ad" data-k="adesao" min="0" max="100" step="1"><input type="number" data-k="adesao" min="0" max="100" step="1" aria-label="Adesão, %"></div></div>
+        <div class="k-ctl"><label for="c-i">Funding do vendedor <span class="k-u">% a.m.</span></label>
+          <div class="k-in"><input type="range" id="c-i" data-k="i" min="0.5" max="3" step="0.05"><input type="number" data-k="i" min="0.5" max="3" step="0.05" aria-label="Funding do vendedor, % a.m."></div></div>
+        <div class="k-ctl"><label for="c-e">Inadimplência evitada <span class="k-u">% da fatia descontada</span></label>
+          <div class="k-in"><input type="range" id="c-e" data-k="e" min="0" max="3" step="0.1"><input type="number" data-k="e" min="0" max="3" step="0.1" aria-label="Inadimplência evitada, %"></div></div>
+
+        <h2 class="k-zt2">Comprador · Horizonte</h2>
+        <div class="k-ctl"><label for="c-cc">Custo de capital <span class="k-u">% a.a.</span></label>
+          <div class="k-in"><input type="range" id="c-cc" data-k="cc" min="8" max="40" step="0.5"><input type="number" data-k="cc" min="8" max="40" step="0.5" aria-label="Custo de capital, % a.a."></div></div>
+      </section>
+
+      <section data-group="v" data-pane="praticas" data-source="cenarios praticas" hidden>
+        <h2 class="k-zt">Preço à vista × a prazo</h2>
+        <div class="k-ctl"><label for="c-desc">Desconto implícito do preço à vista <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-desc" data-k="descVista" min="0" max="5" step="0.1"><input type="number" data-k="descVista" min="0" max="5" step="0.1" aria-label="Desconto implícito, %"></div></div>
+        <p class="k-note">Prazo médio de cada prática = média dos dias das parcelas iguais.</p>
+      </section>
+
+      <section data-group="v" data-pane="veiculo" hidden>
+        <h2 class="k-zt">Filtros</h2>
+        <span class="d42-seglab">Perfil</span>
+        <div class="k-seg" role="group" aria-label="Perfil">
+          <button data-k="perfil" data-v="b2b" aria-pressed="true">B2B ticket alto</button>
+          <button data-k="perfil" data-v="b2c" aria-pressed="false">B2C varejo</button>
+          <button data-k="perfil" data-v="mpe" aria-pressed="false">MPE bens de capital</button>
+          <button data-k="perfil" data-v="cartao" aria-pressed="false">Fluxo de cartão</button>
+        </div>
+        <span class="d42-seglab">Prioridade</span>
+        <div class="k-seg" role="group" aria-label="Prioridade">
+          <button data-k="prio" data-v="liquidez" aria-pressed="true">Liquidez</button>
+          <button data-k="prio" data-v="garantia" aria-pressed="false">Garantia</button>
+          <button data-k="prio" data-v="custo" aria-pressed="false">Custo</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============ VISUAL ============ -->
+    <div class="k-zone" id="visual">
+      <section data-group="v" data-pane="condicao" id="condicao" data-source="cenarios tipicas">
+        <div class="k-ch"><h3>Régua do prazo</h3><span>dias desde a emissão</span></div>
+        <div class="k-chart d42-regua dash-skeleton" id="regua" data-draw="regua" role="img" aria-label="Régua com as zonas de desconto, preço cheio e multa"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-pos)"></i>Até k: preço com desconto</span>
+          <span><i style="background: var(--k-neutro)"></i>De k a n: preço cheio</span>
+          <span><i style="background: var(--k-neg)"></i>Após n: multa + juros (2% + 1%/mês, CDC/CC)</span>
+        </div>
+
+        <div class="d42-pair">
+          <div class="d42-panel" id="painel-vendedor">
+            <div class="k-ch"><h3>Vendedor · Alfa</h3><span>R$ por mês</span></div>
+            <div class="k-chart d42-casc dash-skeleton" id="cascata" data-draw="cascata" role="img" aria-label="Cascata do resultado mensal do vendedor"></div>
+            <p class="k-note">V = venda × adesão = R$ <b data-draw="v" data-q="V">—</b> mil/mês. Os <b data-draw="v" data-q="dpct">—</b> cedidos equivalem a <b data-draw="v" data-q="pctMargem">—</b> da margem de contribuição.</p>
+            <div class="k-diag" data-frases>
+              <span data-draw="frase"></span>
+              <p data-frase="oferece" hidden>Oferecer o desconto: aceleração e inadimplência evitada pagam a margem cedida.</p>
+              <p data-frase="naoOferece" hidden>Não oferecer: a margem cedida supera o que a antecipação devolve.</p>
+            </div>
+          </div>
+          <div class="d42-panel" id="painel-comprador">
+            <div class="k-ch"><h3>Comprador · Horizonte</h3><span>% a.a.</span></div>
+            <div class="k-chart d42-med dash-skeleton" id="medidor" data-draw="medidor" role="img" aria-label="Custo anualizado de recusar o desconto contra o custo de capital do comprador"></div>
+            <p class="k-note">Por R$ <b data-draw="v" data-q="P">—</b> de compra, em valor presente ao custo de capital: pagar no prazo R$ <b data-draw="v" data-q="vpPrazo">—</b> · tomar o desconto R$ <b data-draw="v" data-q="vpVista">—</b>.</p>
+            <div class="k-diag" data-frases>
+              <span data-draw="frase"></span>
+              <p data-frase="tomar" hidden>Tomar o desconto: recusar custa mais que o capital da Horizonte.</p>
+              <p data-frase="manter" hidden>Manter o prazo: o desconto é barato demais para o custo de capital dela.</p>
+            </div>
+          </div>
+        </div>
+
+        <details class="d42-tip" id="tipicas">
+          <summary>Condições típicas · custo anualizado da recusa (base 360)</summary>
+          <div class="k-tw" data-source="tipicas">
+            <table class="k-table d42-table">
+              <thead><tr><th>Condição</th><th>d</th><th>n − k (dias)</th><th>Linear</th><th>Composto</th></tr></thead>
+              <tbody data-draw="tipicas"></tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section data-group="v" data-pane="praticas" id="praticas" data-source="cenarios praticas" hidden>
+        <div class="k-ch"><h3>Mesma venda de R$ <b data-draw="v" data-q="prVenda">—</b> mil, três embalagens</h3><span>pricing implícito em % a.a.</span></div>
+        <p class="k-note">Sem desconto explícito, há preço: à vista × a prazo. Pricing implícito = (1 ÷ (1 − desconto))^(360 ÷ prazo médio) − 1.</p>
+        <div class="k-cards d42-cards dash-skeleton" data-draw="praticas"></div>
+      </section>
+
+      <section data-group="v" data-pane="veiculo" id="veiculo" data-source="recomendacoes instrumentos" hidden>
+        <div class="k-ch"><h3>Instrumento recomendado</h3><span>tripé liquidez · garantia · custo</span></div>
+        <div class="d42-rec">
+          <h3 data-draw="v" data-q="instNome">—</h3>
+          <p class="k-note" data-draw="v" data-q="instJust">—</p>
+          <div class="d42-trow"><span>Liquidez <span class="k-u">dias até o caixa</span></span><div class="d42-bar" data-draw="tripe" data-dim="liq"></div></div>
+          <div class="d42-trow"><span>Garantia</span><div class="d42-bar" data-draw="tripe" data-dim="gar"></div></div>
+          <div class="d42-trow"><span>Custo típico</span><div class="d42-bar" data-draw="tripe" data-dim="custo"></div></div>
+        </div>
+        <details class="d42-todos">
+          <summary>ver todos</summary>
+          <div class="k-tw" data-source="instrumentos">
+            <table class="k-table d42-table">
+              <thead><tr><th>Instrumento</th><th>Liquidez (dias)</th><th class="d42-left">Garantia</th><th class="d42-left">Custo típico</th><th class="d42-left">Quando usar</th></tr></thead>
+              <tbody data-draw="instr"></tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+    </div>
+
+    <!-- ============ LEITURA ============ -->
+    <div class="k-zone" id="leitura">
+      <section data-group="v" data-pane="condicao" data-source="cenarios tipicas">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Resultado do vendedor <span class="k-u">R$/mês</span></span><span class="k-kn" data-draw="v" data-q="resV">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Custo da recusa <span class="k-u">composto, a.a.</span> <span class="k-info" tabindex="0">i<span class="k-tip">Base 360: (1 + d ÷ (1 − d))^(360 ÷ (n − k)) − 1. O V5.1 usa base 365 e chega a um número um pouco maior; os dashboards padronizam em 360.</span></span></span><span class="k-kn" data-draw="v" data-q="custoComp">—</span></div>
+        <p class="k-note">Linear <b data-draw="v" data-q="custoLin">—</b> · base 365 <b data-draw="v" data-q="custo365">—</b> · custo de capital <b data-draw="v" data-q="cc">—</b></p>
+        <div class="d42-dec"><span>Alfa: oferecer?</span><b data-draw="dec" data-q="of">—</b></div>
+        <div class="d42-dec"><span>Horizonte: aceitar?</span><b data-draw="dec" data-q="ac">—</b></div>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase"></span>
+          <p data-frase="compradorGanha" hidden>A condição é cara para quem oferece e barata para quem aceita: a Alfa cede R$ <b data-draw="v" data-q="absRes">—</b>/mês para antecipar o que a Horizonte pagaria a <b data-draw="v" data-q="custoComp">—</b> a.a. Quem ganha é o comprador.</p>
+          <p data-frase="ambos" hidden>Raro: desconto compensa para os dois — alta adesão e inadimplência evitada relevante.</p>
+          <p data-frase="pequeno" hidden>O desconto é pequeno demais para o comprador (custo da recusa <b data-draw="v" data-q="custoComp">—</b> &lt; <b data-draw="v" data-q="cc">—</b>) — adesão real tenderá a zero.</p>
+          <p data-frase="ninguem" hidden>Condição mal calibrada: ninguém ganha.</p>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="praticas" data-source="cenarios praticas" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Pricing implícito do <b data-draw="v" data-q="pr0nome">—</b></span><span class="k-kn" data-draw="v" data-q="pr0">—</span></div>
+        <p class="k-note">Prazo médio <b data-draw="v" data-q="pr0pmr">—</b> dias · preço à vista <b data-draw="v" data-q="descV">—</b> abaixo do a prazo.</p>
+        <div class="k-diag"><p>A notação americana é rara no Brasil; a matemática é a mesma. Tratar "30/60/90" como prazo neutro é o erro mais frequente.</p></div>
+      </section>
+
+      <section data-group="v" data-pane="veiculo" data-source="recomendacoes instrumentos" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="d42-kname" data-draw="v" data-q="instNome">—</div>
+        <p class="k-note">Usado em: <b data-draw="v" data-q="instUso">—</b></p>
+        <div class="k-diag"><p>Regra prática: B2B recorrente → duplicata + boleto; B2C → boleto + Pix; empréstimo bancário → CCB; fluxo de cartão → recebível D+30 antecipável; MPE bens de capital → cartão BNDES.</p></div>
+      </section>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="cenarios tipicas praticas">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>No cenário-slide o desconto dá R$ <span data-draw="v" data-q="g-res">—</span>/mês para a Alfa. O que precisa mudar para compensar?
+          <details><summary>mostrar resposta</summary><p>Adesão alta não basta: o resultado é proporcional a V. Compensa se o capital liberado render <b data-draw="v" data-q="g-fund">—</b> a.m. (funding que zera a perda) ou se a inadimplência evitada subir para <b data-draw="v" data-q="g-inad">—</b>.</p></details>
+        </li>
+        <li>Mude n para <span data-draw="v" data-q="g-q2n">—</span> dias. Por que a Horizonte agora deve manter o prazo?
+          <details><summary>mostrar resposta</summary><p>O custo da recusa cai para <b data-draw="v" data-q="g-c60">—</b> a.a., abaixo dos <b data-draw="v" data-q="g-cc">—</b> do funding dela. Os mesmos <b data-draw="v" data-q="g-d">—</b> comprados por <b data-draw="v" data-q="g-nk60">—</b> dias de antecipação são baratos; em <b data-draw="v" data-q="g-nk">—</b> dias custam <b data-draw="v" data-q="g-c">—</b>.</p></details>
+        </li>
+        <li>Na aba "Práticas brasileiras", o <span data-draw="v" data-q="pr0nome">—</span> com preço à vista <span data-draw="v" data-q="g-desc">—</span> menor é "prazo grátis"?
+          <details><summary>mostrar resposta</summary><p>Não: equivale a <b data-draw="v" data-q="g-pr">—</b> a.a. embutidos no preço de tabela. É pricing implícito: mesma matemática, embalagem diferente.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+
+})();</script>
+<script>(function () {
+
+/* D4.2 · Condições de venda — motor de cálculo (funções puras, sem DOM).
+   Compartilhado com D5.1 (o mesmo título visto pela Horizonte).
+   Núcleo em decimais (d = 0,02; i = 0,012 a.m.; cc = 0,17 a.a.); M.estado converte dos controles em %.
+   Valores monetários em R$ mil. */
+(function (root) {
+  const M = {};
+
+  // custo anualizado de recusar o desconto "d/k net n" — base 360 por padrão (00_Convencoes §3.6)
+  M.custoRecusa = function (d, k, n, base = 360) {
+    const dias = n - k;
+    if (!(dias > 0) || !(d < 1)) return { lin: Infinity, comp: Infinity };
+    const r = d / (1 - d);
+    return { lin: r * base / dias, comp: Math.pow(1 + r, base / dias) - 1 };
+  };
+
+  // conta do vendedor (R$ mil/mês). V = venda × adesão
+  M.vendedor = function ({ venda, adesao, d, k, n, iVend, e }) {
+    const V = venda * adesao;
+    const margemCedida = V * d;
+    const aceleracao = V * (n - k) / 30 * iVend;
+    const inadEvitada = V * e;
+    return { V, margemCedida, aceleracao, inadEvitada, res: -margemCedida + aceleracao + inadEvitada };
+  };
+
+  // break-evens do vendedor: funding mensal e inadimplência evitada que zeram o resultado
+  M.breakEvenFunding = ({ d, k, n, e }) => (n - k > 0 ? (d - e) / ((n - k) / 30) : Infinity);
+  M.breakEvenInad = ({ d, k, n, iVend }) => d - (n - k) / 30 * iVend;
+
+  // conta do comprador: VP dos dois caminhos para um preço P, ao custo de capital anual cc
+  M.comprador = function ({ d, k, n, cc }, P = 100) {
+    const iComp = Math.pow(1 + cc, 1 / 12) - 1;
+    const vpPrazo = P / Math.pow(1 + iComp, n / 30);
+    const vpVista = P * (1 - d) / Math.pow(1 + iComp, k / 30);
+    const c = M.custoRecusa(d, k, n);
+    return { iComp, vpPrazo, vpVista, custoLin: c.lin, custoComp: c.comp, tomar: c.comp > cc };
+  };
+
+  // práticas brasileiras: prazo médio de parcelas iguais e pricing implícito do desconto à vista
+  M.pmr = (dias) => (dias && dias.length ? dias.reduce((a, b) => a + b, 0) / dias.length : 0);
+  M.pricingImplicito = (descVista, pmr) => (pmr > 0 && descVista < 1 ? Math.pow(1 / (1 - descVista), 360 / pmr) - 1 : null);
+
+  // estado a partir dos controles (em %, como na tela)
+  M.estado = function (C) {
+    const p = { venda: C.venda, adesao: C.adesao / 100, d: C.d / 100, k: C.k, n: C.n, iVend: C.i / 100, e: C.e / 100, cc: C.cc / 100 };
+    const vend = M.vendedor(p);
+    const comp = M.comprador(p);
+    const c365 = M.custoRecusa(p.d, p.k, p.n, 365);
+    const oferecer = vend.res > 0;
+    let caso;
+    if (vend.res <= 0 && comp.tomar) caso = 'compradorGanha';
+    else if (vend.res > 0 && comp.tomar) caso = 'ambos';
+    else if (vend.res > 0 && !comp.tomar) caso = 'pequeno';
+    else caso = 'ninguem';
+    return {
+      p, vend, comp, oferecer, aceitar: comp.tomar, caso, custo365: c365.comp,
+      beFunding: M.breakEvenFunding(p), beInad: M.breakEvenInad(p),
+      pctMargem: C.m > 0 ? p.d / (C.m / 100) : null,
+    };
+  };
+
+  root.M42 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D4.2 · Condições de venda
+   Testes de aderência (Spec §7), conferidos com M42 em node (32 PASS / 0 FAIL):
+   2/10 net 30: linear 36,7% · composto 43,9% · 1/10 net 30 19,8% · 2/10 net 60 15,7% · 3/10 net 30 73,0%
+   Slide: V 60 · −1.200 · +480 · +480 · −240/mês · não oferecer · comprador 43,9% > 17% → tomar
+   Alfa → Horizonte (2/10, n 60, V 300): 15,7% < 17% → manter · −6,0 + 6,0 + 2,4 = +2,4 mil/mês
+   Práticas 30/60/90 com 2,5%: 16,4% a.a.
+   ============================================================ */
+const ST = window.D42 = { S: null, cen: null, mexido: false };
+const IDS = ['cenarios', 'tipicas', 'praticas', 'instrumentos', 'recomendacoes'];
+const NOMES = ['v', 'dec', 'frase', 'regua', 'cascata', 'medidor', 'tipicas', 'praticas', 'tripe', 'instr'];
+const Q2_N = 60;          // prazo n sugerido na pergunta-guia 2
+const LIQ_MAX = 60;       // escala da barra de liquidez (dias)
+const NIVEL_MAX = 3;      // escala de garantia e custo (1 a 3)
+const X_MAX = 1.5;        // teto do medidor (150% a.a.)
+const P_COMPRA = 100;     // preço de referência do VP do comprador (M42.comprador)
+
+/* ---------- dados ---------- */
+const rows = (id) => K.num(dash.data(id).data);
+const cenario = (id) => rows('cenarios').find((r) => r.id === id);
+const tipica = (id) => rows('tipicas').find((r) => r.id === id);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const atual = () => M42.estado(ST.S);
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const CAMPOS = ['d', 'k', 'n', 'venda', 'm', 'adesao', 'i', 'e', 'cc', 'descVista'];
+const ctlDe = (r) => { const o = {}; CAMPOS.forEach((c) => { o[c] = r[c]; }); return o; };
+const base = (extra) => M42.estado({ ...ctlDe(cenario('slide')), ...(extra || {}) });
+const dias = (p) => String(p.parcelas).split('|').map(Number);
+const praticas = () => rows('praticas').map((p) => { const pmr = M42.pmr(dias(p)); return { ...p, pmr, pr: M42.pricingImplicito(ST.S.descVista / 100, pmr) }; });
+const rec = () => rows('recomendacoes').find((r) => r.perfil === ST.S.perfil && r.prioridade === ST.S.prio);
+const inst = () => { const r = rec(); return r ? rows('instrumentos').find((x) => x.id === r.id) : null; };
+const pct1 = (x) => K.p(x, 1);
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  document.querySelectorAll('.d42-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+  document.querySelectorAll('.d42-tipb').forEach((b) => {
+    const t = K.status(IDS) === 'ok' ? tipica(b.dataset.tip) : null;
+    b.setAttribute('aria-pressed', String(!!t && ST.S && t.d === ST.S.d && t.k === ST.S.k && t.n === ST.S.n));
+  });
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  const keep = ST.S ? { perfil: ST.S.perfil, prio: ST.S.prio } : { perfil: 'b2b', prio: 'liquidez' };
+  ST.S = { ...ctlDe(r), ...keep }; ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  aplicar('slide');
+  K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  const S = ST.S;
+  if (k === 'k' && S.k >= S.n) S.n = Math.min(120, S.k + 1);
+  if (k === 'n' && S.n <= S.k) S.k = Math.max(0, S.n - 1);
+  if (['d', 'k', 'n', 'venda', 'm', 'adesao', 'i', 'e', 'cc'].includes(k)) ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d42-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+document.querySelectorAll('.d42-tipb').forEach((b) => b.addEventListener('click', () => {
+  if (K.status(IDS) !== 'ok' || !ST.S) return;
+  const t = tipica(b.dataset.tip); if (!t) return;
+  ST.S.d = t.d; ST.S.k = t.k; ST.S.n = t.n; ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+}));
+K.tabs('v', () => K.redraw(NOMES));
+
+/* ---------- régua de três zonas ---------- */
+dash.draw('regua', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const S = ST.S;
+  const { svg, W, H } = K.svg(el, 92, 280);
+  el.replaceChildren(svg.node());
+  const fim = Math.max(S.n * 1.3, S.n + 15);
+  const x = d3.scaleLinear([0, fim], [10, W - 10]);
+  const y0 = 30, h = 26;
+  const zonas = [[0, S.k, 'var(--k-pos)', '−' + K.n(S.d, 1) + '%'], [S.k, S.n, 'var(--k-neutro)', 'preço cheio'], [S.n, fim, 'var(--k-neg)', 'multa + juros']];
+  zonas.forEach(([a, b, cor, lab]) => {
+    if (b <= a) return;
+    svg.append('rect').attr('x', x(a)).attr('width', x(b) - x(a)).attr('y', y0).attr('height', h).attr('fill', cor).attr('opacity', 0.85);
+    const t = svg.append('text').attr('class', 'k-svgt').style('fill', '#fff').style('font-weight', 600).attr('text-anchor', 'middle').attr('x', (x(a) + x(b)) / 2).attr('y', y0 + h / 2 + 5).text(lab);
+    if (t.node().getComputedTextLength() > x(b) - x(a) - 4) t.remove();
+  });
+  const marcas = [[0, '0'], [S.k, 'k = ' + K.n(S.k) + ' d'], [S.n, 'n = ' + K.n(S.n) + ' d']];
+  let ultimoFim = -Infinity;
+  marcas.forEach(([v, lab], i) => {
+    svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', y0 - 4).attr('y2', y0 + h + 4).attr('stroke', 'var(--color-fg)').attr('stroke-width', i ? 2 : 1);
+    const t = svg.append('text').attr('class', 'k-svgt').attr('text-anchor', i ? 'middle' : 'start').attr('x', x(v)).attr('y', y0 + h + 22).text(lab);
+    const bb = t.node().getBBox();
+    if (bb.x < ultimoFim + 6) t.attr('y', y0 - 10);
+    else ultimoFim = bb.x + bb.width;
+    if (bb.x + bb.width > W) t.attr('text-anchor', 'end');
+  });
+});
+
+/* ---------- cascata do vendedor (R$/mês) ---------- */
+dash.draw('cascata', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), v = R.vend;
+  const mc = -v.margemCedida * 1000, ac = v.aceleracao * 1000, ie = v.inadEvitada * 1000, res = v.res * 1000;
+  const passos = [
+    { l1: 'margem', l2: 'cedida', a: 0, b: mc, v: mc, tipo: 'del' },
+    { l1: 'aceleração', l2: '', a: mc, b: mc + ac, v: ac, tipo: 'del' },
+    { l1: 'inad.', l2: 'evitada', a: mc + ac, b: res, v: ie, tipo: 'del' },
+    { l1: 'resultado', l2: '', a: 0, b: res, v: res, tipo: 'tot' },
+  ];
+  const { svg, W, H } = K.svg(el, 230, 280);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const ext = d3.extent(passos.flatMap((p) => [p.a, p.b]).concat([0]));
+  const span = Math.max(1, ext[1] - ext[0]);
+  const y = d3.scaleLinear([ext[0] - span * 0.15, ext[1] + span * 0.15], [H - 40, 10]);
+  const xb = d3.scaleBand(passos.map((_, i) => i), [8, W - 8]).padding(0.28);
+  svg.append('line').attr('x1', 8).attr('x2', W - 8).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  passos.forEach((p, i) => {
+    const top = y(Math.max(p.a, p.b)), alt = Math.max(1, Math.abs(y(p.a) - y(p.b)));
+    const cor = p.tipo === 'tot' ? (p.v > 0 ? 'var(--k-pos)' : p.v < 0 ? 'var(--k-neg)' : 'var(--k-neutro)') : (p.v >= 0 ? 'var(--k-pos)' : 'var(--k-neg)');
+    svg.append('rect').attr('x', xb(i)).attr('width', xb.bandwidth()).attr('y', top).attr('height', alt).attr('rx', 3).attr('fill', cor).attr('opacity', p.tipo === 'tot' ? 1 : 0.8)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show((p.l1 + ' ' + p.l2).trim(), [[cor, 'R$/mês', K.s(p.v)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+    if (i < passos.length - 1) {
+      svg.append('line').attr('x1', xb(i) + xb.bandwidth()).attr('x2', xb(i + 1)).attr('y1', y(p.b)).attr('y2', y(p.b)).attr('stroke', 'var(--color-fg-muted)').attr('stroke-dasharray', '3 3');
+    }
+    const acima = p.v >= 0;
+    svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('text-anchor', 'middle').attr('x', xb(i) + xb.bandwidth() / 2)
+      .attr('y', acima ? top - 5 : top + alt + 15).text(K.s(p.v));
+    const t = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', xb(i) + xb.bandwidth() / 2).attr('y', H - 22);
+    t.append('tspan').attr('x', xb(i) + xb.bandwidth() / 2).text(p.l1);
+    if (p.l2) t.append('tspan').attr('x', xb(i) + xb.bandwidth() / 2).attr('dy', 14).text(p.l2);
+  });
+});
+
+/* ---------- medidor do comprador ---------- */
+dash.draw('medidor', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), cc = R.p.cc;
+  const lin = R.comp.custoLin, comp = R.comp.custoComp;
+  const { svg, W, H } = K.svg(el, 128, 280);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const xmax = Math.min(X_MAX, Math.max(0.5, cc * 1.3, Math.min(comp, X_MAX) * 1.1));
+  const meas = svg.append('text').attr('class', 'k-svgt').text('Composto'); const mL = meas.node().getComputedTextLength() + 12; meas.remove();
+  const x = d3.scaleLinear([0, xmax], [mL, W - 48]);
+  const cor = R.comp.tomar ? 'var(--k-pos)' : 'var(--k-amber)';
+  const barras = [['Linear', lin, 30], ['Composto', comp, 66]];
+  const ticks = x.ticks(4);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', (t) => x(t)).attr('x2', (t) => x(t)).attr('y1', 20).attr('y2', 96).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', 112).text((t) => K.p(t, 0));
+  barras.forEach(([nome, val, yy]) => {
+    const vv = Math.min(val, xmax);
+    svg.append('text').attr('class', 'k-svgt').attr('x', 0).attr('y', yy + 15).text(nome);
+    svg.append('rect').attr('x', x(0)).attr('y', yy).attr('height', 22).attr('width', Math.max(1, x(vv) - x(0))).attr('rx', 3).attr('fill', cor).attr('opacity', nome === 'Linear' ? 0.6 : 1)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('Custo da recusa', [[cor, nome, pct1(val)], [null, 'Custo de capital', pct1(cc)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+    svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', x(vv) + 5).attr('y', yy + 16).text((val > xmax ? '› ' : '') + pct1(val));
+  });
+  svg.append('line').attr('x1', x(cc)).attr('x2', x(cc)).attr('y1', 16).attr('y2', 96).attr('stroke', 'var(--k-navy)').attr('stroke-width', 2).attr('stroke-dasharray', '5 3');
+  const t = svg.append('text').attr('class', 'k-svgt').style('fill', 'var(--k-navy)').style('font-weight', 600).attr('x', x(cc)).attr('y', 12).attr('text-anchor', 'middle').text('custo de capital ' + pct1(cc));
+  const bb = t.node().getBBox();
+  if (bb.x < 0) t.attr('text-anchor', 'start').attr('x', 0); else if (bb.x + bb.width > W) t.attr('text-anchor', 'end').attr('x', W);
+});
+
+/* ---------- tabela das condições típicas ---------- */
+dash.draw('tipicas', (el) => {
+  el.replaceChildren();
+  if (!pronto()) return;
+  rows('tipicas').forEach((t) => {
+    const c = M42.custoRecusa(t.d / 100, t.k, t.n);
+    const tr = document.createElement('tr');
+    if (t.d === ST.S.d && t.k === ST.S.k && t.n === ST.S.n) tr.className = 'k-sel';
+    [t.condicao, K.n(t.d, 0) + '%', K.n(t.n - t.k), pct1(c.lin), pct1(c.comp)].forEach((s) => { const td = document.createElement('td'); td.textContent = s; tr.append(td); });
+    el.append(tr);
+  });
+});
+
+/* ---------- práticas brasileiras ---------- */
+dash.draw('praticas', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  el.replaceChildren();
+  const desc = ST.S.descVista / 100;
+  praticas().forEach((p, i) => {
+    const c = document.createElement('div'); c.className = 'k-card' + (i === 0 ? ' k-on' : '');
+    const h = document.createElement('h4'); h.textContent = p.pratica;
+    const d = document.createElement('p'); d.className = 'k-note'; d.textContent = p.descricao + ' · prazo médio ' + K.n(p.pmr) + ' dias';
+    const big = document.createElement('div'); big.className = 'd42-big'; big.textContent = p.pr == null ? '—' : pct1(p.pr);
+    const u = document.createElement('span'); u.className = 'k-u'; u.textContent = ' a.a. embutidos';
+    big.append(u);
+    const v = document.createElement('p'); v.className = 'k-note';
+    v.textContent = 'R$ ' + K.n(p.venda) + ' mil a prazo = R$ ' + K.n(p.venda * (1 - desc), 1) + ' mil à vista';
+    c.append(h, big, d, v); el.append(c);
+  });
+});
+
+/* ---------- veículo: tripé e tabela ---------- */
+dash.draw('tripe', (el) => {
+  el.replaceChildren();
+  const ok = pronto() && inst();
+  if (!ok) { el.textContent = '—'; return; }
+  const I = inst(), dim = el.dataset.dim;
+  const frac = dim === 'liq' ? Math.min(1, I.liquidez_dias / LIQ_MAX) : (dim === 'gar' ? I.garantia : I.custo) / NIVEL_MAX;
+  const txt = dim === 'liq' ? (I.liquidez_dias === 0 ? 'imediata' : K.n(I.liquidez_dias) + ' dias') : dim === 'gar' ? I.garantia_txt : I.custo_txt;
+  const cor = dim === 'liq' ? 'var(--k-blue)' : dim === 'gar' ? 'var(--k-navy)' : 'var(--k-amber)';
+  const tr = document.createElement('div'); tr.className = 'd42-track';
+  const fi = document.createElement('div'); fi.className = 'd42-fill'; fi.style.width = Math.max(2, frac * 100) + '%'; fi.style.background = cor; tr.append(fi);
+  const v = document.createElement('div'); v.className = 'd42-bval'; v.textContent = txt;
+  el.append(tr, v);
+});
+dash.draw('instr', (el) => {
+  el.replaceChildren();
+  if (!pronto()) return;
+  const sel = inst();
+  rows('instrumentos').forEach((I) => {
+    const tr = document.createElement('tr');
+    if (sel && sel.id === I.id) tr.className = 'k-sel';
+    [[I.instrumento, ''], [K.n(I.liquidez_dias), ''], [I.garantia_txt, 'd42-left'], [I.custo_txt, 'd42-left'], [I.uso, 'd42-left']].forEach(([s, c]) => { const td = document.createElement('td'); td.textContent = s; if (c) td.className = c; tr.append(td); });
+    el.append(tr);
+  });
+});
+
+/* ---------- números ---------- */
+const VAL = {
+  resV: (R) => K.s(R.vend.res * 1000), absRes: (R) => K.n(Math.abs(R.vend.res * 1000)),
+  custoComp: (R) => pct1(R.comp.custoComp), custoLin: (R) => pct1(R.comp.custoLin), custo365: (R) => pct1(R.custo365), cc: (R) => pct1(R.p.cc),
+  V: (R) => K.n(R.vend.V, 1), dpct: (R) => K.p(R.p.d, 1), pctMargem: (R) => (R.pctMargem == null ? null : pct1(R.pctMargem)),
+  P: () => K.n(P_COMPRA), vpPrazo: (R) => K.n(R.comp.vpPrazo, 2), vpVista: (R) => K.n(R.comp.vpVista, 2),
+  prVenda: () => { const p = praticas()[0]; return p ? K.n(p.venda) : null; },
+  pr0nome: () => { const p = praticas()[0]; return p ? p.pratica : null; },
+  pr0: () => { const p = praticas()[0]; return p && p.pr != null ? pct1(p.pr) : null; },
+  pr0pmr: () => { const p = praticas()[0]; return p ? K.n(p.pmr) : null; },
+  descV: () => K.n(ST.S.descVista, 1) + '%',
+  instNome: () => { const I = inst(); return I ? I.instrumento : null; },
+  instJust: () => { const r = rec(); return r ? r.justificativa : null; },
+  instUso: () => { const I = inst(); return I ? I.uso : null; },
+  'g-res': () => K.s(base().vend.res * 1000), 'g-fund': () => K.p(base().beFunding, 1), 'g-inad': () => K.p(base().beInad, 1),
+  'g-q2n': () => K.n(Q2_N), 'g-c60': () => pct1(base({ n: Q2_N }).comp.custoComp), 'g-cc': () => pct1(base().p.cc), 'g-d': () => K.p(base().p.d, 0),
+  'g-nk60': () => K.n(Q2_N - base().p.k), 'g-nk': () => K.n(base().p.n - base().p.k), 'g-c': () => pct1(base().comp.custoComp),
+  'g-desc': () => K.n(cenario('slide').descVista, 1) + '%',
+  'g-pr': () => { const p = rows('praticas')[0]; return p ? pct1(M42.pricingImplicito(cenario('slide').descVista / 100, M42.pmr(dias(p)))) : null; },
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('dec', (el) => {
+  const ok = pronto();
+  const sim = ok ? (el.dataset.q === 'of' ? atual().oferecer : atual().aceitar) : null;
+  el.classList.toggle('k-pos', sim === true);
+  el.classList.toggle('k-neg', sim === false);
+  el.textContent = sim == null ? '—' : sim ? 'sim' : 'não';
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const R = atual();
+    keys.push(R.caso, R.oferecer ? 'oferece' : 'naoOferece', R.aceitar ? 'tomar' : 'manter');
+  }
+  K.frases(el, keys);
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

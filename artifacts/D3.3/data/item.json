@@ -1,0 +1,13 @@
+[
+ {"chave":"D","valor":10000,"descricao":"Demanda anual, rolos (V3.4)"},
+ {"chave":"S","valor":50,"descricao":"Custo por pedido, R$ (V3.4)"},
+ {"chave":"H","valor":2,"descricao":"Custo de carregamento didático, R$/rolo·ano (V3.4)"},
+ {"chave":"P","valor":120,"descricao":"Preço de compra, R$/rolo (00_Convencoes §4.4)"},
+ {"chave":"cdi","valor":12,"descricao":"Componente financeiro do H realista, % a.a."},
+ {"chave":"armaz","valor":3,"descricao":"Armazenagem, % a.a."},
+ {"chave":"seguro","valor":1,"descricao":"Seguros e perdas, % a.a."},
+ {"chave":"obsol","valor":2,"descricao":"Obsolescência, % a.a."},
+ {"chave":"diasUteis","valor":250,"descricao":"Dias úteis por ano (d = D/250)"},
+ {"chave":"p","valor":80,"descricao":"Taxa de produção da Alfa, rolos/dia útil"},
+ {"chave":"multiplo","valor":50,"descricao":"Múltiplo prático (caixa fechada), rolos"}
+]

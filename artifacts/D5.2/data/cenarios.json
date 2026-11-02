@@ -1,0 +1,6 @@
+[
+ {"id":"slide","nome":"Slide V5.2","fornecedor":"fina","prazo":60,"pont":95,"riscoZero":1,"compromisso":0},
+ {"id":"alfa","nome":"Horizonte × Alfa","fornecedor":"alfa","prazo":60,"pont":95,"riscoZero":0,"compromisso":0},
+ {"id":"alfa90","nome":"Alfa, 90 dias","fornecedor":"alfa","prazo":90,"pont":95,"riscoZero":0,"compromisso":0},
+ {"id":"pont80","nome":"Pontualidade 80%","fornecedor":"disj","prazo":60,"pont":80,"riscoZero":0,"compromisso":0}
+]

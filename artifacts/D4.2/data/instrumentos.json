@@ -1,0 +1,8 @@
+[
+ {"id":"duplicata","instrumento":"Duplicata + boleto","liquidez_dias":60,"garantia":2,"garantia_txt":"média (título executivo, protesto)","custo":1,"custo_txt":"baixo (tarifa por boleto)","uso":"B2B recorrente"},
+ {"id":"boleto_pix","instrumento":"Boleto + Pix","liquidez_dias":1,"garantia":1,"garantia_txt":"fraca (sem aceite)","custo":1,"custo_txt":"baixo (tarifa fixa; Pix quase zero)","uso":"B2C"},
+ {"id":"ccb","instrumento":"CCB","liquidez_dias":0,"garantia":3,"garantia_txt":"forte (título executivo + garantias)","custo":3,"custo_txt":"alto (juros + IOF)","uso":"empréstimo bancário"},
+ {"id":"cartao","instrumento":"Recebível de cartão","liquidez_dias":30,"garantia":3,"garantia_txt":"forte (devedor é o adquirente)","custo":2,"custo_txt":"médio (MDR + antecipação)","uso":"fluxo de cartão, D+30 antecipável"},
+ {"id":"bndes","instrumento":"Cartão BNDES","liquidez_dias":30,"garantia":3,"garantia_txt":"forte (risco do banco emissor)","custo":2,"custo_txt":"médio (comissão do emissor)","uso":"MPE bens de capital"},
+ {"id":"np","instrumento":"Nota promissória","liquidez_dias":60,"garantia":2,"garantia_txt":"média (título executivo, sem lastro em venda)","custo":1,"custo_txt":"baixo","uso":"acordos e renegociações"}
+]

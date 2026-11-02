@@ -1,0 +1,50 @@
+[
+ {
+  "cenario": "Alfa T0",
+  "horizonte": 8,
+  "crescimento": 15,
+  "margem": 5,
+  "payout": 50,
+  "dPMRV": 0,
+  "dPMRE": 0,
+  "dPMPF": 0,
+  "capex": 0,
+  "captacao": 0
+ },
+ {
+  "cenario": "Alfa, tendência atual",
+  "horizonte": 8,
+  "crescimento": 15,
+  "margem": 5,
+  "payout": 70,
+  "dPMRV": 6,
+  "dPMRE": 4,
+  "dPMPF": 0,
+  "capex": 0,
+  "captacao": 0
+ },
+ {
+  "cenario": "Expansão eufórica",
+  "horizonte": 16,
+  "crescimento": 35,
+  "margem": 4,
+  "payout": 60,
+  "dPMRV": 0,
+  "dPMRE": 6,
+  "dPMPF": 0,
+  "capex": 0,
+  "captacao": 0
+ },
+ {
+  "cenario": "Mitigação",
+  "horizonte": 8,
+  "crescimento": 15,
+  "margem": 5,
+  "payout": 30,
+  "dPMRV": 0,
+  "dPMRE": 0,
+  "dPMPF": 0,
+  "capex": 0,
+  "captacao": 2500
+ }
+]

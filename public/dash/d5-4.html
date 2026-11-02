@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D5.4 · Calculadora de CET</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"ancora","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"bullet","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"bullet","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"nominal","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":0,"tarifa":0,"tributos":14.25,"garantia":0,"recip":0,"base":252},{"id":"curta","principal":1000000,"prazo":2,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"base","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":365},{"id":"cuid1","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":365},{"id":"cuid2","principal":1000000,"prazo":2,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"cuid3","principal":1000000,"prazo":36,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"cuid4","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":10,"base":252}]},"parametros":{"format":"json","data":[{"chave":"principal","valor":1000000},{"chave":"prazo","valor":12},{"chave":"cdi","valor":12},{"chave":"spread","valor":5},{"chave":"iofFixo","valor":0.38},{"chave":"iofDia","valor":0.0041},{"chave":"iofTeto","valor":365},{"chave":"tarifa","valor":0.44},{"chave":"tributos","valor":14.25},{"chave":"garantia","valor":2000},{"chave":"recip","valor":0},{"chave":"base","valor":252}]},"slide":{"format":"json","data":[{"chave":"entradaSlide","valor":976200},{"chave":"parcelaSlide","valor":91679},{"chave":"nSlide","valor":12},{"chave":"tirSlide","valor":1.46},{"chave":"cetSlide","valor":19},{"chave":"taxaParcelaSlide","valor":1.5},{"chave":"face","valor":100000},{"chave":"dNom","valor":5},{"chave":"prazoDias","valor":60}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+
+
+</style>
+<style>
+.d54-wf { min-height: 280px; }
+.d54-tl { min-height: 170px; }
+.d54-lv { min-height: 220px; }
+.d54-mn { min-height: 130px; }
+.d54-mncols { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+.d54-mncol { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); padding: var(--cds-pad-sm) var(--cds-pad-md); }
+.d54-mncol h4 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.d54-mncol .k-kpi:last-child { border-bottom: 0; }
+.d54-mncol .k-kn { font-size: 1.6rem; }
+.d54-linha { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; padding: 3px 0; font-variant-numeric: tabular-nums; }
+.d54-linha span:first-child { color: var(--color-fg-muted); }
+.d54-cuid { margin-top: 10px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); }
+.d54-cuid > summary { cursor: pointer; padding: 6px 10px; font-size: 14px; }
+.d54-cuid ol { margin: 0; padding: 0 10px 8px 1.6rem; display: grid; gap: 6px; font-size: 13px; line-height: 1.4; }
+.d54-cuid .k-btn { font-size: 12px; padding: 1px 8px; margin-left: 4px; }
+.d54-ft { max-height: 22rem; overflow: auto; margin-top: 8px; }
+.d54-ft table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.d54-ft th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); text-align: left; padding: 2px 4px; }
+.d54-ft td { padding: 1px 3px; }
+.d54-ft td:first-child { color: var(--color-fg-muted); width: 1.8rem; text-align: right; }
+.d54-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.d54-iof { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
+.d54-iof label { font-size: 12px; color: var(--color-fg-muted); display: block; }
+</style>
+
+<div class="k d54" id="d54">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D5.4 · Calculadora de CET</h1>
+      <p class="k-sub">Nominal é a fachada. Quanto a Horizonte paga de fato?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d54-cen" data-cen="ancora" aria-pressed="false">CG 12 m Price</button>
+      <button class="k-btn d54-cen" data-cen="bullet" aria-pressed="false">CG 12 m Bullet</button>
+      <button class="k-btn d54-cen" data-cen="nominal" aria-pressed="false">Só nominal</button>
+      <button class="k-btn d54-cen" data-cen="curta" aria-pressed="false">Operação curta</button>
+      <button class="k-btn d54-cen" data-cen="base" aria-pressed="false">Sem base comum</button>
+    </div>
+  </header>
+
+  <div class="k-tabs" role="tablist">
+    <button class="k-tab" id="tab-waterfall" data-group="v" data-tab="waterfall" role="tab" aria-selected="true">Waterfall</button>
+    <button class="k-tab" id="tab-livres" data-group="v" data-tab="livres" role="tab" aria-selected="false">Fluxos livres</button>
+    <button class="k-tab" id="tab-nominal" data-group="v" data-tab="nominal" role="tab" aria-selected="false">Mesma nominal</button>
+  </div>
+
+  <div class="k-zones">
+    <!-- ===================== CONTROLES ===================== -->
+    <div class="k-zone" id="controles" data-source="parametros cenarios slide">
+      <section data-group="v" data-pane="waterfall">
+        <h2 class="k-zt">Operação</h2>
+        <div class="k-ctl"><label for="c-P">Principal <span class="k-u">R$</span></label>
+          <input class="k-num" type="number" id="c-P" data-k="P" min="10000" max="50000000" step="1000" aria-label="Principal, R$"></div>
+        <div class="k-ctl"><label for="c-n">Prazo <span class="k-u">meses</span></label>
+          <div class="k-in"><input type="range" id="c-n" data-k="n" min="1" max="36" step="1"><input type="number" data-k="n" min="1" max="36" step="1" aria-label="Prazo, meses"></div></div>
+        <div class="k-ctl"><label for="c-cdi">CDI <span class="k-u">% a.a.</span></label>
+          <div class="k-in"><input type="range" id="c-cdi" data-k="cdi" min="5" max="20" step="0.25"><input type="number" data-k="cdi" min="5" max="20" step="0.25" aria-label="CDI, % a.a."></div></div>
+        <div class="k-ctl"><label for="c-sp">Spread <span class="k-u">% a.a.</span></label>
+          <div class="k-in"><input type="range" id="c-sp" data-k="spread" min="0" max="15" step="0.25"><input type="number" data-k="spread" min="0" max="15" step="0.25" aria-label="Spread, % a.a."></div></div>
+        <div class="k-ctl"><span class="k-lab">Amortização</span>
+          <div class="k-seg" role="group" aria-label="Amortização"><button data-k="amort" data-v="price">Price · parcelas iguais</button><button data-k="amort" data-v="bullet">Bullet · principal no fim</button></div></div>
+
+        <h2 class="k-zt2">Retenções na origem</h2>
+        <div class="k-ctl"><label class="k-toggle"><input type="checkbox" data-k="iofOn"> IOF <span class="k-info" tabindex="0">i<span class="k-tip">Crédito PJ: alíquota fixa sobre o principal + alíquota diária sobre cada amortização pelo seu prazo, com teto de <b data-draw="v" data-q="iofTeto">—</b> dias. Price conta 30 dias por parcela; bullet conta o prazo da operação em dias corridos (12 meses = 365 dias).</span></span></label>
+          <div class="d54-iof">
+            <div><label for="c-iofF">Fixa <span class="k-u">% do principal</span></label><input class="k-num" type="number" id="c-iofF" data-k="iofFixo" min="0" max="3" step="0.01" aria-label="IOF fixo, %"></div>
+            <div><label for="c-iofD">Diária <span class="k-u">% a.d.</span></label><input class="k-num" type="number" id="c-iofD" data-k="iofDia" min="0" max="0.02" step="0.0001" aria-label="IOF diário, % ao dia"></div>
+          </div></div>
+        <div class="k-ctl"><label for="c-tar">Tarifas <span class="k-u">% do principal · cadastro / TAC</span></label>
+          <div class="k-in"><input type="range" id="c-tar" data-k="tarifa" min="0" max="3" step="0.01"><input type="number" data-k="tarifa" min="0" max="3" step="0.01" aria-label="Tarifas, % do principal"></div></div>
+        <div class="k-ctl"><label for="c-trib">Tributos sobre tarifas <span class="k-u">% · PIS/COFINS/ISS</span></label>
+          <div class="k-in"><input type="range" id="c-trib" data-k="tributos" min="0" max="20" step="0.25"><input type="number" data-k="tributos" min="0" max="20" step="0.25" aria-label="Tributos sobre tarifas, %"></div></div>
+        <div class="k-ctl"><label for="c-gar">Custo de garantia <span class="k-u">R$ · avaliação + registro</span></label>
+          <input class="k-num" type="number" id="c-gar" data-k="garantia" min="0" max="100000" step="100" aria-label="Custo de garantia, R$"></div>
+        <div class="k-ctl"><label for="c-rec">Saldo médio exigido <span class="k-u">% do principal parado até o fim</span> <span class="k-info" tabindex="0">i<span class="k-tip">Reciprocidade: o banco exige que parte do crédito fique parada em conta durante a operação. Não entra na planilha de CET do banco — é o custo oculto do cuidado 4. Zero no exemplo-âncora.</span></span></label>
+          <div class="k-in"><input type="range" id="c-rec" data-k="recip" min="0" max="20" step="1"><input type="number" data-k="recip" min="0" max="20" step="1" aria-label="Saldo médio exigido, % do principal"></div></div>
+
+        <h2 class="k-zt2">Base de anualização</h2>
+        <div class="k-seg" role="group" aria-label="Base de anualização"><button data-k="base" data-v="252">252 du</button><button data-k="base" data-v="360">360</button><button data-k="base" data-v="365">365</button></div>
+      </section>
+
+      <section data-group="v" data-pane="livres" hidden>
+        <h2 class="k-zt">Fluxos do tomador</h2>
+        <p class="k-note">Entrada líquida com sinal +, pagamentos com sinal −. Linhas em branco são ignoradas.</p>
+        <div class="k-ctl"><span class="k-lab">Datas em</span>
+          <div class="k-seg" role="group" aria-label="Unidade das datas"><button data-k="unid" data-v="mes">meses</button><button data-k="unid" data-v="dia">dias</button></div></div>
+        <div class="k-ctl"><span class="k-lab">Base de anualização</span>
+          <div class="k-seg" role="group" aria-label="Base de anualização"><button data-k="base" data-v="252">252 du</button><button data-k="base" data-v="360">360</button><button data-k="base" data-v="365">365</button></div></div>
+        <div class="d54-btns">
+          <button class="k-btn d54-pre" type="button" data-pre="slide" aria-pressed="false">Proposta do slide 4</button>
+          <button class="k-btn d54-pre" type="button" data-pre="copia" aria-pressed="false">Copiar da aba Waterfall</button>
+          <button class="k-btn d54-pre" type="button" data-pre="limpa" aria-pressed="false">Limpar</button>
+        </div>
+        <div class="d54-ft">
+          <table aria-label="Fluxos livres">
+            <thead><tr><th>#</th><th>Data <span data-draw="v" data-q="lv-un">—</span></th><th>Valor <span class="k-u">R$</span></th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="0" aria-label="Data do fluxo 1"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="0" aria-label="Valor do fluxo 1"></td></tr>
+              <tr><td>2</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="1" aria-label="Data do fluxo 2"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="1" aria-label="Valor do fluxo 2"></td></tr>
+              <tr><td>3</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="2" aria-label="Data do fluxo 3"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="2" aria-label="Valor do fluxo 3"></td></tr>
+              <tr><td>4</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="3" aria-label="Data do fluxo 4"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="3" aria-label="Valor do fluxo 4"></td></tr>
+              <tr><td>5</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="4" aria-label="Data do fluxo 5"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="4" aria-label="Valor do fluxo 5"></td></tr>
+              <tr><td>6</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="5" aria-label="Data do fluxo 6"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="5" aria-label="Valor do fluxo 6"></td></tr>
+              <tr><td>7</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="6" aria-label="Data do fluxo 7"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="6" aria-label="Valor do fluxo 7"></td></tr>
+              <tr><td>8</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="7" aria-label="Data do fluxo 8"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="7" aria-label="Valor do fluxo 8"></td></tr>
+              <tr><td>9</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="8" aria-label="Data do fluxo 9"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="8" aria-label="Valor do fluxo 9"></td></tr>
+              <tr><td>10</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="9" aria-label="Data do fluxo 10"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="9" aria-label="Valor do fluxo 10"></td></tr>
+              <tr><td>11</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="10" aria-label="Data do fluxo 11"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="10" aria-label="Valor do fluxo 11"></td></tr>
+              <tr><td>12</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="11" aria-label="Data do fluxo 12"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="11" aria-label="Valor do fluxo 12"></td></tr>
+              <tr><td>13</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="12" aria-label="Data do fluxo 13"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="12" aria-label="Valor do fluxo 13"></td></tr>
+              <tr><td>14</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="13" aria-label="Data do fluxo 14"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="13" aria-label="Valor do fluxo 14"></td></tr>
+              <tr><td>15</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="14" aria-label="Data do fluxo 15"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="14" aria-label="Valor do fluxo 15"></td></tr>
+              <tr><td>16</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="15" aria-label="Data do fluxo 16"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="15" aria-label="Valor do fluxo 16"></td></tr>
+              <tr><td>17</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="16" aria-label="Data do fluxo 17"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="16" aria-label="Valor do fluxo 17"></td></tr>
+              <tr><td>18</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="17" aria-label="Data do fluxo 18"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="17" aria-label="Valor do fluxo 18"></td></tr>
+              <tr><td>19</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="18" aria-label="Data do fluxo 19"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="18" aria-label="Valor do fluxo 19"></td></tr>
+              <tr><td>20</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="19" aria-label="Data do fluxo 20"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="19" aria-label="Valor do fluxo 20"></td></tr>
+              <tr><td>21</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="20" aria-label="Data do fluxo 21"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="20" aria-label="Valor do fluxo 21"></td></tr>
+              <tr><td>22</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="21" aria-label="Data do fluxo 22"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="21" aria-label="Valor do fluxo 22"></td></tr>
+              <tr><td>23</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="22" aria-label="Data do fluxo 23"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="22" aria-label="Valor do fluxo 23"></td></tr>
+              <tr><td>24</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="23" aria-label="Data do fluxo 24"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="23" aria-label="Valor do fluxo 24"></td></tr>
+              <tr><td>25</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="24" aria-label="Data do fluxo 25"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="24" aria-label="Valor do fluxo 25"></td></tr>
+              <tr><td>26</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="25" aria-label="Data do fluxo 26"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="25" aria-label="Valor do fluxo 26"></td></tr>
+              <tr><td>27</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="26" aria-label="Data do fluxo 27"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="26" aria-label="Valor do fluxo 27"></td></tr>
+              <tr><td>28</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="27" aria-label="Data do fluxo 28"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="27" aria-label="Valor do fluxo 28"></td></tr>
+              <tr><td>29</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="28" aria-label="Data do fluxo 29"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="28" aria-label="Valor do fluxo 29"></td></tr>
+              <tr><td>30</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="29" aria-label="Data do fluxo 30"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="29" aria-label="Valor do fluxo 30"></td></tr>
+              <tr><td>31</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="30" aria-label="Data do fluxo 31"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="30" aria-label="Valor do fluxo 31"></td></tr>
+              <tr><td>32</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="31" aria-label="Data do fluxo 32"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="31" aria-label="Valor do fluxo 32"></td></tr>
+              <tr><td>33</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="32" aria-label="Data do fluxo 33"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="32" aria-label="Valor do fluxo 33"></td></tr>
+              <tr><td>34</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="33" aria-label="Data do fluxo 34"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="33" aria-label="Valor do fluxo 34"></td></tr>
+              <tr><td>35</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="34" aria-label="Data do fluxo 35"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="34" aria-label="Valor do fluxo 35"></td></tr>
+              <tr><td>36</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="35" aria-label="Data do fluxo 36"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="35" aria-label="Valor do fluxo 36"></td></tr>
+              <tr><td>37</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="36" aria-label="Data do fluxo 37"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="36" aria-label="Valor do fluxo 37"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="nominal" hidden>
+        <h2 class="k-zt">Mesma taxa, duas estruturas</h2>
+        <div class="k-ctl"><label for="c-mnd">Taxa nominal no período <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-mnd" data-k="mnD" min="0.5" max="15" step="0.1"><input type="number" data-k="mnD" min="0.5" max="15" step="0.1" aria-label="Taxa nominal no período, %"></div></div>
+        <div class="k-ctl"><label for="c-mnp">Prazo <span class="k-u">dias corridos</span></label>
+          <div class="k-in"><input type="range" id="c-mnp" data-k="mnPrazo" min="15" max="360" step="1"><input type="number" data-k="mnPrazo" min="15" max="360" step="1" aria-label="Prazo, dias"></div></div>
+        <div class="k-ctl"><label for="c-mnf">Valor de face / principal <span class="k-u">R$</span></label>
+          <input class="k-num" type="number" id="c-mnf" data-k="mnFace" min="1000" max="10000000" step="1000" aria-label="Valor de face, R$"></div>
+        <h2 class="k-zt2">Base de anualização</h2>
+        <div class="k-seg" role="group" aria-label="Base de anualização"><button data-k="base" data-v="252">252 du</button><button data-k="base" data-v="360">360</button><button data-k="base" data-v="365">365</button></div>
+      </section>
+    </div>
+
+    <!-- ===================== VISUAL ===================== -->
+    <div class="k-zone" id="visual" data-source="parametros cenarios slide">
+      <section data-group="v" data-pane="waterfall" id="waterfall">
+        <div class="k-ch"><h3>Da taxa nominal ao CET <span class="k-info" tabindex="0">i<span class="k-tip">O slide 4 de V5.4 mostra entrada <b data-draw="v" data-q="sl-ent">—</b>, <b data-draw="v" data-q="sl-n">—</b> × <b data-draw="v" data-q="sl-parc">—</b>, TIR <b data-draw="v" data-q="sl-tir">—</b> e CET ≈ <b data-draw="v" data-q="sl-cet">—</b>. Esses fluxos dão TIR <b data-draw="v" data-q="sl-tirR">—</b> → CET <b data-draw="v" data-q="sl-cetR">—</b> (aba Fluxos livres), e <b data-draw="v" data-q="sl-parc">—</b> é a parcela a <b data-draw="v" data-q="sl-tx">—</b> a.m., não a <b data-draw="v" data-q="sl-nom">—</b>. Recalculado aqui: Price <b data-draw="v" data-q="sl-price">—</b> · Bullet <b data-draw="v" data-q="sl-bullet">—</b>.</span></span></h3><span>CET a.a. acumulando cada retenção · degraus em p.p.</span></div>
+        <div class="k-chart d54-wf dash-skeleton" id="cascata-cet" data-draw="wf" role="img" aria-label="Waterfall da taxa nominal ao CET com o acréscimo de cada retenção"></div>
+        <div class="k-ch"><h3>Fluxos do tomador</h3><span>R$ · entrada líquida em t = 0, saídas mensais</span></div>
+        <div class="k-chart d54-tl dash-skeleton" id="linha-fluxos" data-draw="tl" role="img" aria-label="Linha do tempo dos fluxos de caixa do tomador"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-navy)"></i>Nominal</span>
+          <span><i style="background: var(--k-amber)"></i>Retenção</span>
+          <span><i style="background: var(--k-neg)"></i>CET</span>
+          <span><i style="background: var(--k-pos)"></i>Entra no caixa</span>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="livres" id="livres" hidden>
+        <div class="k-ch"><h3>Fluxos informados</h3><span>R$ · + entra, − sai</span></div>
+        <div class="k-chart d54-lv dash-skeleton" id="grafico-livres" data-draw="lv" role="img" aria-label="Fluxos de caixa informados na tabela"></div>
+      </section>
+
+      <section data-group="v" data-pane="nominal" id="mesma" hidden>
+        <div class="k-ch"><h3>Mesma nominal, CET diferente</h3><span>R$ · dois fluxos de dois pontos</span></div>
+        <div class="d54-mncols">
+          <div class="d54-mncol" id="col-antecipacao">
+            <h4>Antecipação · deságio antecipado</h4>
+            <div class="k-chart d54-mn dash-skeleton" data-draw="mn" data-lado="ant" role="img" aria-label="Antecipação: recebe hoje o valor com deságio e paga a face no vencimento"></div>
+            <div class="d54-linha"><span>Recebe hoje</span><b data-draw="v" data-q="mn-antRec">—</b></div>
+            <div class="d54-linha"><span>Paga no vencimento</span><b data-draw="v" data-q="mn-antPag">—</b></div>
+            <div class="d54-linha"><span>TIR no período</span><b data-draw="v" data-q="mn-antTir">—</b></div>
+            <div class="k-kpi"><span class="k-kl">CET a.a.</span><span class="k-kn" data-draw="v" data-q="mn-antCet">—</span></div>
+          </div>
+          <div class="d54-mncol" id="col-postecipado">
+            <h4>Conta garantida · juros postecipados</h4>
+            <div class="k-chart d54-mn dash-skeleton" data-draw="mn" data-lado="post" role="img" aria-label="Juros postecipados: recebe o principal hoje e paga principal mais juros no vencimento"></div>
+            <div class="d54-linha"><span>Recebe hoje</span><b data-draw="v" data-q="mn-postRec">—</b></div>
+            <div class="d54-linha"><span>Paga no vencimento</span><b data-draw="v" data-q="mn-postPag">—</b></div>
+            <div class="d54-linha"><span>TIR no período</span><b data-draw="v" data-q="mn-postTir">—</b></div>
+            <div class="k-kpi"><span class="k-kl">CET a.a.</span><span class="k-kn" data-draw="v" data-q="mn-postCet">—</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== LEITURA ===================== -->
+    <div class="k-zone" id="leitura" data-source="parametros cenarios slide">
+      <section data-group="v" data-pane="waterfall">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">CET <span class="k-u">a.a.</span></span><span class="k-kn" data-draw="v" data-q="cet">—</span></div>
+        <div class="k-kpi"><span class="k-kl">TIR <span class="k-u">a.m.</span></span><span class="k-kn" data-draw="v" data-q="tir">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Gap nominal → CET <span class="k-u">p.p.</span></span><span class="k-kn" data-draw="v" data-q="gap">—</span></div>
+        <div class="d54-linha"><span>Entrada líquida em t = 0</span><b data-draw="v" data-q="liq">—</b></div>
+        <div class="d54-linha" data-frases><span><span data-draw="frase" data-grp="parc"></span><span data-frase="price" hidden>Parcela mensal</span><span data-frase="bullet" hidden>Juros mensais · principal no fim</span></span><b data-draw="v" data-q="pmt">—</b></div>
+        <div class="d54-linha"><span>IOF</span><b><span data-draw="v" data-q="iof">—</span> · <span data-draw="v" data-q="iofP">—</span></b></div>
+        <div class="d54-linha"><span>Custo total em R$</span><b data-draw="v" data-q="custo">—</b></div>
+        <p class="k-note">Mesma TIR em outras bases: 252 du <b data-draw="v" data-q="b252">—</b> · 360 <b data-draw="v" data-q="b360">—</b> · 365 <b data-draw="v" data-q="b365">—</b></p>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="gap"></span>
+          <p data-frase="leve" hidden>Retenções leves: a nominal quase conta a história. Confirme a base de anualização antes de comparar.</p>
+          <p data-frase="tipica" hidden>O CET fica <b data-draw="v" data-q="gapAbs">—</b> p.p. acima da nominal — faixa típica de capital de giro (V5.4). Compare bancos sempre por esta linha.</p>
+          <p data-frase="pesada" hidden>Retenções na origem pesam <b data-draw="v" data-q="gapAbs">—</b> p.p.: em operação curta ou amortizada, IOF e tarifas são cobrados sobre um principal que você não recebe inteiro. Peça a planilha de CET ao banco.</p>
+          <p data-frase="b365" hidden>Base 365: a mesma TIR vira <b data-draw="v" data-q="b365">—</b> contra <b data-draw="v" data-q="b360">—</b> em 252 du ou 360 — e até a nominal sobe para <b data-draw="v" data-q="nom365">—</b>. Compare propostas sempre na mesma base.</p>
+          <p data-frase="recip" hidden>Saldo médio de <b data-draw="v" data-q="recipV">—</b> parado até o fim soma <b data-draw="v" data-q="recipD">—</b> p.p. que nenhuma planilha de CET do banco mostra.</p>
+        </div>
+        <details class="d54-cuid" id="cuidados">
+          <summary><span class="k-info">i</span> 4 cuidados ao comparar CET</summary>
+          <ol>
+            <li>Mesma base anual: 252 du, 360 ou 365 mudam o número sem mudar o custo.<button class="k-btn d54-ver" type="button" data-cen="cuid1" aria-pressed="false">ver</button></li>
+            <li>Pontual × recorrente: tarifa única pesa mais quanto mais curta a operação.<button class="k-btn d54-ver" type="button" data-cen="cuid2" aria-pressed="false">ver</button></li>
+            <li>Ponderar o horizonte: anualizar compara taxas, não o impacto no caixa — olhe também o custo total em R$.<button class="k-btn d54-ver" type="button" data-cen="cuid3" aria-pressed="false">ver</button></li>
+            <li>Custos ocultos: saldo médio e reciprocidade não aparecem na planilha do banco.<button class="k-btn d54-ver" type="button" data-cen="cuid4" aria-pressed="false">ver</button></li>
+          </ol>
+        </details>
+      </section>
+
+      <section data-group="v" data-pane="livres" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">CET <span class="k-u">a.a.</span></span><span class="k-kn" data-draw="v" data-q="lv-cet">—</span></div>
+        <div class="k-kpi"><span class="k-kl">TIR <span class="k-u">por <span data-draw="v" data-q="lv-per">—</span></span></span><span class="k-kn" data-draw="v" data-q="lv-tir">—</span></div>
+        <div class="d54-linha"><span>Soma dos fluxos</span><b data-draw="v" data-q="lv-soma">—</b></div>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="lv"></span>
+          <p data-frase="ok" hidden>TIR de <b data-draw="v" data-q="lv-tir">—</b> por <span data-draw="v" data-q="lv-per">—</span> → CET de <b data-draw="v" data-q="lv-cet">—</b> a.a. na base <span data-draw="v" data-q="lv-base">—</span>.</p>
+          <p data-frase="slide" hidden>É a proposta do slide 4: entrada <b data-draw="v" data-q="sl-ent">—</b> e <b data-draw="v" data-q="sl-n">—</b> × <b data-draw="v" data-q="sl-parc">—</b> dão CET de <b data-draw="v" data-q="sl-cetR">—</b>, não <b data-draw="v" data-q="sl-cet">—</b>. A <b data-draw="v" data-q="sl-nom">—</b> a.a. com os encargos descritos, o CET é <b data-draw="v" data-q="sl-price">—</b> (Price) — o slide precisa de correção.</p>
+          <p data-frase="sem" hidden>Informe ao menos uma entrada (+) e uma saída (−): sem troca de sinal não existe TIR.</p>
+          <p data-frase="nao" hidden>Estes fluxos não têm TIR entre −90% e +100% por período: confira sinais e datas.</p>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="nominal" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">CET antecipação</span><span class="k-kn" data-draw="v" data-q="mn-antCet">—</span></div>
+        <div class="k-kpi"><span class="k-kl">CET postecipado</span><span class="k-kn" data-draw="v" data-q="mn-postCet">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Diferença <span class="k-u">p.p.</span></span><span class="k-kn" data-draw="v" data-q="mn-dif">—</span></div>
+        <div class="k-diag">
+          <p>Mesmos <b data-draw="v" data-q="mn-d">—</b> nominais: antecipar custa <b data-draw="v" data-q="mn-antCet">—</b> e tomar postecipado custa <b data-draw="v" data-q="mn-postCet">—</b>. Receber menos hoje é mais caro do que devolver mais depois — a TIR enxerga, a nominal não.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="k-help" id="guia" data-source="parametros cenarios slide">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Por que o IOF adiciona <b data-draw="v" data-q="g-iofD">—</b> p.p. ao CET se ele é só <b data-draw="v" data-q="g-iofP">—</b> do principal?
+          <details><summary>mostrar resposta</summary><p>É retido na origem sobre um empréstimo amortizado em <b data-draw="v" data-q="g-n12">—</b> parcelas: o principal fica em média <b data-draw="v" data-q="g-durM">—</b> meses com a empresa — <b data-draw="v" data-q="g-iofP">—</b> pagos em ~<b data-draw="v" data-q="g-durA">—</b> ano viram <b data-draw="v" data-q="g-iofD">—</b> p.p. ao ano. Em bullet o IOF sobe para <b data-draw="v" data-q="g-iofB">—</b> (365 dias cheios), mas soma só <b data-draw="v" data-q="g-iofBD">—</b> p.p.: o principal fica o ano inteiro com a empresa.</p></details>
+        </li>
+        <li>No painel "mesma nominal", a antecipação custa <b data-draw="v" data-q="g-dif">—</b> p.p. a mais. De onde vem a diferença se os <b data-draw="v" data-q="g-d">—</b> são iguais?
+          <details><summary>mostrar resposta</summary><p>O deságio é cobrado sobre <b data-draw="v" data-q="g-face">—</b>, mas entram só <b data-draw="v" data-q="g-rec">—</b>: a TIR é <b data-draw="v" data-q="g-tirAnt">—</b> no período. No postecipado os <b data-draw="v" data-q="g-d">—</b> incidem sobre o que de fato entrou. CET <b data-draw="v" data-q="g-cetAnt">—</b> contra <b data-draw="v" data-q="g-cetPost">—</b>.</p></details>
+        </li>
+        <li>Encurte o prazo para <b data-draw="v" data-q="g-nCurta">—</b> meses. O que acontece com o degrau "+Tarifas"?
+          <details><summary>mostrar resposta</summary><p>A tarifa de <b data-draw="v" data-q="g-tar">—</b> é única: amortizada em <b data-draw="v" data-q="g-nCurta">—</b> meses em vez de <b data-draw="v" data-q="g-n12">—</b>, vira <b data-draw="v" data-q="g-tarC">—</b> p.p. anualizados, contra <b data-draw="v" data-q="g-tar12">—</b> p.p. em <b data-draw="v" data-q="g-n12">—</b> meses. Tarifa pontual pesa mais quanto mais curta a operação (cuidado 2).</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+
+
+})();</script>
+<script>(function () {
+
+/* D5.4 · Calculadora de CET — funções puras (sem DOM). Motor compartilhado com D2.6.
+   Taxas em decimal (0,17 = 17%); valores em R$; prazo em meses.
+   C = {P, n, cdi, spread, amort: 'price'|'bullet', iofOn, iofFixo, iofDia, iofTeto, tarifa, tributos, garantia, recip, base: 252|360|365} */
+(function (root) {
+  const M = {};
+  // períodos por ano: mês = 21 du (252) ou 30 dias corridos (360/365)
+  M.porAno = (base, unidade) => {
+    if (unidade === 'dia') return Number(base);
+    return Number(base) === 365 ? 365 / 30 : 12;
+  };
+  M.diasAno = (base) => (Number(base) === 365 ? 365 : 360);   // anualização de um período em dias corridos
+  M.taxaMensal = (nomAA) => Math.pow(1 + nomAA, 1 / 12) - 1;
+
+  // parcelas: Price (PMT constante) ou Bullet (juros mensais, principal no fim)
+  M.parcelas = function (P, im, n, modo) {
+    const out = [];
+    let saldo = P;
+    const pmt = im === 0 ? P / n : P * im / (1 - Math.pow(1 + im, -n));
+    for (let k = 1; k <= n; k++) {
+      const juros = saldo * im;
+      const amort = modo === 'bullet' ? (k === n ? P : 0) : pmt - juros;
+      out.push({ k, juros, amort, saida: juros + amort });
+      saldo -= amort;
+    }
+    return out;
+  };
+
+  // dias corridos até a amortização: Price conta 30 d por parcela (fecha 11.987, §3.1);
+  // bullet conta o prazo da operação em dias corridos, n × 365/12 (12 meses = 365 d cheios → 18.765, §4.4)
+  M.diasIOF = (k, n, modo) => (modo === 'bullet' ? Math.round(n * 365 / 12) : 30 * k);
+  // IOF crédito PJ: fixo sobre o principal + diário sobre cada amortização pelo seu prazo (teto em dias)
+  M.iof = function (P, parc, o) {
+    if (!o.iofOn) return { fixo: 0, diario: 0, total: 0 };
+    const fixo = o.iofFixo * P;
+    const n = parc.length;
+    const diario = parc.reduce((s, p) => s + p.amort * o.iofDia * Math.min(M.diasIOF(p.k, n, o.amort), o.iofTeto), 0);
+    return { fixo, diario, total: fixo + diario };
+  };
+
+  // TIR por bisseção: fluxos [{t, v}], t em períodos; null se não houver troca de sinal
+  M.vpl = (fl, r) => fl.reduce((s, f) => s + f.v / Math.pow(1 + r, f.t), 0);
+  M.tir = function (fl, lo = -0.9, hi = 1, it = 300) {
+    if (!fl.length || !fl.some((f) => f.v > 0) || !fl.some((f) => f.v < 0)) return null;
+    let a = lo, b = hi, fa = M.vpl(fl, a), fb = M.vpl(fl, b);
+    if (!Number.isFinite(fa) || !Number.isFinite(fb) || (fa > 0) === (fb > 0)) return null;
+    for (let i = 0; i < it; i++) {
+      const m = (a + b) / 2, fm = M.vpl(fl, m);
+      if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m;
+    }
+    return (a + b) / 2;
+  };
+  M.cet = (tirPer, porAno) => (tirPer == null ? null : Math.pow(1 + tirPer, porAno) - 1);
+
+  // uma operação completa; `ate` limita as retenções (para o waterfall): 0 nominal · 1 +IOF · 2 +tarifa · 3 +tributos · 4 +garantia · 5 +reciprocidade
+  M.operacao = function (C, ate = 5) {
+    const nom = C.cdi + C.spread;
+    const im = M.taxaMensal(nom);
+    const parc = M.parcelas(C.P, im, C.n, C.amort);
+    const iofV = M.iof(C.P, parc, C);
+    const tarifa = C.tarifa * C.P;
+    const trib = C.tributos * tarifa;
+    const recip = C.recip * C.P;
+    const ret = {
+      iof: ate >= 1 ? iofV.total : 0,
+      tarifa: ate >= 2 ? tarifa : 0,
+      trib: ate >= 3 ? trib : 0,
+      garantia: ate >= 4 ? C.garantia : 0,
+      recip: ate >= 5 ? recip : 0,
+    };
+    const liquido = C.P - ret.iof - ret.tarifa - ret.trib - ret.garantia;
+    const fl = [{ t: 0, v: liquido - ret.recip }].concat(parc.map((p) => ({ t: p.k, v: -p.saida + (p.k === C.n ? ret.recip : 0) })));
+    const tirM = M.tir(fl);
+    const pa = M.porAno(C.base, 'mes');
+    const saidas = parc.reduce((s, p) => s + p.saida, 0);
+    return {
+      nom, im, parc, iof: iofV, tarifaV: tarifa, tribV: trib, garantia: C.garantia, recipV: recip, ret, liquido, fl, tirM,
+      cet: M.cet(tirM, pa), cetNom: M.cet(im, pa),
+      pmt: parc[0].saida, custoTotal: saidas - liquido,
+    };
+  };
+
+  // waterfall: CET acumulando as retenções na ordem IOF → tarifa → tributos → garantia (→ reciprocidade, se houver)
+  M.ETAPAS = ['nominal', 'iof', 'tarifa', 'trib', 'garantia', 'recip'];
+  M.waterfall = function (C) {
+    const ult = C.recip > 0 ? 5 : 4;
+    const out = [];
+    for (let k = 0; k <= ult; k++) {
+      const o = M.operacao(C, k);
+      out.push({ id: M.ETAPAS[k], liquido: o.liquido, tir: o.tirM, cet: o.cet, delta: k === 0 ? null : o.cet - out[k - 1].cet });
+    }
+    return out;
+  };
+
+  // mesma nominal: deságio antecipado × juros postecipados, d no período de `prazo` dias
+  M.mesmaNominal = function (face, d, prazo, base) {
+    const per = M.diasAno(base) / prazo;
+    const tAnt = 1 / (1 - d) - 1, tPost = d;
+    return {
+      ant: { recebe: face * (1 - d), paga: face, tir: tAnt, cet: Math.pow(1 + tAnt, per) - 1 },
+      post: { recebe: face, paga: face * (1 + d), tir: tPost, cet: Math.pow(1 + tPost, per) - 1 },
+    };
+  };
+
+  // fluxos livres: linhas [{t, v}] (t em meses ou dias) → TIR por período e CET na base
+  M.livre = function (linhas, unidade, base) {
+    const fl = linhas.filter((r) => Number.isFinite(r.t) && Number.isFinite(r.v) && r.v !== 0 && r.t >= 0);
+    const tir = M.tir(fl, -0.9, unidade === 'dia' ? 0.2 : 1);
+    return { fl, tir, cet: M.cet(tir, M.porAno(base, unidade)), soma: fl.reduce((s, f) => s + f.v, 0) };
+  };
+
+  root.M54 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D5.4 · Calculadora de CET
+   Testes de aderência (Spec §7), conferidos com M54 em node (43 PASS / 0 FAIL):
+   Âncora Price: PMT 90.638 · IOF 11.987 · líquido 980.986 (spec 980.983 com tributos 630) · TIR 1,625% · CET 21,34%
+   Waterfall: 17,00 → 19,70 → 20,72 → 20,87 → 21,34 (+2,70 / +1,02 / +0,15 / +0,47)
+   Bullet: IOF 18.765 · líquido 974.208 · juros 13.170 · CET 20,33% · Só nominal: 17,00%
+   Mesma nominal 5% / 60 d: 5,263% → 36,04% · 5,000% → 34,01% · Livre (slide): 1,889% → 25,17%
+   Operação curta (2 m): 17,0 → 22,4 → 26,9 (tarifa +4,4 p.p.)
+   ============================================================ */
+const ST = window.D54 = { S: null, cen: null, mexido: false, L: null, livreSlide: false, pre: null };
+const IDS = ['parametros', 'cenarios', 'slide'];
+const NOMES = ['wf', 'tl', 'lv', 'mn', 'v', 'frase'];
+const NLIN = 37;                      // t = 0 + até 36 parcelas
+const WF_KEYS = ['P', 'n', 'cdi', 'spread', 'amort', 'iofOn', 'iofFixo', 'iofDia', 'tarifa', 'tributos', 'garantia', 'recip', 'base'];
+
+/* ---------- dados ---------- */
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const par = () => K.obj(dash.data('parametros').data);
+const sl = () => K.obj(dash.data('slide').data);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const pct = (v, d = 2) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+const pp = (v, d = 2) => (v == null || !Number.isFinite(v) ? '—' : K.s(v * 100, d));
+const rs = (v) => K.n(v, 0);
+function toC(S) {
+  return {
+    P: S.P, n: S.n, cdi: S.cdi / 100, spread: S.spread / 100, amort: S.amort, iofOn: !!S.iofOn,
+    iofFixo: S.iofFixo / 100, iofDia: S.iofDia / 100, iofTeto: par().iofTeto,
+    tarifa: S.tarifa / 100, tributos: S.tributos / 100, garantia: S.garantia, recip: S.recip / 100, base: S.base,
+  };
+}
+const linhaC = (r) => ({ P: r.principal, n: r.prazo, cdi: r.cdi, spread: r.spread, amort: r.amort, iofOn: !!Number(r.iofOn), tarifa: r.tarifa, tributos: r.tributos, garantia: r.garantia, recip: r.recip, base: r.base });
+const CdoCen = (id) => { const p = par(); return toC({ ...linhaC(cenario(id)), iofFixo: p.iofFixo, iofDia: p.iofDia }); };
+const atual = () => M54.operacao(toC(ST.S));
+const wfAtual = () => M54.waterfall(toC(ST.S));
+const livreAtual = () => M54.livre(ST.L.map((r) => ({ t: r.t === '' ? NaN : Number(r.t), v: r.v === '' ? NaN : Number(r.v) })), ST.S.unid, ST.S.base);
+const mnAtual = () => M54.mesmaNominal(ST.S.mnFace, ST.S.mnD / 100, ST.S.mnPrazo, ST.S.base);
+
+/* ---------- controles ---------- */
+function marca() {
+  const ok = pronto();
+  document.querySelectorAll('.d54-cen, .d54-ver').forEach((b) => b.setAttribute('aria-pressed', String(ok && !ST.mexido && b.dataset.cen === ST.cen)));
+  document.querySelectorAll('.d54-pre').forEach((b) => b.setAttribute('aria-pressed', String(ok && b.dataset.pre === ST.pre)));
+}
+function preencheTabela() {
+  document.querySelectorAll('.d54-lt, .d54-lv').forEach((inp) => {
+    const r = ST.L[Number(inp.dataset.i)];
+    if (!r) return;
+    inp.value = inp.classList.contains('d54-lt') ? r.t : r.v;
+  });
+}
+function sincroniza() { K.sync(ST.S); marca(); }
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  const p = par();
+  ST.S = { ...ST.S, ...linhaC(r), iofFixo: p.iofFixo, iofDia: p.iofDia };
+  ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+function presetLivre(tipo) {
+  const vazio = () => Array.from({ length: NLIN }, () => ({ t: '', v: '' }));
+  const L = vazio();
+  if (tipo === 'slide') {
+    const s = sl();
+    L[0] = { t: 0, v: s.entradaSlide };
+    for (let k = 1; k <= s.nSlide && k < NLIN; k++) L[k] = { t: k, v: -s.parcelaSlide };
+    ST.S.unid = 'mes';
+  } else if (tipo === 'copia') {
+    atual().fl.slice(0, NLIN).forEach((f, i) => { L[i] = { t: f.t, v: Math.round(f.v * 100) / 100 }; });
+    ST.S.unid = 'mes';
+  }
+  ST.L = L; ST.livreSlide = tipo === 'slide'; ST.pre = tipo;
+  preencheTabela(); sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok') { marca(); return; }
+  if (!ST.S) {
+    const s = sl();
+    ST.S = { unid: 'mes', mnD: s.dNom, mnPrazo: s.prazoDias, mnFace: s.face };
+    aplicar('ancora');
+    presetLivre('slide');
+    K.redraw(NOMES);
+  }
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  if (WF_KEYS.includes(k)) ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+});
+const mostra = K.tabs('v', () => K.redraw(NOMES));
+document.querySelectorAll('.d54-cen, .d54-ver').forEach((b) => b.addEventListener('click', () => {
+  if (K.status(IDS) !== 'ok' || !ST.S) return;
+  aplicar(b.dataset.cen);
+  mostra('waterfall');
+  K.redraw(NOMES);
+}));
+document.querySelectorAll('.d54-pre').forEach((b) => b.addEventListener('click', () => {
+  if (!pronto()) return;
+  presetLivre(b.dataset.pre); K.redraw(NOMES);
+}));
+document.querySelectorAll('.d54-lt, .d54-lv').forEach((inp) => inp.addEventListener('change', () => {
+  if (!pronto()) return;
+  const r = ST.L[Number(inp.dataset.i)];
+  if (!r) return;
+  const v = inp.value.trim();
+  if (inp.classList.contains('d54-lt')) r.t = v === '' || !Number.isFinite(Number(v)) ? '' : Math.max(0, Number(v));
+  else r.v = v === '' || !Number.isFinite(Number(v)) ? '' : Number(v);
+  ST.livreSlide = false; ST.pre = null;
+  preencheTabela(); marca(); K.redraw(NOMES);
+}));
+(() => { const h = location.hash.slice(1); if (['waterfall', 'livres', 'nominal'].includes(h)) mostra(h); })();
+
+/* ---------- waterfall ---------- */
+const ROT = { nominal: ['Nominal', 'Nom.'], iof: ['+IOF', '+IOF'], tarifa: ['+Tarifas', '+Tar.'], trib: ['+Tributos', '+Trib.'], garantia: ['+Garantia', '+Gar.'], recip: ['+Saldo médio', '+Saldo'], cet: ['CET', 'CET'] };
+const NOME_TIP = { nominal: 'Só a taxa nominal', iof: '+ IOF', tarifa: '+ tarifas', trib: '+ tributos sobre tarifas', garantia: '+ custo de garantia', recip: '+ saldo médio parado', cet: 'CET' };
+dash.draw('wf', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const W0 = wfAtual();
+  const barras = W0.map((s, i) => ({ id: s.id, a: i === 0 ? 0 : W0[i - 1].cet, b: s.cet, s }));
+  const fim = W0[W0.length - 1];
+  barras.push({ id: 'cet', a: 0, b: fim.cet, s: fim });
+  const { svg, W, H } = K.svg(el, 280);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const top = 26, base = H - 30;
+  const yMax = d3.max(barras, (d) => d.b) * 1.08;
+  const y = d3.scaleLinear([0, yMax], [base, top]).nice();
+  const ticks = y.ticks(5);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t * 100, 0) + '%'); mL = Math.max(mL, meas.node().getComputedTextLength()); });
+  meas.remove();
+  const x = d3.scaleBand(barras.map((d) => d.id), [mL + 10, W - 4]).padding(0.28);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', mL + 8).attr('x2', W - 4).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t * 100, 0) + '%');
+  svg.append('line').attr('x1', mL + 8).attr('x2', W - 4).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  const cor = (d) => (d.id === 'nominal' ? 'var(--k-navy)' : d.id === 'cet' ? 'var(--k-neg)' : 'var(--k-amber)');
+  const bw = x.bandwidth();
+  // rótulos de categoria: curtos se algum não couber
+  const longos = barras.map((d) => ROT[d.id][0]);
+  const mc = svg.append('text').attr('class', 'k-svgm');
+  const cabe = longos.every((t) => { mc.text(t); return mc.node().getComputedTextLength() <= x.step() - 2; });
+  mc.remove();
+  barras.forEach((d, i) => {
+    const x0 = x(d.id);
+    const y1 = y(Math.max(d.a, d.b)), y2 = y(Math.min(d.a, d.b));
+    svg.append('rect').attr('x', x0).attr('width', bw).attr('y', y1).attr('height', Math.max(1.5, y2 - y1)).attr('rx', 3).attr('fill', cor(d));
+    if (i < barras.length - 1) {
+      const nx = x(barras[i + 1].id);
+      svg.append('line').attr('x1', x0 + bw).attr('x2', nx).attr('y1', y(d.b)).attr('y2', y(d.b)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    }
+    const rot = d.id === 'nominal' || d.id === 'cet' ? K.n(d.b * 100, 2) + '%' : K.s((d.b - d.a) * 100, 2);
+    const tv = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('text-anchor', 'middle').attr('x', x0 + bw / 2).attr('y', y1 - 6).text(rot);
+    if (tv.node().getComputedTextLength() > x.step() - 2) tv.attr('class', 'k-svgm').style('font-weight', 600);
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x0 + bw / 2).attr('y', base + 18).text(ROT[d.id][cabe ? 0 : 1]);
+    svg.append('rect').attr('x', x0 - (x.step() - bw) / 2).attr('width', x.step()).attr('y', top).attr('height', base - top).attr('fill', 'transparent')
+      .on('mousemove', (ev) => {
+        const [px, py] = d3.pointer(ev, el);
+        const L = [[cor(d), 'CET acumulado', pct(d.b)]];
+        if (d.id !== 'nominal' && d.id !== 'cet') L.push([null, 'Degrau', pp(d.b - d.a) + ' p.p.']);
+        L.push([null, 'Entrada líquida', 'R$ ' + rs(d.s.liquido)], [null, 'TIR a.m.', pct(d.s.tir, 3)]);
+        tip.show(NOME_TIP[d.id], L, px, py);
+      })
+      .on('mouseleave', () => tip.hide());
+  });
+});
+
+/* ---------- linha do tempo (pirulitos) ---------- */
+function pirulitos(el, fl, opt) {
+  const { svg, W, H } = K.svg(el, opt.H);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  if (!fl.length) return;
+  const tMax = Math.max(1, d3.max(fl, (f) => f.t));
+  const vMax = d3.max(fl, (f) => Math.abs(f.v)) || 1;
+  const top = 24, bot = opt.H - 26, mid = (top + bot) / 2;
+  const hasNeg = fl.some((f) => f.v < 0), hasPos = fl.some((f) => f.v > 0);
+  const y0 = hasNeg && hasPos ? mid : hasPos ? bot : top;
+  const h = hasNeg && hasPos ? (bot - top) / 2 : bot - top;
+  const yv = (v) => y0 - (v / vMax) * h;
+  const x = d3.scaleLinear([0, tMax], [16, W - 16]);
+  svg.append('line').attr('x1', x(0) - 8).attr('x2', x(tMax) + 8).attr('y1', y0).attr('y2', y0).attr('stroke', 'var(--cds-chart-axis)');
+  // marcas de tempo sem sobreposição
+  const meas = svg.append('text').attr('class', 'k-svgm').text(K.n(tMax));
+  const wl = meas.node().getComputedTextLength() + 10; meas.remove();
+  const passo = Math.max(1, Math.ceil(tMax / Math.max(1, Math.floor((W - 32) / wl))));
+  const tk = d3.range(0, tMax + 1, passo); if (tk[tk.length - 1] !== tMax) tk.push(tMax);
+  if (tk.length > 1 && x(tMax) - x(tk[tk.length - 2]) < wl) tk.splice(tk.length - 2, 1);
+  svg.append('g').selectAll('text').data(tk).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', opt.H - 6).text((t) => K.n(t));
+  const r = Math.max(2.5, Math.min(6, (W - 32) / (tMax + 1) / 3));
+  fl.forEach((f) => {
+    const c = f.v >= 0 ? 'var(--k-pos)' : 'var(--k-neg)';
+    svg.append('line').attr('x1', x(f.t)).attr('x2', x(f.t)).attr('y1', y0).attr('y2', yv(f.v)).attr('stroke', c).attr('stroke-width', 2).attr('stroke-linecap', 'round');
+    svg.append('circle').attr('cx', x(f.t)).attr('cy', yv(f.v)).attr('r', f.t === 0 ? r + 2 : r).attr('fill', c);
+  });
+  // rótulos: maior entrada e resumo das saídas
+  (opt.rotulos || []).forEach((l, i) => {
+    const t = svg.append('text').attr('class', 'k-svgb').style('fill', l.cor).attr('y', l.y(yv, y0)).text(l.txt);
+    const w = t.node().getComputedTextLength();
+    const cx = l.ancora === 'fim' ? W - 2 - w : Math.max(2, Math.min(W - 2 - w, x(l.t) + 10));
+    t.attr('x', cx);
+  });
+  // tooltip pelo ponto mais próximo
+  svg.append('rect').attr('x', 0).attr('width', W).attr('y', top - 10).attr('height', bot - top + 20).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [mx] = d3.pointer(ev);
+      const tt = x.invert(mx);
+      const f = fl.reduce((b, c) => (Math.abs(c.t - tt) < Math.abs(b.t - tt) ? c : b), fl[0]);
+      const [px, py] = d3.pointer(ev, el);
+      tip.show(opt.cab(f), opt.linhas(f), px, py);
+    })
+    .on('mouseleave', () => tip.hide());
+}
+dash.draw('tl', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const o = atual(), C = toC(ST.S);
+  const fl = o.fl;
+  const ult = o.parc[o.parc.length - 1];
+  const rotSaida = C.amort === 'bullet'
+    ? (C.n > 1 ? (C.n - 1) + ' × ' + rs(o.pmt) + ' + ' + rs(ult.saida) + ' no fim' : rs(ult.saida) + ' no fim')
+    : C.n + ' × ' + rs(o.pmt);
+  pirulitos(el, fl, {
+    H: 170,
+    rotulos: [
+      { t: 0, txt: '+' + rs(fl[0].v), cor: 'var(--k-pos)', y: (yv) => yv(fl[0].v) + 4 },
+      { t: C.n, txt: '−' + rotSaida, cor: 'var(--k-neg)', ancora: 'fim', y: () => 30 },
+    ],
+    cab: (f) => (f.t === 0 ? 't = 0 · entrada líquida' : 'Mês ' + K.n(f.t)),
+    linhas: (f) => {
+      if (f.t === 0) {
+        const L = [[null, 'Principal', rs(C.P)]];
+        if (o.ret.iof) L.push([null, 'IOF', '−' + rs(o.ret.iof)]);
+        if (o.ret.tarifa) L.push([null, 'Tarifas', '−' + rs(o.ret.tarifa)]);
+        if (o.ret.trib) L.push([null, 'Tributos s/ tarifas', '−' + rs(o.ret.trib)]);
+        if (o.ret.garantia) L.push([null, 'Garantia', '−' + rs(o.ret.garantia)]);
+        if (o.ret.recip) L.push([null, 'Saldo médio parado', '−' + rs(o.ret.recip)]);
+        L.push(['var(--k-pos)', 'Na mão', rs(fl[0].v)]);
+        return L;
+      }
+      const p = o.parc[f.t - 1];
+      const L = [['var(--k-neg)', 'Saída', rs(-f.v)], [null, 'Juros', rs(p.juros)], [null, 'Amortização', rs(p.amort)]];
+      if (f.t === C.n && o.ret.recip) L.push([null, 'Saldo médio devolvido', '+' + rs(o.ret.recip)]);
+      return L;
+    },
+  });
+});
+dash.draw('lv', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = livreAtual();
+  const fl = R.fl.slice().sort((a, b) => a.t - b.t);
+  const un = ST.S.unid === 'dia' ? 'Dia ' : 'Mês ';
+  pirulitos(el, fl, {
+    H: 220,
+    cab: (f) => un + K.n(f.t, 2).replace(/,00$/, ''),
+    linhas: (f) => [[f.v >= 0 ? 'var(--k-pos)' : 'var(--k-neg)', f.v >= 0 ? 'Entra' : 'Sai', rs(Math.abs(f.v))]],
+  });
+});
+
+/* ---------- mesma nominal ---------- */
+dash.draw('mn', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = mnAtual()[el.dataset.lado];
+  const prazo = ST.S.mnPrazo;
+  pirulitos(el, [{ t: 0, v: R.recebe }, { t: prazo, v: -R.paga }], {
+    H: 130,
+    rotulos: [
+      { t: 0, txt: '+' + rs(R.recebe), cor: 'var(--k-pos)', y: (yv) => yv(R.recebe) + 4 },
+      { t: prazo, txt: '−' + rs(R.paga), cor: 'var(--k-neg)', ancora: 'fim', y: () => 30 },
+    ],
+    cab: (f) => (f.t === 0 ? 'Hoje' : 'Dia ' + K.n(f.t)),
+    linhas: (f) => [[f.v >= 0 ? 'var(--k-pos)' : 'var(--k-neg)', f.v >= 0 ? 'Recebe' : 'Paga', rs(Math.abs(f.v))]],
+  });
+});
+
+/* ---------- números ---------- */
+const BASE_NOME = { 252: '252 du', 360: '360', 365: '365' };
+const cetBase = (o, b) => M54.cet(o.tirM, M54.porAno(b, 'mes'));
+const VAL = {
+  iofTeto: () => K.n(par().iofTeto),
+  cet: (o) => pct(o.cet), tir: (o) => pct(o.tirM, 3), gap: (o) => pp(o.cet - o.nom), gapAbs: (o) => K.n((o.cet - o.nom) * 100, 2),
+  liq: (o) => rs(o.fl[0].v), pmt: (o) => rs(o.pmt), iof: (o) => rs(o.iof.total), iofP: (o) => pct(o.iof.total / ST.S.P),
+  custo: (o) => rs(o.custoTotal),
+  b252: (o) => pct(cetBase(o, 252)), b360: (o) => pct(cetBase(o, 360)), b365: (o) => pct(cetBase(o, 365)),
+  nom365: (o) => pct(M54.cet(o.im, M54.porAno(365, 'mes'))),
+  recipV: () => K.n(ST.S.recip, 0) + '%',
+  recipD: () => { const w = wfAtual(); const r = w.find((s) => s.id === 'recip'); return r ? K.n(r.delta * 100, 2) : null; },
+  // fluxos livres
+  'lv-un': () => (ST.S.unid === 'dia' ? (ST.S.base === 252 ? '(dias úteis)' : '(dias corridos)') : '(meses)'),
+  'lv-per': () => (ST.S.unid === 'dia' ? (ST.S.base === 252 ? 'dia útil' : 'dia') : 'mês'),
+  'lv-tir': () => { const R = livreAtual(); return R.tir == null ? null : pct(R.tir, 3); },
+  'lv-cet': () => { const R = livreAtual(); return R.cet == null ? null : pct(R.cet); },
+  'lv-soma': () => rs(livreAtual().soma),
+  'lv-base': () => BASE_NOME[ST.S.base],
+  // slide 4
+  'sl-ent': () => rs(sl().entradaSlide), 'sl-parc': () => rs(sl().parcelaSlide), 'sl-tir': () => K.n(sl().tirSlide, 2) + '%',
+  'sl-cet': () => K.n(sl().cetSlide, 1) + '%', 'sl-tx': () => K.n(sl().taxaParcelaSlide, 1) + '%',
+  'sl-tirR': () => { const s = sl(); return pct(M54.livre(fluxoSlide(s), 'mes', 252).tir, 3); },
+  'sl-cetR': () => { const s = sl(); return pct(M54.livre(fluxoSlide(s), 'mes', 252).cet); },
+  'sl-price': () => pct(M54.operacao(CdoCen('ancora')).cet), 'sl-bullet': () => pct(M54.operacao(CdoCen('bullet')).cet),
+  // mesma nominal
+  'mn-antRec': () => rs(mnAtual().ant.recebe), 'mn-antPag': () => rs(mnAtual().ant.paga), 'mn-antTir': () => pct(mnAtual().ant.tir, 3), 'mn-antCet': () => pct(mnAtual().ant.cet),
+  'mn-postRec': () => rs(mnAtual().post.recebe), 'mn-postPag': () => rs(mnAtual().post.paga), 'mn-postTir': () => pct(mnAtual().post.tir, 3), 'mn-postCet': () => pct(mnAtual().post.cet),
+  'mn-dif': () => { const m = mnAtual(); return pp(m.ant.cet - m.post.cet); }, 'mn-d': () => K.n(ST.S.mnD, 1) + '%',
+  // perguntas-guia (sempre sobre a âncora e o slide)
+  'g-iofP': () => { const o = M54.operacao(CdoCen('ancora')); return pct(o.iof.total / o.parc.reduce((s, p) => s + p.amort, 0), 1); },
+  'g-iofD': () => K.n(M54.waterfall(CdoCen('ancora'))[1].delta * 100, 1),
+  'g-iofB': () => { const o = M54.operacao(CdoCen('bullet')); return pct(o.iof.total / o.parc.reduce((s, p) => s + p.amort, 0)); },
+  'g-iofBD': () => K.n(M54.waterfall(CdoCen('bullet'))[1].delta * 100, 1),
+  'g-d': () => K.n(sl().dNom, 0) + '%', 'g-face': () => rs(sl().face), 'g-rec': () => rs(gMn().ant.recebe),
+  'g-tirAnt': () => pct(gMn().ant.tir, 3), 'g-cetAnt': () => pct(gMn().ant.cet), 'g-cetPost': () => pct(gMn().post.cet),
+  'g-dif': () => K.n((gMn().ant.cet - gMn().post.cet) * 100, 0),
+  'sl-n': () => K.n(sl().nSlide), 'sl-nom': () => K.n(cenario('ancora').cdi + cenario('ancora').spread, 0) + '%',
+  'g-n12': () => K.n(cenario('ancora').prazo),
+  'g-durM': () => { const o = M54.operacao(CdoCen('ancora')); return K.n(o.parc.reduce((s, p) => s + p.k * p.amort, 0) / o.parc.reduce((s, p) => s + p.amort, 0), 1); },
+  'g-durA': () => { const o = M54.operacao(CdoCen('ancora')); return K.n(o.parc.reduce((s, p) => s + p.k * p.amort, 0) / o.parc.reduce((s, p) => s + p.amort, 0) / 12, 2); },
+  'g-nCurta': () => K.n(cenario('curta').prazo), 'g-tar': () => K.n(cenario('ancora').tarifa, 2) + '%',
+  'g-tarC': () => K.n(M54.waterfall(CdoCen('curta'))[2].delta * 100, 1), 'g-tar12': () => K.n(M54.waterfall(CdoCen('ancora'))[2].delta * 100, 1),
+};
+function fluxoSlide(s) { return [{ t: 0, v: s.entradaSlide }].concat(d3.range(1, s.nSlide + 1).map((k) => ({ t: k, v: -s.parcelaSlide }))); }
+function gMn() { const s = sl(); return M54.mesmaNominal(s.face, s.dNom / 100, s.prazoDias, 252); }
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const grp = el.dataset.grp;
+    if (grp === 'gap') {
+      const o = atual(), g = (o.cet - o.nom) * 100;
+      keys.push(g < 1 ? 'leve' : g < 3 ? 'tipica' : 'pesada');
+      if (ST.S.base === 365) keys.push('b365');
+      if (ST.S.recip > 0) keys.push('recip');
+    } else if (grp === 'parc') keys.push(ST.S.amort === 'bullet' ? 'bullet' : 'price');
+    else if (grp === 'lv') {
+      const R = livreAtual();
+      if (!R.fl.some((f) => f.v > 0) || !R.fl.some((f) => f.v < 0)) keys.push('sem');
+      else if (R.tir == null) keys.push('nao');
+      else keys.push(ST.livreSlide && ST.S.unid === 'mes' ? 'slide' : 'ok');
+    }
+  }
+  K.frases(el, keys);
+  marca();
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

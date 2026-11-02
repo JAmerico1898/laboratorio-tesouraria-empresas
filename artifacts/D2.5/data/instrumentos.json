@@ -1,0 +1,7 @@
+[{"id":"compromissada","nome":"Compromissada (Selic)","tipo":"compromissada","liquidez":"D+0/D+1","risco":"muito baixo","taxa":11.8,"prazo":150,"diaria":1},
+{"id":"cdb_diaria","nome":"CDB liquidez diária","tipo":"cdb","liquidez":"D+1","risco":"baixo (FGC)","taxa":12.0,"prazo":150,"diaria":1},
+{"id":"fundo_di","nome":"Fundo DI","tipo":"fundo","liquidez":"D+0/D+1","risco":"baixo","taxa":11.7,"prazo":150,"diaria":1},
+{"id":"lft","nome":"LFT (Tesouro Selic)","tipo":"lft","liquidez":"D+1 mercado","risco":"soberano","taxa":12.0,"prazo":150,"diaria":1},
+{"id":"cdb_120","nome":"CDB a prazo 120 d","tipo":"cdb","liquidez":"vencimento","risco":"baixo-médio","taxa":12.5,"prazo":120,"diaria":0},
+{"id":"cdb_361","nome":"CDB a prazo 361 d","tipo":"cdb","liquidez":"vencimento","risco":"baixo-médio","taxa":13.0,"prazo":361,"diaria":0},
+{"id":"cdb_721","nome":"CDB a prazo 721 d","tipo":"cdb","liquidez":"vencimento","risco":"baixo-médio","taxa":13.5,"prazo":721,"diaria":0}]

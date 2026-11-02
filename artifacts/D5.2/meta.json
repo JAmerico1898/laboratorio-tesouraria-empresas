@@ -1,0 +1,11 @@
+{
+  "code": "D5.2",
+  "title": "D5.2 · Mesa de negociação",
+  "slug": "577626d3-7dc8-44b6-8c0a-355e86fd2ed8",
+  "datasets": {
+    "cenarios": { "file": "cenarios.json", "sha256": "b7a0fe0a2d16a4da5c54d0f7cb70b17f0f4599537862c5468ca55810dda29bfd" },
+    "fornecedores": { "file": "fornecedores.json", "sha256": "9b0a946f702a260bd9aabeee8d56d0407035478ee0e33a934e993b52e995618e" },
+    "jogo": { "file": "jogo.json", "sha256": "bfd26c584529a624d2780b36863a1c1f99449e019d1cb4c5e43e99df91d2dd5d" },
+    "regras": { "file": "regras.json", "sha256": "dc852e611c3e5e9b883af0362d531305ca4dc0f992c3f5f8120e03e2d02c3fa0" }
+  }
+}

@@ -1,0 +1,3 @@
+[{"banco":"X","tipo":"privado","nominal":0.0145,"tac":0.010},
+{"banco":"Y","tipo":"privado","nominal":0.0140,"tac":0.025},
+{"banco":"Z","tipo":"publico","nominal":0.0155,"tac":0.000}]

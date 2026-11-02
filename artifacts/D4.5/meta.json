@@ -1,0 +1,12 @@
+{
+  "code": "D4.5",
+  "title": "D4.5 · Score, cutoff e decisão",
+  "slug": "d1f0fff8-1903-46da-8538-893cf55e8a18",
+  "datasets": {
+    "cortes": { "file": "cortes.json", "sha256": "9b2287045292b998b2e89999e0781325311d0eed3885fc9d2afb6d9340d52231" },
+    "geradores": { "file": "geradores.json", "sha256": "a00d9552ed0d0aab33c34fd9598857cb972d3de884c6153a4ecfe2fd0b869016" },
+    "politica": { "file": "politica.json", "sha256": "96f7ace68540eff12cf3bdd3e78c4ff17d06ce0dadebd1ae42f43a08ee9a8fa4" },
+    "pricing": { "file": "pricing.json", "sha256": "b0b19693160261194199b30bb5bca2615aa878a689e560001f37135f95d406d5" },
+    "variaveis": { "file": "variaveis.json", "sha256": "c39a2736f128c2b2a46d0405defd4d987a9da6722d63628c2c9dbd16d4c0b44d" }
+  }
+}

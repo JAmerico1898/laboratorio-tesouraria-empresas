@@ -1,0 +1,7 @@
+[
+  {"id": "e1", "estagio": "D−3 · lembrete", "canal": "e-mail/SMS/WhatsApp", "custo": 1, "alvo": "r0", "amp": 0.40, "ampRec": 0, "peso": 0.05, "origem": "titulos", "fracTitulos": 1},
+  {"id": "e2", "estagio": "D+1–7 · amigável", "canal": "e-mail + telefone leve", "custo": 15, "alvo": "r1", "amp": 0.24, "ampRec": 0, "peso": 0.15, "origem": "s1", "fracTitulos": 1},
+  {"id": "e3", "estagio": "D+8–30 · ativa", "canal": "telefone firme + carta", "custo": 60, "alvo": "r1", "amp": 0.24, "ampRec": 0, "peso": 0.25, "origem": "s1", "fracTitulos": 1},
+  {"id": "e4", "estagio": "D+30–60 · protesto/extrajudicial", "canal": "cartório + visita + AR", "custo": 250, "alvo": "r2", "amp": 0.40, "ampRec": 0, "peso": 0.30, "origem": "s2", "fracTitulos": 1},
+  {"id": "e5", "estagio": "D+60+ · judicial/cessão", "canal": "execução (30% dos títulos)", "custo": 2500, "alvo": "r3", "amp": 0.40, "ampRec": 0.5, "peso": 0.25, "origem": "s3", "fracTitulos": 0.30}
+]

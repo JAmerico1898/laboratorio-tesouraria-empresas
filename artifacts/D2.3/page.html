@@ -1,0 +1,452 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<style>
+.d23-vz { container-type: inline-size; }
+.d23-vgrid { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 40rem) { .d23-vgrid { grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.45fr); } }
+.d23-heat { min-height: 380px; }
+.d23-perfil { min-height: 250px; }
+.d23-sw { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+.d23-neg { background: var(--k-blue-l); }
+.d23-ineg { background: var(--k-neg); }
+.d23-dec { background: var(--k-neutro); }
+.d23-amb { background: var(--k-amber); }
+.d23-line { background: var(--color-fg); height: 2px; width: .9rem; vertical-align: 3px; }
+.d23-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.d23-chip[aria-pressed="false"] { opacity: .55; text-decoration: line-through; }
+.d23-chip[aria-pressed="true"] { background: var(--color-bg); color: var(--color-fg); border-color: var(--color-fg-muted); }
+.d23-atalho { margin-top: 6px; }
+.d23-comp { display: flex; height: 26px; border-radius: var(--cds-radius); overflow: hidden; margin-top: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.d23-comp > div { display: flex; align-items: center; justify-content: center; color: #1a1a1a; min-width: 0; overflow: hidden; white-space: nowrap; }
+.d23-comp > div.d23-ineg { color: #fff; }
+.d23-hit { cursor: pointer; }
+.d23-sel { pointer-events: none; }
+</style>
+
+<div class="k" id="d23">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D2.3 · Calendário de saídas</h1>
+      <p class="k-sub">O que quase nunca atrasa: quais saídas têm data certa e quais a tesouraria pode mover?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d23-cen" data-cen="alfa" aria-pressed="false">Alfa T0</button>
+      <button class="k-btn d23-cen" data-cen="esqueleto" aria-pressed="false">Só o esqueleto</button>
+      <button class="k-btn d23-cen" data-cen="dezembro" aria-pressed="false">Dezembro</button>
+      <button class="k-btn d23-cen" data-cen="alongar" aria-pressed="false">Alongar fornecedores</button>
+      <button class="k-btn d23-cen" data-cen="cinto" aria-pressed="false">Apertar o cinto</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone" id="controles" data-source="cenarios icms_uf">
+      <h2 class="k-zt">Controles</h2>
+      <div class="k-ctl"><label for="c-mes">Mês em foco</label>
+        <select class="k-select" id="c-mes" data-k="mes">
+          <option value="0">jan</option><option value="1">fev</option><option value="2">mar</option><option value="3">abr</option>
+          <option value="4">mai</option><option value="5">jun</option><option value="6">jul</option><option value="7">ago</option>
+          <option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
+        </select></div>
+      <div class="k-ctl"><span class="k-lab">Classes visíveis</span>
+        <div class="d23-chips">
+          <button class="k-btn d23-chip" data-chip="negociavel" aria-pressed="true"><i class="d23-sw d23-neg"></i>Negociável</button>
+          <button class="k-btn d23-chip" data-chip="inegociavel" aria-pressed="true"><i class="d23-sw d23-ineg"></i>Inegociável</button>
+          <button class="k-btn d23-chip" data-chip="decisao" aria-pressed="true"><i class="d23-sw d23-dec"></i>Decisão interna</button>
+        </div>
+        <button class="k-btn d23-atalho" aria-pressed="false">Só inegociáveis</button>
+      </div>
+      <div class="k-ctl"><span class="k-lab">UF do ICMS <span class="k-u">vence no dia <b data-draw="uf-dia">—</b></span></span>
+        <div class="k-seg" role="group" aria-label="UF do ICMS">
+          <button data-k="uf" data-v="SP" aria-pressed="false">SP</button><button data-k="uf" data-v="RJ" aria-pressed="false">RJ</button><button data-k="uf" data-v="MG" aria-pressed="false">MG</button>
+        </div></div>
+      <div class="k-ctl"><label for="c-pmpf">PMPF <span class="k-u">dias · fornecedores</span></label>
+        <div class="k-in"><input type="range" id="c-pmpf" data-k="pmpf" min="30" max="90" step="15"><input type="number" data-k="pmpf" min="30" max="90" step="15" aria-label="PMPF, dias"></div></div>
+      <div class="k-ctl"><label for="c-cj">CAPEX de junho: pagar em</label>
+        <select class="k-select" id="c-cj" data-k="capexJunMes">
+          <option value="5">jun</option><option value="6">jul</option><option value="7">ago</option><option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
+        </select></div>
+      <div class="k-ctl"><label for="c-cs">CAPEX de setembro: pagar em</label>
+        <select class="k-select" id="c-cs" data-k="capexSetMes">
+          <option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
+        </select></div>
+      <div class="k-ctl"><label for="c-div">Dividendos <span class="k-u">R$ mil · abril</span></label>
+        <div class="k-in"><input type="range" id="c-div" data-k="dividendos" min="0" max="1250" step="50"><input type="number" data-k="dividendos" min="0" max="1250" step="10" aria-label="Dividendos, R$ mil"></div></div>
+      <div class="k-ctl"><label for="c-disc">Discricionárias <span class="k-u">% do orçamento</span></label>
+        <div class="k-in"><input type="range" id="c-disc" data-k="disc" min="0" max="100" step="5"><input type="number" data-k="disc" min="0" max="100" step="5" aria-label="Discricionárias, %"></div></div>
+      <label class="k-toggle"><input type="checkbox" data-k="saldo"> Mostrar saldo diário</label>
+      <p class="k-note">Só fornecedores (negociável) e decisões internas respondem aos controles.</p>
+    </div>
+
+    <div class="k-zone d23-vz" id="visual" data-source="premissas sazonalidade categorias eventos icms_uf">
+      <div class="d23-vgrid">
+        <div id="heatmap">
+          <div class="k-ch"><h3>Saídas do ano, dia a dia</h3><span>R$ mil por dia · clique num dia</span></div>
+          <div class="k-chart d23-heat dash-skeleton" data-draw="heat" role="img" aria-label="Mapa de calor das saídas por dia e mês"></div>
+          <div class="k-legend"><span><i class="d23-amb"></i>cor = valor do dia</span><span>borda = classe dominante</span></div>
+        </div>
+        <div id="perfil">
+          <div class="k-ch"><h3>Perfil de <span data-draw="perfil-mes">—</span></h3><span>R$ mil por dia do mês</span></div>
+          <div class="k-chart d23-perfil dash-skeleton" data-draw="perfil" role="img" aria-label="Saídas por dia do mês em foco, empilhadas por classe"></div>
+          <div class="k-legend">
+            <span><i class="d23-neg"></i>Negociável</span><span><i class="d23-ineg"></i>Inegociável</span><span><i class="d23-dec"></i>Decisão interna</span>
+            <span class="d23-leg-saldo"><i class="d23-line"></i>Saldo do dia</span>
+            <span class="k-info" tabindex="0">i<span class="k-tip">Linhas tracejadas: as janelas fixas do mês — salários, encargos e ICMS, PIS/COFINS e último dia útil (IRPJ; amortização, dividendos e 13º quando houver). Férias estão provisionadas dentro de "Salários".</span></span>
+          </div>
+          <p class="k-note" id="d23-saldo-nota" hidden>Saldo mais baixo do mês: <b data-draw="s-min">—</b> no dia <b data-draw="s-dia">—</b> (abre o mês com <b data-draw="s-ab">—</b>; entradas em quatro parcelas).</p>
+          <div class="k-alert" id="d23-aviso" hidden><b data-draw="aviso-cat">—</b>: data legal/contratual — não se move.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="premissas sazonalidade categorias eventos icms_uf">
+      <h2 class="k-zt">Leitura · <span data-draw="perfil-mes">—</span></h2>
+      <div class="k-kpi"><span class="k-kl">Total de saídas <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="k-total">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Com data travada <span class="k-u">% inegociável</span></span><span class="k-kn" data-draw="k-ineg">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Dia mais pesado</span><span class="k-kn"><span data-draw="k-dia">—</span><small>R$ <span data-draw="k-diaval">—</span> mil</small></span></div>
+      <div class="d23-comp" data-draw="comp" role="img" aria-label="Composição das saídas do mês por classe"></div>
+      <div class="k-legend"><span><i class="d23-neg"></i>Negociável</span><span><i class="d23-ineg"></i>Inegociável</span><span><i class="d23-dec"></i>Decisão interna</span></div>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="resumo" hidden><b data-draw="f-mes">—</b>: <b data-draw="f-total">—</b> de saídas, <b data-draw="f-pct">—</b> com data travada.</p>
+        <p data-frase="janela-icms" hidden>O dia <b data-draw="f-dwin">—</b> concentra <b data-draw="f-dwinval">—</b> (encargos, ICMS e fornecedores).</p>
+        <p data-frase="janela-uf" hidden>O dia <b data-draw="f-dwin">—</b> concentra <b data-draw="f-dwinval">—</b> (encargos e fornecedores); o ICMS sai no dia <b data-draw="uf-dia">—</b>.</p>
+        <p data-frase="movel" hidden>Só os <b data-draw="f-neg">—</b> de fornecedores e os <b data-draw="f-dec">—</b> de decisão interna podem ser movidos.</p>
+        <p data-frase="decimo" hidden>Novembro e dezembro carregam o 13º: <b data-draw="f-13">—</b> a mais no mês — um mês extra de folha que precisa estar provisionado desde janeiro.</p>
+        <p data-frase="dividendos" hidden><b data-draw="f-mesl">—</b> paga dividendos (<b data-draw="f-div">—</b>) no último dia — decisão interna, mas tomada; mover exige assembleia.</p>
+        <p data-frase="pmpf-alivio" hidden>Fornecedores empurrados para o mês seguinte: alívio de <b data-draw="f-pmpf">—</b> neste mês, mesma conta um mês depois.</p>
+        <p data-frase="pmpf-peso" hidden>Com o novo PMPF, este mês paga <b data-draw="f-pmpf2">—</b> a mais a fornecedores que no prazo de <b data-draw="f-pmpf0">—</b> dias: a conta muda de mês, não de tamanho.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="premissas sazonalidade categorias eventos icms_uf cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Que fração das saídas de setembro a Alfa realmente pode mover?
+          <details><summary>mostrar resposta</summary><p>Fornecedores (<b data-draw="gb" data-q="q1-neg">—</b> = <b data-draw="gb" data-q="q1-negp">—</b>) por negociação, e CAPEX + variáveis + discricionárias (<b data-draw="gb" data-q="q1-dec">—</b> = <b data-draw="gb" data-q="q1-decp">—</b>) por decisão interna; o resto (folha, encargos, tributos, juros, fixas = <b data-draw="gb" data-q="q1-ineg">—</b>, <b data-draw="gb" data-q="q1-inegp">—</b>) tem data travada. A alavanca da tesouraria é o PMPF — e ela tem preço (M5).</p></details>
+        </li>
+        <li>Compare novembro e dezembro com um mês comum. De onde vem o "mês extra"?
+          <details><summary>mostrar resposta</summary><p>Do 13º salário (<b data-draw="gb" data-q="q2-nov">—</b> em <b data-draw="gb" data-q="q2-novd">—</b>/nov e <b data-draw="gb" data-q="q2-dez">—</b> em <b data-draw="gb" data-q="q2-dezd">—</b>/dez, com encargos) e, em dezembro, da amortização de <b data-draw="gb" data-q="q2-am">—</b> no dia <b data-draw="gb" data-q="q2-amd">—</b>. São saídas conhecidas um ano antes: devem ser provisionadas mês a mês, não descobertas em novembro.</p></details>
+        </li>
+        <li>Mude a UF para MG. O que muda no perfil do dia <b data-draw="gb" data-q="q3-sp">—</b>?
+          <details><summary>mostrar resposta</summary><p>O ICMS sai do dia <b data-draw="gb" data-q="q3-sp">—</b> para o dia <b data-draw="gb" data-q="q3-mg">—</b>, desafogando a janela <b data-draw="gb" data-q="q3-enc">—</b>–<b data-draw="gb" data-q="q3-pis">—</b> e carregando o dia <b data-draw="gb" data-q="q3-mg">—</b> (junto com as fixas). O calendário tributário é local — por isso se consulta o time fiscal, não se memoriza.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>
+/* ============================================================
+   D2.3 · Calendário de saídas — controles e desenhos
+   Cálculo em model.js (M23, funções puras); testes de aderência em test.js (Spec §7):
+   set 5.290 · 70/19/10% · dia 20 = 1.220 · dia 5 = 1.228 · dez dia 20 = 1.114 · dez dia 30 = 850
+   abr dia 30 = 1.350 · ano 50.934 (14.004 / 33.000 / 3.930) · MG → ICMS no dia 10
+   ============================================================ */
+const G = window.D23 = { D: null, S: null, memo: { k: '', v: null }, base: null, aviso: '' };
+const IDS = ['premissas', 'sazonalidade', 'categorias', 'eventos', 'icms_uf', 'cenarios'];
+const VIS = ['premissas', 'sazonalidade', 'categorias', 'eventos', 'icms_uf'];
+const COR = { negociavel: 'var(--k-blue-l)', inegociavel: 'var(--k-neg)', decisao: 'var(--k-neutro)' };
+const ORDEM = ['inegociavel', 'decisao', 'negociavel'];   // empilhamento: o que é travado fica na base
+const NOMES = ['heat', 'perfil', 'perfil-mes', 'k-total', 'k-ineg', 'k-dia', 'k-diaval', 'comp', 'frase', 'f-mes', 'f-total', 'f-pct',
+  'f-dwin', 'f-dwinval', 'f-neg', 'f-dec', 'f-13', 'f-mesl', 'f-div', 'f-pmpf', 'f-pmpf2', 'f-pmpf0', 'uf-dia', 's-min', 's-dia', 's-ab', 'aviso-cat'];
+
+/* ---------- dados e estado ---------- */
+function montaDados() {
+  const saz = K.num(dash.data('sazonalidade').data);
+  return {
+    P: K.obj(dash.data('premissas').data),
+    pesos: saz.map((r) => r.peso), MES: saz.map((r) => String(r.mes)),
+    cats: K.num(dash.data('categorias').data).map((c) => Object.assign(c, { dias: String(c.dias == null ? '' : c.dias) })),
+    eventos: K.num(dash.data('eventos').data),
+    ufDia: K.obj(dash.data('icms_uf').data, 'uf', 'dia'),
+    cenarios: K.num(dash.data('cenarios').data),
+  };
+}
+const pronto = () => !!(G.D && G.S) && K.status(VIS) === 'ok';
+const estadoCarga = () => { const s = K.status(VIS); return s === 'ok' ? 'loading' : s; };
+const filtro = () => ({ negociavel: G.S.negociavel, inegociavel: G.S.inegociavel, decisao: G.S.decisao });
+const parCal = (S) => ({ pmpf: S.pmpf, uf: S.uf, capexJunMes: S.capexJunMes, capexSetMes: S.capexSetMes, dividendos: S.dividendos, disc: S.disc });
+function cal() {
+  const p = parCal(G.S), k = JSON.stringify(p);
+  if (G.memo.k !== k) G.memo = { k, v: M23.calendario(G.D, p) };
+  return G.memo.v;
+}
+const mesIdx = (s) => G.D.MES.indexOf(String(s));
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const r0 = (v) => K.n(M23.r(v));
+function doCenario(row) {
+  return {
+    mes: mesIdx(row.mes), uf: String(row.uf), pmpf: row.pmpf, capexJunMes: mesIdx(row.capexJunMes), capexSetMes: mesIdx(row.capexSetMes),
+    dividendos: row.dividendos, disc: row.disc,
+    negociavel: row.filtro !== 'inegociavel', inegociavel: true, decisao: row.filtro !== 'inegociavel',
+  };
+}
+function aplicar(id) {
+  const row = (G.D.cenarios || []).find((c) => c.id === id);
+  if (!row) return false;
+  const saldo = G.S ? G.S.saldo : false;
+  G.S = Object.assign(doCenario(row), { saldo, cen: id, mexido: false });
+  G.aviso = '';
+  sincroniza();
+  return true;
+}
+function sincroniza() {
+  if (!G.S) return;
+  K.sync(G.S);
+  document.querySelectorAll('.d23-chip').forEach((b) => b.setAttribute('aria-pressed', String(!!G.S[b.dataset.chip])));
+  const so = G.S.inegociavel && !G.S.negociavel && !G.S.decisao;
+  document.querySelectorAll('.d23-atalho').forEach((b) => b.setAttribute('aria-pressed', String(so)));
+  document.querySelectorAll('.d23-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === G.S.cen && !G.S.mexido)));
+  document.querySelectorAll('#d23-saldo-nota, .d23-leg-saldo').forEach((n) => { n.hidden = !G.S.saldo; });
+  document.querySelectorAll('#d23-aviso').forEach((n) => { n.hidden = !G.aviso; });
+}
+const mudou = (k) => { if (k !== 'saldo') G.S.mexido = true; G.aviso = ''; sincroniza(); K.redraw(NOMES); };
+function avisar(itens) {
+  const trav = itens.filter((x) => x.classe === 'inegociavel').map((x) => x.nome);
+  G.aviso = trav.join(', ');
+  sincroniza();
+  dash.draw('aviso-cat');
+}
+
+dash.onData(() => {
+  if (!G.D && K.status(IDS) === 'ok') { G.D = montaDados(); aplicar('alfa'); }
+});
+K.bind(new Proxy({}, { set(o, k, v) { if (G.S) G.S[k] = v; return true; } }), (k) => { if (G.S) mudou(k); });
+document.querySelectorAll('.d23-cen').forEach((b) => b.addEventListener('click', () => { if (G.D && aplicar(b.dataset.cen)) K.redraw(NOMES); }));
+document.querySelectorAll('.d23-chip').forEach((b) => b.addEventListener('click', () => {
+  if (!G.S) return;
+  const c = b.dataset.chip, ligados = ['negociavel', 'inegociavel', 'decisao'].filter((x) => G.S[x]);
+  if (G.S[c] && ligados.length === 1) return;          // ao menos uma classe visível
+  G.S[c] = !G.S[c];
+  mudou();
+}));
+document.querySelectorAll('.d23-atalho').forEach((b) => b.addEventListener('click', () => {
+  if (!G.S) return;
+  const so = G.S.inegociavel && !G.S.negociavel && !G.S.decisao;
+  G.S.negociavel = so; G.S.decisao = so; G.S.inegociavel = true;
+  mudou();
+}));
+
+/* ---------- auxiliares de desenho ---------- */
+const texto = (name, fn) => K.txt(name, pronto, fn);
+const resumo = () => M23.resumoMes(cal(), G.S.mes, filtro());
+const resumoTodos = () => M23.resumoMes(cal(), G.S.mes, null);
+const catDia = (id) => { const c = G.D.cats.find((x) => x.id === id); return c ? M23.lista(c.dias)[0] : null; };
+const eventoDe = (id) => G.D.eventos.find((e) => e.id === id);
+const linhasTip = (itens) => {
+  const out = [];
+  ORDEM.forEach((cl) => itens.filter((x) => x.classe === cl).forEach((x) => out.push([COR[cl], x.nome, r0(x.valor)])));
+  return out;
+};
+function mede(svg, cls, textos) {
+  let w = 0;
+  textos.forEach((t) => { const n = svg.append('text').attr('class', cls).text(t); w = Math.max(w, n.node().getComputedTextLength()); n.remove(); });
+  return w;
+}
+
+/* ---------- mapa de calor 12 × 31 ---------- */
+dash.draw('heat', (el) => {
+  if (!pronto()) { K.fail(el, estadoCarga()); return; }
+  el.classList.remove('dash-skeleton');
+  const c = cal(), F = filtro(), S = G.S, MES = G.D.MES;
+  const W = Math.max(280, el.clientWidth || 280), ch = 11, top = 34, lab = 24, H = top + 31 * ch + 6;
+  const cw = (W - lab - 2) / 12;
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  let vmax = 1;
+  for (let m = 0; m < 12; m++) for (let d = 1; d <= M23.diasNoMes(m); d++) vmax = Math.max(vmax, M23.diaTotal(c, m, d, F));
+  const op = d3.scaleSqrt([0, vmax], [0.08, 1]);
+  // "mês extra": meses com 13º
+  const extra = c.meses.filter((x) => (x.porCat.decimo || 0) > 0).map((x) => x.m);
+  if (extra.length) {
+    const a = d3.min(extra), b = d3.max(extra);
+    const x0 = lab + a * cw + 2, x1 = lab + (b + 1) * cw - 2;
+    svg.append('line').attr('x1', x0).attr('x2', x1).attr('y1', 13).attr('y2', 13).attr('stroke', 'var(--k-neg)').attr('stroke-width', 1.5);
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x1).attr('y', 10).style('fill', 'var(--k-neg)').text('mês extra · 13º');
+  }
+  MES.forEach((nm, m) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', lab + (m + 0.5) * cw).attr('y', 28)
+    .style('font-weight', m === S.mes ? '700' : null).style('fill', m === S.mes ? 'var(--color-fg)' : null).text(nm));
+  [1, 5, 10, 15, 20, 25, 30].forEach((d) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end')
+    .attr('x', lab - 5).attr('y', top + (d - 0.5) * ch + 4).text(String(d)));
+  const g = svg.append('g');
+  for (let m = 0; m < 12; m++) {
+    for (let d = 1; d <= M23.diasNoMes(m); d++) {
+      const itens = c.cel[m][d].filter((x) => F[x.classe]);
+      const v = itens.reduce((s, x) => s + x.valor, 0);
+      const dom = v > 0 ? M23.dominante(itens) : null;
+      g.append('rect').attr('class', 'd23-hit').attr('x', lab + m * cw + 1.5).attr('y', top + (d - 1) * ch + 0.75)
+        .attr('width', Math.max(1, cw - 3)).attr('height', ch - 1.5).attr('rx', 1.5)
+        .attr('fill', v > 0 ? 'var(--k-amber)' : 'transparent').attr('fill-opacity', v > 0 ? op(v) : 1)
+        .attr('stroke', dom ? COR[dom] : 'var(--color-border-line)').attr('stroke-width', dom ? 1.4 : 0.6)
+        .on('mousemove', (ev) => {
+          const [px, py] = d3.pointer(ev, el);
+          const l = linhasTip(itens); l.push([null, 'Total', r0(v)]);
+          tip.show(d + '/' + MES[m], l, px, py);
+        })
+        .on('mouseleave', () => tip.hide())
+        .on('click', () => {
+          if (G.S.mes !== m) { G.S.mes = m; G.S.mexido = true; }
+          sincroniza(); K.redraw(NOMES.filter((n) => n !== 'aviso-cat'));
+          avisar(itens);
+        });
+    }
+  }
+  svg.append('rect').attr('class', 'd23-sel').attr('x', lab + S.mes * cw + 0.5).attr('y', top - 1).attr('width', cw - 1).attr('height', 31 * ch + 2)
+    .attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2).attr('rx', 2);
+});
+
+/* ---------- perfil do mês em foco ---------- */
+dash.draw('perfil', (el) => {
+  if (!pronto()) { K.fail(el, estadoCarga()); return; }
+  el.classList.remove('dash-skeleton');
+  const c = cal(), F = filtro(), S = G.S, m = S.mes, n = M23.diasNoMes(m);
+  const res = M23.resumoMes(c, m, F);
+  const sd = S.saldo ? M23.saldoDiario(c, m) : null;
+  const W = Math.max(300, el.clientWidth || 300), H = 250;
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const y = d3.scaleLinear([0, Math.max(1, res.valorMax)], [H - 24, 30]).nice();
+  const yt = y.ticks(4);
+  const ml = mede(svg, 'k-svgm', yt.map((t) => K.n(t))) + 10;
+  let y2 = null, mr = 8, y2t = [];
+  if (sd) {
+    const ext = d3.extent(sd, (p) => p.saldo);
+    y2 = d3.scaleLinear([Math.min(0, ext[0]), Math.max(0, ext[1])], [H - 24, 30]).nice();
+    y2t = y2.ticks(4);
+    mr = mede(svg, 'k-svgm', y2t.map((t) => K.n(t))) + 10;
+  }
+  const dias = d3.range(1, n + 1);
+  const x = d3.scaleBand(dias, [ml, W - mr]).padding(0.18);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', ml).attr('x2', W - mr).attr('y1', (t) => y(t)).attr('y2', (t) => y(t))
+    .attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', ml - 6).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  svg.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  [1, 5, 10, 15, 20, 25, 30].filter((d) => d <= n).forEach((d) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle')
+    .attr('x', x(d) + x.bandwidth() / 2).attr('y', H - 8).text(String(d)));
+  // janelas fixas
+  const ult = M23.ultimoDia(m);
+  const jan = [[catDia('salarios'), String(catDia('salarios'))], [catDia('encargos'), String(catDia('encargos'))], [catDia('piscofins'), String(catDia('piscofins'))], [ult, 'últ.']];
+  const vistos = new Set();
+  jan.forEach(([d, t]) => {
+    if (!d || d > n || vistos.has(d)) return; vistos.add(d);
+    const cx = x(d) + x.bandwidth() / 2;
+    svg.append('line').attr('x1', cx).attr('x2', cx).attr('y1', 18).attr('y2', H - 24).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cx).attr('y', 13).text(t);
+  });
+  // barras empilhadas
+  dias.forEach((d) => {
+    const itens = c.cel[m][d].filter((it) => F[it.classe]);
+    let acc = 0;
+    ORDEM.forEach((cl) => itens.filter((it) => it.classe === cl).forEach((it) => {
+      const y0 = y(acc), y1 = y(acc + it.valor); acc += it.valor;
+      svg.append('rect').attr('class', 'd23-hit').attr('x', x(d)).attr('width', x.bandwidth()).attr('y', y1).attr('height', Math.max(0, y0 - y1))
+        .attr('fill', COR[cl]).attr('stroke', 'var(--color-panel)').attr('stroke-width', 0.6)
+        .on('click', () => avisar([it]));
+    }));
+  });
+  // saldo diário
+  if (sd) {
+    svg.append('g').selectAll('text').data(y2t).join('text').attr('class', 'k-svgm').attr('x', W - mr + 6).attr('y', (t) => y2(t) + 4).text((t) => K.n(t));
+    if (y2.domain()[0] < 0) svg.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y2(0)).attr('y2', y2(0)).attr('stroke', 'var(--k-neg)').attr('stroke-dasharray', '4 3');
+    const line = d3.line().x((p) => x(p.d) + x.bandwidth() / 2).y((p) => y2(p.saldo));
+    svg.append('path').attr('d', line(sd)).attr('fill', 'none').attr('stroke', 'var(--color-fg)').attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+    const mn = sd.reduce((a, p) => (p.saldo < a.saldo ? p : a), sd[0]);
+    svg.append('circle').attr('cx', x(mn.d) + x.bandwidth() / 2).attr('cy', y2(mn.saldo)).attr('r', 4).attr('fill', mn.saldo < 0 ? 'var(--k-neg)' : 'var(--color-fg)');
+  }
+  // tooltip por dia: banda mais próxima do ponteiro
+  svg.on('mousemove', (ev) => {
+    const [px, py] = d3.pointer(ev, el);
+    const d = dias[d3.minIndex(dias, (dd) => Math.abs(x(dd) + x.bandwidth() / 2 - px))];
+    if (px < ml || px > W - mr) { tip.hide(); return; }
+    const itens = c.cel[m][d].filter((it) => F[it.classe]);
+    const l = linhasTip(itens);
+    l.push([null, 'Total', r0(itens.reduce((s, it) => s + it.valor, 0))]);
+    if (sd) l.push([null, 'Saldo ao fim do dia', r0(sd[d - 1].saldo)]);
+    tip.show(d + '/' + G.D.MES[m], l, px, py);
+  }).on('mouseleave', () => tip.hide());
+});
+
+/* ---------- leitura ---------- */
+texto('perfil-mes', () => K.MESL[G.S.mes]);
+texto('k-total', () => r0(resumo().total));
+texto('k-ineg', () => K.p(resumo().pctIneg, 0));
+texto('k-dia', () => String(resumo().diaMax));
+texto('k-diaval', () => r0(resumo().valorMax));
+dash.draw('comp', (el) => {
+  if (!pronto()) { K.fail(el, estadoCarga()); return; }
+  el.classList.remove('dash-skeleton');
+  const res = resumo(), tot = res.total || 1;
+  const segs = ['negociavel', 'inegociavel', 'decisao'].filter((cl) => res.porClasse[cl] > 0).map((cl) => {
+    const dv = document.createElement('div');
+    const p = res.porClasse[cl] / tot;
+    dv.className = cl === 'negociavel' ? 'd23-neg' : cl === 'inegociavel' ? 'd23-ineg' : 'd23-dec';
+    dv.style.width = (p * 100) + '%';
+    dv.textContent = p >= 0.08 ? K.p(p, 0) : '';
+    return dv;
+  });
+  el.replaceChildren(...segs);
+});
+dash.draw('frase', (el) => {
+  if (!pronto()) { K.frases(el, []); return; }
+  const c = cal(), S = G.S, x = c.meses[S.mes];
+  const k = ['resumo', G.D.ufDia[S.uf] === catDia('encargos') ? 'janela-icms' : 'janela-uf', 'movel'];
+  if ((x.porCat.decimo || 0) > 0) k.push('decimo');
+  const ev = eventoDe('dividendosAbr');
+  if (ev && mesIdx(ev.mes) === S.mes && (x.porCat.dividendos || 0) > 0) k.push('dividendos');
+  if (x.forn45 - x.forn > 0.5) k.push('pmpf-alivio');
+  else if (x.forn - x.forn45 > 0.5) k.push('pmpf-peso');
+  K.frases(el, k);
+});
+texto('f-mes', () => cap(G.D.MES[G.S.mes]));
+texto('f-mesl', () => cap(K.MESL[G.S.mes]));
+texto('f-total', () => r0(resumo().total));
+texto('f-pct', () => K.p(resumo().pctIneg, 0));
+texto('f-dwin', () => String(catDia('encargos')));
+texto('f-dwinval', () => r0(resumoTodos().dias[catDia('encargos') - 1]));
+texto('f-neg', () => r0(cal().meses[G.S.mes].porClasse.negociavel));
+texto('f-dec', () => r0(cal().meses[G.S.mes].porClasse.decisao));
+texto('f-13', () => r0(cal().meses[G.S.mes].porCat.decimo || 0));
+texto('f-div', () => r0(cal().meses[G.S.mes].porCat.dividendos || 0));
+texto('f-pmpf', () => { const x = cal().meses[G.S.mes]; return r0(x.forn45 - x.forn); });
+texto('f-pmpf2', () => { const x = cal().meses[G.S.mes]; return r0(x.forn - x.forn45); });
+texto('f-pmpf0', () => String(G.D.P.pmpfAntigo));
+texto('uf-dia', () => String(G.D.ufDia[G.S.uf]));
+const minSaldo = () => { const sd = M23.saldoDiario(cal(), G.S.mes); return sd.reduce((a, p) => (p.saldo < a.saldo ? p : a), sd[0]); };
+texto('s-min', () => r0(minSaldo().saldo));
+texto('s-dia', () => String(minSaldo().d));
+texto('s-ab', () => r0(cal().meses[G.S.mes].abertura));
+texto('aviso-cat', () => G.aviso || null);
+
+/* ---------- gabaritos (calculados no cenário Alfa T0) ---------- */
+function base() {
+  if (!G.base) {
+    const row = G.D.cenarios.find((c) => c.id === 'alfa');
+    const S0 = doCenario(row);
+    const c = M23.calendario(G.D, parCal(S0));
+    G.base = { c, set: M23.resumoMes(c, mesIdx('set'), null) };
+  }
+  return G.base;
+}
+const GB = {
+  'q1-neg': (b) => r0(b.set.porClasse.negociavel), 'q1-negp': (b) => K.p(b.set.porClasse.negociavel / b.set.total, 0),
+  'q1-dec': (b) => r0(b.set.porClasse.decisao), 'q1-decp': (b) => K.p(b.set.porClasse.decisao / b.set.total, 0),
+  'q1-ineg': (b) => r0(b.set.porClasse.inegociavel), 'q1-inegp': (b) => K.p(b.set.pctIneg, 0),
+  'q2-nov': () => r0(eventoDe('decimoNov').valor), 'q2-novd': () => String(eventoDe('decimoNov').dia),
+  'q2-dez': () => r0(eventoDe('decimoDez').valor), 'q2-dezd': () => String(eventoDe('decimoDez').dia),
+  'q2-am': () => r0(eventoDe('amortDez').valor), 'q2-amd': () => String(eventoDe('amortDez').dia),
+  'q3-sp': () => String(G.D.ufDia.SP), 'q3-mg': () => String(G.D.ufDia.MG),
+  'q3-enc': () => String(catDia('encargos')), 'q3-pis': () => String(catDia('piscofins')),
+};
+dash.draw('gb', (el) => {
+  const fn = GB[el.dataset.q];
+  if (!fn || !G.D || K.status(IDS) !== 'ok') { el.textContent = '—'; return; }
+  const v = fn(base());
+  el.textContent = v == null ? '—' : v;
+});
+</script>

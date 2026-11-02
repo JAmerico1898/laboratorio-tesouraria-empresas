@@ -1,0 +1,8 @@
+[
+ {"id":"fornecedor","nome":"Crédito comercial (fornecedor)","prazo":"30–90 d","custoNominal":"implícito","cet":15,"uso":"1ª escolha; régua","gatilho":"","bancario":0,"soExportador":0},
+ {"id":"acc","nome":"ACC / ACE","prazo":"até 180 d","custoNominal":"CDI − x ou US$ + SOFR + spread","cet":17,"uso":"AC em moeda estrangeira","gatilho":"hedge","bancario":1,"soExportador":1},
+ {"id":"cglinha","nome":"CG linha (parcelado)","prazo":"12–36 m","custoNominal":"CDI + 3–8%","cet":19,"uso":"ciclo financeiro inteiro, plurianual","gatilho":"cresc","bancario":1,"soExportador":0},
+ {"id":"cgrot","nome":"CG rotativo","prazo":"90–180 d/saque","custoNominal":"CDI + 5–7%","cet":20,"uso":"recorrente, ponte entre vendas","gatilho":"saz","bancario":1,"soExportador":0},
+ {"id":"vendor","nome":"Vendor finance","prazo":"prazo comercial","custoNominal":"CDI + spread do comprador","cet":21,"uso":"destravar prazo na cadeia","gatilho":"","bancario":1,"soExportador":0},
+ {"id":"contagar","nome":"Conta garantida","prazo":"diário","custoNominal":"CDI + 5–10%","cet":28,"uso":"horas/dias; nunca > 30 d","gatilho":"","bancario":1,"soExportador":0}
+]

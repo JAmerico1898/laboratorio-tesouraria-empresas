@@ -1,0 +1,397 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<style>
+.d47 { --d47-f0: #D5D9DE; --d47-f1: #F2C96B; --d47-f2: #E3A21A; --d47-f3: #E07A3A; --d47-f4: #C2412E; --d47-f5: #7A1F1A; }
+.d47-op { font-size: 13px; color: var(--color-fg-muted); margin: 0 0 8px; line-height: 1.35; }
+.d47-step { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 7px 9px 4px; margin-bottom: 7px; background: var(--color-bg); }
+.d47-step h3 { margin: 0; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.d47-step .k-note { margin: 1px 0 4px; }
+.d47-tom { display: block; height: 6px; border-radius: 3px; background: var(--color-panel); border: 1px solid var(--color-border-line); overflow: hidden; margin-bottom: 4px; }
+.d47-mat { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.d47-mat label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.d47-mat input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.d47-adv { margin: 6px 0 8px; font-size: 14px; }
+.d47-adv > summary { cursor: pointer; color: var(--color-fg-muted); font-size: 13px; margin-bottom: 6px; }
+.d47-aging { min-height: 300px; }
+.d47-meds { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); margin-top: 12px; }
+.d47-med { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 8px 10px; background: var(--color-bg); }
+.d47-med h4 { margin: 0; font-size: 13px; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: .03em; }
+.d47-med .d47-val { font-family: var(--font-anthropic-serif); font-size: 1.75rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.d47-meter { min-height: 34px; }
+.d47-ctl3 { display: grid; gap: 4px 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+.d47 .k-table td.d47-win { font-weight: 600; outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.d47 .k-table td.d47-na { color: var(--color-fg-muted); }
+.d47-pp { font-size: 13px; color: var(--color-fg-muted); margin: 8px 0 0; font-variant-numeric: tabular-nums; line-height: 1.5; }
+</style>
+
+<div class="k d47" id="d47">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D4.7 · Régua de cobrança</h1>
+      <p class="k-sub">Tempo define tom. Tom define canal. Canal define custo. Quanto volta — e a que preço?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d47-cen" data-cen="padrao" aria-pressed="false">Padrão</button>
+      <button class="k-btn d47-cen" data-cen="intensa" aria-pressed="false">Intensa</button>
+      <button class="k-btn d47-cen" data-cen="frouxa" aria-pressed="false">Frouxa</button>
+      <button class="k-btn d47-cen" data-cen="lembrete" aria-pressed="false">Só o lembrete</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone" id="regua" data-source="carteira estagios cenarios">
+      <h2 class="k-zt">A régua · intensidade <span class="k-u">0–100 · 50 = padrão</span></h2>
+      <p class="d47-op"><b data-draw="v" data-q="opMin">—</b>–<b data-draw="v" data-q="opMax">—</b>% dos atrasos são operacionais — resolvem aqui, barato.</p>
+
+      <div class="d47-step" id="degrau-1">
+        <h3>D−3 · lembrete</h3>
+        <p class="k-note">e-mail/SMS/WhatsApp · R$ <b data-draw="v" data-q="cu1">—</b> por título · <b data-draw="v" data-q="ca1">—</b> mil/ano</p>
+        <span class="d47-tom" data-draw="tom" data-e="1"></span>
+        <div class="k-in"><input type="range" data-k="i1" min="0" max="100" step="5" aria-label="Intensidade do lembrete D−3"><input type="number" data-k="i1" min="0" max="100" step="5" aria-label="Intensidade do lembrete D−3"></div>
+      </div>
+      <div class="d47-step" id="degrau-2">
+        <h3>D+1–7 · amigável</h3>
+        <p class="k-note">e-mail + telefone leve · R$ <b data-draw="v" data-q="cu2">—</b> por título · <b data-draw="v" data-q="ca2">—</b> mil/ano</p>
+        <span class="d47-tom" data-draw="tom" data-e="2"></span>
+        <div class="k-in"><input type="range" data-k="i2" min="0" max="100" step="5" aria-label="Intensidade da cobrança amigável"><input type="number" data-k="i2" min="0" max="100" step="5" aria-label="Intensidade da cobrança amigável"></div>
+      </div>
+      <div class="d47-step" id="degrau-3">
+        <h3>D+8–30 · ativa</h3>
+        <p class="k-note">telefone firme + carta · R$ <b data-draw="v" data-q="cu3">—</b> por título · <b data-draw="v" data-q="ca3">—</b> mil/ano</p>
+        <span class="d47-tom" data-draw="tom" data-e="3"></span>
+        <div class="k-in"><input type="range" data-k="i3" min="0" max="100" step="5" aria-label="Intensidade da cobrança ativa"><input type="number" data-k="i3" min="0" max="100" step="5" aria-label="Intensidade da cobrança ativa"></div>
+      </div>
+      <div class="d47-step" id="degrau-4">
+        <h3>D+30–60 · protesto/extrajudicial</h3>
+        <p class="k-note">cartório + visita + AR · R$ <b data-draw="v" data-q="cu4">—</b> por título · <b data-draw="v" data-q="ca4">—</b> mil/ano</p>
+        <span class="d47-tom" data-draw="tom" data-e="4"></span>
+        <div class="k-in"><input type="range" data-k="i4" min="0" max="100" step="5" aria-label="Intensidade do protesto e extrajudicial"><input type="number" data-k="i4" min="0" max="100" step="5" aria-label="Intensidade do protesto e extrajudicial"></div>
+      </div>
+      <div class="d47-step" id="degrau-5">
+        <h3>D+60+ · judicial/cessão</h3>
+        <p class="k-note">execução de <b data-draw="v" data-q="fj">—</b> dos títulos · R$ <b data-draw="v" data-q="cu5">—</b> por título · <b data-draw="v" data-q="ca5">—</b> mil/ano</p>
+        <span class="d47-tom" data-draw="tom" data-e="5"></span>
+        <div class="k-in"><input type="range" data-k="i5" min="0" max="100" step="5" aria-label="Intensidade do judicial"><input type="number" data-k="i5" min="0" max="100" step="5" aria-label="Intensidade do judicial"></div>
+      </div>
+
+      <details class="d47-adv">
+        <summary>Matriz de migração · roll rates base</summary>
+        <div class="d47-mat">
+          <div><label for="c-r0">r₀ vence</label><input id="c-r0" type="number" data-k="r0" min="0" max="1" step="0.01"></div>
+          <div><label for="c-r1">r₁ 1–30</label><input id="c-r1" type="number" data-k="r1" min="0" max="1" step="0.01"></div>
+          <div><label for="c-r2">r₂ 31–60</label><input id="c-r2" type="number" data-k="r2" min="0" max="1" step="0.01"></div>
+          <div><label for="c-r3">r₃ 61–90</label><input id="c-r3" type="number" data-k="r3" min="0" max="1" step="0.01"></div>
+          <div><label for="c-r4">r₄ 91–180</label><input id="c-r4" type="number" data-k="r4" min="0" max="1" step="0.01"></div>
+        </div>
+        <p class="k-note">Fração de cada faixa que migra para a seguinte no mês. r₄ vale sobre o terço do saldo que sai da faixa de três meses; do 180+, um terço é baixado por mês e <b data-draw="v" data-q="recEf">—</b> é recuperado.</p>
+      </details>
+
+      <div class="k-ctl"><label for="c-mes">Mês exibido <span class="k-u">a partir de T0</span></label>
+        <div class="k-in"><input type="range" id="c-mes" data-k="mes" min="0" max="12" step="1"><input type="number" data-k="mes" min="0" max="12" step="1" aria-label="Mês exibido"></div></div>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="carteira estagios cenarios">
+      <div class="k-tabs" role="tablist">
+        <button class="k-tab" id="tab-regua" data-group="v" data-tab="regua" role="tab" aria-selected="true">Régua</button>
+        <button class="k-tab" id="tab-comparador" data-group="v" data-tab="comparador" role="tab" aria-selected="false">Própria, especializada ou cessão?</button>
+      </div>
+
+      <section data-group="v" data-pane="regua" id="painel-regua">
+        <div class="k-ch"><h3>A carteira envelhece mês a mês</h3><span>R$ mil · clique num mês para fixá-lo</span></div>
+        <div class="k-chart d47-aging dash-skeleton" id="aging" data-draw="aging" role="img" aria-label="Aging empilhado por faixa de atraso nos meses 0 a 12, com a perda acumulada"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--d47-f0)"></i>Em dia</span>
+          <span><i style="background: var(--d47-f1)"></i>1–30 d</span>
+          <span><i style="background: var(--d47-f2)"></i>31–60 d</span>
+          <span><i style="background: var(--d47-f3)"></i>61–90 d</span>
+          <span><i style="background: var(--d47-f4)"></i>91–180 d</span>
+          <span><i style="background: var(--d47-f5)"></i>180+ d</span>
+          <span><i style="background: var(--k-navy); height: 3px; vertical-align: 3px"></i>Perda acumulada (eixo da direita)</span>
+        </div>
+        <p class="k-note">Mês <b data-draw="v" data-q="mes">—</b>: carteira <b data-draw="v" data-q="fotoTot">—</b> · DSO <b data-draw="v" data-q="fotoDso">—</b> dias · perda acumulada <b data-draw="v" data-q="fotoPerda">—</b>. O aging de T0 não é o regime da matriz: a carteira caminha para ele.</p>
+
+        <h2 class="k-zt2">O trilema · em regime</h2>
+        <div class="d47-meds">
+          <div class="d47-med" id="med-valor"><h4>Recuperar valor</h4><div class="d47-val" data-draw="v" data-q="recuperar">—</div><div class="d47-meter" data-draw="medidor" data-m="rec"></div><p class="k-note">das vendas a prazo não viram perda</p></div>
+          <div class="d47-med" id="med-tempo"><h4>Reduzir tempo</h4><div class="d47-val"><span data-draw="v" data-q="dso">—</span> <small class="k-u">dias de DSO</small></div><div class="d47-meter" data-draw="medidor" data-m="dso"></div><p class="k-note">menos é melhor</p></div>
+          <div class="d47-med" id="med-relacao"><h4>Preservar a relação</h4><div class="d47-val"><span data-draw="v" data-q="relacao">—</span> <small class="k-u">de 100</small></div><div class="d47-meter" data-draw="medidor" data-m="rel"></div><p class="k-note">intensidade acima do padrão nos estágios tardios custa mais relação</p></div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="comparador" id="painel-comparador" hidden>
+        <div class="d47-ctl3">
+          <div class="k-ctl"><label for="c-fee">Success fee da especializada <span class="k-u">% do recuperado</span></label>
+            <div class="k-in"><input type="range" id="c-fee" data-k="fee" min="15" max="30" step="1"><input type="number" data-k="fee" min="15" max="30" step="1" aria-label="Success fee, %"></div></div>
+          <div class="k-ctl"><label for="c-ces">Preço de cessão <span class="k-u">% do nominal</span></label>
+            <div class="k-in"><input type="range" id="c-ces" data-k="cessao" min="5" max="20" step="1"><input type="number" data-k="cessao" min="5" max="20" step="1" aria-label="Preço de cessão, %"></div></div>
+          <div class="k-ctl"><label for="c-fixo">Custo fixo da equipe própria <span class="k-u">R$ mil/mês</span> <span class="k-info" tabindex="0">i<span class="k-tip">Rateado entre as faixas pelo saldo. O custo próprio da faixa é o custo anual dos estágios que agem sobre ela mais a sua parte do fixo, dividido pelo saldo.</span></span></label>
+            <div class="k-in"><input type="range" id="c-fixo" data-k="fixo" min="0" max="60" step="1"><input type="number" data-k="fixo" min="0" max="60" step="1" aria-label="Custo fixo da equipe, R$ mil por mês"></div></div>
+        </div>
+        <div class="k-ch"><h3>Valor líquido esperado por faixa</h3><span>% do saldo · mês <b data-draw="v" data-q="mes">—</b></span></div>
+        <div class="k-tw" id="comparador">
+          <table class="k-table">
+            <thead><tr><th>Faixa</th><th>Saldo <span class="k-u">R$ mil</span></th><th>Própria</th><th>Especializada <span class="k-info" tabindex="0">i<span class="k-tip">Indicada de D+30 a D+90 (slide 5). Fora disso aparece entre parênteses e não concorre.</span></span></th><th>Cessão</th><th>Melhor</th></tr></thead>
+            <tbody data-draw="comp"></tbody>
+          </table>
+        </div>
+        <div class="k-diag" data-frases>
+          <span data-draw="fraseComp"></span>
+          <p data-frase="slide" hidden>Cessão só vence no fim da fila (180+); especializada vence onde o custo próprio por título é alto; a própria carrega a maior parte dos casos — como no slide 5.</p>
+          <p data-frase="outra" hidden>Com estes parâmetros, a cessão vence em <b data-draw="v" data-q="nCes">—</b> faixa(s) e a especializada em <b data-draw="v" data-q="nEsp">—</b>. Valor líquido, não bruto: compare sempre o que sobra depois do custo.</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="carteira estagios cenarios">
+      <h2 class="k-zt">Leitura · em regime</h2>
+      <div class="k-kpi"><span class="k-kl">Perda anual <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="perda">—</span></div>
+      <p class="k-note"><b data-draw="v" data-q="perdaPct">—</b> das vendas a prazo · por real vendido <b data-draw="v" data-q="porReal">—</b></p>
+      <div class="k-kpi"><span class="k-kl">Custo anual da régua <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="custo">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Resultado líquido vs. padrão <span class="k-u">R$ mil/ano</span> <span class="k-info" tabindex="0">i<span class="k-tip">Perda evitada menos custo adicional, contra a régua com todos os estágios em 50 e a mesma matriz.</span></span></span><span class="k-kn" data-draw="liq">—</span></div>
+      <p class="k-note">perda evitada <b data-draw="v" data-q="evitada">—</b> · custo adicional <b data-draw="v" data-q="custoAdic">—</b></p>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="padrao" hidden>Régua padrão: perde <b data-draw="v" data-q="perdaPct1">—</b> das vendas a prazo (R$ <b data-draw="v" data-q="perda">—</b> mil/ano) gastando R$ <b data-draw="v" data-q="custo">—</b> mil. DSO em regime <b data-draw="v" data-q="dso0">—</b> dias.</p>
+        <p data-frase="lembrete" hidden>Lembrete D−3 em intensidade máxima: perda cai de <b data-draw="v" data-q="perda50Pct1">—</b> para <b data-draw="v" data-q="perdaPct1">—</b> quase sem custo — o estágio mais barato é o mais rentável.</p>
+        <p data-frase="relacao" hidden>Recuperação e tempo melhoraram, mas a relação está em <b data-draw="v" data-q="relacao">—</b>: cliente que atrasou hoje e foi tratado como caloteiro não compra amanhã.</p>
+        <p data-frase="paga" hidden>A régua mais intensa paga: evita R$ <b data-draw="v" data-q="evitadaAbs">—</b> mil de perda por R$ <b data-draw="v" data-q="custoAdicAbs">—</b> mil de custo.</p>
+        <p data-frase="pagaGratis" hidden>Esta régua evita R$ <b data-draw="v" data-q="evitadaAbs">—</b> mil de perda e ainda custa R$ <b data-draw="v" data-q="custoAdicAbs">—</b> mil a menos que a padrão: menos títulos chegam aos estágios caros.</p>
+        <p data-frase="outro" hidden>Contra a régua padrão: perda <b data-draw="v" data-q="dPerda">—</b> e custo <b data-draw="v" data-q="custoAdic">—</b> mil/ano. Valor líquido, não bruto: o que decide é a soma das duas linhas.</p>
+      </div>
+      <p class="d47-pp">Chance de um título virar perda: 1–30 <b data-draw="v" data-q="pp1">—</b> · 31–60 <b data-draw="v" data-q="pp2">—</b> · 61–90 <b data-draw="v" data-q="pp3">—</b> · 91–180 <b data-draw="v" data-q="pp4">—</b> · 180+ <b data-draw="v" data-q="pp5">—</b></p>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="carteira estagios cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Suba só o lembrete D−3 para 100. Quanto cai a perda e quanto custa?
+          <details><summary>mostrar resposta</summary><p>A perda cai de <b data-draw="v" data-q="g1p0">—</b> para <b data-draw="v" data-q="g1p1">—</b> das vendas a prazo (R$ <b data-draw="v" data-q="g1ev">—</b> mil/ano). O lembrete custa só R$ <b data-draw="v" data-q="g1cl">—</b> mil/ano a mais, e o custo total da régua até cai (de <b data-draw="v" data-q="g1c0">—</b> para <b data-draw="v" data-q="g1c1">—</b>): menos títulos chegam aos estágios caros.</p></details>
+        </li>
+        <li>Leve tudo a 100. Vale a pena?
+          <details><summary>mostrar resposta</summary><p>A perda cai para <b data-draw="v" data-q="g2p">—</b> (economia de R$ <b data-draw="v" data-q="g2ev">—</b> mil) e o DSO para <b data-draw="v" data-q="g2dso">—</b> dias, com o custo indo de <b data-draw="v" data-q="g1c0">—</b> para <b data-draw="v" data-q="g2c">—</b> — mas a relação vai a <b data-draw="v" data-q="g2rel">—</b>. O trilema não se maximiza num eixo só: tom amigável no início, firmeza só onde o caso justifica.</p></details>
+        </li>
+        <li>No comparador, para qual faixa a cessão a <span data-draw="v" data-q="g3ces">—</span> do nominal é a melhor escolha?
+          <details><summary>mostrar resposta</summary><p>Só para 180+: a cobrança própria espera recuperar pouco e ainda paga custo, sobrando <b data-draw="v" data-q="g3p5">—</b> do saldo contra <b data-draw="v" data-q="g3ces">—</b> certos e imediatos na cessão. Em 1–30 a própria entrega <b data-draw="v" data-q="g3p1">—</b>: ceder seria trocar valor por certeza.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<script>
+/* ============================================================
+   D4.7 · Régua de cobrança
+   Testes de aderência (Spec §7), conferidos com M47.estado() em node (54 PASS / 0 FAIL):
+   Mês 0: 5.810 · 1.245 · 581 · 332 · 208 · 124 = 8.300 · DSO 85 · perda por real 2,03%
+   Prob. de perda: 4,7 · 10,0 · 17,6 · 32,0 · 80% · Regime padrão: 1.254 · 589 · 336 · 554 · 222 · perda 710 · DSO 90,4 · custo 238
+   Mês 12: 1.254 · 589 · 336 · 552 · 214 · perda acumulada 525 · Intensa 264 (0,75%) · DSO 79,0 · relação 0
+   Frouxa 1.634 (4,67%) · DSO 108 · Só o lembrete 568 (1,62%) · DSO 84,3 · relação 95
+   ============================================================ */
+const ST = window.D47 = { S: null, cen: null, mexido: false };
+const IDS = ['carteira', 'estagios', 'cenarios'];
+const NOMES = ['aging', 'tom', 'medidor', 'comp', 'fraseComp', 'v', 'liq', 'frase'];
+const CORES = ['var(--d47-f0)', 'var(--d47-f1)', 'var(--d47-f2)', 'var(--d47-f3)', 'var(--d47-f4)', 'var(--d47-f5)'];
+const FAIXAS = ['Em dia', '1–30 d', '31–60 d', '61–90 d', '91–180 d', '180+ d'];
+// escalas fixas dos medidores (domínio exibido)
+const MED = { rec: [0.94, 1], dso: [70, 115], rel: [0, 100] };
+
+/* ---------- dados ---------- */
+const P = () => K.obj(dash.data('carteira').data);
+const E = () => K.num(dash.data('estagios').data);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const atual = () => M47.estado(P(), E(), ST.S);
+function ctlDe(id) {
+  const p = P(), c = cenario(id);
+  return { i1: c.i1, i2: c.i2, i3: c.i3, i4: c.i4, i5: c.i5, r0: p.r0, r1: p.r1, r2: p.r2, r3: p.r3, r4: p.r4, mes: p.mesesSimulados, fee: p.fee, cessao: p.cessao, fixo: p.fixoEquipe };
+}
+const caso = (id) => M47.estado(P(), E(), ctlDe(id));
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  document.querySelectorAll('.d47-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+}
+function aplicar(id) {
+  if (!cenario(id)) return;
+  ST.S = ctlDe(id); ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  aplicar('padrao');
+  K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  if (k !== 'mes') ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d47-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+K.tabs('v', () => K.redraw(NOMES));
+
+/* ---------- aging empilhado mês a mês ---------- */
+dash.draw('aging', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual();
+  const sim = R.sim;
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const yMax = d3.max(sim, (m) => m.total) * 1.05;
+  const pMax = Math.max(1, d3.max(sim, (m) => m.perdaAcum)) * 1.15;
+  const y = d3.scaleLinear([0, yMax], [H - 26, 14]).nice();
+  const y2 = d3.scaleLinear([0, pMax], [H - 26, 14]).nice();
+  const ticks = y.ticks(5), ticks2 = y2.ticks(5);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0, mR = 0;
+  ticks.forEach((t) => { meas.text(K.n(t)); mL = Math.max(mL, meas.node().getComputedTextLength()); });
+  ticks2.forEach((t) => { meas.text(K.n(t)); mR = Math.max(mR, meas.node().getComputedTextLength()); });
+  meas.remove();
+  const x = d3.scaleBand(sim.map((m) => m.mes), [mL + 10, W - mR - 10]).padding(0.22);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', mL + 6).attr('x2', W - mR - 6).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  svg.append('g').selectAll('text').data(ticks2).join('text').attr('class', 'k-svgm').attr('x', W - mR - 2).attr('y', (t) => y2(t) + 4).style('fill', 'var(--k-navy)').text((t) => K.n(t));
+  svg.append('g').selectAll('text').data(sim).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (m) => x(m.mes) + x.bandwidth() / 2).attr('y', H - 8).style('font-weight', (m) => (m.mes === R.mes ? 700 : 400)).text((m) => m.mes);
+  sim.forEach((m) => {
+    const vals = [m.emDia].concat(m.s);
+    let acc = 0;
+    const g = svg.append('g').style('opacity', m.mes === R.mes ? 1 : 0.62);
+    vals.forEach((v, k) => {
+      g.append('rect').attr('x', x(m.mes)).attr('width', x.bandwidth()).attr('y', y(acc + v)).attr('height', Math.max(0, y(acc) - y(acc + v))).attr('fill', CORES[k]);
+      acc += v;
+    });
+    if (m.mes === R.mes) svg.append('rect').attr('x', x(m.mes) - 2).attr('width', x.bandwidth() + 4).attr('y', y(acc) - 2).attr('height', y(0) - y(acc) + 2).attr('fill', 'none').attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5).attr('rx', 2);
+  });
+  svg.append('line').attr('x1', mL + 6).attr('x2', W - mR - 6).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  const cx = (m) => x(m.mes) + x.bandwidth() / 2;
+  svg.append('path').attr('d', d3.line().x(cx).y((m) => y2(m.perdaAcum))(sim)).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2.5).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  svg.append('g').selectAll('circle').data(sim).join('circle').attr('cx', cx).attr('cy', (m) => y2(m.perdaAcum)).attr('r', (m) => (m.mes === R.mes ? 4.5 : 2.5)).attr('fill', 'var(--k-navy)');
+  const fim = sim[sim.length - 1];
+  const tf = svg.append('text').attr('class', 'k-svgt').style('fill', 'var(--k-navy)').style('font-weight', 600).attr('text-anchor', 'end').attr('x', cx(fim)).attr('y', y2(fim.perdaAcum) - 9).text('perda acum. ' + K.n(fim.perdaAcum));
+  if (y2(fim.perdaAcum) - 9 < 14) tf.attr('y', y2(fim.perdaAcum) + 18);
+  // clique e tooltip por mês
+  svg.append('g').selectAll('rect').data(sim).join('rect')
+    .attr('x', (m) => x(m.mes) - x.step() * x.paddingInner() / 2).attr('width', x.step()).attr('y', 10).attr('height', y(0) - 10).attr('fill', 'transparent').style('cursor', 'pointer')
+    .on('mousemove', (ev, m) => {
+      const [px, py] = d3.pointer(ev, el);
+      const linhas = [m.emDia].concat(m.s).map((v, k) => [CORES[k], FAIXAS[k], K.n(v)]).reverse();
+      linhas.push([null, 'Carteira', K.n(m.total)], ['var(--k-navy)', 'Perda acumulada', K.n(m.perdaAcum)]);
+      tip.show('Mês ' + m.mes + ' · DSO ' + K.n(m.dso, 1), linhas, px, py);
+    })
+    .on('mouseleave', () => tip.hide())
+    .on('click', (ev, m) => { ST.S.mes = m.mes; sincroniza(); K.redraw(NOMES); });
+});
+
+/* ---------- tom do degrau ---------- */
+dash.draw('tom', (el) => {
+  el.replaceChildren();
+  if (!pronto()) return;
+  const k = Number(el.dataset.e);
+  const i = M47.int(ST.S)[k - 1];
+  const f = document.createElement('span');
+  f.style.display = 'block'; f.style.height = '100%'; f.style.width = i + '%';
+  f.style.background = 'var(--k-navy)'; f.style.opacity = String(0.25 + 0.75 * i / 100);
+  el.append(f);
+});
+
+/* ---------- medidores do trilema ---------- */
+dash.draw('medidor', (el) => {
+  if (!pronto()) { el.replaceChildren(); return; }
+  const R = atual(), m = el.dataset.m;
+  const v = m === 'rec' ? R.recuperar : m === 'dso' ? R.dso : R.relacao;
+  const b = m === 'rec' ? 1 - R.perda50Pct : m === 'dso' ? R.reg50.dso : 100;
+  const [lo, hi] = MED[m];
+  const { svg, W } = K.svg(el, 34, 140);
+  el.replaceChildren(svg.node());
+  const x = d3.scaleLinear([lo, hi], [4, W - 4]).clamp(true);
+  const bom = m === 'dso' ? v <= b + 1e-9 : v >= b - 1e-9;
+  svg.append('rect').attr('x', 4).attr('width', W - 8).attr('y', 8).attr('height', 10).attr('rx', 3).attr('fill', 'var(--color-panel)').attr('stroke', 'var(--color-border-line)');
+  const x0 = m === 'dso' ? x(hi) : x(lo);
+  svg.append('rect').attr('x', Math.min(x0, x(v))).attr('width', Math.abs(x(v) - x0)).attr('y', 8).attr('height', 10).attr('rx', 3).attr('fill', bom ? 'var(--k-pos)' : 'var(--k-neg)');
+  svg.append('line').attr('x1', x(b)).attr('x2', x(b)).attr('y1', 4).attr('y2', 22).attr('stroke', 'var(--color-fg)').attr('stroke-width', 2);
+  const t = svg.append('text').attr('class', 'k-svgm').attr('x', x(b)).attr('y', 32).attr('text-anchor', 'middle').text('padrão');
+  const w = t.node().getComputedTextLength();
+  if (x(b) + w / 2 > W) t.attr('text-anchor', 'end').attr('x', W - 2); else if (x(b) - w / 2 < 0) t.attr('text-anchor', 'start').attr('x', 2);
+});
+
+/* ---------- comparador ---------- */
+const MOD = { propria: 'Própria', esp: 'Especializada', cessao: 'Cessão' };
+dash.draw('comp', (tb) => {
+  tb.replaceChildren();
+  if (!pronto()) return;
+  const R = atual();
+  R.comp.forEach((c) => {
+    const tr = document.createElement('tr');
+    const td = (txt, cls) => { const d = document.createElement('td'); d.textContent = txt; if (cls) d.className = cls; tr.append(d); };
+    td(FAIXAS[c.faixa]);
+    td(K.n(c.saldo));
+    td(K.p(c.propria, 1), c.venc === 'propria' ? 'd47-win' : '');
+    td(c.aplEsp ? K.p(c.esp, 1) : '(' + K.p(c.esp, 1) + ')', c.venc === 'esp' ? 'd47-win' : c.aplEsp ? '' : 'd47-na');
+    td(K.p(c.cessao, 1), c.venc === 'cessao' ? 'd47-win' : '');
+    td(MOD[c.venc]);
+    tb.append(tr);
+  });
+});
+dash.draw('fraseComp', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const c = atual().comp;
+    const slide = c[4].venc === 'cessao' && c.slice(0, 4).every((x) => x.venc !== 'cessao') && c.some((x) => x.venc === 'esp') && c.some((x) => x.venc === 'propria');
+    keys.push(slide ? 'slide' : 'outra');
+  }
+  K.frases(el, keys);
+});
+
+/* ---------- números ---------- */
+const RVAL = {
+  mes: (R) => K.n(R.mes), fotoTot: (R) => K.n(R.foto.total), fotoDso: (R) => K.n(R.foto.dso, 1), fotoPerda: (R) => K.n(R.foto.perdaAcum),
+  recuperar: (R) => K.p(R.recuperar, 2), dso: (R) => K.n(R.dso, 1), dso0: (R) => K.n(R.dso), relacao: (R) => K.n(R.relacao),
+  perda: (R) => K.n(R.perda), perdaPct: (R) => K.p(R.perdaPct, 2), perdaPct1: (R) => K.p(R.perdaPct, 1), perda50Pct1: (R) => K.p(R.perda50Pct, 1),
+  porReal: (R) => K.p(R.perdaPorReal, 2), custo: (R) => K.n(R.custo), evitada: (R) => K.s(R.evitada), custoAdic: (R) => K.s(R.custoAdic),
+  evitadaAbs: (R) => K.n(Math.abs(R.evitada)), custoAdicAbs: (R) => K.n(Math.abs(R.custoAdic)), dPerda: (R) => K.s(-R.evitada),
+  recEf: (R) => K.p(R.R.rec, 0),
+  nCes: (R) => K.n(R.comp.filter((c) => c.venc === 'cessao').length), nEsp: (R) => K.n(R.comp.filter((c) => c.venc === 'esp').length),
+  pp1: (R) => K.p(R.probPerda[0], 1), pp2: (R) => K.p(R.probPerda[1], 1), pp3: (R) => K.p(R.probPerda[2], 1), pp4: (R) => K.p(R.probPerda[3], 1), pp5: (R) => K.p(R.probPerda[4], 0),
+};
+const ca = (k) => (R) => K.n(R.custos[k], 1);
+[0, 1, 2, 3, 4].forEach((k) => { RVAL['ca' + (k + 1)] = ca(k); RVAL['cu' + (k + 1)] = () => K.n(E()[k].custo); });
+const FVAL = {
+  opMin: () => K.n(P().atrasoOpMin), opMax: () => K.n(P().atrasoOpMax), fj: () => K.p(E()[4].fracTitulos, 0),
+  g1p0: () => K.p(caso('padrao').perdaPct, 1), g1p1: () => K.p(caso('lembrete').perdaPct, 1), g1ev: () => K.n(caso('lembrete').evitada),
+  g1cl: () => K.n(caso('lembrete').custos[0] - caso('padrao').custos[0], 1), g1c0: () => K.n(caso('padrao').custo), g1c1: () => K.n(caso('lembrete').custo),
+  g2p: () => K.p(caso('intensa').perdaPct, 2), g2ev: () => K.n(caso('intensa').evitada), g2dso: () => K.n(caso('intensa').dso), g2c: () => K.n(caso('intensa').custo), g2rel: () => K.n(caso('intensa').relacao),
+  g3ces: () => K.p(P().cessao / 100, 0), g3p5: () => K.p(caso('padrao').comp[4].propria, 1), g3p1: () => K.p(caso('padrao').comp[0].propria, 1),
+};
+dash.draw('v', (el) => {
+  const q = el.dataset.q;
+  let v = null;
+  if (pronto()) v = FVAL[q] ? FVAL[q]() : RVAL[q] ? RVAL[q](atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('liq', (el) => {
+  const R = pronto() ? atual() : null;
+  el.classList.toggle('k-pos', !!R && R.liquido > 0.5);
+  el.classList.toggle('k-neg', !!R && R.liquido < -0.5);
+  el.textContent = R ? K.s(R.liquido) : '—';
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const R = atual(), p = P(), I = M47.int(ST.S);
+    if (I.every((i) => i === 50)) keys.push('padrao');
+    else if (I[0] === 100 && I.slice(1).every((i) => i === 50)) keys.push('lembrete');
+    else if (R.relacao < p.relacaoRuim) keys.push('relacao');
+    else if (R.liquido > 0 && R.relacao >= p.relacaoPaga) keys.push(R.custoAdic > 0 ? 'paga' : 'pagaGratis');
+    else keys.push('outro');
+  }
+  K.frases(el, keys);
+});
+</script>

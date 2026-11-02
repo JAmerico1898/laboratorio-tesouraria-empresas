@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D5.6 · Covenants com buffer</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"caminhos":{"format":"json","data":[{"antecedencia":3,"momento":"3 trimestres antes","feePct":0.1},{"antecedencia":2,"momento":"2 trimestres antes","feePct":0.15},{"antecedencia":1,"momento":"1 trimestre antes","feePct":0.3},{"antecedencia":0,"momento":"Após o fechamento","feePct":0.5}]},"cenarios":{"format":"json","data":[{"id":"hoje","nome":"Horizonte hoje","ebitda":2400,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},{"id":"recessao","nome":"Recessão","ebitda":1680,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},{"id":"rotativo","nome":"Rolar o rotativo em CP","ebitda":2400,"cp":4000,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},{"id":"caixa","nome":"Queimar caixa","ebitda":2400,"cp":3500,"lp":2000,"caixa":300,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},{"id":"refin","nome":"Refinanciar o CD","ebitda":2400,"cp":1500,"lp":4000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},{"id":"estavel","nome":"Setor estável","ebitda":2400,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.08,"tend":0,"conversa":2}]},"covenants":{"format":"json","data":[{"id":"dl","nome":"Dívida líquida / EBITDA","limite":3,"tipo":"teto"},{"id":"icj","nome":"Cobertura de juros (EBITDA / desp. financeiras)","limite":2,"tipo":"piso"},{"id":"lc","nome":"Liquidez corrente (AC / PC)","limite":1.3,"tipo":"piso"},{"id":"capex","nome":"CAPEX anual","limite":600,"tipo":"teto"},{"id":"div","nome":"Dividendos só se D.Líq/EBITDA abaixo de","limite":2,"tipo":"qualitativo"}]},"horizonte":{"format":"json","data":[{"chave":"ebitda","valor":2400,"descricao":"EBITDA anual (00_Convencoes §4.2)"},{"chave":"dividaCP","valor":3500,"descricao":"Dívida bancária de curto prazo (PCF)"},{"chave":"dividaLP","valor":2000,"descricao":"Exigível de longo prazo — parcela LP do CG linha"},{"chave":"caixa","valor":1000,"descricao":"Caixa e bancos 400 + aplicações CP 600"},{"chave":"capex","valor":600,"descricao":"CAPEX orçado do ano"},{"chave":"aco","valor":9800,"descricao":"Ativo circulante operacional (fixo nas simulações)"},{"chave":"pco","valor":4300,"descricao":"Passivo circulante operacional (fixo nas simulações)"},{"chave":"despFin","valor":1000,"descricao":"Despesas financeiras anuais; proporção da dívida bruta mantida nas simulações"},{"chave":"amortTri","valor":500,"descricao":"Amortização trimestral do CG linha (4.000/24 × 3)"},{"chave":"pisoDivida","valor":1500,"descricao":"Dívida que não amortiza: CG rotativo 1.200 + conta garantida 300"},{"chave":"principalCov","valor":4000,"descricao":"Principal sob covenant: CG linha 24 m, bancos A e B"},{"chave":"crossDefault","valor":1500,"descricao":"Dívida alcançada pelo cross-default: rotativo + conta garantida"},{"chave":"remanescente","valor":2,"descricao":"Prazo remanescente do CG linha, anos"},{"chave":"renegBps","valor":100,"descricao":"Renegociação: acréscimo permanente de spread, pontos-base (faixa 50–150)"},{"chave":"renegMinBps","valor":50,"descricao":"Renegociação: piso da faixa, pontos-base"},{"chave":"renegMaxBps","valor":150,"descricao":"Renegociação: teto da faixa, pontos-base"},{"chave":"ratingBps","valor":300,"descricao":"Quebra: perda de rating, pontos-base a mais nas linhas futuras"}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+
+
+</style>
+<style>
+.d56-gauges { display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); margin-top: 8px; }
+.d56-g { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); padding: 8px 8px 6px; min-width: 0; }
+.d56-g h4 { margin: 0; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.d56-g .k-note { margin-top: 2px; text-align: center; }
+.d56-gauge { position: relative; min-height: 150px; }
+.d56-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.d56-chip { font-size: 13px; padding: 3px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); background: var(--color-bg); font-variant-numeric: tabular-nums; }
+.d56-chip.d56-verde { border-left-color: var(--k-pos); }
+.d56-chip.d56-amarelo { border-left-color: var(--k-amber); }
+.d56-chip.d56-vermelho { border-left-color: var(--k-neg); }
+.d56-proj { min-height: 210px; }
+.d56-pt { margin: 12px 0 0; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.d56-linha { min-height: 118px; }
+.d56 .k-card .d56-val { font-family: var(--font-anthropic-serif); font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.d56 .k-card.k-warn { box-shadow: 0 0 0 1px var(--k-neg); }
+.d56-zv { color: var(--k-pos); }
+.d56-za { color: var(--k-amber-d); }
+.d56-zr { color: var(--k-neg); }
+</style>
+
+<div class="k d56" id="d56">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D5.6 · Covenants com buffer</h1>
+      <p class="k-sub">Qual covenant quebra primeiro — e quanto custa descobrir tarde?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d56-cen" data-cen="hoje" aria-pressed="false">Horizonte hoje</button>
+      <button class="k-btn d56-cen" data-cen="recessao" aria-pressed="false">Recessão</button>
+      <button class="k-btn d56-cen" data-cen="rotativo" aria-pressed="false">Rolar o rotativo em CP</button>
+      <button class="k-btn d56-cen" data-cen="caixa" aria-pressed="false">Queimar caixa</button>
+      <button class="k-btn d56-cen" data-cen="refin" aria-pressed="false">Refinanciar o CD</button>
+      <button class="k-btn d56-cen" data-cen="estavel" aria-pressed="false">Setor estável</button>
+    </div>
+  </header>
+
+  <div class="k-tabs" role="tablist">
+    <button class="k-tab" id="tab-medidores" data-group="v" data-tab="medidores" role="tab" aria-selected="true">Medidores</button>
+    <button class="k-tab" id="tab-projecao" data-group="v" data-tab="projecao" role="tab" aria-selected="false">Projeção</button>
+    <button class="k-tab" id="tab-caminhos" data-group="v" data-tab="caminhos" role="tab" aria-selected="false">Três caminhos</button>
+  </div>
+
+  <div class="k-zones">
+    <!-- ===================== CONTROLES ===================== -->
+    <div class="k-zone" id="controles" data-source="horizonte covenants caminhos cenarios">
+      <h2 class="k-zt">Posição da Horizonte <span class="k-u">R$ mil</span></h2>
+      <div class="k-ctl"><label for="c-eb">EBITDA anual</label>
+        <div class="k-in"><input type="range" id="c-eb" data-k="ebitda" min="1000" max="3600" step="10"><input type="number" data-k="ebitda" min="1000" max="3600" step="10" aria-label="EBITDA anual, R$ mil"></div></div>
+      <div class="k-ctl"><label for="c-cp">Dívida CP</label>
+        <div class="k-in"><input type="range" id="c-cp" data-k="cp" min="1500" max="6000" step="50"><input type="number" data-k="cp" min="1500" max="6000" step="50" aria-label="Dívida de curto prazo, R$ mil"></div></div>
+      <div class="k-ctl"><label for="c-lp">Dívida LP</label>
+        <div class="k-in"><input type="range" id="c-lp" data-k="lp" min="0" max="6000" step="50"><input type="number" data-k="lp" min="0" max="6000" step="50" aria-label="Dívida de longo prazo, R$ mil"></div></div>
+      <div class="k-ctl"><label for="c-cx">Caixa + aplicações</label>
+        <div class="k-in"><input type="range" id="c-cx" data-k="caixa" min="0" max="3000" step="50"><input type="number" data-k="caixa" min="0" max="3000" step="50" aria-label="Caixa e aplicações, R$ mil"></div></div>
+      <div class="k-ctl"><label for="c-capex">CAPEX do ano</label>
+        <div class="k-in"><input type="range" id="c-capex" data-k="capex" min="0" max="1200" step="10"><input type="number" data-k="capex" min="0" max="1200" step="10" aria-label="CAPEX do ano, R$ mil"></div></div>
+      <p class="k-note">Dívida bruta <b data-draw="v" data-q="bruta">—</b> · despesas financeiras <b data-draw="v" data-q="despFin">—</b> <span class="k-info" tabindex="0">i<span class="k-tip">Despesas financeiras mantidas na proporção atual da dívida bruta (<b data-draw="v" data-q="despFin0">—</b> ÷ <b data-draw="v" data-q="bruta0">—</b> = <b data-draw="v" data-q="taxa">—</b>). AC = ACO <b data-draw="v" data-q="aco">—</b> + caixa; PC = PCO <b data-draw="v" data-q="pco">—</b> + dívida CP.</span></span></p>
+
+      <h2 class="k-zt2">Buffer do gatilho interno <span class="k-info" tabindex="0">i<span class="k-tip">Teto: gatilho = limite × buffer. Piso: gatilho = limite ÷ buffer. Setor cíclico (distribuição ligada à construção) pede buffer mais largo.</span></span></h2>
+      <div class="k-seg" role="group" aria-label="Buffer"><button data-k="buffer" data-v="0.9">Estável · 90%</button><button data-k="buffer" data-v="0.8">Cíclico · 80%</button></div>
+
+      <section data-group="v" data-pane="projecao" hidden>
+        <h2 class="k-zt2">Volatilidade do EBITDA <span class="k-u">σ por trimestre</span></h2>
+        <div class="k-seg" role="group" aria-label="Volatilidade do EBITDA"><button data-k="sigma" data-v="0.08">Estável · 8%</button><button data-k="sigma" data-v="0.2">Cíclico · 20%</button></div>
+        <div class="k-ctl" style="margin-top: 10px"><label for="c-tend">Tendência do EBITDA <span class="k-u">% a.a.</span></label>
+          <div class="k-in"><input type="range" id="c-tend" data-k="tend" min="-40" max="20" step="1"><input type="number" data-k="tend" min="-40" max="20" step="1" aria-label="Tendência do EBITDA, % ao ano"></div></div>
+        <p class="k-note">A dívida amortiza <b data-draw="v" data-q="amortTri">—</b> por trimestre até o piso de <b data-draw="v" data-q="pisoDivida">—</b> (rotativo + conta garantida); caixa constante.</p>
+      </section>
+
+      <section data-group="v" data-pane="caminhos" hidden>
+        <h2 class="k-zt2">Quando conversar com o banco</h2>
+        <div class="k-seg" role="group" aria-label="Quando conversar com o banco"><button data-k="conversa" data-v="3">3 tri antes</button><button data-k="conversa" data-v="2">2 tri antes</button><button data-k="conversa" data-v="1">1 tri antes</button><button data-k="conversa" data-v="0">Após o fechamento</button></div>
+        <p class="k-note">Principal sob covenant: CG linha <b data-draw="v" data-q="principal">—</b> (bancos A e B), <b data-draw="v" data-q="remanescente">—</b> anos remanescentes.</p>
+      </section>
+    </div>
+
+    <!-- ===================== VISUAL ===================== -->
+    <div class="k-zone" id="visual" data-source="horizonte covenants caminhos cenarios">
+      <section data-group="v" data-pane="medidores" id="medidores">
+        <div class="k-ch"><h3>Três covenants, três zonas</h3><span>ponteiro = valor atual · marcas = gatilho e limite</span></div>
+        <div class="d56-gauges">
+          <div class="d56-g" id="g-dl">
+            <h4>Dívida líquida / EBITDA <span class="k-u">teto</span></h4>
+            <div class="d56-gauge dash-skeleton" data-draw="gauge" data-id="dl" role="img" aria-label="Medidor da dívida líquida sobre EBITDA"></div>
+            <p class="k-note">gatilho <b data-draw="v" data-q="gat" data-id="dl">—</b> · limite <b data-draw="v" data-q="lim" data-id="dl">—</b></p>
+          </div>
+          <div class="d56-g" id="g-icj">
+            <h4>Cobertura de juros <span class="k-u">piso</span></h4>
+            <div class="d56-gauge dash-skeleton" data-draw="gauge" data-id="icj" role="img" aria-label="Medidor da cobertura de juros"></div>
+            <p class="k-note">gatilho <b data-draw="v" data-q="gat" data-id="icj">—</b> · limite <b data-draw="v" data-q="lim" data-id="icj">—</b></p>
+          </div>
+          <div class="d56-g" id="g-lc">
+            <h4>Liquidez corrente <span class="k-u">piso</span></h4>
+            <div class="d56-gauge dash-skeleton" data-draw="gauge" data-id="lc" role="img" aria-label="Medidor da liquidez corrente"></div>
+            <p class="k-note">gatilho <b data-draw="v" data-q="gat" data-id="lc">—</b> · limite <b data-draw="v" data-q="lim" data-id="lc">—</b></p>
+          </div>
+        </div>
+        <div class="d56-chips">
+          <span class="d56-chip d56-capex">CAPEX <b data-draw="v" data-q="capexV">—</b> · teto <b data-draw="v" data-q="capexLim">—</b> · gatilho <b data-draw="v" data-q="capexGat">—</b></span>
+          <span class="d56-chip d56-div" data-frases><span data-draw="frase" data-grp="div"></span><span data-frase="sim" hidden>Dividendos permitidos: D.Líq/EBITDA <b data-draw="v" data-q="val" data-id="dl">—</b> abaixo de <b data-draw="v" data-q="divLim">—</b></span><span data-frase="nao" hidden>Dividendos vedados: D.Líq/EBITDA <b data-draw="v" data-q="val" data-id="dl">—</b> não está abaixo de <b data-draw="v" data-q="divLim">—</b></span></span>
+        </div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-pos)"></i>Verde · folga</span>
+          <span><i style="background: var(--k-amber)"></i>Amarela · entre gatilho e limite</span>
+          <span><i style="background: var(--k-neg)"></i>Vermelha · além do limite</span>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="projecao" id="projecao" hidden>
+        <div class="k-ch"><h3>Oito trimestres: caso base e banda pessimista</h3><span>banda = EBITDA − 2σ√(t/4)</span></div>
+        <p class="d56-pt">Dívida líquida / EBITDA</p>
+        <div class="k-chart d56-proj dash-skeleton" data-draw="proj" data-id="dl" role="img" aria-label="Projeção da dívida líquida sobre EBITDA em oito trimestres"></div>
+        <p class="d56-pt">Cobertura de juros</p>
+        <div class="k-chart d56-proj dash-skeleton" data-draw="proj" data-id="icj" role="img" aria-label="Projeção da cobertura de juros em oito trimestres"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-navy)"></i>Caso base</span>
+          <span><i style="background: var(--k-navy); opacity: .18"></i>Banda pessimista (−2σ)</span>
+          <span><i style="background: var(--k-amber)"></i>Gatilho</span>
+          <span><i style="background: var(--k-neg)"></i>Limite</span>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="caminhos" id="caminhos" hidden>
+        <div class="k-ch"><h3>Três caminhos diante do aperto</h3><span>R$ mil · principal sob covenant</span></div>
+        <div class="k-cards">
+          <div class="k-card d56-card" data-cam="waiver"><h4>Waiver</h4><span class="d56-val" data-draw="v" data-q="fee">—</span><p class="k-note"><b data-draw="v" data-q="feePct">—</b> do principal · <span data-draw="v" data-q="momento">—</span></p></div>
+          <div class="k-card d56-card" data-cam="reneg"><h4>Renegociação</h4><span class="d56-val" data-draw="v" data-q="reneg">—</span><p class="k-note"><b data-draw="v" data-q="renegBps">—</b> bps permanentes × <b data-draw="v" data-q="remanescente">—</b> anos · faixa <b data-draw="v" data-q="renegMin">—</b>–<b data-draw="v" data-q="renegMax">—</b> + garantias</p></div>
+          <div class="k-card d56-card" data-cam="quebra"><h4>Quebra sem tratamento</h4><span class="d56-val" data-draw="v" data-q="quebra">—</span><p class="k-note">exigíveis: aceleração <b data-draw="v" data-q="principal">—</b> + cross-default <b data-draw="v" data-q="cross">—</b>, contra caixa de <b data-draw="v" data-q="caixa">—</b> · rating +<b data-draw="v" data-q="ratingBps">—</b> bps</p></div>
+        </div>
+        <div class="k-ch" style="margin-top: 14px"><h3>A linha do tempo da conversa</h3><span>custo do waiver em cada momento · clique para escolher</span></div>
+        <div class="k-chart d56-linha dash-skeleton" data-draw="linha" role="img" aria-label="Linha do tempo até o fechamento trimestral com o custo do waiver em cada momento"></div>
+      </section>
+    </div>
+
+    <!-- ===================== LEITURA ===================== -->
+    <div class="k-zone" id="leitura" data-source="horizonte covenants caminhos cenarios">
+      <section data-group="v" data-pane="medidores">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Em foco <span class="k-u">o mais perto do limite</span></span><span class="k-kn" data-draw="v" data-q="focoValor">—</span></div>
+        <p class="k-note"><span data-draw="v" data-q="focoNome">—</span> · folga <b data-draw="v" data-q="focoFolga">—</b> — zona <b data-draw="v" data-q="focoZona">—</b></p>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="med"></span>
+          <p data-frase="verde" hidden>Folga em todos os covenants. Monitoramento mensal gerencial; cálculo formal trimestral.</p>
+          <p data-frase="amarelo" hidden><b data-draw="v" data-q="focoNome">—</b> na zona de gatilho (<b data-draw="v" data-q="focoValor">—</b> contra limite <b data-draw="v" data-q="focoLim">—</b>): abra a conversa com a área de crédito do banco agora — waiver antecipado custa <b data-draw="v" data-q="pctMin">—</b> do principal; depois do fechamento, até <b data-draw="v" data-q="pctMax">—</b> ou renegociação.</p>
+          <p data-frase="vermelho" hidden><b data-draw="v" data-q="focoNome">—</b> além do limite (<b data-draw="v" data-q="focoValor">—</b> contra <b data-draw="v" data-q="focoLim">—</b>): inadimplemento técnico. Sem waiver acordado, o banco pode acelerar <b data-draw="v" data-q="principal">—</b> e disparar cross-default em <b data-draw="v" data-q="cross">—</b> — <b data-draw="v" data-q="quebra">—</b> exigíveis contra <b data-draw="v" data-q="caixa">—</b> de caixa.</p>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="projecao" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">D.Líq/EBITDA em T+8 <span class="k-u">caso base</span></span><span class="k-kn" data-draw="v" data-q="dl8">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Primeiro cruzamento <span class="k-u">banda pessimista</span></span><span class="k-kn" data-draw="v" data-q="cruzT">—</span></div>
+        <div class="k-diag" data-frases>
+          <p>Caso base: D.Líq/EBITDA vai de <b data-draw="v" data-q="dl0">—</b> para <b data-draw="v" data-q="dl8">—</b> em 8 trimestres pela amortização.</p>
+          <span data-draw="frase" data-grp="proj"></span>
+          <p data-frase="limite" hidden>No pior caso plausível (−2σ, setor <span data-draw="v" data-q="setor">—</span>), a <span data-draw="v" data-q="cruzNome">—</span> cruza o limite em <b data-draw="v" data-q="cruzT">—</b> — é esse trimestre que define quando conversar.</p>
+          <p data-frase="gatilho" hidden>No pior caso plausível (−2σ, setor <span data-draw="v" data-q="setor">—</span>), nada quebra, mas a <span data-draw="v" data-q="cruzNome">—</span> entra na zona de gatilho em <b data-draw="v" data-q="cruzT">—</b> — é esse trimestre que define quando conversar.</p>
+          <p data-frase="nenhum" hidden>Nem a banda pessimista (−2σ, setor <span data-draw="v" data-q="setor">—</span>) toca um gatilho em 8 trimestres: monitoramento de rotina basta.</p>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="caminhos" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Waiver agora <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="fee">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Esperar o fechamento <span class="k-u">R$ mil</span></span><span class="k-kn"><span data-draw="v" data-q="feeT">—</span><small>a <span data-draw="v" data-q="reneg">—</span></small></span></div>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="cam"></span>
+          <p data-frase="antes" hidden>Conversar <b data-draw="v" data-q="triN">—</b> <span data-draw="v" data-q="triPal">—</span> antes custa <b data-draw="v" data-q="fee">—</b>; esperar o fechamento custa <b data-draw="v" data-q="feeT">—</b> ou renegociação de <b data-draw="v" data-q="reneg">—</b>; não conversar custa <b data-draw="v" data-q="quebra">—</b> exigíveis. A diferença entre renegociar e acelerar é a antecedência.</p>
+          <p data-frase="apos" hidden>Depois do fechamento o waiver custa <b data-draw="v" data-q="feeT">—</b> — se o banco aceitar; senão, renegociação de <b data-draw="v" data-q="reneg">—</b> (faixa <b data-draw="v" data-q="renegMin">—</b>–<b data-draw="v" data-q="renegMax">—</b>). Não conversar custa <b data-draw="v" data-q="quebra">—</b> exigíveis.</p>
+          <p data-frase="quebra" hidden>Covenant rompido e conversa só depois do fechamento: sem waiver acordado, <b data-draw="v" data-q="quebra">—</b> ficam exigíveis contra <b data-draw="v" data-q="caixa">—</b> de caixa — descoberto de <b data-draw="v" data-q="desc">—</b>.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="k-help" id="guia" data-source="horizonte covenants caminhos cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>O covenant apertado hoje é a liquidez corrente. Qual quebra primeiro numa recessão de <span data-draw="v" data-q="g-rec">—</span> no EBITDA?
+          <details><summary>mostrar resposta</summary><p>A cobertura de juros: cai de <b data-draw="v" data-q="g-icj0">—</b> para <b data-draw="v" data-q="g-icjR">—</b> (limite <b data-draw="v" data-q="g-icjL">—</b>), enquanto D.Líq/EBITDA vai a <b data-draw="v" data-q="g-dlR">—</b> (ainda dentro) e a LC nem se move (<b data-draw="v" data-q="g-lcR">—</b>). O covenant mais sensível ao ciclo não é o mais apertado na foto.</p></details>
+        </li>
+        <li>Rolar o rotativo e levar a dívida CP a <span data-draw="v" data-q="g-cpRot">—</span> leva a LC a <span data-draw="v" data-q="g-lcRot">—</span> — no limite. O que fazer antes do fechamento?
+          <details><summary>mostrar resposta</summary><p>Conversar dois trimestres antes (waiver ≈ <b data-draw="v" data-q="g-fee2">—</b>) ou refinanciar o CD em LP (LC vai a <b data-draw="v" data-q="g-lcRef">—</b>). Esperar o fechamento transforma <b data-draw="v" data-q="g-fee2">—</b> em <b data-draw="v" data-q="g-feeT">—</b> de waiver tardio ou <b data-draw="v" data-q="g-reneg">—</b> de renegociação; não conversar expõe <b data-draw="v" data-q="g-queb">—</b> à aceleração.</p></details>
+        </li>
+        <li>Por que a banda pessimista da projeção se alarga com o tempo?
+          <details><summary>mostrar resposta</summary><p>O choque se acumula — 2σ√(t/4): com σ de <b data-draw="v" data-q="g-sig">—</b> por trimestre, a banda fica <b data-draw="v" data-q="g-b4">—</b> abaixo do base em T+4 e <b data-draw="v" data-q="g-b8">—</b> em T+8. Quanto mais longe, menos se sabe: o buffer cresce com o horizonte (o cone de D2.7).</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+
+
+})();</script>
+<script>(function () {
+
+/* D5.6 · Covenants com buffer — funções puras (sem DOM).
+   S = estado {ebitda, cp, lp, caixa, capex, buffer, sigma, tend (% a.a.), conversa (trimestres de antecedência; 0 = após o fechamento)}
+   H = dados da Horizonte (objeto chave → valor) · C = covenants por id {limite, tipo} · F = taxas de waiver [{antecedencia, feePct}] */
+(function (root) {
+  const M = {};
+  // despesas financeiras como proporção fixa da dívida bruta (1.000 / 5.500)
+  M.taxaJuros = (H) => H.despFin / (H.dividaCP + H.dividaLP);
+  M.indices = function (S, H) {
+    const bruta = S.cp + S.lp, liq = bruta - S.caixa;
+    const despFin = bruta * M.taxaJuros(H);
+    return {
+      bruta, liq, despFin,
+      dl: liq / S.ebitda,
+      icj: despFin > 0 ? S.ebitda / despFin : Infinity,
+      lc: (H.aco + S.caixa) / (H.pco + S.cp),
+      ac: H.aco + S.caixa, pc: H.pco + S.cp,
+    };
+  };
+  // gatilho interno: teto → limite × b ; piso → limite ÷ b
+  M.gatilho = (lim, tipo, b) => (tipo === 'teto' ? lim * b : lim / b);
+  M.zona = function (v, lim, tipo, b) {
+    const g = M.gatilho(lim, tipo, b);
+    if (tipo === 'teto') return v < g ? 'verde' : v <= lim ? 'amarelo' : 'vermelho';
+    return v > g ? 'verde' : v >= lim ? 'amarelo' : 'vermelho';
+  };
+  M.folga = (v, lim, tipo) => (tipo === 'teto' ? (lim - v) / lim : (v - lim) / lim);
+  const RANK = { verde: 0, amarelo: 1, vermelho: 2 };
+  M.estado = function (S, H, C) {
+    const I = M.indices(S, H);
+    const covs = ['dl', 'icj', 'lc'].map((id) => {
+      const c = C[id], v = I[id];
+      return { id, valor: v, limite: c.limite, tipo: c.tipo, gatilho: M.gatilho(c.limite, c.tipo, S.buffer), zona: M.zona(v, c.limite, c.tipo, S.buffer), folga: M.folga(v, c.limite, c.tipo) };
+    });
+    const capex = { valor: S.capex, limite: C.capex.limite, gatilho: M.gatilho(C.capex.limite, 'teto', S.buffer), zona: M.zona(S.capex, C.capex.limite, 'teto', S.buffer) };
+    const divid = { permitido: I.dl < C.div.limite, limite: C.div.limite };
+    // o mais próximo do limite (menor folga); em empate de folga, o de pior zona
+    const pior = covs.slice().sort((a, b) => a.folga - b.folga || RANK[b.zona] - RANK[a.zona])[0];
+    const zonaMax = covs.reduce((z, c) => (RANK[c.zona] > RANK[z] ? c.zona : z), 'verde');
+    const vermelhos = covs.filter((c) => c.zona === 'vermelho').sort((a, b) => a.folga - b.folga);
+    const amarelos = covs.filter((c) => c.zona === 'amarelo').sort((a, b) => a.folga - b.folga);
+    return { I, covs, capex, divid, pior, zonaMax, vermelhos, amarelos };
+  };
+  // projeção de 8 trimestres; choque pessimista acumulado = 2σ√(t/4)
+  M.projecao = function (S, H, C, n = 8) {
+    const taxa = M.taxaJuros(H), bruta0 = S.cp + S.lp, tend = S.tend / 100;
+    const pts = [];
+    for (let t = 0; t <= n; t++) {
+      const eb = S.ebitda * Math.pow(1 + tend, t / 4);
+      const ep = eb * (1 - 2 * S.sigma * Math.sqrt(t / 4));
+      const div = t === 0 ? bruta0 : Math.max(Math.min(H.pisoDivida, bruta0), bruta0 - H.amortTri * t);
+      const df = div * taxa, liq = div - S.caixa;
+      pts.push({ t, ebBase: eb, ebPess: ep, divida: div, despFin: df, dlBase: liq / eb, dlPess: liq / ep, icjBase: df > 0 ? eb / df : Infinity, icjPess: df > 0 ? ep / df : Infinity });
+    }
+    const cruza = (k, nivel) => {
+      const c = C[k], lim = nivel === 'limite' ? c.limite : M.gatilho(c.limite, c.tipo, S.buffer);
+      const p = pts.find((q) => q.t >= 1 && (c.tipo === 'teto' ? q[k + 'Pess'] > lim : q[k + 'Pess'] < lim));
+      return p ? p.t : null;
+    };
+    const primeiro = (nivel) => {
+      const a = cruza('dl', nivel), b = cruza('icj', nivel);
+      if (a == null && b == null) return null;
+      if (b != null && (a == null || b <= a)) return { t: b, id: 'icj' };
+      return { t: a, id: 'dl' };
+    };
+    return { pts, limite: primeiro('limite'), gatilho: primeiro('gatilho'), cruza };
+  };
+  // três caminhos
+  M.caminhos = function (S, H, F) {
+    const fee = (a) => { const r = F.find((x) => x.antecedencia === a); return r ? r.feePct / 100 * H.principalCov : null; };
+    return {
+      waiver: fee(S.conversa),
+      tardio: fee(0),
+      reneg: H.renegBps / 10000 * H.principalCov * H.remanescente,
+      renegMin: H.renegMinBps / 10000 * H.principalCov * H.remanescente,
+      renegMax: H.renegMaxBps / 10000 * H.principalCov * H.remanescente,
+      quebra: H.principalCov + H.crossDefault,
+      descoberto: H.principalCov + H.crossDefault - S.caixa,
+    };
+  };
+  root.M56 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D5.6 · Covenants com buffer
+   Testes de aderência (Spec §7), conferidos com M56 em node (47 PASS / 0 FAIL):
+   Reset 1,875 · 2,40 · 1,385 (verde/verde/amarela) · gatilhos 2,70 / 2,22 / 1,44
+   Recessão 2,679 · 1,68 (vermelho) · 1,385 · Rotativo em CP 2,083 · 2,20 (amarelo) · 1,301 (amarelo)
+   Queimar caixa 2,167 · 2,40 · 1,295 (vermelho) · Refinanciar CD 1,875 · 2,40 · 1,862 (verde)
+   Projeção base T+4: dívida 3.500 · 1,04 · T+8: 1.500 · 0,21 · Setor estável: nenhum cruzamento
+   Três caminhos (2 tri antes): waiver 6 · renegociação 80 · quebra 5.500 contra 1.000
+   ============================================================ */
+const ST = window.D56 = { S: null, cen: null, mexido: false };
+const IDS = ['horizonte', 'covenants', 'caminhos', 'cenarios'];
+const NOMES = ['gauge', 'proj', 'linha', 'v', 'frase'];
+const COR = { verde: 'var(--k-pos)', amarelo: 'var(--k-amber)', vermelho: 'var(--k-neg)' };
+const ZWORD = { verde: 'verde', amarelo: 'amarela', vermelho: 'vermelha' };
+const ZCLS = { verde: 'd56-zv', amarelo: 'd56-za', vermelho: 'd56-zr' };
+const NOME_CURTO = { dl: 'dívida líquida / EBITDA', icj: 'cobertura de juros', lc: 'liquidez corrente' };
+const FAIXA = { teto: [0, 1.5], piso: [0.5, 1.75] };   // escala do medidor em múltiplos do limite
+
+/* ---------- dados ---------- */
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const H = () => K.obj(dash.data('horizonte').data);
+const C = () => { const o = {}; K.num(dash.data('covenants').data).forEach((r) => { o[r.id] = r; }); return o; };
+const F = () => K.num(dash.data('caminhos').data);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const ctlDe = (r) => ({ ebitda: r.ebitda, cp: r.cp, lp: r.lp, caixa: r.caixa, capex: r.capex, buffer: r.buffer, sigma: r.sigma, tend: r.tend, conversa: r.conversa });
+const est = (S) => M56.estado(S || ST.S, H(), C());
+const proj = (S) => M56.projecao(S || ST.S, H(), C());
+const cam = (S) => M56.caminhos(S || ST.S, H(), F());
+const x2 = (v) => K.n(v, 2) + '×';
+const pctFee = (v) => K.n(v, 2).replace(/0$/, '') + '%';
+const foco = (E) => E.vermelhos[0] || E.amarelos[0] || E.pior;
+
+/* ---------- controles ---------- */
+function marca() {
+  const ok = pronto();
+  document.querySelectorAll('.d56-cen').forEach((b) => b.setAttribute('aria-pressed', String(ok && !ST.mexido && b.dataset.cen === ST.cen)));
+  const E = ok ? est() : null, Kc = ok ? cam() : null;
+  const quebra = !!E && ST.S.conversa === 0 && E.zonaMax === 'vermelho';
+  document.querySelectorAll('.d56-card').forEach((c) => {
+    c.classList.toggle('k-on', !!E && c.dataset.cam === 'waiver' && !quebra);
+    c.classList.toggle('k-warn', quebra && c.dataset.cam === 'quebra');
+  });
+  document.querySelectorAll('.d56-capex').forEach((c) => ['verde', 'amarelo', 'vermelho'].forEach((z) => c.classList.toggle('d56-' + z, !!E && E.capex.zona === z)));
+  document.querySelectorAll('.d56-div').forEach((c) => {
+    c.classList.toggle('d56-verde', !!E && E.divid.permitido);
+    c.classList.toggle('d56-vermelho', !!E && !E.divid.permitido);
+  });
+  return Kc;
+}
+function sincroniza() { K.sync(ST.S); marca(); }
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDe(r);
+  ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok') { marca(); return; }
+  if (!ST.S) { aplicar('hoje'); K.redraw(NOMES); }
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  if (k !== 'conversa') ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d56-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+K.tabs('v', () => K.redraw(NOMES));
+
+/* ---------- medidores semicirculares ---------- */
+dash.draw('gauge', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const E = est();
+  const c = E.covs.find((q) => q.id === el.dataset.id);
+  if (!c) { el.replaceChildren(); return; }
+  const Wc = Math.max(170, el.clientWidth || 170);
+  const R = Math.min(Wc / 2 - 12, 105), H0 = R + 44;
+  const { svg, W } = K.svg(el, H0, 170);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const cx = W / 2, cy = R + 10;
+  const [a0, a1] = FAIXA[c.tipo];
+  const lo = c.limite * a0, hi = c.limite * a1;
+  const ang = (v) => -Math.PI / 2 + Math.PI * (Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo);
+  const g = svg.append('g').attr('transform', `translate(${cx},${cy})`);
+  const arco = d3.arc().innerRadius(R * 0.72).outerRadius(R);
+  const segs = c.tipo === 'teto'
+    ? [[lo, c.gatilho, 'verde'], [c.gatilho, c.limite, 'amarelo'], [c.limite, hi, 'vermelho']]
+    : [[lo, c.limite, 'vermelho'], [c.limite, c.gatilho, 'amarelo'], [c.gatilho, hi, 'verde']];
+  segs.forEach(([v0, v1, z]) => {
+    g.append('path').attr('d', arco({ startAngle: ang(v0), endAngle: ang(v1) })).attr('fill', COR[z]).attr('opacity', z === c.zona ? 0.95 : 0.3);
+  });
+  // marcas do gatilho e do limite
+  [[c.gatilho, 'var(--k-amber-d)', 2], [c.limite, 'var(--color-fg)', 2.5]].forEach(([v, cor, w]) => {
+    const a = ang(v) - Math.PI / 2;
+    g.append('line').attr('x1', Math.cos(a) * (R * 0.68)).attr('y1', Math.sin(a) * (R * 0.68)).attr('x2', Math.cos(a) * (R + 5)).attr('y2', Math.sin(a) * (R + 5)).attr('stroke', cor).attr('stroke-width', w);
+  });
+  // ponteiro
+  const ap = ang(c.valor) - Math.PI / 2;
+  g.append('line').attr('x1', 0).attr('y1', 0).attr('x2', Math.cos(ap) * (R * 0.9)).attr('y2', Math.sin(ap) * (R * 0.9)).attr('stroke', 'var(--color-fg)').attr('stroke-width', 3).attr('stroke-linecap', 'round');
+  g.append('circle').attr('r', 5).attr('fill', 'var(--color-fg)');
+  if (c.valor > hi || c.valor < lo) g.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', Math.cos(ap) * (R + 14)).attr('y', Math.sin(ap) * (R + 14) + 4).text(c.valor > hi ? '›' : '‹');
+  // extremos da escala
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cx - R * 0.86).attr('y', cy + 16).text(K.n(lo, 2));
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cx + R * 0.86).attr('y', cy + 16).text(K.n(hi, 2));
+  // valor e zona
+  svg.append('text').attr('text-anchor', 'middle').attr('x', cx).attr('y', cy + 30)
+    .style('font-family', 'var(--font-anthropic-serif)').style('font-size', '28px').style('fill', 'var(--color-fg)').style('font-variant-numeric', 'tabular-nums').text(x2(c.valor));
+  svg.append('text').attr('class', 'k-svgb').attr('text-anchor', 'middle').attr('x', cx).attr('y', cy - R * 0.32)
+    .style('fill', c.zona === 'amarelo' ? 'var(--k-amber-d)' : COR[c.zona]).style('font-size', '13px').text('zona ' + ZWORD[c.zona]);
+  svg.append('rect').attr('x', cx - R - 6).attr('y', cy - R - 6).attr('width', 2 * R + 12).attr('height', R + 50).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      tip.show(NOME_CURTO[c.id], [[COR[c.zona], 'Valor', x2(c.valor)], ['var(--k-amber)', 'Gatilho', x2(c.gatilho)], [null, 'Limite', x2(c.limite)], [null, 'Folga', K.p(c.folga, 1)]], px, py);
+    })
+    .on('mouseleave', () => tip.hide());
+});
+
+/* ---------- projeção de 8 trimestres ---------- */
+dash.draw('proj', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const id = el.dataset.id;
+  const P = proj(), c = C()[id];
+  const gat = M56.gatilho(c.limite, c.tipo, ST.S.buffer);
+  const kB = id + 'Base', kP = id + 'Pess';
+  const { svg, W, H: Hh } = K.svg(el, 210);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const vals = P.pts.flatMap((p) => [p[kB], p[kP]]).concat([c.limite, gat]).filter(Number.isFinite);
+  const y = d3.scaleLinear([0, d3.max(vals) * 1.08], [Hh - 26, 12]).nice();
+  const ticks = y.ticks(4);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t, 1)); mL = Math.max(mL, meas.node().getComputedTextLength()); });
+  meas.remove();
+  const x = d3.scaleLinear([0, 8], [mL + 12, W - 10]);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x(0)).attr('x2', x(8)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t, 1));
+  const xt = W < 420 ? [0, 2, 4, 6, 8] : d3.range(0, 9);
+  svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', Hh - 8).text((t) => (t === 0 ? 'T0' : 'T+' + t));
+  svg.append('line').attr('x1', x(0)).attr('x2', x(8)).attr('y1', y.range()[0]).attr('y2', y.range()[0]).attr('stroke', 'var(--cds-chart-axis)');
+  // banda pessimista
+  const clipY = (v) => y(Math.min(y.domain()[1], Math.max(0, v)));
+  svg.append('path').attr('d', d3.area().x((p) => x(p.t)).y0((p) => clipY(p[kB])).y1((p) => clipY(p[kP]))(P.pts)).attr('fill', 'var(--k-navy)').attr('opacity', 0.16);
+  // linhas de referência
+  const refs = [[gat, 'var(--k-amber)', '5 4', 'gatilho ' + x2(gat)], [c.limite, 'var(--k-neg)', null, 'limite ' + x2(c.limite)]].map(([v, cor, da, txt]) => ({ v, cor, da, txt, y: y(v) }));
+  refs.forEach((r) => svg.append('line').attr('x1', x(0)).attr('x2', x(8)).attr('y1', r.y).attr('y2', r.y).attr('stroke', r.cor).attr('stroke-width', 1.5).attr('stroke-dasharray', r.da));
+  // rótulos das referências, sem se encostarem
+  const order = refs.slice().sort((a, b) => a.y - b.y);
+  order.forEach((r) => { r.ly = r.y - 5; });
+  if (order[1].ly - order[0].ly < 14) order[0].ly = order[1].ly - 14;
+  order.forEach((r) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x(8) - 2).attr('y', Math.max(10, r.ly)).style('fill', r.cor === 'var(--k-amber)' ? 'var(--k-amber-d)' : r.cor).text(r.txt));
+  // linhas base e pessimista
+  svg.append('path').attr('d', d3.line().x((p) => x(p.t)).y((p) => clipY(p[kP]))(P.pts)).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 1.5).attr('stroke-dasharray', '3 3').attr('opacity', 0.8);
+  svg.append('path').attr('d', d3.line().x((p) => x(p.t)).y((p) => clipY(p[kB]))(P.pts)).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2.5).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  // primeiro cruzamento da banda pessimista
+  const tl = P.cruza(id, 'limite'), tg = P.cruza(id, 'gatilho');
+  const tc = tl != null ? tl : tg;
+  if (tc != null) {
+    const pt = P.pts[tc];
+    const cor = tl != null ? 'var(--k-neg)' : 'var(--k-amber-d)';
+    svg.append('circle').attr('cx', x(tc)).attr('cy', clipY(pt[kP])).attr('r', 6).attr('fill', 'var(--color-bg)').attr('stroke', cor).attr('stroke-width', 2.5);
+    const t = svg.append('text').attr('class', 'k-svgb').style('fill', cor).style('font-size', '13px').attr('x', x(tc) + 9).attr('y', clipY(pt[kP]) + 18).text('T+' + tc + ' · ' + (tl != null ? 'limite' : 'gatilho'));
+    if (x(tc) + 9 + t.node().getComputedTextLength() > W - 4) t.attr('text-anchor', 'end').attr('x', x(tc) - 9);
+    if (clipY(pt[kP]) + 18 > Hh - 28) t.attr('y', clipY(pt[kP]) - 10);
+  }
+  // tooltip
+  const hov = svg.append('line').attr('y1', 12).attr('y2', y.range()[0]).attr('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(0)).attr('width', x(8) - x(0)).attr('y', 8).attr('height', y.range()[0] - 8).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const t = Math.max(0, Math.min(8, Math.round(x.invert(d3.pointer(ev)[0]))));
+      const [px, py] = d3.pointer(ev, el);
+      const p = P.pts[t];
+      hov.attr('x1', x(t)).attr('x2', x(t)).attr('opacity', 1);
+      tip.show((t === 0 ? 'T0' : 'T+' + t) + ' · dívida ' + K.n(p.divida), [['var(--k-navy)', 'Base', x2(p[kB])], ['var(--k-blue-l)', 'Pessimista (−2σ)', x2(p[kP])], [null, 'EBITDA base / pess.', K.n(p.ebBase) + ' / ' + K.n(p.ebPess)]], px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hov.attr('opacity', 0); });
+});
+
+/* ---------- linha do tempo da conversa ---------- */
+dash.draw('linha', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const fees = F().slice().sort((a, b) => b.antecedencia - a.antecedencia);
+  const Hc = H();
+  const { svg, W, H: Hh } = K.svg(el, 118);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const xs = (a) => (a === 0 ? 3.55 : 3 - a);   // após o fechamento fica depois da marca do fechamento (3)
+  const x = d3.scaleLinear([0, 4], [24, W - 24]);
+  const yL = 46;
+  svg.append('line').attr('x1', x(0) - 12).attr('x2', x(4)).attr('y1', yL).attr('y2', yL).attr('stroke', 'var(--cds-chart-axis)').attr('stroke-width', 2);
+  // fechamento trimestral
+  svg.append('line').attr('x1', x(3)).attr('x2', x(3)).attr('y1', 14).attr('y2', yL + 14).attr('stroke', 'var(--k-neg)').attr('stroke-width', 2).attr('stroke-dasharray', '4 3');
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(3)).attr('y', 11).style('fill', 'var(--k-neg)').text('fechamento');
+  const quebra = ST.S.conversa === 0 && est().zonaMax === 'vermelho';
+  fees.forEach((r) => {
+    const a = r.antecedencia, sel = a === ST.S.conversa;
+    const cxp = x(xs(a));
+    const cor = a === 0 ? (quebra ? 'var(--k-neg)' : 'var(--k-amber-d)') : 'var(--k-navy)';
+    svg.append('circle').attr('cx', cxp).attr('cy', yL).attr('r', sel ? 9 : 5).attr('fill', sel ? cor : 'var(--color-bg)').attr('stroke', cor).attr('stroke-width', 2);
+    svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', cxp).attr('y', yL + 30).style('font-weight', sel ? 600 : 400).text(a === 0 ? 'após' : '−' + a + ' tri');
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cxp).attr('y', yL + 48).text('R$ ' + K.n(r.feePct / 100 * Hc.principalCov) + ' mil');
+    svg.append('circle').attr('cx', cxp).attr('cy', yL).attr('r', 20).attr('fill', 'transparent').style('cursor', 'pointer')
+      .on('click', () => { ST.S.conversa = a; sincroniza(); K.redraw(NOMES); })
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(r.momento, [[null, 'Waiver', pctFee(r.feePct) + ' × ' + K.n(Hc.principalCov) + ' = ' + K.n(r.feePct / 100 * Hc.principalCov)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+  });
+});
+
+/* ---------- números ---------- */
+const cenEst = (id) => est(ctlDe(cenario(id)));
+const covV = (E, id) => E.covs.find((q) => q.id === id);
+const VAL = {
+  bruta: (E) => K.n(E.I.bruta), despFin: (E) => K.n(E.I.despFin),
+  despFin0: () => K.n(H().despFin), bruta0: () => K.n(H().dividaCP + H().dividaLP), taxa: () => K.p(M56.taxaJuros(H()), 1),
+  aco: () => K.n(H().aco), pco: () => K.n(H().pco), amortTri: () => K.n(H().amortTri), pisoDivida: () => K.n(H().pisoDivida),
+  principal: () => K.n(H().principalCov), remanescente: () => K.n(H().remanescente), cross: () => K.n(H().crossDefault), ratingBps: () => K.n(H().ratingBps),
+  caixa: () => K.n(ST.S.caixa),
+  val: (E, el) => { const c = covV(E, el.dataset.id); return c ? x2(c.valor) : null; },
+  gat: (E, el) => { const c = covV(E, el.dataset.id); return c ? x2(c.gatilho) : null; },
+  lim: (E, el) => { const c = covV(E, el.dataset.id); return c ? x2(c.limite) : null; },
+  capexV: (E) => K.n(E.capex.valor), capexLim: (E) => K.n(E.capex.limite), capexGat: (E) => K.n(E.capex.gatilho), divLim: (E) => x2(E.divid.limite),
+  focoValor: (E) => x2(foco(E).valor), focoLim: (E) => x2(foco(E).limite), focoFolga: (E) => K.p(foco(E).folga, 1), focoZona: (E) => ZWORD[foco(E).zona],
+  focoNome: (E) => { const n = NOME_CURTO[foco(E).id]; return n.charAt(0).toUpperCase() + n.slice(1); },
+  pctMin: () => pctFee(d3.min(F(), (r) => r.feePct)), pctMax: () => pctFee(d3.max(F(), (r) => r.feePct)),
+  // projeção
+  dl0: () => x2(proj().pts[0].dlBase), dl8: () => x2(proj().pts[8].dlBase),
+  cruzT: () => { const P = proj(); const c = P.limite || P.gatilho; return c ? 'T+' + c.t : 'nenhum'; },
+  cruzNome: () => { const P = proj(); const c = P.limite || P.gatilho; return c ? NOME_CURTO[c.id] : null; },
+  setor: () => (ST.S.sigma >= 0.15 ? 'cíclico' : 'estável'),
+  // três caminhos
+  fee: () => K.n(cam().waiver), feeT: () => K.n(cam().tardio), reneg: () => K.n(cam().reneg), renegMin: () => K.n(cam().renegMin), renegMax: () => K.n(cam().renegMax),
+  quebra: () => K.n(cam().quebra), desc: () => K.n(cam().descoberto), renegBps: () => K.n(H().renegBps),
+  feePct: () => { const r = F().find((q) => q.antecedencia === ST.S.conversa); return r ? pctFee(r.feePct) : null; },
+  momento: () => { const r = F().find((q) => q.antecedencia === ST.S.conversa); return r ? r.momento.toLowerCase() : null; },
+  triN: () => K.n(ST.S.conversa), triPal: () => (ST.S.conversa === 1 ? 'trimestre' : 'trimestres'),
+  // perguntas-guia
+  'g-rec': () => K.p(1 - cenario('recessao').ebitda / cenario('hoje').ebitda, 0),
+  'g-icj0': () => x2(covV(cenEst('hoje'), 'icj').valor), 'g-icjR': () => x2(covV(cenEst('recessao'), 'icj').valor), 'g-icjL': () => x2(C().icj.limite),
+  'g-dlR': () => x2(covV(cenEst('recessao'), 'dl').valor), 'g-lcR': () => x2(covV(cenEst('recessao'), 'lc').valor),
+  'g-cpRot': () => K.n(cenario('rotativo').cp), 'g-lcRot': () => x2(covV(cenEst('rotativo'), 'lc').valor), 'g-lcRef': () => x2(covV(cenEst('refin'), 'lc').valor),
+  'g-fee2': () => K.n(cam(ctlDe(cenario('rotativo'))).waiver), 'g-feeT': () => K.n(cam().tardio), 'g-reneg': () => K.n(cam().reneg), 'g-queb': () => K.n(cam().quebra),
+  'g-sig': () => K.p(cenario('hoje').sigma, 0), 'g-b4': () => K.p(2 * cenario('hoje').sigma, 0), 'g-b8': () => K.p(2 * cenario('hoje').sigma * Math.SQRT2, 1),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(est(), el) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+  if (el.dataset.q === 'focoZona' || el.dataset.q === 'focoValor') {
+    const z = pronto() ? foco(est()).zona : null;
+    Object.keys(ZCLS).forEach((k) => el.classList.toggle(ZCLS[k], z === k));
+  }
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const E = est(), grp = el.dataset.grp;
+    if (grp === 'med') keys.push(E.zonaMax);
+    else if (grp === 'div') keys.push(E.divid.permitido ? 'sim' : 'nao');
+    else if (grp === 'proj') { const P = proj(); keys.push(P.limite ? 'limite' : P.gatilho ? 'gatilho' : 'nenhum'); }
+    else if (grp === 'cam') keys.push(ST.S.conversa > 0 ? 'antes' : E.zonaMax === 'vermelho' ? 'quebra' : 'apos');
+  }
+  K.frases(el, keys);
+  marca();
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

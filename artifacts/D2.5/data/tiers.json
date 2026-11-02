@@ -1,0 +1,3 @@
+[{"tier":1,"nome":"Transacional","horizonte":"D+0","prioridade":"liquidez","pct":15,"instrumento":"cdb_diaria"},
+{"tier":2,"nome":"Reserva estratégica","horizonte":"30–180 d","prioridade":"segurança","pct":35,"instrumento":"cdb_120"},
+{"tier":3,"nome":"Excedente estrutural","horizonte":"> 180 d","prioridade":"rentabilidade","pct":50,"instrumento":"cdb_361"}]

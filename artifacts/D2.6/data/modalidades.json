@@ -1,0 +1,3 @@
+[{"id":"cg","nome":"Conta garantida","prazoMin":1,"prazoMax":30,"cet":0.28,"contrato":30},
+{"id":"desc","nome":"Desconto de recebíveis","prazoMin":15,"prazoMax":180,"cet":0.22,"contrato":180},
+{"id":"giro","nome":"Capital de giro 12 m","prazoMin":90,"prazoMax":720,"cet":0.19,"contrato":360}]

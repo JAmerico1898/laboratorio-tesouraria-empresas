@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D3.2 · Curva ABC × XYZ</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"t0","nome":"Horizonte","criterio":"valor","ab":80,"bc":95,"x1":0.5,"x2":1,"alfa":false},{"id":"didatico","nome":"Didático 20/30/50","criterio":"skus","ab":20,"bc":50,"x1":0.5,"x2":1,"alfa":false},{"id":"pareto","nome":"Pareto estrito","criterio":"valor","ab":80,"bc":95,"x1":0.5,"x2":1,"alfa":false},{"id":"soalfa","nome":"Só Alfa","criterio":"valor","ab":80,"bc":95,"x1":0.5,"x2":1,"alfa":true}]},"parametros":{"format":"json","data":[{"chave":"N","valor":3500,"descricao":"SKUs da Comercial Horizonte"},{"chave":"cmv","valor":27000,"descricao":"CMV anual, R$ mil (valor de consumo total)"},{"chave":"seed","valor":20261103,"descricao":"Semente do LCG do coeficiente de variação"},{"chave":"cvMin","valor":0.1,"descricao":"CV = cvMin + cvAmp × u²"},{"chave":"cvAmp","valor":1.6,"descricao":"CV = cvMin + cvAmp × u²"},{"chave":"estoque","valor":7500,"descricao":"Estoque de balanço T0, R$ mil"},{"chave":"hEstoque","valor":0.18,"descricao":"Custo de carregamento H, % a.a. (D3.1)"}]},"skus":{"format":"json","data":[{"posicao":1,"nome":"Cabo flexível 2,5 mm² Alfa","fornecedor":"Alfa"},{"posicao":2,"nome":"Cabo 1,5 mm² Alfa","fornecedor":"Alfa"},{"posicao":3,"nome":"Cabo 4 mm² Alfa","fornecedor":"Alfa"},{"posicao":4,"nome":"Disjuntor DIN 20 A","fornecedor":"Outros"},{"posicao":5,"nome":"Eletroduto PVC 3/4\"","fornecedor":"Outros"},{"posicao":6,"nome":"Tomada 10 A","fornecedor":"Outros"},{"posicao":7,"nome":"Interruptor simples","fornecedor":"Outros"},{"posicao":8,"nome":"Lâmpada LED 9 W","fornecedor":"Outros"},{"posicao":9,"nome":"Fita isolante","fornecedor":"Outros"},{"posicao":10,"nome":"Caixa 4×2","fornecedor":"Outros"},{"posicao":11,"nome":"Quadro de distribuição 12 disjuntores","fornecedor":"Outros"},{"posicao":12,"nome":"Cabo 6 mm² Alfa","fornecedor":"Alfa"}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+</style>
+<style>
+.d32-curva { min-height: 300px; }
+.d32-hist { min-height: 190px; }
+.d32-histc { min-height: 150px; }
+.d32-pair { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 44rem) { .d32-pair { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+.d32-cls { cursor: pointer; text-align: left; font: inherit; color: var(--color-fg); }
+.d32-cls[data-c="A"] { border-left-color: var(--k-amber-d); }
+.d32-cls[data-c="B"] { border-left-color: var(--k-amber); }
+.d32-cls[data-c="C"] { border-left-color: var(--k-neutro); }
+.d32-cls .d32-big { font-family: var(--font-anthropic-serif); font-size: 1.6rem; font-variant-numeric: tabular-nums; }
+.d32-pol th.k-sel, .d32-pol td.k-sel { background: color-mix(in srgb, var(--k-navy) 10%, transparent); }
+.d32-pol td { white-space: normal; text-align: left; }
+.d32-pol th { text-align: left; }
+.d32-top { max-height: 20rem; overflow: auto; }
+.d32-top tr.d32-alfa td { font-weight: 600; }
+.d32-top tr.d32-sep td { color: var(--color-fg-muted); font-style: italic; text-align: left; }
+.d32-mat { width: 100%; border-collapse: separate; border-spacing: 4px; font-size: 13px; }
+.d32-mat th { font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: 2px 4px; text-align: center; }
+.d32-mat th[scope=row] { text-align: right; }
+.d32-mat td { padding: 0; }
+.d32-cel { width: 100%; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); padding: 0; cursor: pointer; font: inherit; color: var(--color-fg); }
+.d32-cel[aria-pressed="true"] { outline: 2px solid var(--k-navy); outline-offset: 1px; }
+.d32-fill { display: block; padding: 8px 4px; border-radius: var(--cds-radius); font-variant-numeric: tabular-nums; line-height: 1.35; min-height: 2.6rem; }
+.d32-polcel { margin: 8px 0 0; padding: 8px 10px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 14px; }
+.d32-ref { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; }
+</style>
+
+<div class="k d32" id="d32">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D3.2 · Curva ABC × XYZ</h1>
+      <p class="k-sub">3.500 SKUs: onde concentrar disciplina — e como tratar valor e previsibilidade ao mesmo tempo?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d32-cen" data-cen="t0" aria-pressed="false">Horizonte</button>
+      <button class="k-btn d32-cen" data-cen="didatico" aria-pressed="false">Didático 20/30/50</button>
+      <button class="k-btn d32-cen" data-cen="pareto" aria-pressed="false">Pareto estrito</button>
+      <button class="k-btn d32-cen" data-cen="soalfa" aria-pressed="false">Só Alfa</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone" id="controles" data-source="parametros cenarios">
+      <h2 class="k-zt">Cortes ABC</h2>
+      <div class="k-ctl"><span class="k-lab">Critério de corte</span>
+        <div class="k-seg" role="group" aria-label="Critério de corte">
+          <button data-k="criterio" data-v="valor" aria-pressed="true">% do valor acumulado</button>
+          <button data-k="criterio" data-v="skus" aria-pressed="false">% dos SKUs</button>
+        </div></div>
+      <div class="d32-crit" data-crit="valor">
+        <div class="k-ctl"><label for="c-abv">Corte A/B <span class="k-u">% do valor</span></label>
+          <div class="k-in"><input type="range" id="c-abv" data-k="abV" min="50" max="95" step="1"><input type="number" data-k="abV" min="50" max="95" step="1" aria-label="Corte A/B, % do valor"></div></div>
+        <div class="k-ctl"><label for="c-bcv">Corte B/C <span class="k-u">% do valor</span></label>
+          <div class="k-in"><input type="range" id="c-bcv" data-k="bcV" min="51" max="99" step="1"><input type="number" data-k="bcV" min="51" max="99" step="1" aria-label="Corte B/C, % do valor"></div></div>
+      </div>
+      <div class="d32-crit" data-crit="skus" hidden>
+        <div class="k-ctl"><label for="c-abs">Corte A/B <span class="k-u">% dos SKUs</span></label>
+          <div class="k-in"><input type="range" id="c-abs" data-k="abS" min="5" max="40" step="1"><input type="number" data-k="abS" min="5" max="40" step="1" aria-label="Corte A/B, % dos SKUs"></div></div>
+        <div class="k-ctl"><label for="c-bcs">Corte B/C <span class="k-u">% dos SKUs</span></label>
+          <div class="k-in"><input type="range" id="c-bcs" data-k="bcS" min="6" max="80" step="1"><input type="number" data-k="bcS" min="6" max="80" step="1" aria-label="Corte B/C, % dos SKUs"></div></div>
+      </div>
+      <p class="k-note">O corte B/C fica sempre ao menos 1 ponto acima do A/B.</p>
+
+      <h2 class="k-zt2">Cortes XYZ <span class="k-u">coeficiente de variação da demanda mensal</span></h2>
+      <div class="k-ctl"><label for="c-x1">X / Y</label>
+        <div class="k-in"><input type="range" id="c-x1" data-k="x1" min="0.2" max="0.8" step="0.05"><input type="number" data-k="x1" min="0.2" max="0.8" step="0.05" aria-label="Corte X/Y, CV"></div></div>
+      <div class="k-ctl"><label for="c-x2">Y / Z</label>
+        <div class="k-in"><input type="range" id="c-x2" data-k="x2" min="0.8" max="1.5" step="0.05"><input type="number" data-k="x2" min="0.8" max="1.5" step="0.05" aria-label="Corte Y/Z, CV"></div></div>
+
+      <h2 class="k-zt2">Fornecedor</h2>
+      <label class="k-toggle"><input type="checkbox" data-k="alfa"> Destacar só SKUs da Alfa</label>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="parametros skus cenarios">
+      <div class="k-tabs" role="tablist">
+        <button class="k-tab" id="tab-abc" data-group="v" data-tab="abc" role="tab" aria-selected="true">Curva ABC</button>
+        <button class="k-tab" id="tab-xyz" data-group="v" data-tab="xyz" role="tab" aria-selected="false">ABC × XYZ</button>
+      </div>
+
+      <section data-group="v" data-pane="abc" id="abc">
+        <div class="k-ch"><h3>Curva acumulada</h3><span>SKUs ordenados por valor de consumo decrescente</span></div>
+        <div class="k-chart d32-curva dash-skeleton" id="curva" data-draw="curva" role="img" aria-label="Curva ABC acumulada com os cortes de classe"></div>
+        <p class="d32-ref">Os cortes 20/30/50 (SKUs) e 80/15/5 (valor) são referência didática. Nesta carteira, 80% do valor estão em <b data-draw="v" data-q="pct80">—</b> dos SKUs.</p>
+        <div class="k-cards" id="classes">
+          <div class="k-card d32-cls" data-c="A" role="button" tabindex="0"><h4>Classe A</h4><span class="d32-big" data-draw="v" data-q="nA">—</span> <span class="k-u">SKUs · <span data-draw="v" data-q="pnA">—</span></span><p class="k-note">R$ <b data-draw="v" data-q="vA">—</b> mil · <b data-draw="v" data-q="pvA">—</b> do valor</p></div>
+          <div class="k-card d32-cls" data-c="B" role="button" tabindex="0"><h4>Classe B</h4><span class="d32-big" data-draw="v" data-q="nB">—</span> <span class="k-u">SKUs · <span data-draw="v" data-q="pnB">—</span></span><p class="k-note">R$ <b data-draw="v" data-q="vB">—</b> mil · <b data-draw="v" data-q="pvB">—</b> do valor</p></div>
+          <div class="k-card d32-cls" data-c="C" role="button" tabindex="0"><h4>Classe C</h4><span class="d32-big" data-draw="v" data-q="nC">—</span> <span class="k-u">SKUs · <span data-draw="v" data-q="pnC">—</span></span><p class="k-note">R$ <b data-draw="v" data-q="vC">—</b> mil · <b data-draw="v" data-q="pvC">—</b> do valor</p></div>
+        </div>
+        <div class="d32-pair" style="margin-top: 12px">
+          <div class="k-tw">
+            <table class="k-table d32-pol" id="politicas" aria-label="Políticas de governança por classe (V3.3)">
+              <thead><tr><th>Atributo</th><th data-cls="A">A</th><th data-cls="B">B</th><th data-cls="C">C</th></tr></thead>
+              <tbody>
+                <tr><td>Contagem cíclica</td><td data-cls="A">Mensal</td><td data-cls="B">Trimestral</td><td data-cls="C">Semestral</td></tr>
+                <tr><td>Nível de serviço-alvo</td><td data-cls="A">99%</td><td data-cls="B">95%</td><td data-cls="C">90%</td></tr>
+                <tr><td>Revisão</td><td data-cls="A">Contínua</td><td data-cls="B">Periódica</td><td data-cls="C">Periódica + automática</td></tr>
+                <tr><td>Fornecedor</td><td data-cls="A">Estratégico</td><td data-cls="B">Tático</td><td data-cls="C">Transacional</td></tr>
+                <tr><td>Decisão de compra</td><td data-cls="A">Comitê</td><td data-cls="B">Comprador sênior</td><td data-cls="C">Automatizada</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="k-tw d32-top">
+            <table class="k-table" id="maiores" aria-label="Os 20 maiores SKUs e os SKUs de fronteira">
+              <thead><tr><th>#</th><th>SKU</th><th>R$ mil</th><th>Acum.</th><th>Classe</th></tr></thead>
+              <tbody data-draw="top"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="xyz" id="xyz" hidden>
+        <div class="k-ch"><h3>Distribuição do CV de todos os SKUs</h3><span>X estável · Y média · Z errática</span></div>
+        <div class="k-chart d32-hist dash-skeleton" id="hist" data-draw="hist" role="img" aria-label="Histograma do coeficiente de variação com os cortes XYZ"></div>
+        <div class="d32-pair" style="margin-top: 10px">
+          <div>
+            <h3 class="k-zt">Matriz ABC × XYZ · SKUs e R$ mil · clique numa célula</h3>
+            <table class="d32-mat" id="matriz" aria-label="Matriz ABC × XYZ">
+              <thead><tr><th></th><th>X · estável</th><th>Y · média</th><th>Z · errática</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">A</th>
+                  <td><button class="d32-cel" data-cel="AX" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="AX">—</span></button></td>
+                  <td><button class="d32-cel" data-cel="AY" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="AY">—</span></button></td>
+                  <td><button class="d32-cel" data-cel="AZ" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="AZ">—</span></button></td></tr>
+                <tr><th scope="row">B</th>
+                  <td><button class="d32-cel" data-cel="BX" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="BX">—</span></button></td>
+                  <td><button class="d32-cel" data-cel="BY" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="BY">—</span></button></td>
+                  <td><button class="d32-cel" data-cel="BZ" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="BZ">—</span></button></td></tr>
+                <tr><th scope="row">C</th>
+                  <td><button class="d32-cel" data-cel="CX" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="CX">—</span></button></td>
+                  <td><button class="d32-cel" data-cel="CY" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="CY">—</span></button></td>
+                  <td><button class="d32-cel" data-cel="CZ" aria-pressed="false"><span class="d32-fill" data-draw="cel" data-c="CZ">—</span></button></td></tr>
+              </tbody>
+            </table>
+            <p class="k-note">Soma da matriz: <b data-draw="v" data-q="matN">—</b> SKUs · R$ <b data-draw="v" data-q="matV">—</b> mil</p>
+          </div>
+          <div>
+            <h3 class="k-zt">Política da célula <b data-draw="v" data-q="cel">—</b></h3>
+            <p class="d32-polcel" data-pol="AX" hidden><b>AX</b> · EOQ direto.</p>
+            <p class="d32-polcel" data-pol="AY" hidden><b>AY</b> · EOQ + estoque de segurança moderado.</p>
+            <p class="d32-polcel" data-pol="AZ" hidden><b>AZ</b> · Previsão + estoque de segurança alto.</p>
+            <p class="d32-polcel" data-pol="BX" hidden><b>BX</b> · Lote padrão.</p>
+            <p class="d32-polcel" data-pol="BY" hidden><b>BY</b> · Lote padrão + estoque de segurança.</p>
+            <p class="d32-polcel" data-pol="BZ" hidden><b>BZ</b> · Revisão atenta.</p>
+            <p class="d32-polcel" data-pol="CX" hidden><b>CX</b> · Reposição automática.</p>
+            <p class="d32-polcel" data-pol="CY" hidden><b>CY</b> · Automática + revisão.</p>
+            <p class="d32-polcel" data-pol="CZ" hidden><b>CZ</b> · Mínimo · revisão trimestral.</p>
+            <div class="k-ch" style="margin-top: 10px"><h3 style="font-size: 14px">CV da classe <b data-draw="v" data-q="celCls">—</b></h3><span>a coluna da célula em destaque</span></div>
+            <div class="k-chart d32-histc dash-skeleton" id="histc" data-draw="histc" role="img" aria-label="Histograma do CV da classe da célula escolhida"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="parametros skus cenarios">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">SKUs classe A</span><span class="k-kn"><span data-draw="v" data-q="nA">—</span><small data-draw="v" data-q="pnA">—</small></span></div>
+      <div class="k-kpi"><span class="k-kl">Valor em A <span class="k-u">R$ mil</span></span><span class="k-kn"><span data-draw="v" data-q="vA">—</span><small data-draw="v" data-q="pvA">—</small></span></div>
+      <div class="k-kpi"><span class="k-kl">Carregamento em A <span class="k-u">R$ mil/ano</span> <span class="k-info" tabindex="0">i<span class="k-tip">H de 18% sobre o estoque de R$ 7.500 mil, rateado pelo valor de consumo: a ponte com o D3.1.</span></span></span><span class="k-kn" data-draw="v" data-q="carregA">—</span></div>
+      <p class="k-note">XYZ em contagem: X <b data-draw="v" data-q="pX">—</b> · Y <b data-draw="v" data-q="pY">—</b> · Z <b data-draw="v" data-q="pZ">—</b></p>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="base" hidden><b data-draw="v" data-q="nA">—</b> SKUs (<b data-draw="v" data-q="pnA">—</b> da carteira) concentram <b data-draw="v" data-q="pvA">—</b> do valor — e <b data-draw="v" data-q="pvA">—</b> do custo de carregamento. Comitê de compras e contagem mensal para <b data-draw="v" data-q="nA">—</b> itens é viável; para <b data-draw="v" data-q="N">—</b>, não.</p>
+        <p data-frase="dilui" hidden>Classe A com <b data-draw="v" data-q="nA">—</b> SKUs: a disciplina se dilui. Governança cara demais para itens que pesam pouco individualmente.</p>
+        <p data-frase="leve" hidden>Classe A com <b data-draw="v" data-q="nA">—</b> SKUs e <b data-draw="v" data-q="pvA">—</b> do valor: fora dela ficam itens que pesam muito. Governança leve demais onde mora o dinheiro.</p>
+        <p data-frase="az" hidden>AZ: alto valor e demanda errática — o EOQ puro não serve; previsão e estoque de segurança alto (D3.4).</p>
+        <p data-frase="cx" hidden>CX: baixo valor e demanda estável — reposição automática. Qualquer minuto de comprador gasto aqui é desperdício.</p>
+        <p data-frase="alfa" hidden>Os SKUs da Alfa (posições <b data-draw="v" data-q="alfaPos">—</b>) estão todos na classe A e somam R$ <b data-draw="v" data-q="alfaV">—</b> mil, <b data-draw="v" data-q="alfaP">—</b> do CMV: a Alfa é fornecedor estratégico pela própria curva.</p>
+        <p data-frase="alfaNao" hidden>Com estes cortes, nem todos os SKUs da Alfa (posições <b data-draw="v" data-q="alfaPos">—</b>) ficam na classe A: <b data-draw="v" data-q="alfaCls">—</b>.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="parametros cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Com os cortes 80/95 do valor, quantos SKUs são classe A? E com o corte didático de 20% dos SKUs?
+          <details><summary>mostrar resposta</summary><p><b data-draw="v" data-q="g-nA1">—</b> SKUs (<b data-draw="v" data-q="g-pA1">—</b>) contra <b data-draw="v" data-q="g-nA2">—</b> (<b data-draw="v" data-q="g-pA2">—</b>). As duas respostas são "certas": o método é o mesmo, os cortes são empíricos. O que importa é que ~600–700 itens carregam 80% do dinheiro.</p></details>
+        </li>
+        <li>Por que a classe C, com 35–50% dos SKUs, merece reposição automática e contagem semestral?
+          <details><summary>mostrar resposta</summary><p>Porque vale só <b data-draw="v" data-q="g-vC1">—</b> a <b data-draw="v" data-q="g-vC2">—</b> do valor: o custo de governança (tempo de comprador, contagem, comitê) excederia o benefício. Automatizar C libera o comprador sênior para A.</p></details>
+        </li>
+        <li>Um SKU classe A pode estar na célula AZ. O que muda em relação a AX?
+          <details><summary>mostrar resposta</summary><p>Valor igual, previsibilidade diferente. Em AX o EOQ é regra; em AZ é só ponto de partida — demanda errática pede previsão e estoque de segurança alto, pagando mais carregamento para evitar ruptura cara.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+})();</script>
+<script>(function () {
+
+/* D3.2 · Curva ABC × XYZ — funções puras (sem DOM).
+   P = parâmetros do gerador (dataset), C = controles. R$ mil. */
+(function (root) {
+  const M = {};
+  // 3.500 SKUs: valor de Zipf e CV por LCG (semente fixa, independente da posição)
+  M.gera = function (P) {
+    const N = P.N;
+    let HN = 0;
+    for (let j = 1; j <= N; j++) HN += 1 / j;
+    let s = P.seed >>> 0;
+    const u = () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; };
+    const skus = [];
+    let acc = 0;
+    for (let k = 1; k <= N; k++) {
+      const v = P.cmv * (1 / k) / HN;
+      const cumAnt = acc / P.cmv;
+      acc += v;
+      const uk = u();
+      skus.push({ k, v, cumAnt, cum: acc / P.cmv, cv: P.cvMin + P.cvAmp * uk * uk });
+    }
+    return { skus, HN };
+  };
+  M.classe = function (sku, C, N) {
+    if (C.criterio === 'valor') return sku.cumAnt < C.ab / 100 ? 'A' : sku.cumAnt < C.bc / 100 ? 'B' : 'C';
+    return sku.k <= N * C.ab / 100 ? 'A' : sku.k <= N * C.bc / 100 ? 'B' : 'C';
+  };
+  M.xyz = (sku, C) => (sku.cv < C.x1 ? 'X' : sku.cv < C.x2 ? 'Y' : 'Z');
+  M.resumo = function (G, P, C) {
+    const N = P.N, cls = { A: { n: 0, v: 0 }, B: { n: 0, v: 0 }, C: { n: 0, v: 0 } };
+    const mat = {}; ['A', 'B', 'C'].forEach((a) => ['X', 'Y', 'Z'].forEach((x) => { mat[a + x] = { n: 0, v: 0 }; }));
+    const xyz = { X: 0, Y: 0, Z: 0 };
+    const lab = new Array(N);
+    G.skus.forEach((s, i) => {
+      const a = M.classe(s, C, N), x = M.xyz(s, C);
+      lab[i] = a + x;
+      cls[a].n++; cls[a].v += s.v; mat[a + x].n++; mat[a + x].v += s.v; xyz[x]++;
+    });
+    // fronteiras: último SKU de A e de B, primeiro de B e de C
+    const fronteiras = [];
+    for (let i = 1; i < N; i++) if (lab[i][0] !== lab[i - 1][0]) fronteiras.push(i - 1, i);
+    // nº de SKUs que somam 80% do valor
+    const n80 = G.skus.findIndex((s) => s.cum >= 0.8) + 1;
+    return {
+      cls, mat, xyz, lab, fronteiras, n80, pct80: n80 / N,
+      carregA: P.hEstoque * P.estoque * cls.A.v / P.cmv,
+      topPct: (p) => { const n = Math.round(N * p); return G.skus[n - 1].cum; },
+    };
+  };
+  // curva acumulada amostrada (1 ponto a cada `passo` SKUs, mais o 0 e o último)
+  M.curva = function (G, passo = 10) {
+    const out = [{ x: 0, y: 0, k: 0 }];
+    const N = G.skus.length;
+    for (let k = passo; k <= N; k += passo) out.push({ x: k / N, y: G.skus[k - 1].cum, k });
+    if (out[out.length - 1].k !== N) out.push({ x: 1, y: 1, k: N });
+    return out;
+  };
+  root.M32 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D3.2 · Curva ABC × XYZ
+   Testes de aderência (Spec §7), conferidos com M32 em node:
+   Curva: top 10% = 73,7% · top 20% = 81,6% · top 50% = 92,1% · SKU 1 = 3.090 (11,4%)
+   Valor 80/95: A 610 (17,4%) · B 1.651 (47,2%) · C 1.239 (35,4%) · carregamento em A 1.080
+   SKUs 20/50: A 700 (81,6% do valor) · B 1.050 (10,5%) · C 1.750 (7,9%)
+   XYZ default: X 1.724 (49,3%) · Y 867 (24,8%) · Z 909 (26,0%) · matriz soma 3.500 e 27.000
+   Alfa (posições 1, 2, 3, 12): todos A
+   ============================================================ */
+const ST = window.D32 = { S: null, cen: null, mexido: false, sel: 'A', cel: 'AZ', G: null, P: null, tab: 'abc', memo: new Map() };
+const IDS = ['parametros', 'skus', 'cenarios'];
+const NOMES = ['curva', 'top', 'hist', 'cel', 'histc', 'v', 'frase'];
+const LIM_DILUI = 0.90, LIM_LEVE = 0.60;   // participação de A no valor que muda a frase (Spec §4.3)
+const N_TOP = 20;                          // SKUs na lista dos maiores (Spec §4.2)
+
+/* ---------- dados ---------- */
+const cenario = (id) => (dash.data('cenarios').data || []).find((r) => r.id === id);
+const nomes = () => { const o = {}; K.num(dash.data('skus').data).forEach((r) => { o[r.posicao] = r; }); return o; };
+const pronto = () => ST.S != null && ST.G != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const bool = (v) => v === true || v === 'true';
+function ctl(S) { return S.criterio === 'valor' ? { criterio: 'valor', ab: S.abV, bc: S.bcV, x1: S.x1, x2: S.x2 } : { criterio: 'skus', ab: S.abS, bc: S.bcS, x1: S.x1, x2: S.x2 }; }
+function resumo(C) {
+  const key = JSON.stringify(C);
+  if (!ST.memo.has(key)) { if (ST.memo.size > 40) ST.memo.clear(); ST.memo.set(key, M32.resumo(ST.G, ST.P, C)); }
+  return ST.memo.get(key);
+}
+const atual = () => resumo(ctl(ST.S));
+function ctlDeCen(r) {
+  const S = { criterio: r.criterio, x1: Number(r.x1), x2: Number(r.x2), alfa: bool(r.alfa), abV: 80, bcV: 95, abS: 20, bcS: 50 };
+  if (r.criterio === 'valor') { S.abV = Number(r.ab); S.bcV = Number(r.bc); } else { S.abS = Number(r.ab); S.bcS = Number(r.bc); }
+  return S;
+}
+const nomeSku = (k, NM) => (NM[k] ? NM[k].nome : 'SKU-' + String(k).padStart(4, '0'));
+const alfaPos = () => K.num(dash.data('skus').data).filter((r) => r.fornecedor === 'Alfa').map((r) => r.posicao);
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  document.querySelectorAll('.d32-crit').forEach((x) => { x.hidden = x.dataset.crit !== ST.S.criterio; });
+  document.querySelectorAll('.d32-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+  document.querySelectorAll('.d32-cls').forEach((b) => b.classList.toggle('k-on', b.dataset.c === ST.sel));
+  document.querySelectorAll('#politicas [data-cls]').forEach((c) => c.classList.toggle('k-sel', c.dataset.cls === ST.sel));
+  document.querySelectorAll('.d32-cel').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cel === ST.cel)));
+  document.querySelectorAll('[data-pol]').forEach((p) => { p.hidden = p.dataset.pol !== ST.cel; });
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDeCen(r); ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  ST.P = K.obj(dash.data('parametros').data);
+  ST.G = M32.gera(ST.P);
+  aplicar('t0');
+  K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  // B/C sempre acima de A/B
+  if (k === 'abV' && ST.S.bcV <= ST.S.abV) ST.S.bcV = Math.min(99, ST.S.abV + 1);
+  if (k === 'bcV' && ST.S.bcV <= ST.S.abV) ST.S.abV = Math.max(50, ST.S.bcV - 1);
+  if (k === 'abS' && ST.S.bcS <= ST.S.abS) ST.S.bcS = Math.min(80, ST.S.abS + 1);
+  if (k === 'bcS' && ST.S.bcS <= ST.S.abS) ST.S.abS = Math.max(5, ST.S.bcS - 1);
+  ST.mexido = true; sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d32-cen').forEach((b) => b.addEventListener('click', () => { if (!ST.G) return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+document.querySelectorAll('.d32-cls').forEach((b) => {
+  const pick = () => { ST.sel = b.dataset.c; if (ST.S) { sincroniza(); K.redraw(['curva']); } };
+  b.addEventListener('click', pick);
+  b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+});
+document.querySelectorAll('.d32-cel').forEach((b) => b.addEventListener('click', () => { ST.cel = b.dataset.cel; if (ST.S) { sincroniza(); K.redraw(['histc', 'v', 'frase']); } }));
+K.tabs('v', (t) => { ST.tab = t; K.redraw(['curva', 'hist', 'histc', 'frase']); });
+
+/* ---------- curva ABC ---------- */
+const COR = { A: 'var(--k-amber-d)', B: 'var(--k-amber)', C: 'var(--k-neutro)' };
+dash.draw('curva', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), N = ST.P.N;
+  const pts = M32.curva(ST.G, 10);
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const meas = svg.append('text').attr('class', 'k-svgm').text('100%');
+  const w100 = meas.node().getComputedTextLength(); meas.remove();
+  const mL = w100 + 10;
+  const x = d3.scaleLinear([0, 1], [mL, W - w100 / 2 - 6]), y = d3.scaleLinear([0, 1], [H - 28, 12]);
+  const tk = [0, 0.2, 0.4, 0.6, 0.8, 1];
+  svg.append('g').selectAll('line').data(tk).join('line').attr('x1', x(0)).attr('x2', x(1)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(tk).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL - 6).attr('y', (t) => y(t) + 4).text((t) => K.p(t, 0));
+  svg.append('g').selectAll('text').data(tk).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 8).text((t) => K.p(t, 0));
+  const fA = R.cls.A.n / N, fB = (R.cls.A.n + R.cls.B.n) / N;
+  const cumAt = (f) => { const k = Math.round(f * N); return k <= 0 ? 0 : ST.G.skus[k - 1].cum; };
+  const seg = (a, b) => [{ x: a, y: cumAt(a) }, ...pts.filter((p) => p.x > a && p.x < b), { x: b, y: cumAt(b) }];
+  [['A', 0, fA], ['B', fA, fB], ['C', fB, 1]].forEach(([c, a, b]) => {
+    if (b <= a) return;
+    svg.append('path').attr('d', d3.area().x((p) => x(p.x)).y0(y(0)).y1((p) => y(p.y))(seg(a, b))).attr('fill', COR[c]).attr('opacity', c === ST.sel ? 0.55 : 0.32);
+    const t = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('text-anchor', 'middle').attr('x', x((a + b) / 2)).attr('y', y(0) - 8).text(c);
+    if (x(b) - x(a) < 14) t.remove();
+  });
+  svg.append('path').attr('d', d3.line().x((p) => x(p.x)).y((p) => y(p.y))(pts)).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2.5).attr('stroke-linejoin', 'round');
+  svg.append('line').attr('x1', x(0)).attr('x2', x(1)).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  // cortes
+  [[fA, 'A/B'], [fB, 'B/C']].forEach(([f, nome], i) => {
+    svg.append('line').attr('x1', x(f)).attr('x2', x(f)).attr('y1', y(cumAt(f))).attr('y2', y(0)).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3');
+    svg.append('circle').attr('cx', x(f)).attr('cy', y(cumAt(f))).attr('r', 4).attr('fill', 'var(--color-fg)');
+    const t = svg.append('text').attr('class', 'k-svgt').attr('x', x(f) + 6).attr('y', y(cumAt(f)) + (i === 0 ? 16 : 18)).text(nome + ': ' + K.p(f, 1) + ' dos SKUs · ' + K.p(cumAt(f), 1) + ' do valor');
+    const tw = t.node().getComputedTextLength();
+    if (x(f) + 6 + tw > W - 4) t.attr('x', Math.max(4, W - 4 - tw));
+  });
+  if (ST.S.alfa) {
+    alfaPos().forEach((k) => svg.append('circle').attr('cx', x(k / N)).attr('cy', y(ST.G.skus[k - 1].cum)).attr('r', 5).attr('fill', 'none').attr('stroke', 'var(--k-neg)').attr('stroke-width', 2));
+    const ta = svg.append('text').attr('class', 'k-svgt').style('fill', 'var(--k-neg)').attr('x', x(0.02) + 8).attr('y', y(0.35)).text('SKUs da Alfa: posições ' + alfaPos().join(', '));
+    const wa = ta.node().getComputedTextLength();
+    if (x(0.02) + 8 + wa > W - 4) ta.attr('x', Math.max(4, W - 4 - wa));
+  }
+  const hov = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-navy)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(0)).attr('width', x(1) - x(0)).attr('y', 12).attr('height', y(0) - 12).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const k = Math.max(1, Math.min(N, Math.round(x.invert(d3.pointer(ev)[0]) * N)));
+      const s = ST.G.skus[k - 1];
+      hov.attr('cx', x(k / N)).attr('cy', y(s.cum)).attr('opacity', 1);
+      tip.show('SKU nº ' + K.n(k) + ' · classe ' + R.lab[k - 1][0], [[null, '% dos SKUs', K.p(k / N, 1)], [null, '% do valor', K.p(s.cum, 1)], [null, 'Valor do SKU', 'R$ ' + K.n(s.v, 1) + ' mil']], px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hov.attr('opacity', 0); });
+});
+
+/* ---------- 20 maiores + fronteiras ---------- */
+dash.draw('top', (el) => {
+  el.replaceChildren();
+  if (!pronto()) return;
+  const R = atual(), NM = nomes(), alfa = new Set(alfaPos());
+  const linha = (k) => {
+    const s = ST.G.skus[k - 1], tr = document.createElement('tr');
+    if (ST.S.alfa && alfa.has(k)) tr.className = 'd32-alfa';
+    [K.n(k), nomeSku(k, NM), K.n(s.v, 1), K.p(s.cum, 1), R.lab[k - 1][0] + ' · ' + R.lab[k - 1][1]].forEach((t) => { const td = document.createElement('td'); td.textContent = t; tr.append(td); });
+    return tr;
+  };
+  for (let k = 1; k <= N_TOP; k++) el.append(linha(k));
+  const sep = document.createElement('tr'); sep.className = 'd32-sep';
+  const td = document.createElement('td'); td.colSpan = 5; td.textContent = 'Fronteiras entre classes'; sep.append(td); el.append(sep);
+  R.fronteiras.map((i) => i + 1).filter((k) => k > N_TOP).forEach((k) => el.append(linha(k)));
+});
+
+/* ---------- histogramas de CV ---------- */
+function histograma(el, skus, H, destaque) {
+  const { svg, W } = K.svg(el, H);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const C = ctl(ST.S);
+  const bins = d3.bin().domain([0, 1.8]).thresholds(d3.range(0, 1.8001, 0.05)).value((s) => s.cv)(skus);
+  const yMax = d3.max(bins, (b) => b.length) || 1;
+  const meas = svg.append('text').attr('class', 'k-svgm').text(K.n(yMax));
+  const mL = meas.node().getComputedTextLength() + 10; meas.remove();
+  const x = d3.scaleLinear([0, 1.8], [mL, W - 10]), y = d3.scaleLinear([0, yMax], [H - 24, 18]).nice();
+  y.ticks(4).forEach((t) => {
+    svg.append('line').attr('x1', x(0)).attr('x2', x(1.8)).attr('y1', y(t)).attr('y2', y(t)).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL - 6).attr('y', y(t) + 4).text(K.n(t));
+  });
+  [0, 0.5, 1, 1.5].forEach((t) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(t)).attr('y', H - 6).text(K.n(t, 1)));
+  const corX = { X: 'var(--k-blue)', Y: 'var(--k-amber)', Z: 'var(--k-neg)' };
+  svg.append('g').selectAll('rect').data(bins).join('rect')
+    .attr('x', (b) => x(b.x0) + 1).attr('width', (b) => Math.max(0, x(b.x1) - x(b.x0) - 2)).attr('y', (b) => y(b.length)).attr('height', (b) => y(0) - y(b.length)).attr('rx', 2)
+    .attr('fill', (b) => corX[M32.xyz({ cv: (b.x0 + b.x1) / 2 }, C)])
+    .attr('opacity', (b) => (!destaque || M32.xyz({ cv: (b.x0 + b.x1) / 2 }, C) === destaque ? 0.9 : 0.3))
+    .on('mousemove', (ev, b) => { const [px, py] = d3.pointer(ev, el); tip.show('CV ' + K.n(b.x0, 2) + ' – ' + K.n(b.x1, 2), [[null, 'SKUs', K.n(b.length)]], px, py); })
+    .on('mouseleave', () => tip.hide());
+  svg.append('line').attr('x1', x(0)).attr('x2', x(1.8)).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  [[C.x1, 'X | Y'], [C.x2, 'Y | Z']].forEach(([c, nome]) => {
+    svg.append('line').attr('x1', x(c)).attr('x2', x(c)).attr('y1', 14).attr('y2', y(0)).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', x(c)).attr('y', 12).text(nome + ' ' + K.n(c, 2));
+  });
+}
+dash.draw('hist', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  histograma(el, ST.G.skus, 190, null);
+});
+dash.draw('histc', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), cls = ST.cel[0];
+  histograma(el, ST.G.skus.filter((_, i) => R.lab[i][0] === cls), 150, ST.cel[1]);
+});
+
+/* ---------- matriz ---------- */
+dash.draw('cel', (el) => {
+  if (!pronto()) { el.textContent = '—'; el.style.background = ''; return; }
+  const R = atual(), m = R.mat[el.dataset.c];
+  const vmax = d3.max(Object.values(R.mat), (c) => c.v) || 1;
+  el.replaceChildren();
+  const n = document.createElement('b'); n.textContent = K.n(m.n) + ' SKUs';
+  const v = document.createElement('div'); v.textContent = 'R$ ' + K.n(m.v);
+  el.append(n, v);
+  const t = Math.sqrt(m.v / vmax);
+  el.style.background = 'color-mix(in srgb, var(--k-amber) ' + Math.round(8 + 62 * t) + '%, transparent)';
+});
+
+/* ---------- números ---------- */
+const g1 = () => resumo(ctl(ctlDeCen(cenario('pareto')))), g2 = () => resumo(ctl(ctlDeCen(cenario('didatico'))));
+const VAL = {
+  N: () => K.n(ST.P.N), pct80: (R) => K.p(R.pct80, 0),
+  nA: (R) => K.n(R.cls.A.n), nB: (R) => K.n(R.cls.B.n), nC: (R) => K.n(R.cls.C.n),
+  pnA: (R) => K.p(R.cls.A.n / ST.P.N, 1), pnB: (R) => K.p(R.cls.B.n / ST.P.N, 1), pnC: (R) => K.p(R.cls.C.n / ST.P.N, 1),
+  vA: (R) => K.n(R.cls.A.v), vB: (R) => K.n(R.cls.B.v), vC: (R) => K.n(R.cls.C.v),
+  pvA: (R) => K.p(R.cls.A.v / ST.P.cmv, 1), pvB: (R) => K.p(R.cls.B.v / ST.P.cmv, 1), pvC: (R) => K.p(R.cls.C.v / ST.P.cmv, 1),
+  carregA: (R) => K.n(R.carregA), pX: (R) => K.p(R.xyz.X / ST.P.N, 0), pY: (R) => K.p(R.xyz.Y / ST.P.N, 0), pZ: (R) => K.p(R.xyz.Z / ST.P.N, 0),
+  matN: (R) => K.n(Object.values(R.mat).reduce((a, c) => a + c.n, 0)), matV: (R) => K.n(Object.values(R.mat).reduce((a, c) => a + c.v, 0)),
+  cel: () => ST.cel, celCls: () => ST.cel[0],
+  alfaPos: () => alfaPos().join(', '), alfaV: () => K.n(alfaPos().reduce((a, k) => a + ST.G.skus[k - 1].v, 0)),
+  alfaP: () => K.p(alfaPos().reduce((a, k) => a + ST.G.skus[k - 1].v, 0) / ST.P.cmv, 1),
+  alfaCls: (R) => alfaPos().map((k) => k + ' → ' + R.lab[k - 1][0]).join(' · '),
+  'g-nA1': () => K.n(g1().cls.A.n), 'g-pA1': () => K.p(g1().cls.A.n / ST.P.N, 1), 'g-nA2': () => K.n(g2().cls.A.n), 'g-pA2': () => K.p(g2().cls.A.n / ST.P.N, 0),
+  'g-vC1': () => K.p(g1().cls.C.v / ST.P.cmv, 0), 'g-vC2': () => K.p(g2().cls.C.v / ST.P.cmv, 0),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const R = atual(), pv = R.cls.A.v / ST.P.cmv;
+    if (ST.tab === 'xyz' && ST.cel === 'AZ') keys.push('az');
+    else if (ST.tab === 'xyz' && ST.cel === 'CX') keys.push('cx');
+    else keys.push(pv >= LIM_DILUI ? 'dilui' : pv <= LIM_LEVE ? 'leve' : 'base');
+    if (ST.S.alfa) keys.push(alfaPos().every((k) => R.lab[k - 1][0] === 'A') ? 'alfa' : 'alfaNao');
+  }
+  K.frases(el, keys);
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

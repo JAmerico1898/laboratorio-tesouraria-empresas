@@ -1,0 +1,9 @@
+[
+ {"id":"slide","nome":"Slide 95%","nivel":"95","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":false},
+ {"id":"a99","nome":"Classe A — 99%","nivel":"99","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":false},
+ {"id":"c90","nome":"Classe C — 90%","nivel":"90","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":false},
+ {"id":"lt4","nome":"LT × 4","nivel":"95","sigma":50,"LT":64,"sigmaLT":0,"incluiLT":false,"Q":6400,"choque":false},
+ {"id":"jit","nome":"JIT (Toyota)","nivel":"JIT","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":false},
+ {"id":"pandemia","nome":"Pandemia","nivel":"JIT","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":true},
+ {"id":"instavel","nome":"Fornecedor instável","nivel":"95","sigma":50,"LT":16,"sigmaLT":3,"incluiLT":false,"Q":2000,"choque":false}
+]

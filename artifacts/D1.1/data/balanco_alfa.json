@@ -1,0 +1,100 @@
+[
+ {
+  "conta": "Disponível",
+  "chave": "disp",
+  "grupo": "ACF",
+  "t_1": 2900,
+  "t0": 2500
+ },
+ {
+  "conta": "Clientes",
+  "chave": "cli",
+  "grupo": "ACO",
+  "t_1": 6600,
+  "t0": 8300
+ },
+ {
+  "conta": "Estoques",
+  "chave": "est",
+  "grupo": "ACO",
+  "t_1": 4200,
+  "t0": 5300
+ },
+ {
+  "conta": "Outros operacionais (ativo)",
+  "chave": "oaco",
+  "grupo": "ACO",
+  "t_1": 350,
+  "t0": 400
+ },
+ {
+  "conta": "Realizável LP",
+  "chave": "rlp",
+  "grupo": "RLP",
+  "t_1": 1100,
+  "t0": 1200
+ },
+ {
+  "conta": "Imobilizado e outros",
+  "chave": "imob",
+  "grupo": "ANC",
+  "t_1": 19400,
+  "t0": 20300
+ },
+ {
+  "conta": "Fornecedores",
+  "chave": "forn",
+  "grupo": "PCO",
+  "t_1": 3400,
+  "t0": 4100
+ },
+ {
+  "conta": "Outros operacionais (passivo)",
+  "chave": "opco",
+  "grupo": "PCO",
+  "t_1": 750,
+  "t0": 1000
+ },
+ {
+  "conta": "Empréstimos CP",
+  "chave": "emp",
+  "grupo": "PCF",
+  "t_1": 2400,
+  "t0": 3500
+ },
+ {
+  "conta": "Exigível LP",
+  "chave": "elp",
+  "grupo": "ELP",
+  "t_1": 8500,
+  "t0": 9000
+ },
+ {
+  "conta": "Patrimônio líquido",
+  "chave": "pl",
+  "grupo": "PL",
+  "t_1": 19500,
+  "t0": 20400
+ },
+ {
+  "conta": "Receita líquida",
+  "chave": "rec",
+  "grupo": "DRE",
+  "t_1": null,
+  "t0": 50000
+ },
+ {
+  "conta": "CMV",
+  "chave": "cmv",
+  "grupo": "DRE",
+  "t_1": null,
+  "t0": 32000
+ },
+ {
+  "conta": "Compras",
+  "chave": "compras",
+  "grupo": "DRE",
+  "t_1": null,
+  "t0": 33000
+ }
+]

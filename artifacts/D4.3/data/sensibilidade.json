@@ -1,0 +1,5 @@
+[
+  {"cenario": "otimista", "nome": "Otimista", "choqueR": 0.05, "choqueInad": -0.005, "fatorAdmin": 1},
+  {"cenario": "base", "nome": "Base", "choqueR": 0, "choqueInad": 0, "fatorAdmin": 1},
+  {"cenario": "pessimista", "nome": "Pessimista", "choqueR": -0.05, "choqueInad": 0.005, "fatorAdmin": 1.6666666666666667}
+]

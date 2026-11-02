@@ -1,0 +1,18 @@
+[
+ {"chave":"aco","valor":9800,"descricao":"Ativo circulante operacional: clientes 2.000 + estoques 7.500 + outros 300"},
+ {"chave":"salarios","valor":500,"descricao":"Salários e tributos a recolher (operacional, vence em 30 d)"},
+ {"chave":"fornecedores","valor":3800,"descricao":"Fornecedores (funding implícito)"},
+ {"chave":"forn30","valor":2300,"descricao":"Fornecedores que vencem em 30 d"},
+ {"chave":"forn60","valor":1000,"descricao":"Fornecedores que vencem em 60 d (Alfa)"},
+ {"chave":"forn90","valor":500,"descricao":"Fornecedores que vencem em 90 d"},
+ {"chave":"pl","valor":9000,"descricao":"Patrimônio líquido"},
+ {"chave":"anc","valor":8000,"descricao":"Ativo não circulante (CD, frota, imóvel)"},
+ {"chave":"ebitda","valor":2400,"descricao":"EBITDA anual; capacidade de geração mensal = EBITDA ÷ 12"},
+ {"chave":"rotVenc","valor":90,"descricao":"Vencimento do CG rotativo (dias)"},
+ {"chave":"linhaMeses","valor":24,"descricao":"Prazo do CG linha que financiou o CD (meses)"},
+ {"chave":"txCG","valor":28,"descricao":"CET da conta garantida (% a.a.)"},
+ {"chave":"txRot","valor":20,"descricao":"CET do CG rotativo (% a.a.)"},
+ {"chave":"txAplic","valor":10.5,"descricao":"Rendimento líquido do CDB diário (% a.a.)"},
+ {"chave":"txForn","valor":15,"descricao":"Funding implícito do fornecedor (% a.a.)"},
+ {"chave":"caixaMin","valor":150,"descricao":"Caixa operacional mínimo"}
+]

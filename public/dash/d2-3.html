@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D2.3 · Calendário de saídas</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"categorias":{"format":"json","data":[{"ordem":1,"id":"fornecedores","nome":"Fornecedores","classe":"negociavel","dias":"5;12;20;26","regra":"fornecedores","ref":"","pct":""},{"ordem":2,"id":"salarios","nome":"Salários","classe":"inegociavel","dias":"5","regra":"premissa","ref":"salarios","pct":""},{"ordem":3,"id":"encargos","nome":"FGTS + INSS patronal","classe":"inegociavel","dias":"20","regra":"premissa","ref":"encargos","pct":""},{"ordem":4,"id":"decimo","nome":"13º salário","classe":"inegociavel","dias":"","regra":"evento","ref":"","pct":""},{"ordem":5,"id":"plr","nome":"PLR","classe":"inegociavel","dias":"","regra":"evento","ref":"","pct":""},{"ordem":6,"id":"icms","nome":"ICMS","classe":"inegociavel","dias":"uf","regra":"pctReceitaAnterior","ref":"","pct":0.04},{"ordem":7,"id":"piscofins","nome":"PIS/COFINS","classe":"inegociavel","dias":"25","regra":"pctReceitaAnterior","ref":"","pct":0.02},{"ordem":8,"id":"irpj","nome":"IRPJ/CSLL","classe":"inegociavel","dias":"ultimo","regra":"premissa","ref":"irpj","pct":""},{"ordem":9,"id":"fixas","nome":"Despesas fixas","classe":"inegociavel","dias":"10","regra":"premissa","ref":"fixas","pct":""},{"ordem":10,"id":"variaveis","nome":"Despesas variáveis","classe":"decisao","dias":"15","regra":"pctReceita","ref":"pctVariaveis","pct":""},{"ordem":11,"id":"discricionarias","nome":"Discricionárias","classe":"decisao","dias":"15","regra":"premissa","ref":"discricionarias","pct":""},{"ordem":12,"id":"jurosCP","nome":"Juros empréstimos CP","classe":"inegociavel","dias":"1","regra":"premissa","ref":"jurosCP","pct":""},{"ordem":13,"id":"jurosELP","nome":"Juros ELP","classe":"inegociavel","dias":"15","regra":"premissa","ref":"jurosELP","pct":""},{"ordem":14,"id":"amortizacao","nome":"Amortização ELP","classe":"inegociavel","dias":"","regra":"evento","ref":"","pct":""},{"ordem":15,"id":"capex","nome":"CAPEX","classe":"decisao","dias":"","regra":"evento","ref":"","pct":""},{"ordem":16,"id":"dividendos","nome":"Dividendos","classe":"decisao","dias":"","regra":"evento","ref":"","pct":""}]},"cenarios":{"format":"json","data":[{"id":"alfa","nome":"Alfa T0","mes":"set","uf":"SP","pmpf":45,"capexJunMes":"jun","capexSetMes":"set","dividendos":1250,"disc":100,"filtro":"todos"},{"id":"esqueleto","nome":"Só o esqueleto","mes":"set","uf":"SP","pmpf":45,"capexJunMes":"jun","capexSetMes":"set","dividendos":1250,"disc":100,"filtro":"inegociavel"},{"id":"dezembro","nome":"Dezembro","mes":"dez","uf":"SP","pmpf":45,"capexJunMes":"jun","capexSetMes":"set","dividendos":1250,"disc":100,"filtro":"todos"},{"id":"alongar","nome":"Alongar fornecedores","mes":"set","uf":"SP","pmpf":60,"capexJunMes":"jun","capexSetMes":"set","dividendos":1250,"disc":100,"filtro":"todos"},{"id":"cinto","nome":"Apertar o cinto","mes":"set","uf":"SP","pmpf":45,"capexJunMes":"jun","capexSetMes":"nov","dividendos":0,"disc":0,"filtro":"todos"}]},"eventos":{"format":"json","data":[{"id":"decimoNov","categoria":"decimo","mes":"nov","dia":30,"valor":150},{"id":"decimoDez","categoria":"decimo","mes":"dez","dia":20,"valor":250},{"id":"plrMar","categoria":"plr","mes":"mar","dia":31,"valor":200},{"id":"amortJun","categoria":"amortizacao","mes":"jun","dia":30,"valor":750},{"id":"amortDez","categoria":"amortizacao","mes":"dez","dia":30,"valor":750},{"id":"capexJun","categoria":"capex","mes":"jun","dia":15,"valor":800},{"id":"capexSet","categoria":"capex","mes":"set","dia":15,"valor":400},{"id":"dividendosAbr","categoria":"dividendos","mes":"abr","dia":30,"valor":1250}]},"icms_uf":{"format":"json","data":[{"uf":"SP","dia":20},{"uf":"RJ","dia":12},{"uf":"MG","dia":10}]},"premissas":{"format":"json","data":[{"chave":"receitaAnual","valor":50000},{"chave":"pctCompras","valor":0.66},{"chave":"pmrv","valor":60},{"chave":"pmpf","valor":45},{"chave":"pmrvAntigo","valor":60},{"chave":"pmpfAntigo","valor":45},{"chave":"inad","valor":2},{"chave":"salarios","valor":300},{"chave":"encargos","valor":100},{"chave":"fixas","valor":100},{"chave":"pctVariaveis","valor":0.02},{"chave":"discricionarias","valor":40},{"chave":"pctTributos","valor":0.06},{"chave":"irpj","valor":100},{"chave":"jurosCP","valor":42},{"chave":"jurosELP","valor":100},{"chave":"saldoInicial","valor":2500},{"chave":"dividendos","valor":1250},{"chave":"mesDividendos","valor":3},{"chave":"diasEntradas","valor":"5;12;19;26"}]},"sazonalidade":{"format":"json","data":[{"mes":"jan","peso":0.8},{"mes":"fev","peso":0.75},{"mes":"mar","peso":0.82},{"mes":"abr","peso":0.88},{"mes":"mai","peso":0.9},{"mes":"jun","peso":0.96},{"mes":"jul","peso":1.05},{"mes":"ago","peso":1.15},{"mes":"set","peso":1.3},{"mes":"out","peso":1.4},{"mes":"nov","peso":1.1},{"mes":"dez","peso":0.89}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+</style>
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+})();</script>
+<script>(function () {
+
+/* D2.3 · Calendário de saídas — funções puras (sem DOM). Tudo em R$ mil.
+   Motor de orçamento (fracPMPF, orcamento) copiado de D2.1 (validado contra D2.1 §7);
+   aqui ele só fornece receita, entradas e pagamento a fornecedores com o PMPF escolhido.
+   Testes de aderência (Spec D2.3 §7) em test.js:
+   set: total 5.290 · negociável 3.712 (70%) · inegociável 1.030 (19%) · decisão 548 (10%)
+   set dia 20 = 1.220 · set dia 5 = 1.228 · dez dia 20 = 1.114 · dez dia 30 = 850 · abr dia 30 = 1.350
+   ano: 50.934 · inegociável 14.004 · negociável 33.000 · decisão 3.930 · UF MG → ICMS no dia 10 */
+(function (root) {
+  const M = {};
+  M.fracPMPF = function (pmpf) {
+    const lo = Math.floor(pmpf / 30), r = (pmpf - lo * 30) / 30;
+    return r === 0 ? [[lo, 1]] : [[lo, 1 - r], [lo + 1, r]];
+  };
+  M.orcamento = function (P, C) {
+    const base = P.receitaAnual / 12;
+    const pesos = C.achatar ? P.pesos.map(() => 1) : C.pesos;
+    const g = C.crescimento / 100;
+    // receita do mês s, s = -4..13 (anos vizinhos sem crescimento, mesmos pesos)
+    const rec = (s) => {
+      const m = ((s % 12) + 12) % 12;
+      const fat = s >= 0 ? Math.pow(1 + g, s / 12) : 1; // anos seguintes seguem crescendo (fecha dez = 143 em "Crescer 20%")
+      return base * pesos[m] * fat;
+    };
+    const ent = new Array(12).fill(0), forn = new Array(12).fill(0);
+    const lagRV0 = P.pmrvAntigo / 30, fr0 = M.fracPMPF(P.pmpfAntigo), fr1 = M.fracPMPF(C.pmpf);
+    for (let s = -6; s <= 11; s++) {
+      const lag = s < 0 ? lagRV0 : C.pmrv / 30;
+      const t = s + lag;
+      if (t >= 0 && t <= 11) ent[t] += rec(s) * (1 - C.inad / 100);
+      const compras = P.pctCompras * rec(s + 2);
+      (s < 0 ? fr0 : fr1).forEach(([a, f]) => { const u = s + a; if (u >= 0 && u <= 11) forn[u] += f * compras; });
+    }
+    const meses = [];
+    let saldo = P.saldoInicial;
+    for (let m = 0; m < 12; m++) {
+      const folha = P.salarios + P.encargos + P.decimo[m] + P.plr[m];
+      const varr = P.pctVariaveis * rec(m);
+      const disc = P.discricionarias * C.disc / 100;
+      const trib = P.pctTributos * rec(m - 1) + P.irpj;
+      const saidasOp = forn[m] + folha + P.fixas + varr + disc + trib;
+      const fluxoOp = ent[m] - saidasOp;
+      const capex = m === 5 ? C.capexJun : m === 8 ? C.capexSet : 0;
+      const div = m === P.mesDividendos ? C.dividendos : 0;
+      const juros = P.jurosCP + P.jurosELP;
+      const financ = -(juros + P.amortELP[m] + div);
+      const fluxoLiq = fluxoOp - capex + financ;
+      saldo += fluxoLiq;
+      meses.push({ m, receita: rec(m), entradas: ent[m], forn: forn[m], folha, fixas: P.fixas, variaveis: varr, disc, trib,
+        saidasOp, fluxoOp, invest: -capex, financ, juros, amort: P.amortELP[m], div, fluxoLiq, saldo });
+    }
+    const fl = meses.map((x) => x.fluxoLiq), media = fl.reduce((a, b) => a + b, 0) / 12;
+    const sigma = Math.sqrt(fl.reduce((a, b) => a + (b - media) ** 2, 0) / 12);
+    const minimo = C.k * sigma;
+    const soma = (k) => meses.reduce((a, x) => a + x[k], 0);
+    let pior = meses[0], exc = meses[0];
+    meses.forEach((x) => { if (x.saldo < pior.saldo) pior = x; if (x.saldo > exc.saldo) exc = x; });
+    return { meses, sigma, minimo, pior, falta: Math.max(0, minimo - pior.saldo), excMes: exc, excedente: exc.saldo - minimo,
+      abaixo: meses.filter((x) => x.saldo < minimo).map((x) => x.m), negativos: meses.filter((x) => x.saldo < 0).map((x) => x.m),
+      totais: { receita: soma('receita'), entradas: soma('entradas'), saidasOp: soma('saidasOp'), fluxoOp: soma('fluxoOp'), invest: soma('invest'), financ: soma('financ'), fluxoLiq: soma('fluxoLiq') },
+      saldoFinal: meses[11].saldo };
+  };
+
+  M.CLASSES = ['negociavel', 'inegociavel', 'decisao'];
+  // arredondamento de exibição: meio para o par (3.712,5 → 3.712; 1.029,5 → 1.030), como nas tabelas da spec
+  M.r = (v) => { const f = Math.floor(v), d = v - f; if (Math.abs(d - 0.5) < 1e-7) return f % 2 === 0 ? f : f + 1; return Math.round(v); };
+  // dias do mês num ano não bissexto (calendário, não dado do caso)
+  M.diasNoMes = (m) => new Date(2027, m + 1, 0).getDate();
+  // "último dia útil" = dia 30 (28 em fev): assim dez dia 30 = IRPJ + amortização (Spec §7)
+  M.ultimoDia = (m) => Math.min(30, M.diasNoMes(m));
+  M.lista = (s) => String(s).split(';').map(Number).filter((x) => x > 0);
+
+  // D = {P, pesos, cats, eventos, ufDia}; C = {pmpf, uf, capexJunMes, capexSetMes, dividendos, disc}
+  M.calendario = function (D, C) {
+    const P = D.P, base = P.receitaAnual / 12;
+    const rec = (s) => base * D.pesos[((s % 12) + 12) % 12];
+    const zeros = new Array(12).fill(0);
+    const PP = Object.assign({}, P, { pesos: D.pesos, decimo: zeros, plr: zeros, amortELP: zeros });
+    const CC = { crescimento: 0, pesos: D.pesos, achatar: false, pmrv: P.pmrv, pmpf: C.pmpf, inad: P.inad, disc: 100, dividendos: 0, capexJun: 0, capexSet: 0, k: 1 };
+    const orc = M.orcamento(PP, CC);
+    const orc45 = M.orcamento(PP, Object.assign({}, CC, { pmpf: P.pmpfAntigo }));
+    const cel = [];
+    for (let m = 0; m < 12; m++) { cel.push([]); for (let d = 0; d <= M.diasNoMes(m); d++) cel[m].push([]); }
+    const put = (m, d, cat, v) => { if (v > 1e-9) cel[m][Math.min(d, M.diasNoMes(m))].push({ id: cat.id, nome: cat.nome, classe: cat.classe, valor: v }); };
+    const mesIdx = (x) => (typeof x === 'number' ? x : D.MES.indexOf(x));
+    const cats = D.cats.slice().sort((a, b) => a.ordem - b.ordem);
+    cats.forEach((cat) => {
+      for (let m = 0; m < 12; m++) {
+        let v = 0;
+        if (cat.regra === 'fornecedores') v = orc.meses[m].forn;
+        else if (cat.regra === 'premissa') v = P[cat.ref] * (cat.ref === 'discricionarias' ? C.disc / 100 : 1);
+        else if (cat.regra === 'pctReceitaAnterior') v = cat.pct * rec(m - 1);
+        else if (cat.regra === 'pctReceita') v = P[cat.ref] * rec(m);
+        else continue;
+        let dias;
+        if (cat.dias === 'uf') dias = [D.ufDia[C.uf]];
+        else if (cat.dias === 'ultimo') dias = [M.ultimoDia(m)];
+        else dias = M.lista(cat.dias);
+        dias.forEach((d) => put(m, d, cat, v / dias.length));
+      }
+    });
+    D.eventos.forEach((e) => {
+      const cat = cats.find((c) => c.id === e.categoria); if (!cat) return;
+      let m = mesIdx(e.mes), v = e.valor;
+      if (e.id === 'capexJun' && C.capexJunMes != null) m = mesIdx(C.capexJunMes);
+      if (e.id === 'capexSet' && C.capexSetMes != null) m = mesIdx(C.capexSetMes);
+      if (e.categoria === 'dividendos' && C.dividendos != null) v = C.dividendos;
+      put(m, e.dia, cat, v);
+    });
+    // saldo: abertura de cada mês = inicial + Σ (entradas − saídas) dos meses anteriores
+    const diasEnt = M.lista(P.diasEntradas);
+    const meses = [];
+    let saldo = P.saldoInicial;
+    for (let m = 0; m < 12; m++) {
+      const porClasse = { negociavel: 0, inegociavel: 0, decisao: 0 }, porCat = {};
+      cel[m].forEach((it) => it.forEach((x) => { porClasse[x.classe] += x.valor; porCat[x.id] = (porCat[x.id] || 0) + x.valor; }));
+      const total = porClasse.negociavel + porClasse.inegociavel + porClasse.decisao;
+      const abertura = saldo;
+      saldo += orc.meses[m].entradas - total;
+      meses.push({ m, porClasse, porCat, total, entradas: orc.meses[m].entradas, receita: rec(m), forn: orc.meses[m].forn, forn45: orc45.meses[m].forn, abertura, fechamento: saldo });
+    }
+    const ano = { negociavel: 0, inegociavel: 0, decisao: 0, total: 0 };
+    meses.forEach((x) => { M.CLASSES.forEach((c) => { ano[c] += x.porClasse[c]; }); ano.total += x.total; });
+    return { cel, meses, ano, diasEnt };
+  };
+
+  // total por dia do mês m, só das classes ligadas em F = {negociavel: bool, …}
+  M.diaTotal = (cal, m, d, F) => cal.cel[m][d].reduce((a, x) => a + (!F || F[x.classe] ? x.valor : 0), 0);
+  M.resumoMes = function (cal, m, F) {
+    const n = M.diasNoMes(m), dias = [];
+    const porClasse = { negociavel: 0, inegociavel: 0, decisao: 0 };
+    let maxD = 1, maxV = -1;
+    for (let d = 1; d <= n; d++) {
+      const v = M.diaTotal(cal, m, d, F); dias.push(v);
+      if (v > maxV + 1e-9) { maxV = v; maxD = d; }
+      cal.cel[m][d].forEach((x) => { if (!F || F[x.classe]) porClasse[x.classe] += x.valor; });
+    }
+    const total = porClasse.negociavel + porClasse.inegociavel + porClasse.decisao;
+    return { dias, porClasse, total, pctIneg: total > 0 ? porClasse.inegociavel / total : 0, diaMax: maxD, valorMax: maxV };
+  };
+  // saldo dentro do mês m (todas as classes): [{d, saldo}] começando na abertura
+  M.saldoDiario = function (cal, m) {
+    const x = cal.meses[m], n = M.diasNoMes(m), q = x.entradas / cal.diasEnt.length, out = [];
+    let s = x.abertura;
+    for (let d = 1; d <= n; d++) {
+      if (cal.diasEnt.indexOf(d) >= 0) s += q;
+      s -= M.diaTotal(cal, m, d, null);
+      out.push({ d, saldo: s });
+    }
+    return out;
+  };
+  // classe dominante de uma célula
+  M.dominante = (itens) => {
+    const t = { negociavel: 0, inegociavel: 0, decisao: 0 }; itens.forEach((x) => { t[x.classe] += x.valor; });
+    let best = null, bv = 0; M.CLASSES.forEach((c) => { if (t[c] > bv) { bv = t[c]; best = c; } });
+    return best;
+  };
+  root.M23 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<style>
+.d23-vz { container-type: inline-size; }
+.d23-vgrid { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 40rem) { .d23-vgrid { grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.45fr); } }
+.d23-heat { min-height: 380px; }
+.d23-perfil { min-height: 250px; }
+.d23-sw { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+.d23-neg { background: var(--k-blue-l); }
+.d23-ineg { background: var(--k-neg); }
+.d23-dec { background: var(--k-neutro); }
+.d23-amb { background: var(--k-amber); }
+.d23-line { background: var(--color-fg); height: 2px; width: .9rem; vertical-align: 3px; }
+.d23-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.d23-chip[aria-pressed="false"] { opacity: .55; text-decoration: line-through; }
+.d23-chip[aria-pressed="true"] { background: var(--color-bg); color: var(--color-fg); border-color: var(--color-fg-muted); }
+.d23-atalho { margin-top: 6px; }
+.d23-comp { display: flex; height: 26px; border-radius: var(--cds-radius); overflow: hidden; margin-top: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.d23-comp > div { display: flex; align-items: center; justify-content: center; color: #1a1a1a; min-width: 0; overflow: hidden; white-space: nowrap; }
+.d23-comp > div.d23-ineg { color: #fff; }
+.d23-hit { cursor: pointer; }
+.d23-sel { pointer-events: none; }
+</style>
+
+<div class="k" id="d23">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D2.3 · Calendário de saídas</h1>
+      <p class="k-sub">O que quase nunca atrasa: quais saídas têm data certa e quais a tesouraria pode mover?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d23-cen" data-cen="alfa" aria-pressed="false">Alfa T0</button>
+      <button class="k-btn d23-cen" data-cen="esqueleto" aria-pressed="false">Só o esqueleto</button>
+      <button class="k-btn d23-cen" data-cen="dezembro" aria-pressed="false">Dezembro</button>
+      <button class="k-btn d23-cen" data-cen="alongar" aria-pressed="false">Alongar fornecedores</button>
+      <button class="k-btn d23-cen" data-cen="cinto" aria-pressed="false">Apertar o cinto</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone" id="controles" data-source="cenarios icms_uf">
+      <h2 class="k-zt">Controles</h2>
+      <div class="k-ctl"><label for="c-mes">Mês em foco</label>
+        <select class="k-select" id="c-mes" data-k="mes">
+          <option value="0">jan</option><option value="1">fev</option><option value="2">mar</option><option value="3">abr</option>
+          <option value="4">mai</option><option value="5">jun</option><option value="6">jul</option><option value="7">ago</option>
+          <option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
+        </select></div>
+      <div class="k-ctl"><span class="k-lab">Classes visíveis</span>
+        <div class="d23-chips">
+          <button class="k-btn d23-chip" data-chip="negociavel" aria-pressed="true"><i class="d23-sw d23-neg"></i>Negociável</button>
+          <button class="k-btn d23-chip" data-chip="inegociavel" aria-pressed="true"><i class="d23-sw d23-ineg"></i>Inegociável</button>
+          <button class="k-btn d23-chip" data-chip="decisao" aria-pressed="true"><i class="d23-sw d23-dec"></i>Decisão interna</button>
+        </div>
+        <button class="k-btn d23-atalho" aria-pressed="false">Só inegociáveis</button>
+      </div>
+      <div class="k-ctl"><span class="k-lab">UF do ICMS <span class="k-u">vence no dia <b data-draw="uf-dia">—</b></span></span>
+        <div class="k-seg" role="group" aria-label="UF do ICMS">
+          <button data-k="uf" data-v="SP" aria-pressed="false">SP</button><button data-k="uf" data-v="RJ" aria-pressed="false">RJ</button><button data-k="uf" data-v="MG" aria-pressed="false">MG</button>
+        </div></div>
+      <div class="k-ctl"><label for="c-pmpf">PMPF <span class="k-u">dias · fornecedores</span></label>
+        <div class="k-in"><input type="range" id="c-pmpf" data-k="pmpf" min="30" max="90" step="15"><input type="number" data-k="pmpf" min="30" max="90" step="15" aria-label="PMPF, dias"></div></div>
+      <div class="k-ctl"><label for="c-cj">CAPEX de junho: pagar em</label>
+        <select class="k-select" id="c-cj" data-k="capexJunMes">
+          <option value="5">jun</option><option value="6">jul</option><option value="7">ago</option><option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
+        </select></div>
+      <div class="k-ctl"><label for="c-cs">CAPEX de setembro: pagar em</label>
+        <select class="k-select" id="c-cs" data-k="capexSetMes">
+          <option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
+        </select></div>
+      <div class="k-ctl"><label for="c-div">Dividendos <span class="k-u">R$ mil · abril</span></label>
+        <div class="k-in"><input type="range" id="c-div" data-k="dividendos" min="0" max="1250" step="50"><input type="number" data-k="dividendos" min="0" max="1250" step="10" aria-label="Dividendos, R$ mil"></div></div>
+      <div class="k-ctl"><label for="c-disc">Discricionárias <span class="k-u">% do orçamento</span></label>
+        <div class="k-in"><input type="range" id="c-disc" data-k="disc" min="0" max="100" step="5"><input type="number" data-k="disc" min="0" max="100" step="5" aria-label="Discricionárias, %"></div></div>
+      <label class="k-toggle"><input type="checkbox" data-k="saldo"> Mostrar saldo diário</label>
+      <p class="k-note">Só fornecedores (negociável) e decisões internas respondem aos controles.</p>
+    </div>
+
+    <div class="k-zone d23-vz" id="visual" data-source="premissas sazonalidade categorias eventos icms_uf">
+      <div class="d23-vgrid">
+        <div id="heatmap">
+          <div class="k-ch"><h3>Saídas do ano, dia a dia</h3><span>R$ mil por dia · clique num dia</span></div>
+          <div class="k-chart d23-heat dash-skeleton" data-draw="heat" role="img" aria-label="Mapa de calor das saídas por dia e mês"></div>
+          <div class="k-legend"><span><i class="d23-amb"></i>cor = valor do dia</span><span>borda = classe dominante</span></div>
+        </div>
+        <div id="perfil">
+          <div class="k-ch"><h3>Perfil de <span data-draw="perfil-mes">—</span></h3><span>R$ mil por dia do mês</span></div>
+          <div class="k-chart d23-perfil dash-skeleton" data-draw="perfil" role="img" aria-label="Saídas por dia do mês em foco, empilhadas por classe"></div>
+          <div class="k-legend">
+            <span><i class="d23-neg"></i>Negociável</span><span><i class="d23-ineg"></i>Inegociável</span><span><i class="d23-dec"></i>Decisão interna</span>
+            <span class="d23-leg-saldo"><i class="d23-line"></i>Saldo do dia</span>
+            <span class="k-info" tabindex="0">i<span class="k-tip">Linhas tracejadas: as janelas fixas do mês — salários, encargos e ICMS, PIS/COFINS e último dia útil (IRPJ; amortização, dividendos e 13º quando houver). Férias estão provisionadas dentro de "Salários".</span></span>
+          </div>
+          <p class="k-note" id="d23-saldo-nota" hidden>Saldo mais baixo do mês: <b data-draw="s-min">—</b> no dia <b data-draw="s-dia">—</b> (abre o mês com <b data-draw="s-ab">—</b>; entradas em quatro parcelas).</p>
+          <div class="k-alert" id="d23-aviso" hidden><b data-draw="aviso-cat">—</b>: data legal/contratual — não se move.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="premissas sazonalidade categorias eventos icms_uf">
+      <h2 class="k-zt">Leitura · <span data-draw="perfil-mes">—</span></h2>
+      <div class="k-kpi"><span class="k-kl">Total de saídas <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="k-total">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Com data travada <span class="k-u">% inegociável</span></span><span class="k-kn" data-draw="k-ineg">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Dia mais pesado</span><span class="k-kn"><span data-draw="k-dia">—</span><small>R$ <span data-draw="k-diaval">—</span> mil</small></span></div>
+      <div class="d23-comp" data-draw="comp" role="img" aria-label="Composição das saídas do mês por classe"></div>
+      <div class="k-legend"><span><i class="d23-neg"></i>Negociável</span><span><i class="d23-ineg"></i>Inegociável</span><span><i class="d23-dec"></i>Decisão interna</span></div>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="resumo" hidden><b data-draw="f-mes">—</b>: <b data-draw="f-total">—</b> de saídas, <b data-draw="f-pct">—</b> com data travada.</p>
+        <p data-frase="janela-icms" hidden>O dia <b data-draw="f-dwin">—</b> concentra <b data-draw="f-dwinval">—</b> (encargos, ICMS e fornecedores).</p>
+        <p data-frase="janela-uf" hidden>O dia <b data-draw="f-dwin">—</b> concentra <b data-draw="f-dwinval">—</b> (encargos e fornecedores); o ICMS sai no dia <b data-draw="uf-dia">—</b>.</p>
+        <p data-frase="movel" hidden>Só os <b data-draw="f-neg">—</b> de fornecedores e os <b data-draw="f-dec">—</b> de decisão interna podem ser movidos.</p>
+        <p data-frase="decimo" hidden>Novembro e dezembro carregam o 13º: <b data-draw="f-13">—</b> a mais no mês — um mês extra de folha que precisa estar provisionado desde janeiro.</p>
+        <p data-frase="dividendos" hidden><b data-draw="f-mesl">—</b> paga dividendos (<b data-draw="f-div">—</b>) no último dia — decisão interna, mas tomada; mover exige assembleia.</p>
+        <p data-frase="pmpf-alivio" hidden>Fornecedores empurrados para o mês seguinte: alívio de <b data-draw="f-pmpf">—</b> neste mês, mesma conta um mês depois.</p>
+        <p data-frase="pmpf-peso" hidden>Com o novo PMPF, este mês paga <b data-draw="f-pmpf2">—</b> a mais a fornecedores que no prazo de <b data-draw="f-pmpf0">—</b> dias: a conta muda de mês, não de tamanho.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="premissas sazonalidade categorias eventos icms_uf cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Que fração das saídas de setembro a Alfa realmente pode mover?
+          <details><summary>mostrar resposta</summary><p>Fornecedores (<b data-draw="gb" data-q="q1-neg">—</b> = <b data-draw="gb" data-q="q1-negp">—</b>) por negociação, e CAPEX + variáveis + discricionárias (<b data-draw="gb" data-q="q1-dec">—</b> = <b data-draw="gb" data-q="q1-decp">—</b>) por decisão interna; o resto (folha, encargos, tributos, juros, fixas = <b data-draw="gb" data-q="q1-ineg">—</b>, <b data-draw="gb" data-q="q1-inegp">—</b>) tem data travada. A alavanca da tesouraria é o PMPF — e ela tem preço (M5).</p></details>
+        </li>
+        <li>Compare novembro e dezembro com um mês comum. De onde vem o "mês extra"?
+          <details><summary>mostrar resposta</summary><p>Do 13º salário (<b data-draw="gb" data-q="q2-nov">—</b> em <b data-draw="gb" data-q="q2-novd">—</b>/nov e <b data-draw="gb" data-q="q2-dez">—</b> em <b data-draw="gb" data-q="q2-dezd">—</b>/dez, com encargos) e, em dezembro, da amortização de <b data-draw="gb" data-q="q2-am">—</b> no dia <b data-draw="gb" data-q="q2-amd">—</b>. São saídas conhecidas um ano antes: devem ser provisionadas mês a mês, não descobertas em novembro.</p></details>
+        </li>
+        <li>Mude a UF para MG. O que muda no perfil do dia <b data-draw="gb" data-q="q3-sp">—</b>?
+          <details><summary>mostrar resposta</summary><p>O ICMS sai do dia <b data-draw="gb" data-q="q3-sp">—</b> para o dia <b data-draw="gb" data-q="q3-mg">—</b>, desafogando a janela <b data-draw="gb" data-q="q3-enc">—</b>–<b data-draw="gb" data-q="q3-pis">—</b> e carregando o dia <b data-draw="gb" data-q="q3-mg">—</b> (junto com as fixas). O calendário tributário é local — por isso se consulta o time fiscal, não se memoriza.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* ============================================================
+   D2.3 · Calendário de saídas — controles e desenhos
+   Cálculo em model.js (M23, funções puras); testes de aderência em test.js (Spec §7):
+   set 5.290 · 70/19/10% · dia 20 = 1.220 · dia 5 = 1.228 · dez dia 20 = 1.114 · dez dia 30 = 850
+   abr dia 30 = 1.350 · ano 50.934 (14.004 / 33.000 / 3.930) · MG → ICMS no dia 10
+   ============================================================ */
+const G = window.D23 = { D: null, S: null, memo: { k: '', v: null }, base: null, aviso: '' };
+const IDS = ['premissas', 'sazonalidade', 'categorias', 'eventos', 'icms_uf', 'cenarios'];
+const VIS = ['premissas', 'sazonalidade', 'categorias', 'eventos', 'icms_uf'];
+const COR = { negociavel: 'var(--k-blue-l)', inegociavel: 'var(--k-neg)', decisao: 'var(--k-neutro)' };
+const ORDEM = ['inegociavel', 'decisao', 'negociavel'];   // empilhamento: o que é travado fica na base
+const NOMES = ['heat', 'perfil', 'perfil-mes', 'k-total', 'k-ineg', 'k-dia', 'k-diaval', 'comp', 'frase', 'f-mes', 'f-total', 'f-pct',
+  'f-dwin', 'f-dwinval', 'f-neg', 'f-dec', 'f-13', 'f-mesl', 'f-div', 'f-pmpf', 'f-pmpf2', 'f-pmpf0', 'uf-dia', 's-min', 's-dia', 's-ab', 'aviso-cat'];
+
+/* ---------- dados e estado ---------- */
+function montaDados() {
+  const saz = K.num(dash.data('sazonalidade').data);
+  return {
+    P: K.obj(dash.data('premissas').data),
+    pesos: saz.map((r) => r.peso), MES: saz.map((r) => String(r.mes)),
+    cats: K.num(dash.data('categorias').data).map((c) => Object.assign(c, { dias: String(c.dias == null ? '' : c.dias) })),
+    eventos: K.num(dash.data('eventos').data),
+    ufDia: K.obj(dash.data('icms_uf').data, 'uf', 'dia'),
+    cenarios: K.num(dash.data('cenarios').data),
+  };
+}
+const pronto = () => !!(G.D && G.S) && K.status(VIS) === 'ok';
+const estadoCarga = () => { const s = K.status(VIS); return s === 'ok' ? 'loading' : s; };
+const filtro = () => ({ negociavel: G.S.negociavel, inegociavel: G.S.inegociavel, decisao: G.S.decisao });
+const parCal = (S) => ({ pmpf: S.pmpf, uf: S.uf, capexJunMes: S.capexJunMes, capexSetMes: S.capexSetMes, dividendos: S.dividendos, disc: S.disc });
+function cal() {
+  const p = parCal(G.S), k = JSON.stringify(p);
+  if (G.memo.k !== k) G.memo = { k, v: M23.calendario(G.D, p) };
+  return G.memo.v;
+}
+const mesIdx = (s) => G.D.MES.indexOf(String(s));
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const r0 = (v) => K.n(M23.r(v));
+function doCenario(row) {
+  return {
+    mes: mesIdx(row.mes), uf: String(row.uf), pmpf: row.pmpf, capexJunMes: mesIdx(row.capexJunMes), capexSetMes: mesIdx(row.capexSetMes),
+    dividendos: row.dividendos, disc: row.disc,
+    negociavel: row.filtro !== 'inegociavel', inegociavel: true, decisao: row.filtro !== 'inegociavel',
+  };
+}
+function aplicar(id) {
+  const row = (G.D.cenarios || []).find((c) => c.id === id);
+  if (!row) return false;
+  const saldo = G.S ? G.S.saldo : false;
+  G.S = Object.assign(doCenario(row), { saldo, cen: id, mexido: false });
+  G.aviso = '';
+  sincroniza();
+  return true;
+}
+function sincroniza() {
+  if (!G.S) return;
+  K.sync(G.S);
+  document.querySelectorAll('.d23-chip').forEach((b) => b.setAttribute('aria-pressed', String(!!G.S[b.dataset.chip])));
+  const so = G.S.inegociavel && !G.S.negociavel && !G.S.decisao;
+  document.querySelectorAll('.d23-atalho').forEach((b) => b.setAttribute('aria-pressed', String(so)));
+  document.querySelectorAll('.d23-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === G.S.cen && !G.S.mexido)));
+  document.querySelectorAll('#d23-saldo-nota, .d23-leg-saldo').forEach((n) => { n.hidden = !G.S.saldo; });
+  document.querySelectorAll('#d23-aviso').forEach((n) => { n.hidden = !G.aviso; });
+}
+const mudou = (k) => { if (k !== 'saldo') G.S.mexido = true; G.aviso = ''; sincroniza(); K.redraw(NOMES); };
+function avisar(itens) {
+  const trav = itens.filter((x) => x.classe === 'inegociavel').map((x) => x.nome);
+  G.aviso = trav.join(', ');
+  sincroniza();
+  dash.draw('aviso-cat');
+}
+
+dash.onData(() => {
+  if (!G.D && K.status(IDS) === 'ok') { G.D = montaDados(); aplicar('alfa'); }
+});
+K.bind(new Proxy({}, { set(o, k, v) { if (G.S) G.S[k] = v; return true; } }), (k) => { if (G.S) mudou(k); });
+document.querySelectorAll('.d23-cen').forEach((b) => b.addEventListener('click', () => { if (G.D && aplicar(b.dataset.cen)) K.redraw(NOMES); }));
+document.querySelectorAll('.d23-chip').forEach((b) => b.addEventListener('click', () => {
+  if (!G.S) return;
+  const c = b.dataset.chip, ligados = ['negociavel', 'inegociavel', 'decisao'].filter((x) => G.S[x]);
+  if (G.S[c] && ligados.length === 1) return;          // ao menos uma classe visível
+  G.S[c] = !G.S[c];
+  mudou();
+}));
+document.querySelectorAll('.d23-atalho').forEach((b) => b.addEventListener('click', () => {
+  if (!G.S) return;
+  const so = G.S.inegociavel && !G.S.negociavel && !G.S.decisao;
+  G.S.negociavel = so; G.S.decisao = so; G.S.inegociavel = true;
+  mudou();
+}));
+
+/* ---------- auxiliares de desenho ---------- */
+const texto = (name, fn) => K.txt(name, pronto, fn);
+const resumo = () => M23.resumoMes(cal(), G.S.mes, filtro());
+const resumoTodos = () => M23.resumoMes(cal(), G.S.mes, null);
+const catDia = (id) => { const c = G.D.cats.find((x) => x.id === id); return c ? M23.lista(c.dias)[0] : null; };
+const eventoDe = (id) => G.D.eventos.find((e) => e.id === id);
+const linhasTip = (itens) => {
+  const out = [];
+  ORDEM.forEach((cl) => itens.filter((x) => x.classe === cl).forEach((x) => out.push([COR[cl], x.nome, r0(x.valor)])));
+  return out;
+};
+function mede(svg, cls, textos) {
+  let w = 0;
+  textos.forEach((t) => { const n = svg.append('text').attr('class', cls).text(t); w = Math.max(w, n.node().getComputedTextLength()); n.remove(); });
+  return w;
+}
+
+/* ---------- mapa de calor 12 × 31 ---------- */
+dash.draw('heat', (el) => {
+  if (!pronto()) { K.fail(el, estadoCarga()); return; }
+  el.classList.remove('dash-skeleton');
+  const c = cal(), F = filtro(), S = G.S, MES = G.D.MES;
+  const W = Math.max(280, el.clientWidth || 280), ch = 11, top = 34, lab = 24, H = top + 31 * ch + 6;
+  const cw = (W - lab - 2) / 12;
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  let vmax = 1;
+  for (let m = 0; m < 12; m++) for (let d = 1; d <= M23.diasNoMes(m); d++) vmax = Math.max(vmax, M23.diaTotal(c, m, d, F));
+  const op = d3.scaleSqrt([0, vmax], [0.08, 1]);
+  // "mês extra": meses com 13º
+  const extra = c.meses.filter((x) => (x.porCat.decimo || 0) > 0).map((x) => x.m);
+  if (extra.length) {
+    const a = d3.min(extra), b = d3.max(extra);
+    const x0 = lab + a * cw + 2, x1 = lab + (b + 1) * cw - 2;
+    svg.append('line').attr('x1', x0).attr('x2', x1).attr('y1', 13).attr('y2', 13).attr('stroke', 'var(--k-neg)').attr('stroke-width', 1.5);
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x1).attr('y', 10).style('fill', 'var(--k-neg)').text('mês extra · 13º');
+  }
+  MES.forEach((nm, m) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', lab + (m + 0.5) * cw).attr('y', 28)
+    .style('font-weight', m === S.mes ? '700' : null).style('fill', m === S.mes ? 'var(--color-fg)' : null).text(nm));
+  [1, 5, 10, 15, 20, 25, 30].forEach((d) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end')
+    .attr('x', lab - 5).attr('y', top + (d - 0.5) * ch + 4).text(String(d)));
+  const g = svg.append('g');
+  for (let m = 0; m < 12; m++) {
+    for (let d = 1; d <= M23.diasNoMes(m); d++) {
+      const itens = c.cel[m][d].filter((x) => F[x.classe]);
+      const v = itens.reduce((s, x) => s + x.valor, 0);
+      const dom = v > 0 ? M23.dominante(itens) : null;
+      g.append('rect').attr('class', 'd23-hit').attr('x', lab + m * cw + 1.5).attr('y', top + (d - 1) * ch + 0.75)
+        .attr('width', Math.max(1, cw - 3)).attr('height', ch - 1.5).attr('rx', 1.5)
+        .attr('fill', v > 0 ? 'var(--k-amber)' : 'transparent').attr('fill-opacity', v > 0 ? op(v) : 1)
+        .attr('stroke', dom ? COR[dom] : 'var(--color-border-line)').attr('stroke-width', dom ? 1.4 : 0.6)
+        .on('mousemove', (ev) => {
+          const [px, py] = d3.pointer(ev, el);
+          const l = linhasTip(itens); l.push([null, 'Total', r0(v)]);
+          tip.show(d + '/' + MES[m], l, px, py);
+        })
+        .on('mouseleave', () => tip.hide())
+        .on('click', () => {
+          if (G.S.mes !== m) { G.S.mes = m; G.S.mexido = true; }
+          sincroniza(); K.redraw(NOMES.filter((n) => n !== 'aviso-cat'));
+          avisar(itens);
+        });
+    }
+  }
+  svg.append('rect').attr('class', 'd23-sel').attr('x', lab + S.mes * cw + 0.5).attr('y', top - 1).attr('width', cw - 1).attr('height', 31 * ch + 2)
+    .attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2).attr('rx', 2);
+});
+
+/* ---------- perfil do mês em foco ---------- */
+dash.draw('perfil', (el) => {
+  if (!pronto()) { K.fail(el, estadoCarga()); return; }
+  el.classList.remove('dash-skeleton');
+  const c = cal(), F = filtro(), S = G.S, m = S.mes, n = M23.diasNoMes(m);
+  const res = M23.resumoMes(c, m, F);
+  const sd = S.saldo ? M23.saldoDiario(c, m) : null;
+  const W = Math.max(300, el.clientWidth || 300), H = 250;
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const y = d3.scaleLinear([0, Math.max(1, res.valorMax)], [H - 24, 30]).nice();
+  const yt = y.ticks(4);
+  const ml = mede(svg, 'k-svgm', yt.map((t) => K.n(t))) + 10;
+  let y2 = null, mr = 8, y2t = [];
+  if (sd) {
+    const ext = d3.extent(sd, (p) => p.saldo);
+    y2 = d3.scaleLinear([Math.min(0, ext[0]), Math.max(0, ext[1])], [H - 24, 30]).nice();
+    y2t = y2.ticks(4);
+    mr = mede(svg, 'k-svgm', y2t.map((t) => K.n(t))) + 10;
+  }
+  const dias = d3.range(1, n + 1);
+  const x = d3.scaleBand(dias, [ml, W - mr]).padding(0.18);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', ml).attr('x2', W - mr).attr('y1', (t) => y(t)).attr('y2', (t) => y(t))
+    .attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', ml - 6).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  svg.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  [1, 5, 10, 15, 20, 25, 30].filter((d) => d <= n).forEach((d) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle')
+    .attr('x', x(d) + x.bandwidth() / 2).attr('y', H - 8).text(String(d)));
+  // janelas fixas
+  const ult = M23.ultimoDia(m);
+  const jan = [[catDia('salarios'), String(catDia('salarios'))], [catDia('encargos'), String(catDia('encargos'))], [catDia('piscofins'), String(catDia('piscofins'))], [ult, 'últ.']];
+  const vistos = new Set();
+  jan.forEach(([d, t]) => {
+    if (!d || d > n || vistos.has(d)) return; vistos.add(d);
+    const cx = x(d) + x.bandwidth() / 2;
+    svg.append('line').attr('x1', cx).attr('x2', cx).attr('y1', 18).attr('y2', H - 24).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cx).attr('y', 13).text(t);
+  });
+  // barras empilhadas
+  dias.forEach((d) => {
+    const itens = c.cel[m][d].filter((it) => F[it.classe]);
+    let acc = 0;
+    ORDEM.forEach((cl) => itens.filter((it) => it.classe === cl).forEach((it) => {
+      const y0 = y(acc), y1 = y(acc + it.valor); acc += it.valor;
+      svg.append('rect').attr('class', 'd23-hit').attr('x', x(d)).attr('width', x.bandwidth()).attr('y', y1).attr('height', Math.max(0, y0 - y1))
+        .attr('fill', COR[cl]).attr('stroke', 'var(--color-panel)').attr('stroke-width', 0.6)
+        .on('click', () => avisar([it]));
+    }));
+  });
+  // saldo diário
+  if (sd) {
+    svg.append('g').selectAll('text').data(y2t).join('text').attr('class', 'k-svgm').attr('x', W - mr + 6).attr('y', (t) => y2(t) + 4).text((t) => K.n(t));
+    if (y2.domain()[0] < 0) svg.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y2(0)).attr('y2', y2(0)).attr('stroke', 'var(--k-neg)').attr('stroke-dasharray', '4 3');
+    const line = d3.line().x((p) => x(p.d) + x.bandwidth() / 2).y((p) => y2(p.saldo));
+    svg.append('path').attr('d', line(sd)).attr('fill', 'none').attr('stroke', 'var(--color-fg)').attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+    const mn = sd.reduce((a, p) => (p.saldo < a.saldo ? p : a), sd[0]);
+    svg.append('circle').attr('cx', x(mn.d) + x.bandwidth() / 2).attr('cy', y2(mn.saldo)).attr('r', 4).attr('fill', mn.saldo < 0 ? 'var(--k-neg)' : 'var(--color-fg)');
+  }
+  // tooltip por dia: banda mais próxima do ponteiro
+  svg.on('mousemove', (ev) => {
+    const [px, py] = d3.pointer(ev, el);
+    const d = dias[d3.minIndex(dias, (dd) => Math.abs(x(dd) + x.bandwidth() / 2 - px))];
+    if (px < ml || px > W - mr) { tip.hide(); return; }
+    const itens = c.cel[m][d].filter((it) => F[it.classe]);
+    const l = linhasTip(itens);
+    l.push([null, 'Total', r0(itens.reduce((s, it) => s + it.valor, 0))]);
+    if (sd) l.push([null, 'Saldo ao fim do dia', r0(sd[d - 1].saldo)]);
+    tip.show(d + '/' + G.D.MES[m], l, px, py);
+  }).on('mouseleave', () => tip.hide());
+});
+
+/* ---------- leitura ---------- */
+texto('perfil-mes', () => K.MESL[G.S.mes]);
+texto('k-total', () => r0(resumo().total));
+texto('k-ineg', () => K.p(resumo().pctIneg, 0));
+texto('k-dia', () => String(resumo().diaMax));
+texto('k-diaval', () => r0(resumo().valorMax));
+dash.draw('comp', (el) => {
+  if (!pronto()) { K.fail(el, estadoCarga()); return; }
+  el.classList.remove('dash-skeleton');
+  const res = resumo(), tot = res.total || 1;
+  const segs = ['negociavel', 'inegociavel', 'decisao'].filter((cl) => res.porClasse[cl] > 0).map((cl) => {
+    const dv = document.createElement('div');
+    const p = res.porClasse[cl] / tot;
+    dv.className = cl === 'negociavel' ? 'd23-neg' : cl === 'inegociavel' ? 'd23-ineg' : 'd23-dec';
+    dv.style.width = (p * 100) + '%';
+    dv.textContent = p >= 0.08 ? K.p(p, 0) : '';
+    return dv;
+  });
+  el.replaceChildren(...segs);
+});
+dash.draw('frase', (el) => {
+  if (!pronto()) { K.frases(el, []); return; }
+  const c = cal(), S = G.S, x = c.meses[S.mes];
+  const k = ['resumo', G.D.ufDia[S.uf] === catDia('encargos') ? 'janela-icms' : 'janela-uf', 'movel'];
+  if ((x.porCat.decimo || 0) > 0) k.push('decimo');
+  const ev = eventoDe('dividendosAbr');
+  if (ev && mesIdx(ev.mes) === S.mes && (x.porCat.dividendos || 0) > 0) k.push('dividendos');
+  if (x.forn45 - x.forn > 0.5) k.push('pmpf-alivio');
+  else if (x.forn - x.forn45 > 0.5) k.push('pmpf-peso');
+  K.frases(el, k);
+});
+texto('f-mes', () => cap(G.D.MES[G.S.mes]));
+texto('f-mesl', () => cap(K.MESL[G.S.mes]));
+texto('f-total', () => r0(resumo().total));
+texto('f-pct', () => K.p(resumo().pctIneg, 0));
+texto('f-dwin', () => String(catDia('encargos')));
+texto('f-dwinval', () => r0(resumoTodos().dias[catDia('encargos') - 1]));
+texto('f-neg', () => r0(cal().meses[G.S.mes].porClasse.negociavel));
+texto('f-dec', () => r0(cal().meses[G.S.mes].porClasse.decisao));
+texto('f-13', () => r0(cal().meses[G.S.mes].porCat.decimo || 0));
+texto('f-div', () => r0(cal().meses[G.S.mes].porCat.dividendos || 0));
+texto('f-pmpf', () => { const x = cal().meses[G.S.mes]; return r0(x.forn45 - x.forn); });
+texto('f-pmpf2', () => { const x = cal().meses[G.S.mes]; return r0(x.forn - x.forn45); });
+texto('f-pmpf0', () => String(G.D.P.pmpfAntigo));
+texto('uf-dia', () => String(G.D.ufDia[G.S.uf]));
+const minSaldo = () => { const sd = M23.saldoDiario(cal(), G.S.mes); return sd.reduce((a, p) => (p.saldo < a.saldo ? p : a), sd[0]); };
+texto('s-min', () => r0(minSaldo().saldo));
+texto('s-dia', () => String(minSaldo().d));
+texto('s-ab', () => r0(cal().meses[G.S.mes].abertura));
+texto('aviso-cat', () => G.aviso || null);
+
+/* ---------- gabaritos (calculados no cenário Alfa T0) ---------- */
+function base() {
+  if (!G.base) {
+    const row = G.D.cenarios.find((c) => c.id === 'alfa');
+    const S0 = doCenario(row);
+    const c = M23.calendario(G.D, parCal(S0));
+    G.base = { c, set: M23.resumoMes(c, mesIdx('set'), null) };
+  }
+  return G.base;
+}
+const GB = {
+  'q1-neg': (b) => r0(b.set.porClasse.negociavel), 'q1-negp': (b) => K.p(b.set.porClasse.negociavel / b.set.total, 0),
+  'q1-dec': (b) => r0(b.set.porClasse.decisao), 'q1-decp': (b) => K.p(b.set.porClasse.decisao / b.set.total, 0),
+  'q1-ineg': (b) => r0(b.set.porClasse.inegociavel), 'q1-inegp': (b) => K.p(b.set.pctIneg, 0),
+  'q2-nov': () => r0(eventoDe('decimoNov').valor), 'q2-novd': () => String(eventoDe('decimoNov').dia),
+  'q2-dez': () => r0(eventoDe('decimoDez').valor), 'q2-dezd': () => String(eventoDe('decimoDez').dia),
+  'q2-am': () => r0(eventoDe('amortDez').valor), 'q2-amd': () => String(eventoDe('amortDez').dia),
+  'q3-sp': () => String(G.D.ufDia.SP), 'q3-mg': () => String(G.D.ufDia.MG),
+  'q3-enc': () => String(catDia('encargos')), 'q3-pis': () => String(catDia('piscofins')),
+};
+dash.draw('gb', (el) => {
+  const fn = GB[el.dataset.q];
+  if (!fn || !G.D || K.status(IDS) !== 'ok') { el.textContent = '—'; return; }
+  const v = fn(base());
+  el.textContent = v == null ? '—' : v;
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

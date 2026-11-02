@@ -1,0 +1,10 @@
+{
+  "code": "D5.1",
+  "title": "D5.1 · Fornecedor é credor",
+  "slug": "7e612fde-9e76-4eb5-a031-ed2f03630504",
+  "datasets": {
+    "alfa": { "file": "alfa.json", "sha256": "f455173fe45954cedf3bf9ad8d8ce402e947f86d35281fe7cdfd1b6d5215230f" },
+    "cenarios": { "file": "cenarios.json", "sha256": "9ae69a81b5f696e08a6108634c1bfa9ca4b9a2ae46bf70d40a789ccba6271a43" },
+    "horizonte": { "file": "horizonte.json", "sha256": "76fd186fd568cbc103787415267a74bac2e903fce74577cadf3b9264ba74c8b1" }
+  }
+}

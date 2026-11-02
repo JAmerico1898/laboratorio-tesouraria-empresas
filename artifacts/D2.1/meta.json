@@ -1,0 +1,19 @@
+{
+  "code": "D2.1",
+  "title": "D2.1 · Cascata do orçamento de caixa",
+  "slug": "d229b4f9-5258-49a3-8d9a-77cd17540bda",
+  "datasets": {
+    "cenarios": {
+      "file": "cenarios.json",
+      "sha256": "410d359d045ddf39de0489cbc4249bc0ffad4d31335a4677021e4ce65f8546df"
+    },
+    "meses": {
+      "file": "meses.json",
+      "sha256": "2c3f7a56506bd8b857e813b5c9bc20b3d4af7470ef69d4ba69aad16419ecb2cc"
+    },
+    "premissas": {
+      "file": "premissas.json",
+      "sha256": "e222a78ddea7419f2f18fd55fa5c5782fa25e2591ebb7ae3ae6e15e2d6501973"
+    }
+  }
+}

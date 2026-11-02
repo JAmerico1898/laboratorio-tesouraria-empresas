@@ -1,0 +1,11 @@
+{
+  "code": "D4.8",
+  "title": "D4.8 · Antecipação, FIDC e cartão",
+  "slug": "68fe28c4-038a-465b-aa4f-ce8121ccdc43",
+  "datasets": {
+    "alfa": { "file": "alfa.json", "sha256": "654e72e24e4ab68e1dd7b96613ddd645a4109f98991d7b8316a3e382e01703b4" },
+    "cascata": { "file": "cascata.json", "sha256": "5e6efcf2ca0532acadffebd61c777e4d062ae1289ab053c17ed394ad69a987eb" },
+    "cenarios": { "file": "cenarios.json", "sha256": "d229421738ad5b46bbd3a386d3bd07fe66aff9603a6377b4df62dc67b547c8bb" },
+    "modalidades": { "file": "modalidades.json", "sha256": "7ee55c26e70e298e2a9bebd2299e60b7c34654039a77f7d4e1a5ce9ed53cd0dc" }
+  }
+}

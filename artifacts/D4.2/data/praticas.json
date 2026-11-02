@@ -1,0 +1,5 @@
+[
+ {"id":"306090","pratica":"30/60/90","parcelas":"30|60|90","descricao":"três duplicatas de 1/3","venda":100},
+ {"id":"283030","pratica":"28/30/30","parcelas":"0|30|60","descricao":"1/3 à vista + 30 + 60","venda":100},
+ {"id":"net30","pratica":"Boleto único net 30","parcelas":"30","descricao":"um boleto em 30 dias","venda":100}
+]

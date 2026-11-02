@@ -1,0 +1,7 @@
+[
+ {"nivel":1,"fonte":"Crédito comercial","custo":15,"saldo":"fornecedores","rotulo":"~15%"},
+ {"nivel":2,"fonte":"CG de relacionamento","custo":19,"saldo":"cg","rotulo":"~19%"},
+ {"nivel":3,"fonte":"Antecipação de recebíveis","custo":22,"saldo":"antecipacao","rotulo":"~22%"},
+ {"nivel":4,"fonte":"Conta garantida","custo":28,"saldo":"contaGar","rotulo":"~28%"},
+ {"nivel":5,"fonte":"Cheque especial PJ","custo":200,"saldo":"cheque","rotulo":"> 200%"}
+]

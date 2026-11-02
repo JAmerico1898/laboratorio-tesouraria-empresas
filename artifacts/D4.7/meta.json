@@ -1,0 +1,10 @@
+{
+  "code": "D4.7",
+  "title": "D4.7 · Régua de cobrança",
+  "slug": "593920f2-66b5-47a4-a987-24274c3a1b6b",
+  "datasets": {
+    "carteira": { "file": "carteira.json", "sha256": "56e9e6851c0082787732175b3acd49ae84fd17ab66124b700faaf804bf235fdf" },
+    "cenarios": { "file": "cenarios.json", "sha256": "c0fe2ff0735f673545b61c3a7fc9f47a8ae1f10ad205c82f9ab985269757d909" },
+    "estagios": { "file": "estagios.json", "sha256": "14712f2d9a2400bf4ca42698dc9f08d8a16f95a91b692d67655a7101035c60c7" }
+  }
+}

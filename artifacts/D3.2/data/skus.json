@@ -1,0 +1,14 @@
+[
+ {"posicao":1,"nome":"Cabo flexível 2,5 mm² Alfa","fornecedor":"Alfa"},
+ {"posicao":2,"nome":"Cabo 1,5 mm² Alfa","fornecedor":"Alfa"},
+ {"posicao":3,"nome":"Cabo 4 mm² Alfa","fornecedor":"Alfa"},
+ {"posicao":4,"nome":"Disjuntor DIN 20 A","fornecedor":"Outros"},
+ {"posicao":5,"nome":"Eletroduto PVC 3/4\"","fornecedor":"Outros"},
+ {"posicao":6,"nome":"Tomada 10 A","fornecedor":"Outros"},
+ {"posicao":7,"nome":"Interruptor simples","fornecedor":"Outros"},
+ {"posicao":8,"nome":"Lâmpada LED 9 W","fornecedor":"Outros"},
+ {"posicao":9,"nome":"Fita isolante","fornecedor":"Outros"},
+ {"posicao":10,"nome":"Caixa 4×2","fornecedor":"Outros"},
+ {"posicao":11,"nome":"Quadro de distribuição 12 disjuntores","fornecedor":"Outros"},
+ {"posicao":12,"nome":"Cabo 6 mm² Alfa","fornecedor":"Alfa"}
+]

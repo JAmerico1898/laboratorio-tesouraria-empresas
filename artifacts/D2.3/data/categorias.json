@@ -1,0 +1,162 @@
+[
+{
+"ordem": 1,
+"id": "fornecedores",
+"nome": "Fornecedores",
+"classe": "negociavel",
+"dias": "5;12;20;26",
+"regra": "fornecedores",
+"ref": "",
+"pct": ""
+},
+{
+"ordem": 2,
+"id": "salarios",
+"nome": "Salários",
+"classe": "inegociavel",
+"dias": "5",
+"regra": "premissa",
+"ref": "salarios",
+"pct": ""
+},
+{
+"ordem": 3,
+"id": "encargos",
+"nome": "FGTS + INSS patronal",
+"classe": "inegociavel",
+"dias": "20",
+"regra": "premissa",
+"ref": "encargos",
+"pct": ""
+},
+{
+"ordem": 4,
+"id": "decimo",
+"nome": "13º salário",
+"classe": "inegociavel",
+"dias": "",
+"regra": "evento",
+"ref": "",
+"pct": ""
+},
+{
+"ordem": 5,
+"id": "plr",
+"nome": "PLR",
+"classe": "inegociavel",
+"dias": "",
+"regra": "evento",
+"ref": "",
+"pct": ""
+},
+{
+"ordem": 6,
+"id": "icms",
+"nome": "ICMS",
+"classe": "inegociavel",
+"dias": "uf",
+"regra": "pctReceitaAnterior",
+"ref": "",
+"pct": 0.04
+},
+{
+"ordem": 7,
+"id": "piscofins",
+"nome": "PIS/COFINS",
+"classe": "inegociavel",
+"dias": "25",
+"regra": "pctReceitaAnterior",
+"ref": "",
+"pct": 0.02
+},
+{
+"ordem": 8,
+"id": "irpj",
+"nome": "IRPJ/CSLL",
+"classe": "inegociavel",
+"dias": "ultimo",
+"regra": "premissa",
+"ref": "irpj",
+"pct": ""
+},
+{
+"ordem": 9,
+"id": "fixas",
+"nome": "Despesas fixas",
+"classe": "inegociavel",
+"dias": "10",
+"regra": "premissa",
+"ref": "fixas",
+"pct": ""
+},
+{
+"ordem": 10,
+"id": "variaveis",
+"nome": "Despesas variáveis",
+"classe": "decisao",
+"dias": "15",
+"regra": "pctReceita",
+"ref": "pctVariaveis",
+"pct": ""
+},
+{
+"ordem": 11,
+"id": "discricionarias",
+"nome": "Discricionárias",
+"classe": "decisao",
+"dias": "15",
+"regra": "premissa",
+"ref": "discricionarias",
+"pct": ""
+},
+{
+"ordem": 12,
+"id": "jurosCP",
+"nome": "Juros empréstimos CP",
+"classe": "inegociavel",
+"dias": "1",
+"regra": "premissa",
+"ref": "jurosCP",
+"pct": ""
+},
+{
+"ordem": 13,
+"id": "jurosELP",
+"nome": "Juros ELP",
+"classe": "inegociavel",
+"dias": "15",
+"regra": "premissa",
+"ref": "jurosELP",
+"pct": ""
+},
+{
+"ordem": 14,
+"id": "amortizacao",
+"nome": "Amortização ELP",
+"classe": "inegociavel",
+"dias": "",
+"regra": "evento",
+"ref": "",
+"pct": ""
+},
+{
+"ordem": 15,
+"id": "capex",
+"nome": "CAPEX",
+"classe": "decisao",
+"dias": "",
+"regra": "evento",
+"ref": "",
+"pct": ""
+},
+{
+"ordem": 16,
+"id": "dividendos",
+"nome": "Dividendos",
+"classe": "decisao",
+"dias": "",
+"regra": "evento",
+"ref": "",
+"pct": ""
+}
+]

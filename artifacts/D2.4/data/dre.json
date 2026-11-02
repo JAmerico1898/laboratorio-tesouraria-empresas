@@ -1,0 +1,8 @@
+[{"chave":"receita","linha":"Receita líquida","valor":50000},
+{"chave":"cmv","linha":"CMV","valor":32000},
+{"chave":"pessoal","linha":"Despesas com pessoal","valor":5400},
+{"chave":"gerais","linha":"Despesas gerais (fixas 1.200 · variáveis 1.000 · discricionárias 480)","valor":2680},
+{"chave":"tribVendas","linha":"Tributos sobre vendas (ICMS e PIS/COFINS líquidos)","valor":3000},
+{"chave":"deprec","linha":"Depreciação","valor":1000},
+{"chave":"juros","linha":"Despesas financeiras (juros)","valor":1704},
+{"chave":"ir","linha":"IR/CSLL (34% do LAIR)","valor":1433}]

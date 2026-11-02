@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D5.5 · Passivo integrado</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"bancos":{"format":"json","data":[{"banco":"A","perfil":"público","caixa":250,"aplic":0,"linhaCP":1250,"linhaLP":1250,"contaGar":300,"rotativo":0,"aprovado":1000},{"banco":"B","perfil":"privado","caixa":100,"aplic":600,"linhaCP":750,"linhaLP":750,"contaGar":0,"rotativo":0,"aprovado":500},{"banco":"C","perfil":"privado","caixa":50,"aplic":0,"linhaCP":0,"linhaLP":0,"contaGar":0,"rotativo":1200,"aprovado":1500}]},"cenarios":{"format":"json","data":[{"id":"hoje","aba":"tudo","pooling":"nenhum","esticar":0,"refin":24,"nBancos":3,"pA":"","pB":"","pC":"","pD":"","pE":""},{"id":"fisico","aba":"tudo","pooling":"fisico","esticar":0,"refin":24,"nBancos":3,"pA":"","pB":"","pC":"","pD":"","pE":""},{"id":"quitar","aba":"hierarquia","pooling":"nenhum","esticar":1,"refin":24,"nBancos":3,"pA":"","pB":"","pC":"","pD":"","pE":""},{"id":"refin","aba":"hierarquia","pooling":"nenhum","esticar":0,"refin":60,"nBancos":3,"pA":"","pB":"","pC":"","pD":"","pE":""},{"id":"slide","aba":"bancos","pooling":"nenhum","esticar":0,"refin":24,"nBancos":5,"pA":30,"pB":25,"pC":20,"pD":15,"pE":10},{"id":"iguais","aba":"bancos","pooling":"nenhum","esticar":0,"refin":24,"nBancos":4,"pA":25,"pB":25,"pC":25,"pD":25,"pE":""}]},"hierarquia":{"format":"json","data":[{"nivel":1,"fonte":"Crédito comercial","custo":15,"saldo":"fornecedores","rotulo":"~15%"},{"nivel":2,"fonte":"CG de relacionamento","custo":19,"saldo":"cg","rotulo":"~19%"},{"nivel":3,"fonte":"Antecipação de recebíveis","custo":22,"saldo":"antecipacao","rotulo":"~22%"},{"nivel":4,"fonte":"Conta garantida","custo":28,"saldo":"contaGar","rotulo":"~28%"},{"nivel":5,"fonte":"Cheque especial PJ","custo":200,"saldo":"cheque","rotulo":"> 200%"}]},"historico":{"format":"json","data":[{"semana":-7,"plcp":-5400},{"semana":-6,"plcp":-5500},{"semana":-5,"plcp":-5600},{"semana":-4,"plcp":-5700},{"semana":-3,"plcp":-5850},{"semana":-2,"plcp":-6000},{"semana":-1,"plcp":-6150},{"semana":0,"plcp":-6300}]},"horizonte":{"format":"json","data":[{"chave":"aco","valor":9800,"descricao":"Ativo circulante operacional: clientes 2.000 + estoques 7.500 + outros 300"},{"chave":"salarios","valor":500,"descricao":"Salários e tributos a recolher (operacional, vence em 30 d)"},{"chave":"fornecedores","valor":3800,"descricao":"Fornecedores (funding implícito)"},{"chave":"forn30","valor":2300,"descricao":"Fornecedores que vencem em 30 d"},{"chave":"forn60","valor":1000,"descricao":"Fornecedores que vencem em 60 d (Alfa)"},{"chave":"forn90","valor":500,"descricao":"Fornecedores que vencem em 90 d"},{"chave":"pl","valor":9000,"descricao":"Patrimônio líquido"},{"chave":"anc","valor":8000,"descricao":"Ativo não circulante (CD, frota, imóvel)"},{"chave":"ebitda","valor":2400,"descricao":"EBITDA anual; capacidade de geração mensal = EBITDA ÷ 12"},{"chave":"rotVenc","valor":90,"descricao":"Vencimento do CG rotativo (dias)"},{"chave":"linhaMeses","valor":24,"descricao":"Prazo do CG linha que financiou o CD (meses)"},{"chave":"txCG","valor":28,"descricao":"CET da conta garantida (% a.a.)"},{"chave":"txRot","valor":20,"descricao":"CET do CG rotativo (% a.a.)"},{"chave":"txAplic","valor":10.5,"descricao":"Rendimento líquido do CDB diário (% a.a.)"},{"chave":"txForn","valor":15,"descricao":"Funding implícito do fornecedor (% a.a.)"},{"chave":"caixaMin","valor":150,"descricao":"Caixa operacional mínimo"}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+
+
+</style>
+<style>
+.d55-bal { min-height: 196px; }
+.d55-cfo { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); margin-top: 12px; }
+.d55-cfo .k-card { border-left-color: var(--k-navy); }
+.d55-cfo .k-card.k-warn { border-left-color: var(--k-neg); }
+.d55-mini { min-height: 104px; }
+.d55-gauge { min-height: 70px; }
+.d55-esc { min-height: 250px; }
+.d55-bars { min-height: 120px; }
+.d55-red { min-height: 64px; }
+.d55-pos { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.d55-pos th, .d55-pos td { padding: 2px 3px; border-bottom: 1px solid var(--color-border-line); }
+.d55-pos th { font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); text-align: center; }
+.d55-pos td:first-child { text-align: left; white-space: nowrap; padding-right: 6px; }
+.d55-pos input { font: inherit; font-size: 13px; width: 100%; min-width: 3.4rem; box-sizing: border-box; padding: 1px 3px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.d55-mat { width: 100%; border-collapse: separate; border-spacing: 6px; font-size: 14px; font-variant-numeric: tabular-nums; margin-top: 6px; }
+.d55-mat th { font-size: 13px; color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); text-align: center; }
+.d55-mat th[scope=row] { text-align: left; }
+.d55-mat td { background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 8px; text-align: center; }
+.d55-mat .d55-v { display: block; font-family: var(--font-anthropic-serif); font-size: 1.6rem; }
+.d55-sem { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; margin-top: 2px; color: #fff; }
+.d55-sem.d55-ok { background: var(--k-pos); }
+.d55-sem.d55-mal { background: var(--k-neg); }
+.d55-sem.d55-at { background: var(--k-amber-d); }
+.d55-ouro { margin-top: 10px; }
+.d55-share[hidden] { display: none; }
+.d55-fix { font-size: 13px; color: var(--color-fg-muted); margin: 8px 0 0; line-height: 1.4; }
+</style>
+
+<div class="k d55" id="d55">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D5.5 · Passivo integrado</h1>
+      <p class="k-sub">Ver tudo, casar prazos, diversificar bancos: a Horizonte passa nos três?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d55-cen" data-cen="hoje" aria-pressed="false">Horizonte hoje</button>
+      <button class="k-btn d55-cen" data-cen="fisico" aria-pressed="false">Pooling físico</button>
+      <button class="k-btn d55-cen" data-cen="quitar" aria-pressed="false">Quitar conta garantida</button>
+      <button class="k-btn d55-cen" data-cen="refin" aria-pressed="false">Refinanciar o CD</button>
+      <button class="k-btn d55-cen" data-cen="slide" aria-pressed="false">Exemplo do slide</button>
+      <button class="k-btn d55-cen" data-cen="iguais" aria-pressed="false">Quatro iguais</button>
+    </div>
+  </header>
+
+  <div class="k-tabs" role="tablist">
+    <button class="k-tab" id="tab-tudo" data-group="v" data-tab="tudo" role="tab" aria-selected="true">Ver tudo</button>
+    <button class="k-tab" id="tab-hierarquia" data-group="v" data-tab="hierarquia" role="tab" aria-selected="false">Hierarquia e casamento</button>
+    <button class="k-tab" id="tab-bancos" data-group="v" data-tab="bancos" role="tab" aria-selected="false">Diversificar bancos</button>
+  </div>
+
+  <div class="k-zones">
+    <!-- ===================== CONTROLES ===================== -->
+    <div class="k-zone" id="controles" data-source="bancos horizonte historico hierarquia cenarios">
+      <section data-group="v" data-pane="tudo">
+        <h2 class="k-zt">Posição por banco <span class="k-u">R$ mil</span></h2>
+        <div class="k-tw">
+          <table class="d55-pos" aria-label="Posição de curto prazo por banco">
+            <thead><tr><th></th><th>A</th><th>B</th><th>C</th></tr></thead>
+            <tbody>
+              <tr><td>Caixa em conta</td>
+                <td><input type="number" data-k="A_caixa" min="0" max="5000" step="10" aria-label="Caixa no banco A"></td>
+                <td><input type="number" data-k="B_caixa" min="0" max="5000" step="10" aria-label="Caixa no banco B"></td>
+                <td><input type="number" data-k="C_caixa" min="0" max="5000" step="10" aria-label="Caixa no banco C"></td></tr>
+              <tr><td>Aplicações CP</td>
+                <td><input type="number" data-k="A_aplic" min="0" max="5000" step="10" aria-label="Aplicações no banco A"></td>
+                <td><input type="number" data-k="B_aplic" min="0" max="5000" step="10" aria-label="Aplicações no banco B"></td>
+                <td><input type="number" data-k="C_aplic" min="0" max="5000" step="10" aria-label="Aplicações no banco C"></td></tr>
+              <tr><td>CG linha <span class="k-u">parcela CP</span></td>
+                <td><input type="number" data-k="A_linhaCP" min="0" max="5000" step="10" aria-label="CG linha, parcela CP, banco A"></td>
+                <td><input type="number" data-k="B_linhaCP" min="0" max="5000" step="10" aria-label="CG linha, parcela CP, banco B"></td>
+                <td><input type="number" data-k="C_linhaCP" min="0" max="5000" step="10" aria-label="CG linha, parcela CP, banco C"></td></tr>
+              <tr><td>Conta garantida</td>
+                <td><input type="number" data-k="A_contaGar" min="0" max="5000" step="10" aria-label="Conta garantida, banco A"></td>
+                <td><input type="number" data-k="B_contaGar" min="0" max="5000" step="10" aria-label="Conta garantida, banco B"></td>
+                <td><input type="number" data-k="C_contaGar" min="0" max="5000" step="10" aria-label="Conta garantida, banco C"></td></tr>
+              <tr><td>CG rotativo</td>
+                <td><input type="number" data-k="A_rotativo" min="0" max="5000" step="10" aria-label="CG rotativo, banco A"></td>
+                <td><input type="number" data-k="B_rotativo" min="0" max="5000" step="10" aria-label="CG rotativo, banco B"></td>
+                <td><input type="number" data-k="C_rotativo" min="0" max="5000" step="10" aria-label="CG rotativo, banco C"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="k-note">A público · B e C privados. Dívida CP por banco: A <b data-draw="v" data-q="dcpA">—</b> · B <b data-draw="v" data-q="dcpB">—</b> · C <b data-draw="v" data-q="dcpC">—</b>.</p>
+        <div class="k-ctl" style="margin-top: 10px"><label for="c-forn">Fornecedores <span class="k-u">R$ mil · funding implícito</span></label>
+          <div class="k-in"><input type="range" id="c-forn" data-k="forn" min="0" max="8000" step="50"><input type="number" data-k="forn" min="0" max="8000" step="50" aria-label="Fornecedores, R$ mil"></div></div>
+        <h2 class="k-zt2">Pooling de caixa</h2>
+        <div class="k-seg" role="group" aria-label="Pooling"><button data-k="pool" data-v="nenhum">Nenhum</button><button data-k="pool" data-v="notional">Notional</button><button data-k="pool" data-v="fisico">Físico</button></div>
+        <p class="k-note">Notional: o caixa abate a dívida rotativa no mesmo banco. Físico: varredura diária para a conta-mãe, que quita primeiro a dívida mais cara.</p>
+        <div class="k-ctl" style="margin-top: 8px"><label for="c-min">Caixa operacional mínimo <span class="k-u">R$ mil</span> <span class="k-info" tabindex="0">i<span class="k-tip">No pooling físico o mínimo fica aplicado no CDB diário (liquidez imediata), e o caixa parado a 0% é o primeiro a quitar dívida.</span></span></label>
+          <div class="k-in"><input type="range" id="c-min" data-k="caixaMin" min="0" max="600" step="10"><input type="number" data-k="caixaMin" min="0" max="600" step="10" aria-label="Caixa mínimo, R$ mil"></div></div>
+      </section>
+
+      <section data-group="v" data-pane="hierarquia" hidden>
+        <h2 class="k-zt">Regra de ouro</h2>
+        <div class="k-seg" role="group" aria-label="Conta garantida"><button data-k="esticar" data-v="false">Manter a conta garantida</button><button data-k="esticar" data-v="true">Esticar fornecedor e quitar</button></div>
+        <p class="k-note">Esticar o prazo do fornecedor (~<b data-draw="v" data-q="txForn">—</b>) para zerar a conta garantida (~<b data-draw="v" data-q="txCG">—</b>): o saldo muda de nível na escada, o PLCP não muda.</p>
+        <h2 class="k-zt2">Casamento fontes × usos</h2>
+        <div class="k-ctl"><label for="c-refin">Refinanciar o CAPEX do CD em LP <span class="k-u">meses</span> <span class="k-info" tabindex="0">i<span class="k-tip">O CD foi construído com CG linha de <b data-draw="v" data-q="linhaMeses">—</b> meses. A partir de <b data-draw="v" data-q="prazoLP">—</b> meses (BNDES/Finame) a parcela de curto prazo migra para o exigível de longo prazo.</span></span></label>
+          <div class="k-in"><input type="range" id="c-refin" data-k="refin" min="24" max="120" step="12"><input type="number" data-k="refin" min="24" max="120" step="12" aria-label="Prazo do refinanciamento, meses"></div></div>
+      </section>
+
+      <section data-group="v" data-pane="bancos" hidden>
+        <h2 class="k-zt">Dívida bancária</h2>
+        <div class="k-ctl"><label for="c-div">Dívida bruta <span class="k-u">R$ mil</span></label>
+          <div class="k-in"><input type="range" id="c-div" data-k="div" min="1000" max="20000" step="100"><input type="number" data-k="div" min="1000" max="20000" step="100" aria-label="Dívida bruta, R$ mil"></div></div>
+        <label class="k-toggle"><input type="checkbox" data-k="incD"> Incluir novo banco D</label><br>
+        <label class="k-toggle"><input type="checkbox" data-k="incE"> Incluir novo banco E</label>
+        <h2 class="k-zt2">Participação <span class="k-u">% · o último é o residual</span></h2>
+        <div class="k-ctl d55-share" data-b="A"><label for="c-pA">Banco A</label>
+          <div class="k-in"><input type="range" id="c-pA" data-k="pA" min="0" max="100" step="0.1"><input type="number" data-k="pA" min="0" max="100" step="0.1" aria-label="Participação do banco A, %"></div></div>
+        <div class="k-ctl d55-share" data-b="B"><label for="c-pB">Banco B</label>
+          <div class="k-in"><input type="range" id="c-pB" data-k="pB" min="0" max="100" step="0.1"><input type="number" data-k="pB" min="0" max="100" step="0.1" aria-label="Participação do banco B, %"></div></div>
+        <div class="k-ctl d55-share" data-b="C"><label for="c-pC">Banco C</label>
+          <div class="k-in"><input type="range" id="c-pC" data-k="pC" min="0" max="100" step="0.1"><input type="number" data-k="pC" min="0" max="100" step="0.1" aria-label="Participação do banco C, %"></div></div>
+        <div class="k-ctl d55-share" data-b="D" hidden><label for="c-pD">Banco D <span class="k-u">novo</span></label>
+          <div class="k-in"><input type="range" id="c-pD" data-k="pD" min="0" max="100" step="0.1"><input type="number" data-k="pD" min="0" max="100" step="0.1" aria-label="Participação do banco D, %"></div></div>
+        <div class="k-ctl d55-share" data-b="E" hidden><label for="c-pE">Banco E <span class="k-u">novo</span></label>
+          <div class="k-in"><input type="range" id="c-pE" data-k="pE" min="0" max="100" step="0.1"><input type="number" data-k="pE" min="0" max="100" step="0.1" aria-label="Participação do banco E, %"></div></div>
+      </section>
+    </div>
+
+    <!-- ===================== VISUAL ===================== -->
+    <div class="k-zone" id="visual" data-source="bancos horizonte historico hierarquia cenarios">
+      <section data-group="v" data-pane="tudo" id="tudo">
+        <div class="k-ch"><h3>Balanço de curto prazo consolidado</h3><span>R$ mil · três bancos e fornecedores</span></div>
+        <div class="k-chart d55-bal dash-skeleton" id="balanco" data-draw="bal" role="img" aria-label="Ativos e passivos de curto prazo por banco e o PLCP resultante"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-blue-l)"></i>Caixa</span>
+          <span><i style="background: var(--k-blue)"></i>Aplicações</span>
+          <span><i style="background: var(--k-blue-d)"></i>Dívida CP por banco</span>
+          <span><i style="background: var(--k-amber-d)"></i>Fornecedores</span>
+          <span><i style="background: var(--k-neg)"></i>PLCP negativo</span>
+        </div>
+        <div class="d55-cfo" id="painel-cfo">
+          <div class="k-card d55-cfoc" data-c="plcp"><h4>PLCP · 8 semanas</h4>
+            <div class="k-chart d55-mini dash-skeleton" data-draw="cfoPlcp" role="img" aria-label="PLCP semanal das últimas oito semanas"></div>
+            <p class="k-note" data-frases><span data-draw="frase" data-grp="cfoPlcp"></span><span data-frase="aceso" hidden>Alerta: piora de <b data-draw="v" data-q="piora">—</b> em 4 semanas.</span><span data-frase="ok" hidden>Variação de <b data-draw="v" data-q="varia">—</b> em 4 semanas: abaixo do alerta de <b data-draw="v" data-q="alertaLim">—</b>.</span></p></div>
+          <div class="k-card d55-cfoc" data-c="venc"><h4>Vencimentos 30/60/90 × geração</h4>
+            <div class="k-chart d55-mini dash-skeleton" data-draw="cfoVenc" role="img" aria-label="Vencimentos financeiros em 30, 60 e 90 dias contra a geração operacional mensal"></div>
+            <p class="k-note">Geração operacional ≈ EBITDA ÷ 12 = <b data-draw="v" data-q="cap">—</b>/mês.</p></div>
+          <div class="k-card d55-cfoc" data-c="lim"><h4>Limites disponíveis</h4>
+            <div class="k-chart d55-gauge dash-skeleton" data-draw="cfoLim" role="img" aria-label="Percentual dos limites aprovados ainda livres"></div>
+            <p class="k-note">Usado <b data-draw="v" data-q="usado">—</b> de <b data-draw="v" data-q="aprovado">—</b> aprovados · mínimo saudável <b data-draw="v" data-q="livresMin">—</b> livres.</p></div>
+          <div class="k-card d55-cfoc" data-c="hhi"><h4>Concentração bancária (HHI)</h4>
+            <div class="k-chart d55-gauge dash-skeleton" data-draw="cfoHhi" role="img" aria-label="HHI da dívida bancária com as faixas de concentração"></div>
+            <p class="k-note">Maior banco: <b data-draw="v" data-q="maiorBk">—</b> · teto <b data-draw="v" data-q="teto">—</b>.</p></div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="hierarquia" id="hierarquia" hidden>
+        <div class="k-ch"><h3>Hierarquia de fontes</h3><span>custo aproximado a.a. · saldo da Horizonte em R$ mil</span></div>
+        <div class="k-chart d55-esc dash-skeleton" id="escada" data-draw="escada" role="img" aria-label="Escada de cinco níveis de funding com o saldo da Horizonte em cada nível"></div>
+        <div class="k-alert d55-ouro" data-frases><span data-draw="frase" data-grp="ouro"></span>
+          <span data-frase="aceso" hidden><b>Regra de ouro violada:</b> pagar <b data-draw="v" data-q="txCG">—</b> para preservar <b data-draw="v" data-q="txForn">—</b> = <b data-draw="v" data-q="difPP">—</b> em <b data-draw="v" data-q="cg">—</b> → <b data-draw="v" data-q="regraNeg">—</b>/ano.</span>
+          <span data-frase="ok" hidden><b>Regra de ouro respeitada:</b> nenhum saldo em conta garantida enquanto há fornecedor em aberto.</span></div>
+        <div class="k-ch" style="margin-top: 14px"><h3>Fontes × usos</h3><span>R$ mil · quem financia o quê</span></div>
+        <table class="d55-mat" id="matriz" aria-label="Matriz de casamento entre fontes e usos">
+          <thead><tr><th></th><th scope="col">Fontes de CP <span class="k-u">(PC <span data-draw="v" data-q="PC">—</span>)</span></th><th scope="col">Fontes de LP <span class="k-u">(PL + ELP <span data-draw="v" data-q="LP">—</span>)</span></th></tr></thead>
+          <tbody>
+            <tr><th scope="row">AC <span class="k-u"><span data-draw="v" data-q="AC">—</span></span></th>
+              <td><span class="d55-v" data-draw="v" data-q="acCP">—</span><span data-draw="sem" data-q="acCP"></span></td>
+              <td><span class="d55-v" data-draw="v" data-q="acLP">—</span><span data-draw="sem" data-q="acLP"></span></td></tr>
+            <tr><th scope="row">ANC <span class="k-u"><span data-draw="v" data-q="ANC">—</span></span></th>
+              <td><span class="d55-v" data-draw="v" data-q="ancCP">—</span><span data-draw="sem" data-q="ancCP"></span></td>
+              <td><span class="d55-v" data-draw="v" data-q="ancLP">—</span><span data-draw="sem" data-q="ancLP"></span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section data-group="v" data-pane="bancos" id="bancos" hidden>
+        <div class="k-ch"><h3>Participação por banco</h3><span>% da dívida bruta · R$ mil</span></div>
+        <div class="k-chart d55-bars dash-skeleton" id="barras" data-draw="barras" role="img" aria-label="Participação de cada banco na dívida com a linha do teto de 35%"></div>
+        <div class="k-ch" style="margin-top: 12px"><h3>HHI</h3><span>soma dos quadrados das participações</span></div>
+        <div class="k-chart d55-gauge dash-skeleton" id="medidor-hhi" data-draw="hhiMed" role="img" aria-label="Medidor do HHI com as faixas de concentração"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-pos); opacity: .5"></i>abaixo de <b data-draw="v" data-q="hhiAlto">—</b>: altamente diversificado</span>
+          <span><i style="background: var(--k-amber); opacity: .5"></i><b data-draw="v" data-q="hhiAlto">—</b>–<b data-draw="v" data-q="lim">—</b>: aceitável</span>
+          <span><i style="background: var(--k-neg); opacity: .5"></i>acima de <b data-draw="v" data-q="lim">—</b>: concentrado</span>
+        </div>
+        <p class="d55-fix">Com <b data-draw="v" data-q="n4">—</b> bancos, HHI ≤ <b data-draw="v" data-q="lim">—</b> só em <b data-draw="v" data-q="iguais">—</b>. O exemplo do slide (<b data-draw="v" data-q="slide">—</b>) precisa de <b data-draw="v" data-q="n5">—</b>.</p>
+        <div class="k-ch" style="margin-top: 12px"><h3>Redundância em crise</h3><span>se o maior banco sair</span></div>
+        <div class="k-chart d55-red dash-skeleton" id="redundancia" data-draw="redund" role="img" aria-label="Capacidade preservada se o maior banco sair"></div>
+      </section>
+    </div>
+
+    <!-- ===================== LEITURA ===================== -->
+    <div class="k-zone" id="leitura" data-source="bancos horizonte historico hierarquia cenarios">
+      <section data-group="v" data-pane="tudo">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">PLCP <span class="k-u">R$ mil</span> <span class="k-info" tabindex="0">i<span class="k-tip">Posição líquida de curto prazo: caixa + aplicações − dívida CP − fornecedores, somando os três bancos.</span></span></span><span class="k-kn" data-draw="v" data-q="plcp">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Economia do pooling <span class="k-u">R$ mil/ano</span></span><span class="k-kn" data-draw="v" data-q="pool">—</span></div>
+        <p class="k-note"><b data-draw="v" data-q="poolPct">—</b> da dívida CP (<b data-draw="v" data-q="divCP">—</b>) <span class="k-info" tabindex="0">i<span class="k-tip">O slide fala em 0,5–1,5% da dívida CP. Na Horizonte dá mais porque ela mantém dinheiro aplicado a <b data-draw="v" data-q="txAplic">—</b> enquanto saca a <b data-draw="v" data-q="txRot">—</b>–<b data-draw="v" data-q="txCG">—</b>.</span></span></p>
+        <div class="k-diag">
+          <div data-frases><span data-draw="frase" data-grp="plcp"></span>
+          <p data-frase="piora" hidden>PLCP <b data-draw="v" data-q="plcp">—</b> e piorando <b data-draw="v" data-q="piora">—</b> em 4 semanas.</p>
+          <p data-frase="estavel" hidden>PLCP <b data-draw="v" data-q="plcp">—</b>, variação de <b data-draw="v" data-q="varia">—</b> em 4 semanas: sem alerta.</p></div>
+          <div data-frases><span data-draw="frase" data-grp="venc"></span>
+          <p data-frase="estoura" hidden>Bucket de <b data-draw="v" data-q="wDias">—</b> dias (<b data-draw="v" data-q="wVal">—</b>) excede <b data-draw="v" data-q="wX">—</b> a geração mensal — rolar antes do vencimento.</p>
+          <p data-frase="cabe" hidden>Os três buckets cabem na geração mensal de <b data-draw="v" data-q="cap">—</b>.</p></div>
+          <div data-frases><span data-draw="frase" data-grp="pool"></span>
+          <p data-frase="nenhum" hidden>Sem pooling: a Horizonte paga <b data-draw="v" data-q="txRot">—</b>–<b data-draw="v" data-q="txCG">—</b> em um banco enquanto mantém <b data-draw="v" data-q="liq">—</b> parados ou a <b data-draw="v" data-q="txAplic">—</b> em outro.</p>
+          <p data-frase="notional" hidden>Pooling notional economiza <b data-draw="v" data-q="pool">—</b>/ano só compensando saldos no mesmo banco.</p>
+          <p data-frase="fisico" hidden>Pooling físico economiza <b data-draw="v" data-q="pool">—</b>/ano: a conta-mãe quita a dívida mais cara com o caixa parado e com o excesso aplicado.</p></div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="hierarquia" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Custo da regra de ouro <span class="k-u">R$ mil/ano</span></span><span class="k-kn" data-draw="v" data-q="regra">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Liquidez corrente <span class="k-info" tabindex="0">i<span class="k-tip">AC ÷ PC. Covenant do CG linha: ≥ <b data-draw="v" data-q="cov">—</b> (ver D5.6).</span></span></span><span class="k-kn" data-draw="v" data-q="lc">—</span></div>
+        <p class="k-note">PC <b data-draw="v" data-q="PC">—</b> · CCL <b data-draw="v" data-q="ccl">—</b></p>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="casa"></span>
+          <p data-frase="viol" hidden>Violação grave: CD financiado com CG de <b data-draw="v" data-q="linhaMeses">—</b> m; em choque externo o banco pode não renovar. Refinanciar em BNDES/Finame ≥ <b data-draw="v" data-q="prazoLP">—</b> m muda o PC de <b data-draw="v" data-q="pcSem">—</b> para <b data-draw="v" data-q="pcCom">—</b>.</p>
+          <p data-frase="ok" hidden>CAPEX refinanciado em <b data-draw="v" data-q="refin">—</b> m: ANC em fontes de LP, PC em <b data-draw="v" data-q="PC">—</b> e liquidez corrente em <b data-draw="v" data-q="lc">—</b>.</p>
+          <p>Regra de moeda: receita em R$ → dívida em R$ (a Horizonte não exporta; sem exposição).</p>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="bancos" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">HHI</span><span class="k-kn" data-draw="v" data-q="hhi3">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Maior participação</span><span class="k-kn" data-draw="v" data-q="maior3">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Capacidade preservada <span class="k-u">se o maior sair</span></span><span class="k-kn" data-draw="v" data-q="red3">—</span></div>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="hhi"></span>
+          <p data-frase="conc" hidden>Concentrado: o banco <b data-draw="v" data-q="maiorBanco">—</b> tem <b data-draw="v" data-q="maiorP">—</b> — se sair, a Horizonte perde <b data-draw="v" data-q="maiorP">—</b> da capacidade de uma vez. Diluir.</p>
+          <p data-frase="concH" hidden>Concentrado: HHI <b data-draw="v" data-q="hhi3">—</b> acima de <b data-draw="v" data-q="lim">—</b> mesmo sem banco acima de <b data-draw="v" data-q="teto">—</b> — as participações altas somam demais. Diluir.</p>
+          <p data-frase="aceit" hidden>Aceitável. Com <b data-draw="v" data-q="n3">—</b> bancos, a perda de um preserva <b data-draw="v" data-q="red3">—</b> da capacidade.</p>
+          <p data-frase="alto" hidden>Altamente diversificado — confira se o custo administrativo de <b data-draw="v" data-q="n3">—</b> relacionamentos compensa.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="k-help" id="guia" data-source="bancos horizonte historico hierarquia cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>A Horizonte tem <span data-draw="v" data-q="g-liq">—</span> em caixa e aplicações e deve <span data-draw="v" data-q="g-cg">—</span> em conta garantida a <span data-draw="v" data-q="txCG">—</span>. Qual é o custo dessa "operação isolada"?
+          <details><summary>mostrar resposta</summary><p><b data-draw="v" data-q="g-cg">—</b> × <b data-draw="v" data-q="txCG">—</b> = <b data-draw="v" data-q="g-custoCG">—</b>/ano pagos enquanto <b data-draw="v" data-q="g-caixa">—</b> ficam parados a 0% — o pooling notional recupera <b data-draw="v" data-q="g-notional">—</b> só compensando saldos no mesmo banco; o físico, <b data-draw="v" data-q="g-fisico">—</b>. Sem visão consolidada, cada conta é gerida sozinha.</p></details>
+        </li>
+        <li>Tente levar o HHI abaixo de <span data-draw="v" data-q="lim">—</span> com quatro bancos. O que acontece?
+          <details><summary>mostrar resposta</summary><p>Só <b data-draw="v" data-q="iguais">—</b> chega exatamente a <b data-draw="v" data-q="g-hhi4">—</b>; qualquer desvio sobe. É preciso o quinto banco — por isso o slide fala em 3–5 e dá o exemplo com cinco (<b data-draw="v" data-q="g-hhi5">—</b>).</p></details>
+        </li>
+        <li>Refinanciar o CD em <span data-draw="v" data-q="prazoLP">—</span> meses não muda o endividamento total. Por que a liquidez corrente sobe de <span data-draw="v" data-q="g-lc0">—</span> para <span data-draw="v" data-q="g-lc1">—</span>?
+          <details><summary>mostrar resposta</summary><p>Porque <b data-draw="v" data-q="g-capex">—</b> saem do PC e vão para o ELP; o CCL sobe de <b data-draw="v" data-q="g-ccl0">—</b> para <b data-draw="v" data-q="g-ccl1">—</b> e o covenant de liquidez corrente (≥ <b data-draw="v" data-q="cov">—</b>) ganha folga. Casar prazo é também gestão de covenant (D5.6).</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+
+
+})();</script>
+<script>(function () {
+
+/* D5.5 · Passivo integrado — funções puras (sem DOM).
+   bancos = [{banco, caixa, aplic, linhaCP, linhaLP, contaGar, rotativo, aprovado}] (R$ mil)
+   H = dados da Horizonte {aco, salarios, fornecedores, pl, anc, ebitda, rotVenc, txCG, txRot, txAplic, txForn, caixaMin} (taxas em %) */
+(function (root) {
+  const M = {};
+  const soma = (xs, k) => xs.reduce((a, x) => a + (Number(x[k]) || 0), 0);
+  // "esticar fornecedor": a conta garantida vira fornecedor (mesmo total de passivo CP)
+  M.efetivo = function (bancos, forn, esticar) {
+    if (!esticar) return { bancos: bancos.map((b) => ({ ...b })), forn };
+    const cg = soma(bancos, 'contaGar');
+    return { bancos: bancos.map((b) => ({ ...b, contaGar: 0 })), forn: forn + cg };
+  };
+  M.totais = function (bancos) {
+    const t = {};
+    ['caixa', 'aplic', 'linhaCP', 'linhaLP', 'contaGar', 'rotativo', 'aprovado'].forEach((k) => { t[k] = soma(bancos, k); });
+    t.divCP = t.linhaCP + t.contaGar + t.rotativo;
+    t.divTotal = t.divCP + t.linhaLP;
+    t.usado = t.contaGar + t.rotativo;
+    t.liquidez = t.caixa + t.aplic;
+    return t;
+  };
+  M.divBanco = (b) => (Number(b.linhaCP) || 0) + (Number(b.linhaLP) || 0) + (Number(b.contaGar) || 0) + (Number(b.rotativo) || 0);
+  M.divCPBanco = (b) => (Number(b.linhaCP) || 0) + (Number(b.contaGar) || 0) + (Number(b.rotativo) || 0);
+  M.plcp = (t, forn) => t.caixa + t.aplic - t.divCP - forn;
+  // alerta: piora > 10% em relação a 4 semanas antes (série semanal, último ponto = hoje)
+  M.alerta = function (serie, limite) {
+    const n = serie.length;
+    if (n < 5) return { varia: 0, aceso: false };
+    const hoje = serie[n - 1], ref = serie[n - 5];
+    const varia = ref === 0 ? 0 : (hoje - ref) / Math.abs(ref);
+    return { varia, ref, hoje, aceso: varia < -limite };
+  };
+  // vencimentos financeiros por janela de 30 dias: amortização mensal do CG linha (parcela CP ÷ 12),
+  // conta garantida exigível no 1º bucket, rotativo no bucket do seu vencimento
+  M.buckets = function (t, rotVenc) {
+    const mes = t.linhaCP / 12;
+    const b = [mes, mes, mes];
+    b[0] += t.contaGar;
+    const i = Math.min(2, Math.max(0, Math.ceil(rotVenc / 30) - 1));
+    b[i] += t.rotativo;
+    return b;
+  };
+  M.limitesLivres = (t) => (t.aprovado > 0 ? 1 - t.usado / t.aprovado : 0);
+  // HHI em pontos (participações em %)
+  M.hhi = (parts) => parts.reduce((a, p) => a + p * p, 0);
+  M.partsDe = function (valores) {
+    const tot = valores.reduce((a, v) => a + v, 0);
+    return valores.map((v) => (tot > 0 ? (v / tot) * 100 : 0));
+  };
+  M.classeHHI = function (h, maior, teto) {
+    if (h > 2500 + 1e-9 || maior > teto + 1e-9) return 'conc';
+    if (h >= 1500) return 'aceit';
+    return 'alto';
+  };
+  // pooling notional: no mesmo banco, o caixa abate a dívida rotativa mais cara primeiro
+  M.poolNotional = function (bancos, H) {
+    let econ = 0;
+    bancos.forEach((b) => {
+      let c = Number(b.caixa) || 0;
+      const cg = Math.min(c, Number(b.contaGar) || 0); econ += cg * H.txCG / 100; c -= cg;
+      const ro = Math.min(c, Number(b.rotativo) || 0); econ += ro * H.txRot / 100;
+    });
+    return econ;
+  };
+  // pooling físico: varredura para a conta-mãe; o dinheiro de menor custo de oportunidade (caixa 0%)
+  // quita primeiro a dívida mais cara (conta garantida, depois rotativo); o caixa mínimo fica aplicado (CDB diário)
+  M.poolFisico = function (t, H) {
+    let reserva = H.caixaMin;
+    let aplic = t.aplic, caixa = t.caixa;
+    const ra = Math.min(reserva, aplic); aplic -= ra; reserva -= ra; caixa = Math.max(0, caixa - reserva);
+    const fontes = [{ v: caixa, op: 0 }, { v: aplic, op: H.txAplic }];
+    const dividas = [{ v: t.contaGar, tx: H.txCG, id: 'cg' }, { v: t.rotativo, tx: H.txRot, id: 'rot' }].sort((a, b) => b.tx - a.tx);
+    let econ = 0; const quitado = { cg: 0, rot: 0 };
+    let fi = 0;
+    dividas.forEach((d) => {
+      let falta = d.v;
+      while (falta > 1e-9 && fi < fontes.length) {
+        const f = fontes[fi];
+        const q = Math.min(falta, f.v);
+        if (d.tx > f.op) { econ += q * (d.tx - f.op) / 100; quitado[d.id] += q; } else break;
+        falta -= q; f.v -= q;
+        if (f.v <= 1e-9) fi++;
+      }
+    });
+    return { econ, quitado };
+  };
+  M.pooling = function (modo, bancos, t, H) {
+    if (modo === 'notional') return M.poolNotional(bancos, H);
+    if (modo === 'fisico') return M.poolFisico(t, H).econ;
+    return 0;
+  };
+  // regra de ouro: pagar conta garantida enquanto há fornecedor em aberto
+  M.regraOuro = (t, H) => t.contaGar * (H.txCG - H.txForn) / 100;
+  // balanço CP, matriz fontes × usos e refinanciamento do CAPEX
+  M.balanco = function (t, forn, H, refinMeses, prazoLP) {
+    const AC = t.caixa + t.aplic + H.aco;
+    const capexCP = t.linhaCP;                       // parcela CP do CG linha que financiou o CD
+    const migrado = refinMeses >= prazoLP ? capexCP : 0;
+    const PC = t.divCP + forn + H.salarios - migrado;
+    const ELP = t.linhaLP + migrado;
+    const LP = H.pl + ELP;
+    const ancCP = capexCP - migrado;                 // ANC financiado com CP
+    const acCP = PC - ancCP, acLP = AC - acCP, ancLP = H.anc - ancCP;
+    return { AC, PC, ELP, LP, CCL: AC - PC, LC: AC / PC, capexCP, migrado, cel: { acCP, acLP, ancCP, ancLP } };
+  };
+  M.saldosEscada = (t, forn) => ({ fornecedores: forn, cg: t.linhaCP + t.linhaLP + t.rotativo, antecipacao: 0, contaGar: t.contaGar, cheque: 0 });
+  root.M55 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D5.5 · Passivo integrado
+   Testes de aderência (Spec §7), conferidos com M55 em node (54 PASS / 0 FAIL):
+   Reset: PLCP −6.300 · alerta −10,5% em 4 sem · buckets 467 / 167 / 1.367 × 200 · limites livres 50% · HHI 3.812 · A 50,9%
+   Pooling notional 80 · físico 147 (4,2% da dívida CP) · regra de ouro 39 → 0
+   Refinanciar o CD (≥ 60 m): PC 5.800 · LC 1,86 · ANC × CP = 0
+   30/25/20/15/10: HHI 2.250 · redundância 70% · 25 × 4: 2.500 · 35/30/20/15: 2.750 (concentrado)
+   ============================================================ */
+const ST = window.D55 = { S: null, cen: null, mexido: false };
+const IDS = ['bancos', 'horizonte', 'historico', 'hierarquia', 'cenarios'];
+const NOMES = ['bal', 'cfoPlcp', 'cfoVenc', 'cfoLim', 'cfoHhi', 'escada', 'barras', 'hhiMed', 'redund', 'v', 'sem', 'frase'];
+const CAMPOS = ['caixa', 'aplic', 'linhaCP', 'contaGar', 'rotativo'];
+const LETRAS = ['A', 'B', 'C', 'D', 'E'];
+const ALERTA = 0.10;        // piora do PLCP que acende o alerta (4 semanas)
+const LIVRES_MIN = 0.30;    // limites livres mínimos
+const TETO = 35;            // participação máxima por banco (%)
+const HHI_LIM = 2500, HHI_ALTO = 1500, HHI_ESC = 5000;
+const PRAZO_LP = 60;        // meses a partir dos quais o CAPEX sai do curto prazo
+const COV_LC = 1.3;         // covenant de liquidez corrente (D5.6)
+const N4 = 4, N5 = 5;
+
+/* ---------- dados ---------- */
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const linhasB = () => K.num(dash.data('bancos').data);
+const Hz = () => K.obj(dash.data('horizonte').data);
+const hist = () => K.num(dash.data('historico').data).sort((a, b) => a.semana - b.semana).map((r) => r.plcp);
+const niveis = () => K.num(dash.data('hierarquia').data).sort((a, b) => a.nivel - b.nivel);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const tx = (v) => K.n(v, Math.abs(v % 1) > 1e-9 ? 1 : 0) + '%';
+const pct = (v, d = 1) => K.n(v, d) + '%';
+const ativos = () => LETRAS.slice(0, 3 + (ST.S.incD ? 1 : 0) + (ST.S.incE ? 1 : 0));
+
+function baseS() {
+  const S = {};
+  const L = linhasB(), H = Hz();
+  L.forEach((b) => CAMPOS.forEach((c) => { S[b.banco + '_' + c] = b[c]; }));
+  S.forn = H.fornecedores; S.caixaMin = H.caixaMin; S.pool = 'nenhum'; S.esticar = false; S.refin = H.linhaMeses;
+  const divs = L.map(M55.divBanco), parts = M55.partsDe(divs);
+  S.div = divs.reduce((a, v) => a + v, 0);
+  LETRAS.forEach((l, i) => { S['p' + l] = parts[i] || 0; });
+  S.incD = false; S.incE = false;
+  return S;
+}
+function bancosAtuais(S) { return linhasB().map((b) => { const o = { ...b }; CAMPOS.forEach((c) => { o[c] = Number(S[b.banco + '_' + c]) || 0; }); return o; }); }
+function calc(S) {
+  const H = Hz();
+  const E = M55.efetivo(bancosAtuais(S), S.forn, !!S.esticar);
+  const t = M55.totais(E.bancos);
+  const plcp = M55.plcp(t, E.forn);
+  const serie = hist().slice(0, -1).concat([plcp]);
+  const al = M55.alerta(serie, ALERTA);
+  const bk = M55.buckets(t, H.rotVenc), cap = H.ebitda / 12;
+  const partsBk = M55.partsDe(E.bancos.map(M55.divBanco));
+  const pool = M55.pooling(S.pool, E.bancos, t, H);
+  const bal = M55.balanco(t, E.forn, H, S.refin, PRAZO_LP);
+  const act = ativos();
+  const shares = act.map((l) => ({ banco: l, p: Number(S['p' + l]) || 0 }));
+  const maior3 = shares.reduce((a, s) => (s.p > a.p ? s : a), shares[0]);
+  const hhi3 = M55.hhi(shares.map((s) => s.p));
+  let iMaior = 0; partsBk.forEach((p, i) => { if (p > partsBk[iMaior]) iMaior = i; });
+  return {
+    H, E, t, forn: E.forn, plcp, serie, al, bk, cap, livres: M55.limitesLivres(t), partsBk, iMaior,
+    hhiBk: M55.hhi(partsBk), pool, poolPct: t.divCP > 0 ? pool / t.divCP : 0, regra: M55.regraOuro(t, H),
+    bal, esc: M55.saldosEscada(t, E.forn), act, shares, maior3, hhi3, red3: 100 - maior3.p,
+    classe3: M55.classeHHI(hhi3, maior3.p, TETO),
+  };
+}
+const atual = () => calc(ST.S);
+
+/* ---------- controles ---------- */
+function residual() {
+  const act = ativos(), res = act[act.length - 1];
+  const soma = act.slice(0, -1).reduce((a, l) => a + (Number(ST.S['p' + l]) || 0), 0);
+  ST.S['p' + res] = Math.max(0, 100 - soma);
+  LETRAS.forEach((l) => { if (!act.includes(l)) ST.S['p' + l] = 0; });
+}
+function marca() {
+  const ok = pronto();
+  document.querySelectorAll('.d55-cen').forEach((b) => b.setAttribute('aria-pressed', String(ok && !ST.mexido && b.dataset.cen === ST.cen)));
+  if (!ok) return;
+  const act = ativos(), res = act[act.length - 1];
+  document.querySelectorAll('.d55-share').forEach((d) => {
+    d.hidden = !act.includes(d.dataset.b);
+    d.querySelectorAll('input').forEach((i) => { i.disabled = d.dataset.b === res; });
+  });
+  const R = atual();
+  document.querySelectorAll('.d55-cfoc').forEach((c) => {
+    const k = c.dataset.c;
+    const mal = k === 'plcp' ? R.al.aceso : k === 'venc' ? R.bk.some((b) => b > R.cap) : k === 'lim' ? R.livres < LIVRES_MIN : M55.classeHHI(R.hhiBk, R.partsBk[R.iMaior], TETO) === 'conc';
+    c.classList.toggle('k-warn', mal);
+  });
+}
+function sincroniza() { K.sync(ST.S); marca(); }
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = baseS();
+  ST.S.pool = r.pool; ST.S.esticar = !!Number(r.esticar); ST.S.refin = r.refin;
+  if (r.nBancos >= 4) {
+    ST.S.incD = true; ST.S.incE = r.nBancos >= 5;
+    LETRAS.forEach((l) => { const v = r['p' + l]; ST.S['p' + l] = v === '' || v == null ? 0 : Number(v); });
+  }
+  ST.cen = id; ST.mexido = false;
+  sincroniza();
+  return r.aba;
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok') { marca(); return; }
+  if (!ST.S) { aplicar('hoje'); K.redraw(NOMES); }
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  if (k === 'incE' && ST.S.incE) ST.S.incD = true;
+  if (k === 'incD' && !ST.S.incD) ST.S.incE = false;
+  if (/^p[A-E]$/.test(k)) {
+    const act = ativos(), l = k.slice(1);
+    const outros = act.slice(0, -1).filter((x) => x !== l).reduce((a, x) => a + (Number(ST.S['p' + x]) || 0), 0);
+    ST.S[k] = Math.min(ST.S[k], Math.max(0, 100 - outros));
+  }
+  residual();
+  ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+});
+const mostra = K.tabs('v', () => K.redraw(NOMES));
+document.querySelectorAll('.d55-cen').forEach((b) => b.addEventListener('click', () => {
+  if (K.status(IDS) !== 'ok') return;
+  const aba = aplicar(b.dataset.cen);
+  if (aba) { mostra(aba); try { dash.setLink(aba); } catch (e) { /* ok */ } }
+  K.redraw(NOMES);
+}));
+
+/* ---------- auxiliares de desenho ---------- */
+function rotuloDentro(svg, txt, x0, x1, y, cor) {
+  const t = svg.append('text').attr('class', 'k-svgt').attr('x', x0 + 5).attr('y', y).style('fill', cor).text(txt);
+  if (t.node().getComputedTextLength() > x1 - x0 - 8) t.remove();
+}
+// medidor horizontal com faixas; marcas = [[valor, texto]]
+function medidor(el, o) {
+  const { svg, W, H } = K.svg(el, 70);
+  el.replaceChildren(svg.node());
+  const x = d3.scaleLinear([0, o.max], [8, W - 8]).clamp(true);
+  const y = 30, h = 14;
+  o.faixas.forEach(([a, b, cor]) => svg.append('rect').attr('x', x(a)).attr('width', Math.max(0, x(b) - x(a))).attr('y', y).attr('height', h).attr('fill', cor).attr('opacity', 0.28));
+  svg.append('rect').attr('x', x(0)).attr('width', x(o.max) - x(0)).attr('y', y).attr('height', h).attr('fill', 'none').attr('stroke', 'var(--color-border-line)').attr('rx', 3);
+  let fim = -Infinity;
+  o.marcas.forEach(([v, txt]) => {
+    svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', y).attr('y2', y + h + 3).attr('stroke', 'var(--cds-chart-reference)');
+    const t = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(v)).attr('y', y + h + 16).text(txt);
+    const w = t.node().getComputedTextLength();
+    const cx = Math.max(w / 2, Math.min(W - w / 2, x(v)));
+    t.attr('x', cx);
+    if (cx - w / 2 < fim + 4) t.remove(); else fim = cx + w / 2;
+  });
+  const vx = x(Math.min(o.valor, o.max));
+  svg.append('path').attr('d', `M${vx - 6},${y - 9} L${vx + 6},${y - 9} L${vx},${y - 1} Z`).attr('fill', o.cor);
+  svg.append('line').attr('x1', vx).attr('x2', vx).attr('y1', y - 1).attr('y2', y + h).attr('stroke', o.cor).attr('stroke-width', 2.5);
+  const tv = svg.append('text').attr('class', 'k-svgb').style('fill', o.cor).attr('y', y - 13).text(o.rot);
+  const wv = tv.node().getComputedTextLength();
+  tv.attr('x', Math.max(0, Math.min(W - wv, vx - wv / 2)));
+}
+
+/* ---------- balanço de curto prazo ---------- */
+dash.draw('bal', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), B = R.E.bancos;
+  const at = B.map((b) => ({ n: 'Caixa ' + b.banco, v: b.caixa, c: 'var(--k-blue-l)', tc: '#1a1a1a' })).concat([{ n: 'Aplicações', v: R.t.aplic, c: 'var(--k-blue)', tc: '#fff' }]);
+  const op = [1, 0.78, 0.6];
+  const ps = B.map((b, i) => ({ n: 'Banco ' + b.banco, v: M55.divCPBanco(b), c: 'var(--k-blue-d)', o: op[i % 3], tc: '#fff' })).concat([{ n: 'Fornecedores', v: R.forn, c: 'var(--k-amber-d)', tc: '#fff' }]);
+  const { svg, W } = K.svg(el, 196);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const meas = svg.append('text').attr('class', 'k-svgt');
+  let mL = 0; ['Ativos de CP', 'Passivos de CP', 'PLCP'].forEach((s) => { meas.text(s); mL = Math.max(mL, meas.node().getComputedTextLength()); });
+  meas.remove();
+  const totA = d3.sum(at, (d) => d.v), totP = d3.sum(ps, (d) => d.v);
+  const xMax = Math.max(totA, totP, Math.abs(R.plcp), 1);
+  const x = d3.scaleLinear([0, xMax], [mL + 14, W - 70]);
+  const linha = (lista, y, h, nome, tot) => {
+    svg.append('text').attr('class', 'k-svgt').attr('x', 0).attr('y', y + h / 2 + 5).text(nome);
+    let acc = 0;
+    lista.forEach((d) => {
+      if (d.v <= 0) return;
+      const x0 = x(acc), x1 = x(acc + d.v);
+      svg.append('rect').attr('x', x0).attr('width', Math.max(1, x1 - x0 - 1)).attr('y', y).attr('height', h).attr('rx', 2).attr('fill', d.c).attr('opacity', d.o || 1)
+        .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(nome, [[d.c, d.n, K.n(d.v)], [null, 'Total', K.n(tot)]], px, py); })
+        .on('mouseleave', () => tip.hide());
+      rotuloDentro(svg, d.n.replace('Banco ', '') + ' ' + K.n(d.v), x0, x1, y + h / 2 + 5, d.tc);
+      acc += d.v;
+    });
+    svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', x(acc) + 6).attr('y', y + h / 2 + 5).text(K.n(tot));
+  };
+  linha(at, 10, 40, 'Ativos de CP', totA);
+  linha(ps, 62, 40, 'Passivos de CP', totP);
+  const cor = R.plcp < 0 ? 'var(--k-neg)' : 'var(--k-pos)';
+  svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', 4).attr('y2', 182).attr('stroke', 'var(--cds-chart-axis)');
+  svg.append('text').attr('class', 'k-svgt').attr('x', 0).attr('y', 145).text('PLCP');
+  svg.append('rect').attr('x', x(0)).attr('width', Math.max(2, x(Math.abs(R.plcp)) - x(0))).attr('y', 126).attr('height', 30).attr('rx', 3).attr('fill', cor)
+    .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('PLCP', [[null, 'Ativos de CP', K.n(totA)], [null, 'Passivos de CP', K.n(totP)], [cor, 'PLCP', K.n(R.plcp)]], px, py); })
+    .on('mouseleave', () => tip.hide());
+  svg.append('text').attr('class', 'k-svgb').style('fill', cor).attr('x', x(Math.abs(R.plcp)) + 6).attr('y', 146).text(K.n(R.plcp));
+  svg.append('text').attr('class', 'k-svgm').attr('x', x(0)).attr('y', 176).text('ativos − passivos de curto prazo');
+});
+
+/* ---------- painel do CFO ---------- */
+dash.draw('cfoPlcp', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), s = R.serie, n = s.length;
+  const { svg, W, H } = K.svg(el, 104, 200);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const ext = d3.extent(s), pad = Math.max(50, (ext[1] - ext[0]) * 0.15);
+  const meas = svg.append('text').attr('class', 'k-svgm').text(K.n(ext[0] - pad));
+  const mR = meas.node().getComputedTextLength() + 8; meas.remove();
+  const x = d3.scaleLinear([0, n - 1], [8, W - mR]);
+  const y = d3.scaleLinear([ext[0] - pad, ext[1] + pad], [H - 18, 12]);
+  const cor = R.al.aceso ? 'var(--k-neg)' : 'var(--k-navy)';
+  svg.append('path').attr('d', d3.line().x((v, i) => x(i)).y((v) => y(v))(s)).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  svg.append('path').attr('d', d3.line().x((v, i) => x(n - 5 + i)).y((v) => y(v))(s.slice(n - 5))).attr('fill', 'none').attr('stroke', cor).attr('stroke-width', 3).attr('stroke-linecap', 'round');
+  s.forEach((v, i) => svg.append('circle').attr('cx', x(i)).attr('cy', y(v)).attr('r', i === n - 1 || i === n - 5 ? 4 : 2.5).attr('fill', i >= n - 5 ? cor : 'var(--k-navy)')
+    .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(i === n - 1 ? 'Hoje' : 'Há ' + (n - 1 - i) + ' sem.', [[null, 'PLCP', K.n(v)]], px, py); })
+    .on('mouseleave', () => tip.hide()));
+  svg.append('text').attr('class', 'k-svgb').style('fill', cor).attr('x', x(n - 1) + 6).attr('y', y(s[n - 1]) + 5).text(K.n(s[n - 1]));
+  svg.append('text').attr('class', 'k-svgm').attr('x', x(0)).attr('y', H - 3).text('−7 sem.');
+  const th = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x(n - 1)).attr('y', H - 3).text('hoje');
+  const t4 = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(n - 5)).attr('y', H - 3).text('−4');
+  if (x(n - 5) + t4.node().getComputedTextLength() / 2 + 4 > x(n - 1) - th.node().getComputedTextLength()) t4.remove();
+});
+dash.draw('cfoVenc', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual();
+  const { svg, W, H } = K.svg(el, 104, 200);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const dados = R.bk.map((v, i) => ({ d: (i + 1) * 30, v }));
+  const yMax = Math.max(d3.max(dados, (d) => d.v), R.cap) * 1.18;
+  const meas = svg.append('text').attr('class', 'k-svgm').text('geração ' + K.n(R.cap));
+  const mR = meas.node().getComputedTextLength() + 6; meas.remove();
+  const x = d3.scaleBand(dados.map((d) => d.d), [4, W - mR]).padding(0.35);
+  const y = d3.scaleLinear([0, yMax], [H - 18, 14]);
+  dados.forEach((d) => {
+    const c = d.v > R.cap ? 'var(--k-neg)' : 'var(--k-navy)';
+    svg.append('rect').attr('x', x(d.d)).attr('width', x.bandwidth()).attr('y', y(d.v)).attr('height', y(0) - y(d.v)).attr('rx', 3).attr('fill', c)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(d.d + ' dias', [[c, 'Vencimentos', K.n(d.v)], [null, 'Geração', K.n(R.cap)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+    svg.append('text').attr('class', 'k-svgb').style('fill', c).attr('text-anchor', 'middle').attr('x', x(d.d) + x.bandwidth() / 2).attr('y', y(d.v) - 4).text(K.n(d.v));
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(d.d) + x.bandwidth() / 2).attr('y', H - 4).text(d.d + ' d');
+  });
+  svg.append('line').attr('x1', 4).attr('x2', W - mR).attr('y1', y(R.cap)).attr('y2', y(R.cap)).attr('stroke', 'var(--k-pos)').attr('stroke-width', 2).attr('stroke-dasharray', '5 3');
+  svg.append('text').attr('class', 'k-svgm').attr('x', W - mR + 4).attr('y', y(R.cap) + 4).text('geração ' + K.n(R.cap));
+});
+dash.draw('cfoLim', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), v = R.livres * 100;
+  medidor(el, { max: 100, valor: Math.max(0, v), cor: v < LIVRES_MIN * 100 ? 'var(--k-neg)' : 'var(--k-pos)', rot: pct(v, 0) + ' livres',
+    faixas: [[0, LIVRES_MIN * 100, 'var(--k-neg)'], [LIVRES_MIN * 100, 100, 'var(--k-pos)']], marcas: [[0, '0%'], [LIVRES_MIN * 100, pct(LIVRES_MIN * 100, 0)], [100, '100%']] });
+});
+const corHHI = (h, maior) => { const c = M55.classeHHI(h, maior, TETO); return c === 'conc' ? 'var(--k-neg)' : c === 'aceit' ? 'var(--k-amber-d)' : 'var(--k-pos)'; };
+const faixasHHI = (max) => [[0, HHI_ALTO, 'var(--k-pos)'], [HHI_ALTO, HHI_LIM, 'var(--k-amber)'], [HHI_LIM, max, 'var(--k-neg)']];
+dash.draw('cfoHhi', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), h = R.hhiBk, max = Math.max(HHI_ESC, Math.ceil(h / 1000) * 1000);
+  medidor(el, { max, valor: h, cor: corHHI(h, R.partsBk[R.iMaior]), rot: 'HHI ' + K.n(h), faixas: faixasHHI(max), marcas: [[HHI_ALTO, K.n(HHI_ALTO)], [HHI_LIM, K.n(HHI_LIM)]] });
+});
+
+/* ---------- escada da hierarquia ---------- */
+dash.draw('escada', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), N = niveis();
+  const { svg, W } = K.svg(el, 250);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const rowH = 46, degrau = Math.min(26, W / 30), boxW = Math.min(190, W * 0.38);
+  const maxS = Math.max(1, d3.max(N, (n) => R.esc[n.saldo] || 0));
+  const viol = R.t.contaGar > 0 && R.forn > 0;
+  N.forEach((n, i) => {
+    const y = 8 + i * rowH, x0 = i * degrau;
+    const s = R.esc[n.saldo] || 0;
+    const alerta = n.saldo === 'contaGar' && viol;
+    svg.append('rect').attr('x', x0).attr('y', y).attr('width', boxW).attr('height', rowH - 8).attr('rx', 3).attr('fill', 'var(--color-bg)').attr('stroke', alerta ? 'var(--k-neg)' : 'var(--color-border-line)').attr('stroke-width', alerta ? 2 : 1);
+    const tn = svg.append('text').attr('class', 'k-svgt').attr('x', x0 + 8).attr('y', y + 16).text(n.nivel + ' · ' + n.fonte);
+    while (tn.node().getComputedTextLength() > boxW - 12 && tn.text().length > 6) tn.text(tn.text().slice(0, -2) + '…');
+    svg.append('text').attr('class', 'k-svgm').attr('x', x0 + 8).attr('y', y + 32).text(n.rotulo + ' a.a.');
+    const bx = x0 + boxW + 10, bMax = W - bx - 60;
+    const bw = bMax > 20 ? (s / maxS) * bMax : 0;
+    const cor = alerta ? 'var(--k-neg)' : n.saldo === 'fornecedores' ? 'var(--k-amber-d)' : 'var(--k-blue-d)';
+    if (s > 0) svg.append('rect').attr('x', bx).attr('y', y + 8).attr('width', Math.max(2, bw)).attr('height', rowH - 24).attr('rx', 3).attr('fill', cor)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(n.fonte, [[cor, 'Saldo', K.n(s)], [null, 'Custo', n.rotulo + ' a.a.']], px, py); })
+      .on('mouseleave', () => tip.hide());
+    svg.append('text').attr('class', s > 0 ? 'k-svgb' : 'k-svgm').style('fill', s > 0 ? cor : null).attr('x', bx + Math.max(2, bw) + 6).attr('y', y + rowH / 2 + 1).text(s > 0 ? K.n(s) : 'sem saldo');
+  });
+});
+
+/* ---------- participação, HHI e redundância ---------- */
+dash.draw('barras', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), D = R.shares, div = ST.S.div;
+  const H = 22 + D.length * 30;
+  el.style.minHeight = H + 'px';
+  const { svg, W } = K.svg(el, H);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const meas = svg.append('text').attr('class', 'k-svgb').text('100,0% · ' + K.n(div));
+  const mR = meas.node().getComputedTextLength() + 10; meas.remove();
+  const x = d3.scaleLinear([0, 100], [64, W - mR]);
+  D.forEach((d, i) => {
+    const y = 18 + i * 30;
+    const c = d.p > TETO + 1e-9 ? 'var(--k-neg)' : 'var(--k-navy)';
+    svg.append('text').attr('class', 'k-svgt').attr('x', 0).attr('y', y + 15).text('Banco ' + d.banco);
+    svg.append('rect').attr('x', x(0)).attr('width', Math.max(1, x(d.p) - x(0))).attr('y', y).attr('height', 22).attr('rx', 3).attr('fill', c)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('Banco ' + d.banco, [[c, 'Participação', pct(d.p)], [null, 'Dívida', K.n(div * d.p / 100)], [null, 'Contribuição ao HHI', K.n(d.p * d.p)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+    svg.append('text').attr('class', 'k-svgb').style('fill', c).attr('x', x(d.p) + 6).attr('y', y + 16).text(pct(d.p) + ' · ' + K.n(div * d.p / 100));
+  });
+  svg.append('line').attr('x1', x(TETO)).attr('x2', x(TETO)).attr('y1', 12).attr('y2', H - 2).attr('stroke', 'var(--k-neg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '5 3');
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(TETO)).attr('y', 9).text('teto ' + pct(TETO, 0));
+});
+dash.draw('hhiMed', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), h = R.hhi3, max = Math.max(HHI_ESC, Math.ceil(h / 1000) * 1000);
+  medidor(el, { max, valor: h, cor: corHHI(h, R.maior3.p), rot: 'HHI ' + K.n(h), faixas: faixasHHI(max),
+    marcas: [[HHI_ALTO, K.n(HHI_ALTO)], [HHI_LIM, K.n(HHI_LIM)]] });
+});
+dash.draw('redund', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual(), m = R.maior3;
+  const { svg, W } = K.svg(el, 64);
+  el.replaceChildren(svg.node());
+  const x = d3.scaleLinear([0, 100], [0, W]);
+  svg.append('rect').attr('x', x(0)).attr('width', x(R.red3)).attr('y', 6).attr('height', 26).attr('rx', 3).attr('fill', 'var(--k-pos)');
+  svg.append('rect').attr('x', x(R.red3)).attr('width', Math.max(0, x(100) - x(R.red3))).attr('y', 6).attr('height', 26).attr('rx', 3).attr('fill', 'var(--k-neg)').attr('opacity', 0.85);
+  rotuloDentro(svg, 'preservada ' + pct(R.red3, 1), x(0), x(R.red3), 24, '#fff');
+  rotuloDentro(svg, 'sai ' + m.banco + ' · ' + pct(m.p, 1), x(R.red3), x(100), 24, '#fff');
+  svg.append('text').attr('class', 'k-svgm').attr('x', 0).attr('y', 52).text('capacidade de crédito que sobra no dia em que o maior banco corta a linha');
+});
+
+/* ---------- semáforo da matriz ---------- */
+dash.draw('sem', (el) => {
+  el.classList.remove('d55-ok', 'd55-mal', 'd55-at', 'd55-sem');
+  if (!pronto()) { el.textContent = ''; return; }
+  const c = atual().bal.cel, q = el.dataset.q, v = c[q];
+  let k = 'ok', txt = 'correto';
+  if (q === 'ancCP' && v > 0.5) { k = 'mal'; txt = 'violação: CAPEX com CP'; }
+  else if (q === 'ancCP') txt = 'nada';
+  else if (v < -0.5) { k = 'at'; txt = 'descasado'; }
+  el.classList.add('d55-sem', 'd55-' + k);
+  el.textContent = txt;
+});
+
+/* ---------- números ---------- */
+function guiaBase() {
+  const H = Hz(), S0 = baseS(), R0 = calc(S0);
+  const t = R0.t;
+  const b1 = M55.balanco(t, R0.forn, H, PRAZO_LP, PRAZO_LP);
+  const ig = cenario('iguais'), sl = cenario('slide');
+  const sh = (r, n) => LETRAS.slice(0, n).map((l) => Number(r['p' + l]));
+  return { H, R0, t, b1, hhi4: M55.hhi(sh(ig, ig.nBancos)), hhi5: M55.hhi(sh(sl, sl.nBancos)), ig, sl, sh };
+}
+const VAL = {
+  dcpA: (R) => K.n(M55.divCPBanco(R.E.bancos[0])), dcpB: (R) => K.n(M55.divCPBanco(R.E.bancos[1])), dcpC: (R) => K.n(M55.divCPBanco(R.E.bancos[2])),
+  plcp: (R) => K.n(R.plcp), piora: (R) => pct(Math.abs(R.al.varia * 100), 1), varia: (R) => K.s(R.al.varia * 100, 1) + '%', alertaLim: () => pct(ALERTA * 100, 0),
+  cap: (R) => K.n(R.cap), usado: (R) => K.n(R.t.usado), aprovado: (R) => K.n(R.t.aprovado), livresMin: () => pct(LIVRES_MIN * 100, 0),
+  maiorBk: (R) => R.E.bancos[R.iMaior].banco + ' · ' + pct(R.partsBk[R.iMaior], 1), teto: () => pct(TETO, 0),
+  pool: (R) => K.n(R.pool), poolPct: (R) => pct(R.poolPct * 100, 1), divCP: (R) => K.n(R.t.divCP), liq: (R) => K.n(R.t.liquidez),
+  txCG: (R) => tx(R.H.txCG), txRot: (R) => tx(R.H.txRot), txAplic: (R) => tx(R.H.txAplic), txForn: (R) => tx(R.H.txForn),
+  wDias: (R) => { const i = R.bk.indexOf(d3.max(R.bk)); return K.n((i + 1) * 30); },
+  wVal: (R) => K.n(d3.max(R.bk)), wX: (R) => K.n(d3.max(R.bk) / R.cap, 1) + '×',
+  regra: (R) => K.n(R.regra), regraNeg: (R) => K.n(-R.regra), cg: (R) => K.n(R.t.contaGar), difPP: (R) => K.n(-(R.H.txCG - R.H.txForn), 0) + ' p.p.',
+  lc: (R) => K.n(R.bal.LC, 2), PC: (R) => K.n(R.bal.PC), LP: (R) => K.n(R.bal.LP), AC: (R) => K.n(R.bal.AC), ANC: (R) => K.n(R.H.anc), ccl: (R) => K.n(R.bal.CCL),
+  acCP: (R) => K.n(R.bal.cel.acCP), acLP: (R) => K.n(R.bal.cel.acLP), ancCP: (R) => K.n(R.bal.cel.ancCP), ancLP: (R) => K.n(R.bal.cel.ancLP),
+  pcSem: (R) => K.n(R.bal.PC + R.bal.migrado), pcCom: (R) => K.n(R.bal.PC + R.bal.migrado - R.bal.capexCP),
+  linhaMeses: (R) => K.n(R.H.linhaMeses), prazoLP: () => K.n(PRAZO_LP), refin: () => K.n(ST.S.refin), cov: () => K.n(COV_LC, 1),
+  hhi3: (R) => K.n(R.hhi3), maior3: (R) => R.maior3.banco + ' · ' + pct(R.maior3.p, 1), maiorBanco: (R) => R.maior3.banco, maiorP: (R) => pct(R.maior3.p, 1),
+  red3: (R) => pct(R.red3, 1), n3: (R) => K.n(R.act.length), lim: () => K.n(HHI_LIM), hhiAlto: () => K.n(HHI_ALTO),
+  n4: () => K.n(N4), n5: () => K.n(N5),
+  iguais: () => { const g = guiaBase(); return g.sh(g.ig, g.ig.nBancos).map((v) => K.n(v)).join('/'); },
+  slide: () => { const g = guiaBase(); return g.sh(g.sl, g.sl.nBancos).map((v) => K.n(v)).join('/'); },
+  'g-liq': () => K.n(guiaBase().t.liquidez), 'g-cg': () => K.n(guiaBase().t.contaGar), 'g-caixa': () => K.n(guiaBase().t.caixa),
+  'g-custoCG': () => { const g = guiaBase(); return K.n(g.t.contaGar * g.H.txCG / 100); },
+  'g-notional': () => { const g = guiaBase(); return K.n(M55.pooling('notional', g.R0.E.bancos, g.t, g.H)); },
+  'g-fisico': () => { const g = guiaBase(); return K.n(M55.pooling('fisico', g.R0.E.bancos, g.t, g.H)); },
+  'g-hhi4': () => K.n(guiaBase().hhi4), 'g-hhi5': () => K.n(guiaBase().hhi5),
+  'g-lc0': () => K.n(guiaBase().R0.bal.LC, 2), 'g-lc1': () => K.n(guiaBase().b1.LC, 2),
+  'g-capex': () => K.n(guiaBase().b1.migrado), 'g-ccl0': () => K.n(guiaBase().R0.bal.CCL), 'g-ccl1': () => K.n(guiaBase().b1.CCL),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const R = atual(), grp = el.dataset.grp;
+    if (grp === 'cfoPlcp') keys.push(R.al.aceso ? 'aceso' : 'ok');
+    else if (grp === 'plcp') keys.push(R.al.aceso ? 'piora' : 'estavel');
+    else if (grp === 'venc') keys.push(R.bk.some((b) => b > R.cap) ? 'estoura' : 'cabe');
+    else if (grp === 'pool') keys.push(ST.S.pool);
+    else if (grp === 'ouro') keys.push(R.t.contaGar > 0 && R.forn > 0 ? 'aceso' : 'ok');
+    else if (grp === 'casa') keys.push(R.bal.cel.ancCP > 0.5 ? 'viol' : 'ok');
+    else if (grp === 'hhi') keys.push(R.classe3 === 'conc' ? (R.maior3.p > TETO + 1e-9 ? 'conc' : 'concH') : R.classe3);
+  }
+  K.frases(el, keys);
+  marca();
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "code": "D4.6",
+  "title": "D4.6 · KS, AUC e PSI",
+  "slug": "2cfa9289-87a8-46dd-97bb-a8356e017766",
+  "datasets": {
+    "cenarios": { "file": "cenarios.json", "sha256": "933d07e3ae96bb5e66a7b77fa25ea897b1d0f2899ecb5c58b3fc7b916b986b90" },
+    "faixas": { "file": "faixas.json", "sha256": "cbfdd5515bc40b9b267b016234d5b6f61e190009e089d14d0934073521846c6d" },
+    "gerador": { "file": "gerador.json", "sha256": "bade11a86d425e566a8c2708e1cd0a221914f0d7fb3cb0e36a70e1065e375217" }
+  }
+}

@@ -1,0 +1,5 @@
+[{"id":"slide","avista":20,"cartao":30,"boleto":35,"parcelado":15,"programado":0,"boletoPrazo":"30/60","parcelas":3,"inad":0,"direto":false,"k0":20,"k1":52.5,"k2":22.5,"k3":5,"safra":false,"selic":12,"desemp":7},
+{"id":"deck","avista":20,"cartao":30,"boleto":35,"parcelado":15,"programado":0,"boletoPrazo":"30/60","parcelas":3,"inad":0,"direto":true,"k0":20,"k1":50,"k2":25,"k3":5,"safra":false,"selic":12,"desemp":7},
+{"id":"longo","avista":20,"cartao":30,"boleto":35,"parcelado":15,"programado":0,"boletoPrazo":"30/60","parcelas":3,"inad":0,"direto":true,"k0":10,"k1":30,"k2":40,"k3":20,"safra":false,"selic":12,"desemp":7},
+{"id":"b2b","avista":0,"cartao":0,"boleto":100,"parcelado":0,"programado":0,"boletoPrazo":"60/90","parcelas":3,"inad":0,"direto":false,"k0":20,"k1":52.5,"k2":22.5,"k3":5,"safra":false,"selic":12,"desemp":7},
+{"id":"crise","avista":20,"cartao":30,"boleto":35,"parcelado":15,"programado":0,"boletoPrazo":"30/60","parcelas":3,"inad":2,"direto":false,"k0":20,"k1":52.5,"k2":22.5,"k3":5,"safra":true,"selic":16,"desemp":10}]

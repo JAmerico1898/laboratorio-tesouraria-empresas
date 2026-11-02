@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D4.6 · KS, AUC e PSI</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"saudavel","nome":"Saudável","sep":100,"taxa":10,"deriva":0,"corte":650},{"id":"deriva","nome":"Deriva","sep":100,"taxa":10,"deriva":50,"corte":650},{"id":"fraco","nome":"Modelo fraco","sep":40,"taxa":10,"deriva":0,"corte":650},{"id":"frouxa","nome":"Régua frouxa","sep":100,"taxa":10,"deriva":0,"corte":550},{"id":"overfit","nome":"Overfitting aparente","sep":150,"taxa":10,"deriva":0,"corte":650}]},"faixas":{"format":"json","data":[{"metrica":"ks","faixa":"fraco","de":0,"ate":0.3},{"metrica":"ks","faixa":"regular","de":0.3,"ate":0.4},{"metrica":"ks","faixa":"bom","de":0.4,"ate":0.5},{"metrica":"ks","faixa":"excelente","de":0.5,"ate":1},{"metrica":"auc","faixa":"fraco","de":0.5,"ate":0.7},{"metrica":"auc","faixa":"regular","de":0.7,"ate":0.8},{"metrica":"auc","faixa":"bom","de":0.8,"ate":0.9},{"metrica":"auc","faixa":"atencao","de":0.9,"ate":1},{"metrica":"psi","faixa":"bom","de":0,"ate":0.1},{"metrica":"psi","faixa":"alerta","de":0.1,"ate":0.25},{"metrica":"psi","faixa":"retreinar","de":0.25,"ate":0.5}]},"gerador":{"format":"json","data":[{"chave":"semente","valor":70,"descricao":"Semente do LCG (s = 1664525·s + 1013904223 mod 2^32) usado no Box-Muller"},{"chave":"n","valor":10000,"descricao":"Contas na base de treino e na base de produção"},{"chave":"mediaBons","valor":700,"descricao":"Média do score dos bons pagadores (pontos)"},{"chave":"dp","valor":100,"descricao":"Desvio-padrão do score em cada classe (pontos)"},{"chave":"fatorD","valor":1.66,"descricao":"d' = (Separação/100) × fatorD"},{"chave":"fatorDeriva","valor":1.1,"descricao":"Deslocamento da produção = (Deriva/100) × fatorDeriva desvios-padrão da base de treino"},{"chave":"decis","valor":10,"descricao":"Faixas do PSI, definidas pelos decis da base de treino"}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+
+</style>
+<style>
+.d46-chart { min-height: 300px; }
+.d46-funil { min-height: 96px; }
+.d46-gauge { min-height: 44px; margin-top: 2px; }
+.d46-fbox { margin-top: 14px; border-top: 1px solid var(--color-border-line); padding-top: 10px; }
+.d46-med { padding: 4px 0 8px; border-bottom: 1px solid var(--color-border-line); }
+.d46-med .k-kpi { border-bottom: 0; padding-bottom: 0; }
+.d46-med .k-note { margin-top: 2px; }
+.d46-ctx { font-size: 13px; color: var(--color-fg-muted); margin: 1px 0 0; }
+.d46-dash { display: inline-block; width: .9rem; height: 0; border-top: 2px dashed var(--color-fg); vertical-align: 3px; margin-right: 4px; }
+.d46 .d46-med b, .d46 .d46-ctx b { font-variant-numeric: tabular-nums; }
+</style>
+
+<div class="k d46" id="d46">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D4.6 · KS, AUC e PSI</h1>
+      <p class="k-sub">Ele separa bons de maus? É melhor que o acaso? A população de hoje ainda parece a do treino?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d46-cen" data-cen="saudavel" aria-pressed="false">Saudável</button>
+      <button class="k-btn d46-cen" data-cen="deriva" aria-pressed="false">Deriva</button>
+      <button class="k-btn d46-cen" data-cen="fraco" aria-pressed="false">Modelo fraco</button>
+      <button class="k-btn d46-cen" data-cen="frouxa" aria-pressed="false">Régua frouxa</button>
+      <button class="k-btn d46-cen" data-cen="overfit" aria-pressed="false">Overfitting aparente</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone" id="controles" data-source="gerador cenarios">
+      <h2 class="k-zt">Alavancas</h2>
+      <div class="k-ctl"><label for="c-sep">Poder de separação <span class="k-info" tabindex="0">i<span class="k-tip">Distância entre as médias de score de bons e maus, em desvios-padrão (d'). Bons ~ N(700, 100); maus ~ N(700 − 100·d', 100).</span></span></label>
+        <div class="k-in"><input type="range" id="c-sep" data-k="sep" min="0" max="150" step="1"><input type="number" data-k="sep" min="0" max="150" step="1" aria-label="Poder de separação"></div>
+        <p class="d46-ctx">Qualidade do modelo · d' = <b data-draw="v" data-q="dp">—</b> · média dos maus <b data-draw="v" data-q="mMaus">—</b></p></div>
+      <div class="k-ctl"><label for="c-taxa">Taxa de inadimplência <span class="k-u">%</span></label>
+        <div class="k-in"><input type="range" id="c-taxa" data-k="taxa" min="2" max="30" step="1"><input type="number" data-k="taxa" min="2" max="30" step="1" aria-label="Taxa de inadimplência, %"></div>
+        <p class="d46-ctx">Ciclo econômico / mix da carteira</p></div>
+      <div class="k-ctl"><label for="c-der">Deriva populacional <span class="k-info" tabindex="0">i<span class="k-tip">A base de produção é a mesma mistura de bons e maus, deslocada para baixo. Deriva 100 = 1,1 desvio-padrão da base de treino.</span></span></label>
+        <div class="k-in"><input type="range" id="c-der" data-k="deriva" min="0" max="100" step="1"><input type="number" data-k="deriva" min="0" max="100" step="1" aria-label="Deriva populacional"></div>
+        <p class="d46-ctx">A carteira de hoje mudou (novos canais, novo perfil de cliente) · deslocamento <b data-draw="v" data-q="desloc">—</b> pontos = <b data-draw="v" data-q="deslocSig">—</b> desvio-padrão</p></div>
+      <div class="k-ctl"><label for="c-corte">Cutoff da faixa verde <span class="k-u">score mínimo</span></label>
+        <div class="k-in"><input type="range" id="c-corte" data-k="corte" min="300" max="900" step="10"><input type="number" data-k="corte" min="300" max="900" step="10" aria-label="Cutoff, score mínimo"></div>
+        <p class="d46-ctx">Apetite a risco</p></div>
+      <p class="k-note">Base de treino e de produção com <b data-draw="v" data-q="n">—</b> contas cada; <b data-draw="v" data-q="nMaus">—</b> maus no treino.</p>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="gerador cenarios faixas">
+      <div class="k-tabs" role="tablist">
+        <button class="k-tab" id="tab-ks" data-group="p" data-tab="ks" role="tab" aria-selected="true">KS · separa?</button>
+        <button class="k-tab" id="tab-roc" data-group="p" data-tab="roc" role="tab" aria-selected="false">AUC · melhor que o acaso?</button>
+        <button class="k-tab" id="tab-psi" data-group="p" data-tab="psi" role="tab" aria-selected="false">PSI · a população mudou?</button>
+      </div>
+
+      <section data-group="p" data-pane="ks" id="painel-ks">
+        <div class="k-ch"><h3>Distribuições acumuladas do score</h3><span>base de treino · KS = maior distância vertical</span></div>
+        <div class="k-chart d46-chart dash-skeleton" id="graf-ks" data-draw="ks" data-source="gerador" role="img" aria-label="Curvas acumuladas de bons e maus com a distância KS"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-blue)"></i>Bons</span>
+          <span><i style="background: var(--k-neg)"></i>Maus</span>
+          <span><i style="background: var(--k-navy)"></i>KS</span>
+          <span><span class="d46-dash"></span>Cutoff</span>
+        </div>
+      </section>
+
+      <section data-group="p" data-pane="roc" id="painel-roc" hidden>
+        <div class="k-ch"><h3>Curva ROC</h3><span>base de treino · área sob a curva = AUC</span></div>
+        <div class="k-chart d46-chart dash-skeleton" id="graf-roc" data-draw="roc" data-source="gerador" role="img" aria-label="Curva ROC com a diagonal do acaso e a área AUC"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-navy)"></i>Modelo</span>
+          <span><span class="d46-dash"></span>Acaso (AUC 0,5)</span>
+          <span><i style="background: var(--k-amber)"></i>Ponto do cutoff</span>
+        </div>
+      </section>
+
+      <section data-group="p" data-pane="psi" id="painel-psi" hidden>
+        <div class="k-ch"><h3>Treino × produção por decil do treino</h3><span>% da base em cada faixa</span></div>
+        <div class="k-chart d46-chart dash-skeleton" id="graf-psi" data-draw="psi" data-source="gerador" role="img" aria-label="Barras pareadas por decil: treino e produção"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-neutro)"></i>Treino</span>
+          <span><i style="background: var(--k-amber)"></i>Produção</span>
+        </div>
+        <h2 class="k-zt2">PSI = Σ (produção − treino) × ln(produção ÷ treino)</h2>
+        <div class="d46-gauge dash-skeleton" data-draw="gauge" data-m="psi" data-source="faixas"></div>
+      </section>
+
+      <div class="d46-fbox" id="funil" data-source="gerador">
+        <div class="k-ch"><h3>O funil pelo cutoff</h3><span>base de treino · score ≥ cutoff = faixa verde</span></div>
+        <div class="k-chart d46-funil dash-skeleton" data-draw="funil" role="img" aria-label="Bons e maus acima e abaixo do cutoff"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-neutro); opacity: .45"></i>Abaixo do cutoff</span>
+          <span><i style="background: var(--k-pos)"></i>Bons na faixa verde</span>
+          <span><i style="background: var(--k-neg)"></i>Maus na faixa verde (aprovados sem análise)</span>
+        </div>
+        <p class="k-note">Maus aprovados automaticamente: <b data-draw="v" data-q="mausVerde">—</b> (<b data-draw="v" data-q="pctMaus">—</b> dos maus) · bons abaixo do corte: <b data-draw="v" data-q="bonsAbaixo">—</b> (<b data-draw="v" data-q="pctBonsAb">—</b> dos bons).</p>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="gerador cenarios faixas">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="d46-med" id="med-ks">
+        <div class="k-kpi"><span class="k-kl">KS <span class="k-u">discriminação</span></span><span class="k-kn" data-draw="v" data-q="ks">—</span></div>
+        <div class="d46-gauge dash-skeleton" data-draw="gauge" data-m="ks" data-source="faixas"></div>
+        <p class="k-note" data-frases><span data-draw="faixa" data-m="ks"></span>Faixa: <b data-frase="fraco" hidden>fraco</b><b data-frase="regular" hidden>regular</b><b data-frase="bom" hidden>bom</b><b data-frase="excelente" hidden>excelente</b></p>
+        <p class="k-note" data-frases><span data-draw="alav" data-m="ks"></span>Última alavanca que mexeu neste número: <b data-frase="sep" hidden>Separação</b><b data-frase="taxa" hidden>Taxa</b><b data-frase="deriva" hidden>Deriva</b><b data-frase="corte" hidden>Cutoff</b><b data-frase="nenhuma" hidden>nenhuma</b></p>
+      </div>
+      <div class="d46-med" id="med-auc">
+        <div class="k-kpi"><span class="k-kl">AUC <span class="k-u">melhor que o acaso</span></span><span class="k-kn" data-draw="v" data-q="auc">—</span></div>
+        <div class="d46-gauge dash-skeleton" data-draw="gauge" data-m="auc" data-source="faixas"></div>
+        <p class="k-note" data-frases><span data-draw="faixa" data-m="auc"></span>Faixa: <b data-frase="fraco" hidden>fraco</b><b data-frase="regular" hidden>regular</b><b data-frase="bom" hidden>bom</b><b data-frase="atencao" hidden>atenção (overfitting?)</b></p>
+        <p class="k-note" data-frases><span data-draw="alav" data-m="auc"></span>Última alavanca que mexeu neste número: <b data-frase="sep" hidden>Separação</b><b data-frase="taxa" hidden>Taxa</b><b data-frase="deriva" hidden>Deriva</b><b data-frase="corte" hidden>Cutoff</b><b data-frase="nenhuma" hidden>nenhuma</b></p>
+      </div>
+      <div class="d46-med" id="med-psi">
+        <div class="k-kpi"><span class="k-kl">PSI <span class="k-u">estabilidade</span></span><span class="k-kn" data-draw="v" data-q="psi">—</span></div>
+        <div class="d46-gauge dash-skeleton" data-draw="gauge" data-m="psi" data-source="faixas"></div>
+        <p class="k-note" data-frases><span data-draw="faixa" data-m="psi"></span>Faixa: <b data-frase="bom" hidden>estável</b><b data-frase="alerta" hidden>alerta</b><b data-frase="retreinar" hidden>retreinar</b></p>
+        <p class="k-note" data-frases><span data-draw="alav" data-m="psi"></span>Última alavanca que mexeu neste número: <b data-frase="sep" hidden>Separação</b><b data-frase="taxa" hidden>Taxa</b><b data-frase="deriva" hidden>Deriva</b><b data-frase="corte" hidden>Cutoff</b><b data-frase="nenhuma" hidden>nenhuma</b></p>
+      </div>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="saudavel" hidden>Modelo saudável e população estável. Discrimina bem e a base de hoje parece a do treino.</p>
+        <p data-frase="retreinar" hidden>O modelo não piorou (KS <b data-draw="v" data-q="ks">—</b>); a população mudou (PSI <b data-draw="v" data-q="psi">—</b>). Retreinar com a base recente.</p>
+        <p data-frase="fraca" hidden>Discriminação fraca: o modelo pouco separa bons de maus. Não é problema de população nem de cutoff — é de modelo.</p>
+        <p data-frase="overfit" hidden>Atenção: discriminação alta demais pode ser overfitting — validar fora da amostra.</p>
+        <p data-frase="alerta" hidden>PSI de <b data-draw="v" data-q="psi">—</b> em alerta: a carteira de hoje começa a se afastar da do treino. Monitorar mês a mês antes de retreinar.</p>
+        <p data-frase="moderado" hidden>Discriminação aceitável (KS <b data-draw="v" data-q="ks">—</b>) e população estável: o modelo serve, com espaço para melhorar as variáveis.</p>
+        <p data-frase="corte" hidden>Cutoff de <b data-draw="v" data-q="corte">—</b>: <b data-draw="v" data-q="mausVerde">—</b> maus na faixa verde. KS, AUC e PSI não mudaram um dígito.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="gerador cenarios faixas">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Suba a deriva para <span data-draw="v" data-q="g-der">—</span>. O que o PSI acusa — e por que KS e AUC não se mexeram?
+          <details><summary>mostrar resposta</summary><p>A base de produção deslocou <b data-draw="v" data-q="g-sig">—</b> desvio-padrão (PSI <b data-draw="v" data-q="g-psi">—</b>, faixa “retreinar”). KS e AUC medem a separação entre bons e maus na base de treino: o modelo não piorou, a população deixou de parecer a do treino.</p></details>
+        </li>
+        <li>Baixe o corte de <span data-draw="v" data-q="g-c0">—</span> para <span data-draw="v" data-q="g-c1">—</span>. Quantos maus a mais entram na faixa verde? E quanto mudou o KS?
+          <details><summary>mostrar resposta</summary><p>Os maus aprovados passam de <b data-draw="v" data-q="g-m0">—</b> (<b data-draw="v" data-q="g-p0">—</b> dos maus) para <b data-draw="v" data-q="g-m1">—</b> (<b data-draw="v" data-q="g-p1">—</b>); o KS continua em <b data-draw="v" data-q="g-ks">—</b>. Cutoff é régua, não modelo — quem decide é o comitê de crédito, pelo apetite a risco.</p></details>
+        </li>
+        <li>Com separação <span data-draw="v" data-q="g-sep">—</span> o AUC vai a <span data-draw="v" data-q="g-auc">—</span>. Isso é bom?
+          <details><summary>mostrar resposta</summary><p>Na amostra de treino parece ótimo, mas em crédito B2B um AUC acima de <b data-draw="v" data-q="g-lim">—</b> é alerta de overfitting (o modelo decorou a amostra) — julgue sempre fora da amostra.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+
+})();</script>
+<script>(function () {
+
+/* D4.6 · KS, AUC e PSI — funções puras (sem DOM).
+   P = parâmetros do gerador (dataset), C = controles {sep, taxa, deriva, corte}.
+   Scores em pontos (0–1000, maior = melhor pagador). Trabalho interno em unidades z (desvios-padrão de cada classe). */
+(function (root) {
+  const M = {};
+
+  /* ---------- gerador: LCG + Box-Muller, semente fixa ---------- */
+  M.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  M.normais = (u, n) => {
+    const out = new Float64Array(n);
+    for (let i = 0; i < n; i += 2) {
+      let u1 = u(); const u2 = u();
+      if (u1 < 1e-12) u1 = 1e-12;
+      const r = Math.sqrt(-2 * Math.log(u1)), a = 2 * Math.PI * u2;
+      out[i] = r * Math.cos(a);
+      if (i + 1 < n) out[i + 1] = r * Math.sin(a);
+    }
+    return out;
+  };
+  const stats = (a) => { let m = 0; for (const v of a) m += v; m /= a.length; let s = 0; for (const v of a) s += (v - m) * (v - m); return { m, v: s / (a.length - 1) }; };
+  // Quatro reservatórios de normais padrão, gerados uma vez (números comuns): treino-bons, treino-maus, produção-bons, produção-maus.
+  // Separação só translada os maus; deriva só translada a produção; taxa só pondera a mistura; cutoff só reclassifica.
+  const cacheG = {};
+  M.gerar = function (P) {
+    const key = P.semente + ':' + P.n;
+    if (cacheG[key]) return cacheG[key];
+    const u = M.lcg(P.semente), n = P.n;
+    const sorted = (a) => a.sort();
+    const G = { n, zb: sorted(M.normais(u, n)), zm: sorted(M.normais(u, n)), pb: sorted(M.normais(u, n)), pm: sorted(M.normais(u, n)) };
+    G.sb = stats(G.zb); G.sm = stats(G.zm);
+    return (cacheG[key] = G);
+  };
+
+  /* ---------- utilitários ---------- */
+  // nº de elementos de a (ordenado) < x
+  const lt = (a, x) => { let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < x) lo = m + 1; else hi = m; } return lo; };
+  M.dprime = (P, C) => (C.sep / 100) * P.fatorD;
+  M.Phi = (x) => { // CDF normal (Abramowitz-Stegun 26.2.17), só para referência teórica
+    const t = 1 / (1 + 0.2316419 * Math.abs(x)), d = 0.3989422804014327 * Math.exp(-x * x / 2);
+    const p = d * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+    return x >= 0 ? 1 - p : p;
+  };
+
+  /* ---------- KS e AUC (treino; independem de taxa, deriva e cutoff) ---------- */
+  M.ksAuc = function (G, dp) {
+    const cacheKA = G.ka || (G.ka = {}), key = dp.toFixed(6);
+    if (cacheKA[key]) return cacheKA[key];
+    const b = G.zb, m = G.zm, n = G.n;
+    let i = 0, j = 0, ks = 0, zks = 0, gt = 0;
+    // varre os valores em ordem; maus em z' = zm − d'
+    while (i < n || j < n) {
+      const vb = i < n ? b[i] : Infinity, vm = j < n ? m[j] - dp : Infinity;
+      let v;
+      if (vb < vm) { gt += j; i++; v = vb; }   // AUC: cada bom conta os maus abaixo dele
+      else { j++; v = vm; }
+      const d = Math.abs(j / n - i / n);
+      if (d > ks) { ks = d; zks = v; }
+    }
+    return (cacheKA[key] = { ks, zks, auc: gt / (n * n) });
+  };
+
+  /* ---------- mistura de treino e produção ---------- */
+  M.sigmaTreino = (G, dp, t) => Math.sqrt((1 - t) * G.sb.v + t * G.sm.v + t * (1 - t) * Math.pow(G.sb.m - (G.sm.m - dp), 2));
+  // deslocamento da produção em unidades z das classes (= pontos ÷ 100)
+  M.desloc = (P, G, dp, t, deriva) => (deriva / 100) * P.fatorDeriva * M.sigmaTreino(G, dp, t);
+  const Ftreino = (G, dp, t, x) => (1 - t) * lt(G.zb, x) / G.n + t * lt(G.zm, x + dp) / G.n;
+  const Fprod = (G, dp, t, s, x) => (1 - t) * lt(G.pb, x + s) / G.n + t * lt(G.pm, x + dp + s) / G.n;
+  M.decis = function (G, dp, t, k) {
+    const cortes = [];
+    for (let q = 1; q < k; q++) {
+      let lo = -12, hi = 12;
+      for (let it = 0; it < 60; it++) { const mid = (lo + hi) / 2; if (Ftreino(G, dp, t, mid) < q / k) lo = mid; else hi = mid; }
+      cortes.push(hi);
+    }
+    return cortes;
+  };
+  M.psi = function (P, G, dp, t, deriva) {
+    const s = M.desloc(P, G, dp, t, deriva), cortes = M.decis(G, dp, t, P.decis);
+    const ed = [-Infinity, ...cortes, Infinity];
+    const bins = [];
+    let psi = 0;
+    for (let k = 0; k < P.decis; k++) {
+      const a = ed[k], b = ed[k + 1];
+      const p = (b === Infinity ? 1 : Ftreino(G, dp, t, b)) - (a === -Infinity ? 0 : Ftreino(G, dp, t, a));
+      const q = (b === Infinity ? 1 : Fprod(G, dp, t, s, b)) - (a === -Infinity ? 0 : Fprod(G, dp, t, s, a));
+      const pp = Math.max(p, 1e-6), qq = Math.max(q, 1e-6);
+      psi += (qq - pp) * Math.log(qq / pp);
+      bins.push({ decil: k + 1, p, q, de: a, ate: b });
+    }
+    return { psi, bins, desloc: s };
+  };
+
+  /* ---------- funil pelo cutoff (base de treino de N contas) ---------- */
+  M.funil = function (P, G, dp, t, corte) {
+    const x = (corte - P.mediaBons) / P.dp;
+    const fb = 1 - lt(G.zb, x) / G.n, fm = 1 - lt(G.zm, x + dp) / G.n;   // score ≥ corte
+    const nb = P.n * (1 - t), nm = P.n * t;
+    return { fracBons: fb, fracMaus: fm, bonsVerde: Math.round(nb * fb), mausVerde: Math.round(nm * fm), bonsAbaixo: Math.round(nb * (1 - fb)), mausAbaixo: Math.round(nm * (1 - fm)), nBons: Math.round(nb), nMaus: Math.round(nm) };
+  };
+
+  /* ---------- curvas para os gráficos ---------- */
+  M.cdfs = function (P, G, dp, lo, hi, passo) {
+    const out = [];
+    for (let s = lo; s <= hi + 1e-9; s += passo) { const x = (s - P.mediaBons) / P.dp; out.push({ s, fb: lt(G.zb, x) / G.n, fm: lt(G.zm, x + dp) / G.n }); }
+    return out;
+  };
+  M.roc = function (G, dp, pts) {
+    // limiar descendo do score mais alto ao mais baixo: TPR = bons ≥ limiar (aprovados corretamente) · FPR = maus ≥ limiar
+    const out = [{ fpr: 0, tpr: 0 }];
+    for (let k = 1; k <= pts; k++) {
+      const x = 6 - k * (12 + dp) / pts;
+      out.push({ fpr: 1 - lt(G.zm, x + dp) / G.n, tpr: 1 - lt(G.zb, x) / G.n });
+    }
+    out.push({ fpr: 1, tpr: 1 });
+    return out;
+  };
+
+  /* ---------- estado completo ---------- */
+  M.estado = function (P, C) {
+    const G = M.gerar(P), dp = M.dprime(P, C), t = C.taxa / 100;
+    const ka = M.ksAuc(G, dp), ps = M.psi(P, G, dp, t, C.deriva), fu = M.funil(P, G, dp, t, C.corte);
+    return {
+      dp, t, ks: ka.ks, ksScore: P.mediaBons + P.dp * ka.zks, auc: ka.auc, psi: ps.psi, bins: ps.bins,
+      deslocPts: ps.desloc * P.dp, deslocSigma: (C.deriva / 100) * P.fatorDeriva, sigmaTreino: M.sigmaTreino(G, dp, t) * P.dp,
+      mediaMaus: P.mediaBons - P.dp * dp, funil: fu,
+      ksTeo: 2 * M.Phi(dp / 2) - 1, aucTeo: M.Phi(dp / Math.SQRT2),
+    };
+  };
+  root.M46 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D4.6 · KS, AUC e PSI
+   Testes de aderência (Spec §7 e §4.4), conferidos com M46.estado() em node (semente 70):
+   Saudável: KS 0,59 · AUC 0,88 · PSI 0,00 · 12,3% dos maus no verde (123 de 1.000)
+   Deriva 50: PSI 0,28 · KS e AUC idênticos · Deriva 30: PSI 0,10
+   Separação 40: KS 0,26 · AUC 0,68 · Separação 150: KS 0,79 · AUC 0,96
+   Corte 550: 43,8% dos maus no verde · KS, AUC e PSI idênticos
+   Taxa 2–30 e cutoff 300–900 não mudam KS/AUC/PSI exibidos (deriva 0); deriva não muda KS/AUC.
+   ============================================================ */
+const ST = window.D46 = { S: null, cen: null, mexido: false, alav: null, prev: null, ultima: null };
+const IDS = ['gerador', 'cenarios', 'faixas'];
+const NOMES = ['ks', 'roc', 'psi', 'funil', 'gauge', 'v', 'faixa', 'alav', 'frase'];
+const METR = ['ks', 'auc', 'psi'];
+const COR_FAIXA = { fraco: 'var(--k-neg)', regular: 'var(--k-amber)', bom: 'var(--k-pos)', excelente: 'var(--k-pos)', atencao: 'var(--k-amber)', alerta: 'var(--k-amber)', retreinar: 'var(--k-neg)' };
+
+/* ---------- dados ---------- */
+const P = () => K.obj(dash.data('gerador').data);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const faixas = (m) => K.num(dash.data('faixas').data).filter((r) => r.metrica === m);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const atual = () => M46.estado(P(), ST.S);
+const com = (id, extra) => M46.estado(P(), { ...ctlDe(cenario(id)), ...(extra || {}) });
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+function ctlDe(r) { return { sep: r.sep, taxa: r.taxa, deriva: r.deriva, corte: r.corte }; }
+const r2 = (v) => Math.round(v * 100) / 100;
+const exib = (R) => ({ ks: K.n(R.ks, 2), auc: K.n(R.auc, 2), psi: K.n(R.psi, 2) });
+function faixaDe(m, v) {
+  const fs = faixas(m), x = r2(v);
+  let f = fs[0];
+  fs.forEach((r) => { if (x >= r.de) f = r; });
+  return f;
+}
+const limiar = (m, faixa) => { const r = faixas(m).find((x) => x.faixa === faixa); return r ? r.de : NaN; };
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  document.querySelectorAll('.d46-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDe(r); ST.cen = id; ST.mexido = false; ST.ultima = null;
+  ST.alav = { ks: 'nenhuma', auc: 'nenhuma', psi: 'nenhuma' };
+  ST.prev = exib(atual());
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  aplicar('saudavel');
+  K.redraw(NOMES);
+});
+const MAPA = { sep: 'sep', taxa: 'taxa', deriva: 'deriva', corte: 'corte' };
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  ST.mexido = true; ST.ultima = MAPA[k] || null;
+  const novo = exib(atual());
+  METR.forEach((m) => { if (novo[m] !== ST.prev[m]) ST.alav[m] = MAPA[k]; });
+  ST.prev = novo;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d46-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+K.tabs('p', () => K.redraw(['ks', 'roc', 'psi', 'gauge']));
+
+/* ---------- eixos: margem medida pelo maior rótulo ---------- */
+function largura(svg, textos, cls) {
+  const t = svg.append('text').attr('class', cls || 'k-svgm');
+  let w = 0; textos.forEach((s) => { t.text(s); w = Math.max(w, t.node().getComputedTextLength()); });
+  t.remove(); return w;
+}
+
+/* ---------- KS: acumuladas ---------- */
+dash.draw('ks', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const p = P(), R = atual(), G = M46.gerar(p), C = ST.S;
+  const lo = 100, hi = 1000;
+  const pts = M46.cdfs(p, G, R.dp, lo, hi, 5);
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const y = d3.scaleLinear([0, 1], [H - 28, 14]);
+  const yt = [0, 0.25, 0.5, 0.75, 1];
+  const mL = largura(svg, yt.map((t) => K.p(t, 0)));
+  const x = d3.scaleLinear([lo, hi], [mL + 10, W - 10]);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', x(lo)).attr('x2', x(hi)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.p(t, 0));
+  const xt = d3.range(lo, hi + 1, W < 420 ? 200 : 100);
+  svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 8).text((t) => K.n(t));
+  svg.append('line').attr('x1', x(lo)).attr('x2', x(hi)).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  [['fb', 'var(--k-blue)'], ['fm', 'var(--k-neg)']].forEach(([k, cor]) => {
+    svg.append('path').attr('d', d3.line().x((d) => x(d.s)).y((d) => y(d[k]))(pts)).attr('fill', 'none').attr('stroke', cor).attr('stroke-width', 2.5).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  });
+  // cutoff
+  const xc = x(Math.min(hi, Math.max(lo, C.corte)));
+  svg.append('line').attr('x1', xc).attr('x2', xc).attr('y1', 14).attr('y2', y(0)).attr('stroke', 'var(--color-fg)').attr('stroke-dasharray', '4 3');
+  const tc = svg.append('text').attr('class', 'k-svgm').attr('x', xc + 4).attr('y', 24).text('cutoff ' + K.n(C.corte));
+  if (xc + 4 + tc.node().getComputedTextLength() > W - 4) tc.attr('text-anchor', 'end').attr('x', xc - 4);
+  // segmento KS
+  const sk = Math.min(hi, Math.max(lo, R.ksScore));
+  const q = M46.cdfs(p, G, R.dp, sk, sk, 1)[0];
+  const xk = x(sk);
+  svg.append('line').attr('x1', xk).attr('x2', xk).attr('y1', y(q.fm)).attr('y2', y(q.fb)).attr('stroke', 'var(--k-navy)').attr('stroke-width', 4);
+  const tk = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--k-navy)').attr('x', xk + 8).attr('y', (y(q.fm) + y(q.fb)) / 2 + 5).text('KS ' + K.n(R.ks, 2));
+  if (xk + 8 + tk.node().getComputedTextLength() > W - 4) tk.attr('text-anchor', 'end').attr('x', xk - 8);
+  // tooltip
+  const hb = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-blue)').attr('opacity', 0);
+  const hm = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-neg)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(lo)).attr('width', x(hi) - x(lo)).attr('y', 14).attr('height', y(0) - 14).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const i = Math.max(0, Math.min(pts.length - 1, Math.round((x.invert(d3.pointer(ev)[0]) - lo) / 5)));
+      const d = pts[i];
+      hb.attr('cx', x(d.s)).attr('cy', y(d.fb)).attr('opacity', 1); hm.attr('cx', x(d.s)).attr('cy', y(d.fm)).attr('opacity', 1);
+      tip.show('Score ≤ ' + K.n(d.s), [['var(--k-blue)', 'Bons', K.p(d.fb, 1)], ['var(--k-neg)', 'Maus', K.p(d.fm, 1)], [null, 'Distância', K.n(d.fm - d.fb, 2)]], px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hb.attr('opacity', 0); hm.attr('opacity', 0); });
+});
+
+/* ---------- ROC ---------- */
+dash.draw('roc', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const p = P(), R = atual(), G = M46.gerar(p);
+  const pts = M46.roc(G, R.dp, 200);
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const tt = [0, 0.25, 0.5, 0.75, 1];
+  const mL = largura(svg, tt.map((t) => K.p(t, 0))) + 22;
+  const top = 12, bot = H - 40;
+  const lado = Math.min(bot - top, W - mL - 16);
+  const x = d3.scaleLinear([0, 1], [mL + 6, mL + 6 + lado]);
+  const y = d3.scaleLinear([0, 1], [bot, bot - lado]);
+  svg.append('g').selectAll('line').data(tt).join('line').attr('x1', x(0)).attr('x2', x(1)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(tt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x(0) - 6).attr('y', (t) => y(t) + 4).text((t) => K.p(t, 0));
+  svg.append('g').selectAll('text').data(tt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', bot + 16).text((t) => K.p(t, 0));
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (x(0) + x(1)) / 2).attr('y', bot + 32).text('maus aprovados (FPR)');
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('transform', `translate(${12},${(y(0) + y(1)) / 2}) rotate(-90)`).text('bons aprovados (TPR)');
+  const area = d3.area().x((d) => x(d.fpr)).y0(y(0)).y1((d) => y(d.tpr));
+  svg.append('path').attr('d', area(pts)).attr('fill', 'var(--k-navy)').attr('opacity', 0.14);
+  svg.append('line').attr('x1', x(0)).attr('y1', y(0)).attr('x2', x(1)).attr('y2', y(1)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+  svg.append('path').attr('d', d3.line().x((d) => x(d.fpr)).y((d) => y(d.tpr))(pts)).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2.5).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--k-navy)').attr('text-anchor', 'middle').attr('x', x(0.62)).attr('y', y(0.3)).text('AUC ' + K.n(R.auc, 2));
+  // ponto do cutoff
+  const f = R.funil;
+  svg.append('circle').attr('cx', x(f.fracMaus)).attr('cy', y(f.fracBons)).attr('r', 6).attr('fill', 'var(--k-amber)').attr('stroke', 'var(--color-bg)').attr('stroke-width', 1.5);
+  const tc = svg.append('text').attr('class', 'k-svgt').attr('x', x(f.fracMaus) + 9).attr('y', y(f.fracBons) + 14).text('cutoff ' + K.n(ST.S.corte));
+  if (x(f.fracMaus) + 9 + tc.node().getComputedTextLength() > W - 4) tc.attr('text-anchor', 'end').attr('x', x(f.fracMaus) - 9);
+  const hv = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-navy)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(0)).attr('width', x(1) - x(0)).attr('y', y(1)).attr('height', y(0) - y(1)).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const fx = x.invert(d3.pointer(ev)[0]);
+      let best = pts[0]; pts.forEach((d) => { if (Math.abs(d.fpr - fx) < Math.abs(best.fpr - fx)) best = d; });
+      hv.attr('cx', x(best.fpr)).attr('cy', y(best.tpr)).attr('opacity', 1);
+      tip.show('Um cutoff qualquer', [['var(--k-navy)', 'Bons aprovados', K.p(best.tpr, 1)], [null, 'Maus aprovados', K.p(best.fpr, 1)]], px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hv.attr('opacity', 0); });
+});
+
+/* ---------- PSI por decil ---------- */
+dash.draw('psi', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual();
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const mx = d3.max(R.bins, (b) => Math.max(b.p, b.q)) * 1.12;
+  const y = d3.scaleLinear([0, mx], [H - 28, 14]).nice();
+  const yt = y.ticks(5);
+  const mL = largura(svg, yt.map((t) => K.p(t, 0)));
+  const x = d3.scaleBand(R.bins.map((b) => b.decil), [mL + 10, W - 6]).padding(0.22);
+  const xi = d3.scaleBand(['p', 'q'], [0, x.bandwidth()]).padding(0.08);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', mL + 10).attr('x2', W - 6).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.p(t, 0));
+  svg.append('g').selectAll('text').data(R.bins).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (b) => x(b.decil) + x.bandwidth() / 2).attr('y', H - 8).text((b) => 'D' + b.decil);
+  const g = svg.append('g');
+  R.bins.forEach((b) => {
+    [['p', b.p, 'var(--k-neutro)', 'Treino'], ['q', b.q, 'var(--k-amber)', 'Produção']].forEach(([k, v, cor]) => {
+      g.append('rect').attr('x', x(b.decil) + xi(k)).attr('width', xi.bandwidth()).attr('y', y(v)).attr('height', Math.max(0, y(0) - y(v))).attr('rx', 2).attr('fill', cor);
+    });
+    const contrib = (Math.max(b.q, 1e-6) - Math.max(b.p, 1e-6)) * Math.log(Math.max(b.q, 1e-6) / Math.max(b.p, 1e-6));
+    g.append('rect').attr('x', x(b.decil)).attr('width', x.bandwidth()).attr('y', 14).attr('height', y(0) - 14).attr('fill', 'transparent')
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('Decil ' + b.decil + ' do treino', [['var(--k-neutro)', 'Treino', K.p(b.p, 1)], ['var(--k-amber)', 'Produção', K.p(b.q, 1)], [null, 'Contribuição ao PSI', K.n(contrib, 3)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+  });
+  svg.append('line').attr('x1', mL + 10).attr('x2', W - 6).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  svg.append('text').attr('class', 'k-svgm').attr('x', mL + 12).attr('y', 12).text('score baixo  →  score alto');
+});
+
+/* ---------- medidor com faixas ---------- */
+dash.draw('gauge', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const m = el.dataset.m, fs = faixas(m), R = atual();
+  if (!fs.length) { el.replaceChildren(); return; }
+  const v = R[m];
+  const { svg, W, H } = K.svg(el, 44, 180);
+  el.replaceChildren(svg.node());
+  const lo = fs[0].de, hi = fs[fs.length - 1].ate;
+  const x = d3.scaleLinear([lo, hi], [4, W - 4]).clamp(true);
+  fs.forEach((f, i) => {
+    svg.append('rect').attr('x', x(f.de)).attr('width', Math.max(0, x(f.ate) - x(f.de) - 1)).attr('y', 10).attr('height', 12).attr('fill', COR_FAIXA[f.faixa] || 'var(--k-neutro)').attr('opacity', f.faixa === faixaDe(m, v).faixa ? 0.95 : 0.3);
+    if (i > 0) svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(f.de)).attr('y', 38).text(K.n(f.de, 2));
+  });
+  const xv = x(v);
+  svg.append('path').attr('d', `M${xv},8 l-6,-7 h12 z`).attr('fill', 'var(--color-fg)');
+  svg.append('line').attr('x1', xv).attr('x2', xv).attr('y1', 8).attr('y2', 24).attr('stroke', 'var(--color-fg)').attr('stroke-width', 2);
+});
+
+/* ---------- funil ---------- */
+dash.draw('funil', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const f = atual().funil;
+  const { svg, W } = K.svg(el, 96);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const rot = ['Bons · ' + K.n(f.nBons), 'Maus · ' + K.n(f.nMaus)];
+  const mL = largura(svg, rot, 'k-svgt') + 10;
+  const x = d3.scaleLinear([0, 1], [mL, W - 4]);
+  const linhas = [
+    { nome: rot[0], ab: f.bonsAbaixo, ve: f.bonsVerde, fr: 1 - f.fracBons, cor: 'var(--k-pos)', y: 14, quem: 'Bons' },
+    { nome: rot[1], ab: f.mausAbaixo, ve: f.mausVerde, fr: 1 - f.fracMaus, cor: 'var(--k-neg)', y: 58, quem: 'Maus' },
+  ];
+  linhas.forEach((l) => {
+    svg.append('text').attr('class', 'k-svgt').attr('x', 0).attr('y', l.y + 21).text(l.nome);
+    const segs = [['abaixo do corte', 0, l.fr, l.ab, 'var(--k-neutro)', 0.45], ['faixa verde', l.fr, 1, l.ve, l.cor, 0.9]];
+    segs.forEach(([nome, a, b, n, cor, op]) => {
+      const w = Math.max(0, x(b) - x(a));
+      svg.append('rect').attr('x', x(a)).attr('width', w).attr('y', l.y).attr('height', 32).attr('fill', cor).attr('opacity', op).attr('rx', 2)
+        .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(l.quem + ' · ' + nome, [[cor, 'Contas', K.n(n)], [null, 'Participação', K.p(b - a, 1)]], px, py); })
+        .on('mouseleave', () => tip.hide());
+      const t = svg.append('text').attr('class', 'k-svgt').style('fill', op > 0.5 ? '#fff' : 'var(--color-fg)').style('font-weight', 600).attr('text-anchor', 'middle').attr('x', x(a) + w / 2).attr('y', l.y + 21).text(K.n(n));
+      if (t.node().getComputedTextLength() + 8 > w) t.remove();
+    });
+  });
+});
+
+/* ---------- números ---------- */
+const VAL = {
+  ks: (R) => K.n(R.ks, 2), auc: (R) => K.n(R.auc, 2), psi: (R) => K.n(R.psi, 2), dp: (R) => K.n(R.dp, 2), mMaus: (R) => K.n(R.mediaMaus),
+  desloc: (R) => K.n(R.deslocPts), deslocSig: (R) => K.n(R.deslocSigma, 2), corte: () => K.n(ST.S.corte), n: () => K.n(P().n),
+  nMaus: (R) => K.n(R.funil.nMaus), mausVerde: (R) => K.n(R.funil.mausVerde), pctMaus: (R) => K.p(R.funil.fracMaus, 1),
+  bonsAbaixo: (R) => K.n(R.funil.bonsAbaixo), pctBonsAb: (R) => K.p(1 - R.funil.fracBons, 1),
+  'g-der': () => K.n(cenario('deriva').deriva), 'g-sig': () => K.n(com('deriva').deslocSigma, 2), 'g-psi': () => K.n(com('deriva').psi, 2),
+  'g-c0': () => K.n(cenario('saudavel').corte), 'g-c1': () => K.n(cenario('frouxa').corte),
+  'g-m0': () => K.n(com('saudavel').funil.mausVerde), 'g-p0': () => K.p(com('saudavel').funil.fracMaus, 0),
+  'g-m1': () => K.n(com('frouxa').funil.mausVerde), 'g-p1': () => K.p(com('frouxa').funil.fracMaus, 0), 'g-ks': () => K.n(com('frouxa').ks, 2),
+  'g-sep': () => K.n(cenario('overfit').sep), 'g-auc': () => K.n(com('overfit').auc, 2), 'g-lim': () => K.n(limiar('auc', 'atencao'), 2),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('faixa', (el) => {
+  const m = el.dataset.m;
+  K.frases(el, pronto() ? [faixaDe(m, atual()[m]).faixa] : []);
+});
+dash.draw('alav', (el) => {
+  const m = el.dataset.m;
+  K.frases(el, pronto() && ST.alav ? [ST.alav[m]] : []);
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const R = atual(), ks = r2(R.ks), auc = r2(R.auc), psi = r2(R.psi);
+    if (ks < limiar('ks', 'regular')) keys.push('fraca');
+    else if (auc >= limiar('auc', 'atencao')) keys.push('overfit');
+    else if (psi > limiar('psi', 'retreinar')) keys.push('retreinar');
+    else if (psi >= limiar('psi', 'alerta')) keys.push('alerta');
+    else if (ks >= limiar('ks', 'excelente')) keys.push('saudavel');
+    else keys.push('moderado');
+    if (ST.ultima === 'corte') keys.push('corte');
+  }
+  K.frases(el, keys);
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

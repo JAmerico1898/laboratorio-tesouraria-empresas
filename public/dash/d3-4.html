@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D3.4 · Dente de serra</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"slide","nome":"Slide 95%","nivel":"95","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":false},{"id":"a99","nome":"Classe A — 99%","nivel":"99","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":false},{"id":"c90","nome":"Classe C — 90%","nivel":"90","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":false},{"id":"lt4","nome":"LT × 4","nivel":"95","sigma":50,"LT":64,"sigmaLT":0,"incluiLT":false,"Q":6400,"choque":false},{"id":"jit","nome":"JIT (Toyota)","nivel":"JIT","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":false},{"id":"pandemia","nome":"Pandemia","nivel":"JIT","sigma":50,"LT":16,"sigmaLT":0,"incluiLT":false,"Q":2000,"choque":true},{"id":"instavel","nome":"Fornecedor instável","nivel":"95","sigma":50,"LT":16,"sigmaLT":3,"incluiLT":false,"Q":2000,"choque":false}]},"item":{"format":"json","data":[{"chave":"d","valor":100,"descricao":"Demanda média, rolos por dia útil (V3.5)"},{"chave":"preco","valor":90,"descricao":"Preço de compra, R$ por rolo"},{"chave":"cdi","valor":12,"descricao":"Componente financeiro de H, % a.a."},{"chave":"outrosH","valor":0.06,"descricao":"Armazenagem + seguro + obsolescência, fração a.a. (H = 90 × 18% = 16,20)"},{"chave":"margem","valor":20,"descricao":"Margem de contribuição, R$ por rolo não vendido"},{"chave":"diasUteis","valor":250,"descricao":"Dias úteis por ano"},{"chave":"diasSim","valor":2000,"descricao":"Dias simulados para as estatísticas"},{"chave":"diasTela","valor":200,"descricao":"Dias exibidos no gráfico"},{"chave":"seed","valor":26,"descricao":"Semente do gerador (LCG + Box-Muller)"},{"chave":"ltAlfa","valor":3,"descricao":"Lead time se a Alfa mantiver produto acabado, dias (extensão)"},{"chave":"nDistrib","valor":10,"descricao":"Distribuidores iguais atendidos pela Alfa (pooling)"}]},"niveis":{"format":"json","data":[{"nivel":"90","z":1.28},{"nivel":"95","z":1.65},{"nivel":"99","z":2.33},{"nivel":"JIT","z":0}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+</style>
+<style>
+.d34-chart { min-height: 300px; }
+.d34-mini { min-height: 150px; }
+.d34-pair { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 40rem) { .d34-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.d34-play { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
+.d34-play .k-select { width: auto; }
+.d34-formula { padding: 8px 10px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 15px; line-height: 1.6; font-variant-numeric: tabular-nums; margin-bottom: 10px; }
+.d34-formula p { margin: 0; }
+.d34-banner { margin-top: 8px; }
+.d34-ext { margin-top: 14px; border-top: 1px solid var(--color-border-line); padding-top: 10px; }
+.d34-ext h4 { margin: 0; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.d34-conta { font-size: 14px; line-height: 1.6; font-variant-numeric: tabular-nums; margin: 8px 0 0; }
+.d34-choque[aria-pressed="true"] { background: var(--k-neg); border-color: var(--k-neg); color: #fff; }
+</style>
+
+<div class="k d34" id="d34">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D3.4 · Dente de serra</h1>
+      <p class="k-sub">Quanto buffer protege o nível de serviço — e o que acontece quando a cadeia falha?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d34-cen" data-cen="slide" aria-pressed="false">Slide 95%</button>
+      <button class="k-btn d34-cen" data-cen="a99" aria-pressed="false">Classe A — 99%</button>
+      <button class="k-btn d34-cen" data-cen="c90" aria-pressed="false">Classe C — 90%</button>
+      <button class="k-btn d34-cen" data-cen="lt4" aria-pressed="false">LT × 4</button>
+      <button class="k-btn d34-cen" data-cen="jit" aria-pressed="false">JIT (Toyota)</button>
+      <button class="k-btn d34-cen" data-cen="pandemia" aria-pressed="false">Pandemia</button>
+      <button class="k-btn d34-cen" data-cen="instavel" aria-pressed="false">Fornecedor instável</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone k-scroll" id="controles" data-source="item niveis cenarios">
+      <h2 class="k-zt">Cabo flexível 1,5 mm² · d = <span data-draw="v" data-q="d">—</span> rolos/dia</h2>
+      <div class="k-ctl"><span class="k-lab">Nível de serviço</span>
+        <div class="k-seg" role="group" aria-label="Nível de serviço">
+          <button data-k="nivel" data-v="90" aria-pressed="false">90%</button>
+          <button data-k="nivel" data-v="95" aria-pressed="true">95%</button>
+          <button data-k="nivel" data-v="99" aria-pressed="false">99%</button>
+          <button data-k="nivel" data-v="JIT" aria-pressed="false">JIT · z = 0</button>
+        </div></div>
+      <div class="k-ctl"><label for="c-sig">σ <span class="k-u">desvio-padrão diário da demanda</span></label>
+        <div class="k-in"><input type="range" id="c-sig" data-k="sigma" min="0" max="120" step="5"><input type="number" data-k="sigma" min="0" max="120" step="5" aria-label="Desvio-padrão diário, rolos"></div></div>
+      <div class="k-ctl"><label for="c-lt">LT <span class="k-u">lead time da Alfa, dias</span></label>
+        <div class="k-in"><input type="range" id="c-lt" data-k="LT" min="1" max="64" step="1"><input type="number" data-k="LT" min="1" max="64" step="1" aria-label="Lead time, dias"></div></div>
+      <div class="k-ctl"><label for="c-slt">σ<sub>LT</sub> <span class="k-u">desvio do lead time, dias</span></label>
+        <div class="k-in"><input type="range" id="c-slt" data-k="sigmaLT" min="0" max="6" step="0.5"><input type="number" data-k="sigmaLT" min="0" max="6" step="0.5" aria-label="Desvio do lead time, dias"></div></div>
+      <label class="k-toggle d34-inclui" hidden><input type="checkbox" data-k="incluiLT"> Incluir σ<sub>LT</sub> no ES</label>
+      <div class="k-ctl"><label for="c-q">Q <span class="k-u">lote de compra, rolos</span></label>
+        <div class="k-in"><input type="range" id="c-q" data-k="Q" min="500" max="6500" step="100"><input type="number" data-k="Q" min="500" max="6500" step="100" aria-label="Lote de compra, rolos"></div></div>
+
+      <h2 class="k-zt2">Cadeia</h2>
+      <button class="k-btn d34-choque" type="button" aria-pressed="false">Choque de cadeia: LT real dobra</button>
+      <p class="k-note">O ROP não é recalculado: continua supondo o lead time do controle acima.</p>
+
+      <h2 class="k-zt2">Animação</h2>
+      <div class="d34-play">
+        <button class="k-btn d34-btn-play" type="button" aria-pressed="false">Reproduzir</button>
+        <button class="k-btn d34-btn-pause" type="button" hidden>Pausar</button>
+        <select class="k-select d34-vel" aria-label="Velocidade">
+          <option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option>
+        </select>
+      </div>
+
+      <h2 class="k-zt2">Extensão</h2>
+      <label class="k-toggle"><input type="checkbox" data-k="ext"> Quem carrega o estoque na cadeia</label>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="item niveis cenarios">
+      <div class="k-ch"><h3>Estoque em mãos, dia a dia</h3><span>primeiros <b data-draw="v" data-q="diasTela">—</b> dias úteis · estatísticas sobre <b data-draw="v" data-q="diasSim">—</b> dias simulados</span></div>
+      <div class="k-chart d34-chart dash-skeleton" id="serra" data-draw="serra" role="img" aria-label="Dente de serra do estoque com ROP, estoque de segurança, pedidos, chegadas e rupturas"></div>
+      <div class="k-legend">
+        <span><i style="background: var(--k-navy); height: 3px; vertical-align: 3px"></i>Estoque em mãos</span>
+        <span><i style="background: var(--k-amber-d); height: 3px; vertical-align: 3px"></i>ROP</span>
+        <span><i style="background: color-mix(in srgb, var(--k-amber) 30%, transparent)"></i>Estoque de segurança</span>
+        <span>▲ pedido disparado</span>
+        <span>↑ chegada</span>
+        <span><i style="background: var(--k-neg)"></i>Dia com ruptura</span>
+      </div>
+      <div class="k-alert d34-banner" hidden>Lead time dobrou; o ROP ainda assume <b data-draw="v" data-q="LT">—</b> dias. Fill rate <b data-draw="v" data-q="fill">—</b>.</div>
+
+      <div class="d34-ext" id="extensao" hidden>
+        <div class="k-ch"><h3>Quem carrega o estoque</h3><span>a Alfa mantém produto acabado e entrega em <b data-draw="v" data-q="ltAlfa">—</b> dias</span></div>
+        <div class="d34-pair">
+          <div><h4>Horizonte com LT <span data-draw="v" data-q="LT">—</span> · ES <span data-draw="v" data-q="esH">—</span></h4><div class="k-chart d34-mini dash-skeleton" data-draw="mini" data-lt="base" role="img" aria-label="Estoque da Horizonte com o lead time atual"></div></div>
+          <div><h4>Horizonte com LT <span data-draw="v" data-q="ltAlfa">—</span> · ES <span data-draw="v" data-q="esL">—</span></h4><div class="k-chart d34-mini dash-skeleton" data-draw="mini" data-lt="alfa" role="img" aria-label="Estoque da Horizonte com lead time curto"></div></div>
+        </div>
+        <p class="d34-conta">A Horizonte economiza (<b data-draw="v" data-q="esH">—</b> − <b data-draw="v" data-q="esL">—</b>) × <b data-draw="v" data-q="H">—</b> = R$ <b data-draw="v" data-q="economia">—</b>/ano em carregamento de ES.<br>
+          A Alfa, atendendo <b data-draw="v" data-q="nDistrib">—</b> distribuidores iguais, precisa de ES agregado de <b data-draw="v" data-q="z">—</b> × <b data-draw="v" data-q="sigma">—</b> × √<b data-draw="v" data-q="nDistrib">—</b> × √<b data-draw="v" data-q="LT">—</b> = <b data-draw="v" data-q="agregado">—</b> rolos — contra <b data-draw="v" data-q="nDistrib">—</b> × <b data-draw="v" data-q="esH">—</b> = <b data-draw="v" data-q="separado">—</b> se cada distribuidor se protegesse sozinho.</p>
+        <p class="k-note">Centralizar o buffer no fornecedor reduz o estoque total da cadeia (pooling: √n), mas transfere o carregamento para quem tem mais escala — e poder de negociação (M5).</p>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="item niveis cenarios">
+      <h2 class="k-zt">A fórmula</h2>
+      <div class="d34-formula">
+        <p class="d34-f-simples">ES = z · σ · √LT = <b data-draw="v" data-q="z">—</b> × <b data-draw="v" data-q="sigma">—</b> × <b data-draw="v" data-q="raizLT">—</b> = <b data-draw="v" data-q="ES">—</b></p>
+        <p class="d34-f-lt" hidden>ES = z · √(LT·σ² + d²·σ<sub>LT</sub>²) = <b data-draw="v" data-q="z">—</b> × √(<b data-draw="v" data-q="LT">—</b> × <b data-draw="v" data-q="sigma">—</b>² + <b data-draw="v" data-q="d">—</b>² × <b data-draw="v" data-q="sigmaLT">—</b>²) = <b data-draw="v" data-q="ES">—</b></p>
+        <p>ROP = d · LT + ES = <b data-draw="v" data-q="d">—</b> × <b data-draw="v" data-q="LT">—</b> + <b data-draw="v" data-q="ES">—</b> = <b data-draw="v" data-q="ROP">—</b></p>
+      </div>
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">ES <span class="k-u">rolos</span></span><span class="k-kn" data-draw="v" data-q="ES">—</span></div>
+      <div class="k-kpi"><span class="k-kl">ROP <span class="k-u">rolos</span></span><span class="k-kn" data-draw="v" data-q="ROP">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Ciclos com ruptura</span><span class="k-kn"><span data-draw="v" data-q="rupt">—</span><small data-draw="v" data-q="ruptN">—</small></span></div>
+      <div class="k-kpi"><span class="k-kl">Custo anual <span class="k-u">R$</span></span><span class="k-kn" data-draw="v" data-q="custo">—</span></div>
+      <p class="k-note">ES × H = <b data-draw="v" data-q="ES">—</b> × <b data-draw="v" data-q="H">—</b> = <b data-draw="v" data-q="custoES">—</b> · ruptura <b data-draw="v" data-q="perdAno">—</b> rolos/ano × R$ <b data-draw="v" data-q="margem">—</b> = <b data-draw="v" data-q="custoRup">—</b> · fill rate <b data-draw="v" data-q="fill">—</b></p>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="base" hidden>ES de <b data-draw="v" data-q="ES">—</b> rolos protege contra <b data-draw="v" data-q="nivel">—</b> dos lead times; custa R$ <b data-draw="v" data-q="custoES">—</b> por ano. Rupturas em <b data-draw="v" data-q="rupt">—</b> dos ciclos — 1 em <b data-draw="v" data-q="umEm">—</b>, como a tabela promete.</p>
+        <p data-frase="n99" hidden>Subir de 95% para 99% custa <b data-draw="v" data-q="dES">—</b> rolos a mais de buffer (R$ <b data-draw="v" data-q="dCusto">—</b>/ano) para evitar 4 rupturas em 100 ciclos. Vale para classe A; não para C.</p>
+        <p data-frase="jit" hidden>ES zero: carregamento zero, <b data-draw="v" data-q="rupt">—</b> dos ciclos com ruptura, <b data-draw="v" data-q="perdAno">—</b> rolos/ano não vendidos (R$ <b data-draw="v" data-q="custoRup">—</b>). Ganho pequeno e contínuo; risco grande e pontual.</p>
+        <p data-frase="choque" hidden>A cadeia falhou: com LT de <b data-draw="v" data-q="LT2">—</b> dias e ROP de <b data-draw="v" data-q="LT">—</b>, o estoque zera em <b data-draw="v" data-q="rupt">—</b> dos ciclos. Nenhum buffer calibrado para o mundo antigo resiste a um lead time que dobra.</p>
+        <p data-frase="sltoff" hidden>Lead time variável e ES que o ignora: <b data-draw="v" data-q="rupt">—</b> de rupturas, contra a promessa de <b data-draw="v" data-q="promessa">—</b>. A variabilidade do fornecedor é tão perigosa quanto a da demanda.</p>
+        <p data-frase="raiz" hidden>LT × <b data-draw="v" data-q="ltMult">—</b>, o ES só × <b data-draw="v" data-q="esMult">—</b> (<b data-draw="v" data-q="ES">—</b>): o buffer escala pela raiz do lead time.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="item niveis cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Suba o LT de <span data-draw="v" data-q="g-lt">—</span> para <span data-draw="v" data-q="g-lt4">—</span> dias. O ES quadruplica?
+          <details><summary>mostrar resposta</summary><p>Não — vai de <b data-draw="v" data-q="g-es">—</b> para <b data-draw="v" data-q="g-es4">—</b>, dobra. ES escala por √LT: lead times longos doem menos do que parecem (mas o ROP, que carrega d × LT, vai de <b data-draw="v" data-q="g-rop">—</b> para <b data-draw="v" data-q="g-rop4">—</b> — é o estoque de ciclo que explode, não o de segurança).</p></details>
+        </li>
+        <li>Ative o JIT e depois o choque de cadeia. Compare o custo anual nas duas situações com o cenário 95%.
+          <details><summary>mostrar resposta</summary><p>95%: R$ <b data-draw="v" data-q="g-c95">—</b> de ES e quase nenhuma venda perdida. JIT em cadeia calma: zero de ES, <b data-draw="v" data-q="g-pjit">—</b> rolos/ano perdidos (R$ <b data-draw="v" data-q="g-cjit">—</b>) — já pior. JIT com LT dobrado: <b data-draw="v" data-q="g-rpan">—</b> dos ciclos rompem e o fill rate cai para <b data-draw="v" data-q="g-fpan">—</b> — perda catastrófica. É o perfil assimétrico do slide 2 de V3.5.</p></details>
+        </li>
+        <li>O fornecedor passa a entregar com σ<sub>LT</sub> = <span data-draw="v" data-q="g-slt">—</span> dias. O que acontece se a Horizonte não recalcular o ES?
+          <details><summary>mostrar resposta</summary><p>As rupturas sobem de <b data-draw="v" data-q="g-r95">—</b> para <b data-draw="v" data-q="g-roff">—</b> dos ciclos com o mesmo ES de <b data-draw="v" data-q="g-es">—</b>. Incluindo o lead time variável na fórmula, o ES sobe para <b data-draw="v" data-q="g-eson">—</b> e as rupturas voltam a <b data-draw="v" data-q="g-ron">—</b>. Variabilidade do fornecedor é variabilidade da demanda no lead time.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+})();</script>
+<script>(function () {
+
+/* D3.4 · Dente de serra — funções puras (sem DOM).
+   P = parâmetros do item (dataset), C = controles. Unidades: rolos, dias úteis, R$. */
+(function (root) {
+  const M = {};
+  // gerador determinístico: LCG + Box-Muller
+  M.rng = function (seed) {
+    let s = seed >>> 0, spare = null;
+    const u = () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return (s + 0.5) / 4294967296; };
+    const n = () => {
+      if (spare != null) { const v = spare; spare = null; return v; }
+      const a = u(), b = u(), r = Math.sqrt(-2 * Math.log(a)), t = 2 * Math.PI * b;
+      spare = r * Math.sin(t);
+      return r * Math.cos(t);
+    };
+    return { u, n };
+  };
+  M.H = (P, C) => P.preco * (C.cdi / 100 + P.outrosH);            // R$/rolo·ano
+  // ES em rolos inteiros (arredondado), ROP = d·LT + ES
+  M.esExato = (C) => (C.incluiLT && C.sigmaLT > 0 ? C.z * Math.sqrt(C.LT * C.sigma ** 2 + C.d ** 2 * C.sigmaLT ** 2) : C.z * C.sigma * Math.sqrt(C.LT));
+  M.es = (C) => Math.round(M.esExato(C));
+  M.rop = (C) => C.d * C.LT + M.es(C);
+  // simulação (Q, R) por posição de estoque (em mãos + a receber)
+  M.simula = function (P, C, dias) {
+    const R = M.rng(P.seed);
+    const ES = M.es(C), ROP = M.rop(C), LTreal = C.choque ? 2 * C.LT : C.LT;
+    let inv = ROP + C.Q, perdidos = 0, demTot = 0, ciclos = 0, ciclosRup = 0, rupCiclo = false;
+    const pend = [], serie = [];
+    for (let t = 0; t < dias; t++) {
+      let chegou = false;
+      for (let i = pend.length - 1; i >= 0; i--) if (pend[i].chega === t) { inv += pend[i].q; pend.splice(i, 1); chegou = true; }
+      if (chegou) { ciclos++; if (rupCiclo) ciclosRup++; rupCiclo = false; }
+      const dem = Math.max(0, C.d + C.sigma * R.n());
+      demTot += dem;
+      let falta = 0;
+      if (dem > inv) { falta = dem - inv; perdidos += falta; inv = 0; rupCiclo = true; } else inv -= dem;
+      let pos = inv + pend.reduce((a, p) => a + p.q, 0), pediu = false;
+      while (pos <= ROP) {
+        const lt = C.sigmaLT > 0 ? Math.max(1, Math.round(LTreal + C.sigmaLT * R.n())) : LTreal;
+        pend.push({ chega: t + lt, q: C.Q }); pos += C.Q; pediu = true;
+      }
+      serie.push({ t, inv, falta, pediu, chegou });
+    }
+    const ano = P.diasUteis / dias;
+    const H = M.H(P, C);
+    const perdAno = perdidos * ano;
+    return {
+      ES, ROP, H, serie, ciclos, ciclosRup, rupt: ciclos ? ciclosRup / ciclos : 0,
+      fill: demTot ? 1 - perdidos / demTot : 1, perdAno,
+      custoES: ES * H, custoRup: perdAno * P.margem * (C.mult || 1), custo: ES * H + perdAno * P.margem * (C.mult || 1),
+    };
+  };
+  // extensão: quem carrega o estoque (pooling)
+  M.pooling = function (P, C) {
+    const esL = M.es({ ...C, LT: P.ltAlfa, incluiLT: false });
+    const esH = M.es({ ...C, incluiLT: false });
+    const H = M.H(P, C);
+    return { esH, esL, economia: (esH - esL) * H, agregado: Math.round(C.z * C.sigma * Math.sqrt(P.nDistrib) * Math.sqrt(C.LT)), separado: P.nDistrib * esH };
+  };
+  root.M34 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D3.4 · Dente de serra — política (Q, R) por posição de estoque
+   Testes de aderência (Spec §7), conferidos com M34.simula() em node (semente 26, 2.000 dias):
+   Default: ES 330 · ROP 1.930 · rupturas 4,1% · custo ES 5.346 · 90%: ES 256 · ROP 1.856 · 6,1%
+   99%: ES 466 · ROP 2.066 · 1,0% · custo ES 7.549 · LT 64 (Q 6.400): ES 660 · ROP 7.060
+   σLT 3: 15,5% (fill 98,6%) → ligado: ES 595 · ROP 2.195 · 2,0%
+   JIT: ES 0 · ROP 1.600 · 38,5% · fill 97,1% · 730 rolos/ano · Choque: 100% · fill 62,4% · Pandemia: 100% · fill 57,0%
+   Extensão LT 3: ES 143 · economia 3.029 · agregado 1.044 × 3.300
+   ============================================================ */
+const ST = window.D34 = { S: null, P: null, Z: null, cen: null, mexido: false, prog: 1, play: false, raf: null, memo: new Map() };
+const IDS = ['item', 'niveis', 'cenarios'];
+const NOMES = ['serra', 'mini', 'v', 'frase'];
+const ANIM_MS = 6000;      // duração da animação a 1× (Spec §4.2)
+const LT_RAIZ = 2;         // a frase da raiz aparece quando o LT passa deste múltiplo do LT do slide
+
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const bool = (v) => v === true || v === 'true';
+const cenario = (id) => (dash.data('cenarios').data || []).find((r) => r.id === id);
+function ctlDe(r) {
+  return { nivel: String(r.nivel), sigma: Number(r.sigma), LT: Number(r.LT), sigmaLT: Number(r.sigmaLT), incluiLT: bool(r.incluiLT), Q: Number(r.Q), choque: bool(r.choque),
+    ext: ST.S ? ST.S.ext : false };
+}
+// controles → entrada do modelo
+const entrada = (S) => ({ d: ST.P.d, sigma: S.sigma, LT: S.LT, sigmaLT: S.sigmaLT, incluiLT: S.incluiLT, z: ST.Z[S.nivel], Q: S.Q, choque: S.choque, cdi: ST.P.cdi, mult: 1 });
+function sim(S, extra) {
+  const C = { ...entrada(S), ...(extra || {}) };
+  const key = JSON.stringify(C);
+  if (!ST.memo.has(key)) { if (ST.memo.size > 60) ST.memo.clear(); ST.memo.set(key, M34.simula(ST.P, C, ST.P.diasSim)); }
+  return ST.memo.get(key);
+}
+const atual = () => sim(ST.S);
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  const S = ST.S;
+  K.sync(S);
+  document.querySelectorAll('.d34-inclui').forEach((x) => { x.hidden = !(S.sigmaLT > 0); });
+  document.querySelectorAll('.d34-f-simples').forEach((x) => { x.hidden = S.incluiLT && S.sigmaLT > 0; });
+  document.querySelectorAll('.d34-f-lt').forEach((x) => { x.hidden = !(S.incluiLT && S.sigmaLT > 0); });
+  document.querySelectorAll('.d34-choque').forEach((b) => b.setAttribute('aria-pressed', String(S.choque)));
+  document.querySelectorAll('.d34-banner').forEach((x) => { x.hidden = !S.choque; });
+  document.querySelectorAll('#extensao').forEach((x) => { x.hidden = !S.ext; });
+  document.querySelectorAll('.d34-btn-play').forEach((b) => { b.hidden = ST.play; });
+  document.querySelectorAll('.d34-btn-pause').forEach((b) => { b.hidden = !ST.play; });
+  document.querySelectorAll('.d34-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+}
+function para() { ST.play = false; if (ST.raf) cancelAnimationFrame(ST.raf); ST.raf = null; }
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDe(r); ST.cen = id; ST.mexido = false;
+  para(); ST.prog = 1;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  ST.P = K.obj(dash.data('item').data);
+  ST.Z = {}; K.num(dash.data('niveis').data).forEach((r) => { ST.Z[String(r.nivel)] = Number(r.z); });
+  aplicar('slide');
+  K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = k === 'nivel' ? String(v) : v; return true; } }), (k) => {
+  if (!ST.S) return;
+  if (k !== 'ext') { ST.mexido = true; para(); ST.prog = 1; }
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d34-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+document.querySelectorAll('.d34-choque').forEach((b) => b.addEventListener('click', () => {
+  if (!ST.S) return;
+  ST.S.choque = !ST.S.choque; ST.mexido = true; para(); ST.prog = 1; sincroniza(); K.redraw(NOMES);
+}));
+document.querySelectorAll('.d34-btn-play').forEach((b) => b.addEventListener('click', () => {
+  if (!ST.S) return;
+  if (ST.prog >= 1) ST.prog = 0;
+  ST.play = true; sincroniza(); dash.draw('serra');
+}));
+document.querySelectorAll('.d34-btn-pause').forEach((b) => b.addEventListener('click', () => { para(); if (ST.S) sincroniza(); }));
+const velocidade = () => { const s = document.querySelector('.d34-vel'); return s ? Number(s.value) || 1 : 1; };
+
+/* ---------- dente de serra ---------- */
+function serra(el, R, H, opts) {
+  const P = ST.P, dias = P.diasTela, serie = R.serie.slice(0, dias);
+  const { svg, W } = K.svg(el, H);
+  el.replaceChildren(svg.node());
+  const tip = opts.tip ? K.tip(el) : null;
+  const yMax = Math.max(d3.max(serie, (s) => s.inv), R.ROP) * 1.08;
+  const y = d3.scaleLinear([0, yMax], [H - 22, 10]).nice();
+  const ticks = y.ticks(opts.mini ? 3 : 5);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t)); mL = Math.max(mL, meas.node().getComputedTextLength()); }); meas.remove();
+  const x = d3.scaleLinear([0, dias - 1], [mL + 10, W - 10]);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x(0)).attr('x2', x(dias - 1)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  x.ticks(opts.mini ? 4 : 8).forEach((t) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(t)).attr('y', H - 6).text(K.n(t)));
+  // faixa do ES e linha do ROP
+  if (R.ES > 0) svg.append('rect').attr('x', x(0)).attr('width', x(dias - 1) - x(0)).attr('y', y(R.ES)).attr('height', y(0) - y(R.ES)).attr('fill', 'color-mix(in srgb, var(--k-amber) 30%, transparent)');
+  svg.append('line').attr('x1', x(0)).attr('x2', x(dias - 1)).attr('y1', y(R.ROP)).attr('y2', y(R.ROP)).attr('stroke', 'var(--k-amber-d)').attr('stroke-width', 1.5).attr('stroke-dasharray', '6 4');
+  if (!opts.mini) {
+    const tR = svg.append('text').attr('class', 'k-svgt').style('fill', 'var(--k-amber-d)').style('font-weight', 600).attr('text-anchor', 'end').attr('x', x(dias - 1)).attr('y', y(R.ROP) - 5).text('ROP = ' + K.n(R.ROP));
+    if (R.ES > 0) {
+      const tE = svg.append('text').attr('class', 'k-svgt').style('font-weight', 600).attr('x', x(0) + 4).attr('y', y(R.ES) + 14).text('ES = ' + K.n(R.ES));
+      if (y(0) - y(R.ES) < 18) tE.attr('y', y(R.ES) - 4);
+      if (Math.abs(y(R.ES) - y(R.ROP)) < 18) tR.attr('y', y(R.ROP) - 18);
+    }
+  }
+  svg.append('line').attr('x1', x(0)).attr('x2', x(dias - 1)).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  // traçado (com recorte para a animação)
+  const cid = 'd34-clip-' + (opts.id || 'm');
+  const clip = svg.append('defs').append('clipPath').attr('id', cid).append('rect').attr('x', 0).attr('y', 0).attr('height', H).attr('width', x(0) + (x(dias - 1) - x(0)) * (opts.prog == null ? 1 : opts.prog) + 4);
+  const g = svg.append('g').attr('clip-path', 'url(#' + cid + ')');
+  // dias de ruptura
+  g.append('g').selectAll('rect').data(serie.filter((s) => s.falta > 0)).join('rect')
+    .attr('x', (s) => x(s.t) - 1.5).attr('width', 3).attr('y', y(0) - 6).attr('height', 6).attr('fill', 'var(--k-neg)');
+  g.append('path').attr('d', d3.line().x((s) => x(s.t)).y((s) => y(s.inv))(serie)).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+  if (!opts.mini) {
+    g.append('g').selectAll('path').data(serie.filter((s) => s.pediu)).join('path')
+      .attr('d', d3.symbol(d3.symbolTriangle, 36)).attr('transform', (s) => `translate(${x(s.t)},${y(s.inv) - 9})`).attr('fill', 'var(--k-amber-d)');
+    g.append('g').selectAll('text').data(serie.filter((s) => s.chegou)).join('text').attr('class', 'k-svgt').style('fill', 'var(--k-pos)').style('font-weight', 700)
+      .attr('text-anchor', 'middle').attr('x', (s) => x(s.t)).attr('y', (s) => y(s.inv) - 6).text('↑');
+  }
+  if (tip) {
+    const hov = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-navy)').attr('opacity', 0);
+    svg.append('rect').attr('x', x(0)).attr('width', x(dias - 1) - x(0)).attr('y', 10).attr('height', y(0) - 10).attr('fill', 'transparent')
+      .on('mousemove', (ev) => {
+        const [px, py] = d3.pointer(ev, el);
+        const s = serie[Math.max(0, Math.min(dias - 1, Math.round(x.invert(d3.pointer(ev)[0]))))];
+        hov.attr('cx', x(s.t)).attr('cy', y(s.inv)).attr('opacity', 1);
+        const l = [[null, 'Em mãos', K.n(s.inv) + ' rolos']];
+        if (s.falta > 0) l.push(['var(--k-neg)', 'Venda perdida', K.n(s.falta) + ' rolos']);
+        if (s.pediu) l.push(['var(--k-amber-d)', 'Pedido disparado', null]);
+        if (s.chegou) l.push(['var(--k-pos)', 'Lote chegou', null]);
+        tip.show('Dia ' + K.n(s.t + 1), l, px, py);
+      })
+      .on('mouseleave', () => { tip.hide(); hov.attr('opacity', 0); });
+  }
+  return { clip, x, dias };
+}
+dash.draw('serra', (el) => {
+  if (ST.raf) { cancelAnimationFrame(ST.raf); ST.raf = null; }
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual();
+  const semMov = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (ST.play && semMov) { ST.play = false; ST.prog = 1; sincroniza(); }
+  const d = serra(el, R, 300, { tip: true, prog: ST.prog, id: 'main' });
+  if (!ST.play) return;
+  const largura = d.x(d.dias - 1) - d.x(0);
+  let t0 = null; const p0 = ST.prog;
+  const passo = (ts) => {
+    if (t0 == null) t0 = ts;
+    ST.prog = Math.min(1, p0 + (ts - t0) * velocidade() / ANIM_MS);
+    d.clip.attr('width', d.x(0) + largura * ST.prog + 4);
+    if (ST.prog < 1 && ST.play) ST.raf = requestAnimationFrame(passo);
+    else { ST.raf = null; if (ST.prog >= 1) { ST.play = false; sincroniza(); } }
+  };
+  ST.raf = requestAnimationFrame(passo);
+});
+dash.draw('mini', (el) => {
+  if (!pronto() || !ST.S.ext) { if (!pronto()) falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = el.dataset.lt === 'alfa' ? sim(ST.S, { LT: ST.P.ltAlfa, incluiLT: false, sigmaLT: 0, choque: false }) : sim(ST.S, { incluiLT: false, sigmaLT: 0, choque: false });
+  serra(el, R, 150, { mini: true, id: el.dataset.lt });
+});
+
+/* ---------- números ---------- */
+const S0 = () => ctlDe(cenario('slide'));
+const sc = (id) => sim(ctlDe(cenario(id)));
+const pool = () => M34.pooling(ST.P, entrada(ST.S));
+const VAL = {
+  d: () => K.n(ST.P.d), diasTela: () => K.n(ST.P.diasTela), diasSim: () => K.n(ST.P.diasSim), ltAlfa: () => K.n(ST.P.ltAlfa), nDistrib: () => K.n(ST.P.nDistrib),
+  z: () => K.n(ST.Z[ST.S.nivel], 2), sigma: () => K.n(ST.S.sigma), LT: () => K.n(ST.S.LT), LT2: () => K.n(2 * ST.S.LT), sigmaLT: () => K.n(ST.S.sigmaLT, 1),
+  raizLT: () => { const r = Math.sqrt(ST.S.LT); return Math.abs(r - Math.round(r)) < 1e-9 ? K.n(r) : K.n(r, 2); },
+  ES: (R) => K.n(R.ES), ROP: (R) => K.n(R.ROP), H: (R) => K.n(R.H, 2), margem: () => K.n(ST.P.margem),
+  rupt: (R) => K.p(R.rupt, 1), ruptN: (R) => K.n(R.ciclosRup) + ' de ' + K.n(R.ciclos), fill: (R) => K.p(R.fill, 1),
+  custo: (R) => K.n(R.custo), custoES: (R) => K.n(R.custoES), custoRup: (R) => K.n(R.custoRup), perdAno: (R) => K.n(R.perdAno),
+  nivel: () => (ST.S.nivel === 'JIT' ? null : ST.S.nivel + '%'), umEm: () => (ST.S.nivel === 'JIT' ? null : K.n(100 / (100 - Number(ST.S.nivel)))),
+  dES: (R) => K.n(R.ES - sim({ ...ST.S, nivel: '95' }).ES), dCusto: (R) => K.n(R.custoES - sim({ ...ST.S, nivel: '95' }).custoES),
+  promessa: () => (ST.S.nivel === 'JIT' ? null : K.n(100 - Number(ST.S.nivel)) + '%'),
+  ltMult: () => K.n(ST.S.LT / S0().LT, 1), esMult: () => K.n(Math.sqrt(ST.S.LT / S0().LT), 1),
+  esH: () => K.n(pool().esH), esL: () => K.n(pool().esL), economia: () => K.n(pool().economia), agregado: () => K.n(pool().agregado), separado: () => K.n(pool().separado),
+  'g-lt': () => K.n(S0().LT), 'g-lt4': () => K.n(ctlDe(cenario('lt4')).LT), 'g-es': () => K.n(sc('slide').ES), 'g-es4': () => K.n(sc('lt4').ES),
+  'g-rop': () => K.n(sc('slide').ROP), 'g-rop4': () => K.n(sc('lt4').ROP), 'g-c95': () => K.n(sc('slide').custoES),
+  'g-pjit': () => K.n(sc('jit').perdAno), 'g-cjit': () => K.n(sc('jit').custoRup), 'g-rpan': () => K.p(sc('pandemia').rupt, 0), 'g-fpan': () => K.p(sc('pandemia').fill, 0),
+  'g-slt': () => K.n(ctlDe(cenario('instavel')).sigmaLT, 0), 'g-r95': () => K.p(sc('slide').rupt, 0), 'g-roff': () => K.p(sc('instavel').rupt, 0),
+  'g-eson': () => K.n(sim({ ...ctlDe(cenario('instavel')), incluiLT: true }).ES), 'g-ron': () => K.p(sim({ ...ctlDe(cenario('instavel')), incluiLT: true }).rupt, 0),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const S = ST.S;
+    if (S.choque) keys.push('choque');
+    else if (S.nivel === 'JIT') keys.push('jit');
+    else if (S.sigmaLT > 0 && !S.incluiLT) keys.push('sltoff');
+    else if (S.nivel === '99') keys.push('n99');
+    else keys.push('base');
+    if (S.LT >= LT_RAIZ * S0().LT && S.nivel !== 'JIT') keys.push('raiz');
+  }
+  K.frases(el, keys);
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+[
+{
+"id": "decimoNov",
+"categoria": "decimo",
+"mes": "nov",
+"dia": 30,
+"valor": 150
+},
+{
+"id": "decimoDez",
+"categoria": "decimo",
+"mes": "dez",
+"dia": 20,
+"valor": 250
+},
+{
+"id": "plrMar",
+"categoria": "plr",
+"mes": "mar",
+"dia": 31,
+"valor": 200
+},
+{
+"id": "amortJun",
+"categoria": "amortizacao",
+"mes": "jun",
+"dia": 30,
+"valor": 750
+},
+{
+"id": "amortDez",
+"categoria": "amortizacao",
+"mes": "dez",
+"dia": 30,
+"valor": 750
+},
+{
+"id": "capexJun",
+"categoria": "capex",
+"mes": "jun",
+"dia": 15,
+"valor": 800
+},
+{
+"id": "capexSet",
+"categoria": "capex",
+"mes": "set",
+"dia": 15,
+"valor": 400
+},
+{
+"id": "dividendosAbr",
+"categoria": "dividendos",
+"mes": "abr",
+"dia": 30,
+"valor": 1250
+}
+]

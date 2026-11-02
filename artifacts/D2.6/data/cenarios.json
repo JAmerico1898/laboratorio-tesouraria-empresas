@@ -1,0 +1,3 @@
+[{"id":"reset","valor":3000,"dur":150,"recorrencia":"anual"},
+{"id":"aperto","valor":600,"dur":10,"recorrencia":"pontual"},
+{"id":"estrutural","valor":3000,"dur":360,"recorrencia":"anual"}]

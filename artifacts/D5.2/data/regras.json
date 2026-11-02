@@ -1,0 +1,16 @@
+[
+ {"chave":"pdBase","valor":1.0,"descricao":"PD base sobre a Horizonte com 95% de pontualidade (% a.a.)"},
+ {"chave":"pontRef","valor":95,"descricao":"Pontualidade de referência (% dos títulos pagos em dia)"},
+ {"chave":"pdAbaixo","valor":0.2,"descricao":"p.p. de PD por ponto de pontualidade abaixo da referência"},
+ {"chave":"pdAcima","valor":0.1,"descricao":"p.p. de PD a menos por ponto acima da referência"},
+ {"chave":"pdPiso","valor":0.3,"descricao":"Piso do PD (% a.a.)"},
+ {"chave":"pdTeto","valor":10,"descricao":"Teto do PD (% a.a.)"},
+ {"chave":"adm","valor":0.2,"descricao":"Custo administrativo fixo do fornecedor (% do volume)"},
+ {"chave":"alvo","valor":0.5,"descricao":"Fração da margem que o fornecedor quer preservar"},
+ {"chave":"batnaLim","valor":30,"descricao":"Participação máxima por categoria (%) antes de a BATNA ficar fraca"},
+ {"chave":"batnaPp","valor":1.0,"descricao":"Repasse adicional com BATNA fraca (p.p.)"},
+ {"chave":"compPp","valor":0.5,"descricao":"Redução do pricing com compromisso anual (p.p.)"},
+ {"chave":"limTotal","valor":15,"descricao":"Participação máxima de um fornecedor nas compras totais (%)"},
+ {"chave":"compras","valor":27500,"descricao":"Compras anuais totais da Horizonte (R$ mil)"},
+ {"chave":"janela","valor":10,"descricao":"Janela do desconto por antecipação (dias)"}
+]

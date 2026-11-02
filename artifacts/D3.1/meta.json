@@ -1,0 +1,9 @@
+{
+  "code": "D3.1",
+  "title": "D3.1 · Estoque é dinheiro parado",
+  "slug": "95efc01c-428b-45cb-b34b-32878787847c",
+  "datasets": {
+    "cenarios": { "file": "cenarios.json", "sha256": "9d23fa5add1a2167da9e2285d4f7f928771b1f2b32df140aeb6737805989d32c" },
+    "perfis": { "file": "perfis.json", "sha256": "33ae48d2698c43c0a5b03425ea923f1ccb1166c31d24ea75e2158aefa70d70d1" }
+  }
+}

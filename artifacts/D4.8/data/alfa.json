@@ -1,0 +1,9 @@
+[
+  {"chave": "receita", "valor": 50000, "descricao": "Receita líquida anual da Alfa (R$ mil)"},
+  {"chave": "vendasPrazoAno", "valor": 35000, "descricao": "Vendas a prazo por ano — duplicatas 30/60/90 (R$ mil)"},
+  {"chave": "Vmes", "valor": 2917, "descricao": "Duplicatas faturadas por mês (R$ mil)"},
+  {"chave": "cartaoAno", "valor": 5000, "descricao": "Vendas no cartão por ano — 10% da receita, construído (R$ mil)"},
+  {"chave": "Vcmes", "valor": 417, "descricao": "Recebíveis de cartão por mês (R$ mil)"},
+  {"chave": "prazoDup", "valor": 60, "descricao": "Prazo médio antecipável das duplicatas (dias)"},
+  {"chave": "prazoCartao", "valor": 30, "descricao": "Prazo do recebível de cartão (dias, D+30)"}
+]

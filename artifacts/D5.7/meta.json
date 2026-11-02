@@ -1,0 +1,10 @@
+{
+  "code": "D5.7",
+  "title": "D5.7 · Fecho da cadeia",
+  "slug": "aa82d653-0d47-4c05-96f9-6ae2fb170069",
+  "datasets": {
+    "alfa": { "file": "alfa.json", "sha256": "946032a32f75e28ee1e65c9a2eb4c6059e287e9867857cf684b633baaa41a9b9" },
+    "cadeia": { "file": "cadeia.json", "sha256": "3ab0a94d602aaa2005ac29ad8b6ed43d34bfe6e300df20724cb315e48f758adb" },
+    "cenarios": { "file": "cenarios.json", "sha256": "2785bd6e9c9485bbdd8c0ff35796db10034bca66ccc5f9b710e60435110fe5fb" }
+  }
+}

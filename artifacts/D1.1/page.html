@@ -1,0 +1,489 @@
+<meta name="dash-one-writer">
+<style>
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.bv {
+  --bv-aco: #E3A21A; --bv-pco: #9C6206; --bv-acf: #74B9EE; --bv-pcf: #1E4E8C; --bv-ccl: #2A3F7A;
+  --bv-pos: #2E9E5B; --bv-neg: #D64545; --bv-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.bv-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.bv-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.bv-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; max-width: 46rem; }
+.bv-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.bv-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.bv-btn:hover { border-color: var(--color-fg-muted); }
+.bv-btn[aria-pressed="true"] { background: var(--bv-ccl); border-color: var(--bv-ccl); color: #fff; }
+
+.bv-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .bv-zones { grid-template-columns: minmax(16rem, .9fr) minmax(0, 1.6fr) minmax(17rem, 1fr); }
+}
+.bv-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.bv-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+
+.bv-ctl { margin-bottom: 8px; }
+.bv-ctl label { display: block; font-size: 14px; margin-bottom: 1px; }
+.bv-u { color: var(--color-fg-muted); font-size: 13px; }
+.bv-in { display: grid; grid-template-columns: 1fr 5rem; gap: 8px; align-items: center; }
+.bv-in input[type=range] { width: 100%; accent-color: var(--bv-ccl); }
+.bv-in input[type=number] { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.bv-in input:disabled { opacity: .55; }
+.bv-sep { border-top: 1px solid var(--color-border-line); margin: 10px 0 8px; }
+.bv-tg { margin-bottom: 8px; }
+.bv-tg > span { display: block; font-size: 14px; margin-bottom: 3px; }
+.bv-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.bv-seg button { font: inherit; font-size: 13px; border: 0; background: var(--color-bg); color: var(--color-fg-muted); padding: 5px 10px; cursor: pointer; }
+.bv-seg button + button { border-left: 1px solid var(--color-border-line); }
+.bv-seg button[aria-pressed="true"] { background: var(--bv-ccl); color: #fff; }
+
+.bv-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.bv-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.bv-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.bv-blocos { position: relative; min-height: 400px; margin-top: 6px; }
+.bv-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; font-variant-numeric: tabular-nums; }
+.bv-svgh { font-family: var(--font-anthropic-sans); font-size: 14px; fill: var(--color-fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+.bv-fn { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; }
+.bv-tt { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; z-index: 4; }
+.bv-tt .bv-ttd { color: var(--cds-text-secondary); }
+
+.bv-r { display: grid; grid-template-columns: 1fr 5.2rem 5.2rem; align-items: baseline; gap: 6px; padding: 4px 0; border-bottom: 1px solid var(--color-border-line); }
+.bv-r > span { font-size: 14px; }
+.bv-r b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.3rem; text-align: right; font-variant-numeric: tabular-nums; }
+.bv-r.bv-big b { font-size: 1.85rem; }
+.bv-r.bv-hd { border-bottom: 1px solid var(--color-fg-muted); }
+.bv-r.bv-hd span { font-size: 13px; color: var(--color-fg-muted); text-align: right; font-weight: var(--cds-font-weight-medium); }
+.bv-r.bv-hd span:first-child { text-align: left; }
+.bv-r b.bv-aj, .bv-r span.bv-aj { color: var(--bv-neg); }
+.bv-tot { font-size: 13px; color: var(--color-fg-muted); margin: 8px 0 0; font-variant-numeric: tabular-nums; }
+.bv-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--bv-ccl); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.bv-diag p { margin: 0; }
+.bv-diag b { font-variant-numeric: tabular-nums; }
+
+.bv-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.bv-info .bv-tip { display: none; position: absolute; left: 50%; top: 130%; transform: translateX(-50%); width: 15rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); text-transform: none; letter-spacing: 0; pointer-events: none; text-align: left; }
+.bv-info:hover .bv-tip, .bv-info:focus .bv-tip { display: block; }
+
+.bv-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.bv-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.bv-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.bv-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.bv-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.bv-help details p { margin: 4px 0 0; font-size: 14px; }
+.bv-help b { font-variant-numeric: tabular-nums; }
+
+.bv-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.bv-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="bv" id="d11">
+  <header class="bv-head">
+    <div>
+      <h1 class="bv-title">D1.1 · Balanço vivo</h1>
+      <p class="bv-sub">O número sozinho não diz nada: o que muda quando a carteira e o estoque não valem o que o balanço diz?</p>
+    </div>
+    <div class="bv-cens" id="cenarios" data-source="cenarios" role="group" aria-label="Cenários">
+      <button class="bv-btn bv-cen" data-cen="Alfa T0" aria-pressed="false">Alfa T0</button>
+      <button class="bv-btn bv-cen" data-cen="Liquidez bonita, carteira podre" aria-pressed="false">Liquidez bonita, carteira podre</button>
+      <button class="bv-btn bv-cen" data-cen="Estoque encalhado" aria-pressed="false">Estoque encalhado</button>
+      <button class="bv-btn bv-cen" data-cen="Alfa T-1" aria-pressed="false">Alfa T-1</button>
+    </div>
+  </header>
+
+  <div class="bv-zones">
+    <div class="bv-zone" id="controles" data-source="cenarios balanco_alfa">
+      <h2 class="bv-zt">Contas circulantes · R$ mil</h2>
+      <div class="bv-ctl"><label for="c-disp">Disponível</label>
+        <div class="bv-in"><input type="range" id="c-disp" data-k="disp" min="0" max="8000" step="100"><input type="number" data-k="disp" min="0" max="8000" step="100" aria-label="Disponível, R$ mil"></div></div>
+      <div class="bv-ctl"><label for="c-cli">Clientes</label>
+        <div class="bv-in"><input type="range" id="c-cli" data-k="cli" min="2000" max="16000" step="100"><input type="number" data-k="cli" min="2000" max="16000" step="100" aria-label="Clientes, R$ mil"></div></div>
+      <div class="bv-ctl"><label for="c-est">Estoques</label>
+        <div class="bv-in"><input type="range" id="c-est" data-k="est" min="1000" max="12000" step="100"><input type="number" data-k="est" min="1000" max="12000" step="100" aria-label="Estoques, R$ mil"></div></div>
+      <div class="bv-ctl"><label for="c-forn">Fornecedores</label>
+        <div class="bv-in"><input type="range" id="c-forn" data-k="forn" min="1000" max="9000" step="100"><input type="number" data-k="forn" min="1000" max="9000" step="100" aria-label="Fornecedores, R$ mil"></div></div>
+      <div class="bv-sep"></div>
+      <h2 class="bv-zt">Qualidade do ativo</h2>
+      <div class="bv-ctl"><label for="c-inad">Inadimplência na carteira <span class="bv-u">%</span></label>
+        <div class="bv-in"><input type="range" id="c-inad" data-k="inad" min="0" max="50" step="1"><input type="number" data-k="inad" min="0" max="50" step="1" aria-label="Inadimplência na carteira, %"></div></div>
+      <div class="bv-ctl"><label for="c-obs">Estoque obsoleto / sem giro <span class="bv-u">%</span></label>
+        <div class="bv-in"><input type="range" id="c-obs" data-k="obs" min="0" max="50" step="1"><input type="number" data-k="obs" min="0" max="50" step="1" aria-label="Estoque obsoleto, %"></div></div>
+      <div class="bv-sep"></div>
+      <div class="bv-tg"><span>Quem financia a variação <span class="bv-info" tabindex="0">i<span class="bv-tip">O que a operação demanda e a estrutura não cobre, a Alfa toma em dívida — de curto prazo ou de longo prazo, conforme esta escolha.</span></span></span>
+        <div class="bv-seg" role="group" aria-label="Quem financia a variação"><button class="bv-fin" data-fin="CP" aria-pressed="true">Empréstimos CP</button><button class="bv-fin" data-fin="ELP" aria-pressed="false">Exigível LP</button></div></div>
+      <div class="bv-tg"><span>Base da foto</span>
+        <div class="bv-seg" role="group" aria-label="Base da foto"><button class="bv-modo" data-modo="foto" aria-pressed="true">Foto 31/12</button><button class="bv-modo" data-modo="media" aria-pressed="false">Média 4 trimestres</button></div></div>
+    </div>
+
+    <div class="bv-zone" id="balanco" data-source="balanco_alfa trimestres">
+      <div class="bv-ch"><h3>Balanço em blocos proporcionais</h3><span>R$ mil · a distância entre as fronteiras é o CCL</span></div>
+      <div class="bv-blocos dash-skeleton" data-draw="blocos" role="img" aria-label="Balanço da Alfa em blocos proporcionais"></div>
+      <p class="bv-fn">⇄ marca a conta que fecha o balanço. Hachurado: a parte de Clientes e Estoques que não vale o que o balanço diz.</p>
+      <p class="bv-fn bv-media-nota" hidden>Média de 4 trimestres: só AC e PC mudam; o balanço médio não precisa fechar.</p>
+    </div>
+
+    <div class="bv-zone" id="leitura" data-source="balanco_alfa trimestres">
+      <h2 class="bv-zt">Indicadores</h2>
+      <span data-draw="aj-sel"></span>
+      <div class="bv-r bv-hd"><span></span><span>Cheio</span><span class="bv-aj" hidden>Ajustado</span></div>
+      <div class="bv-r bv-big"><span>Liquidez corrente</span><b data-draw="v" data-i="LC">—</b><b class="bv-aj" data-draw="v" data-i="LC" data-aj hidden>—</b></div>
+      <div class="bv-r"><span>Liquidez seca</span><b data-draw="v" data-i="LS">—</b><b class="bv-aj" data-draw="v" data-i="LS" data-aj hidden>—</b></div>
+      <div class="bv-r"><span>Liquidez imediata</span><b data-draw="v" data-i="LI">—</b><b class="bv-aj" data-draw="v" data-i="LI" data-aj hidden>—</b></div>
+      <div class="bv-r"><span>Liquidez geral</span><b data-draw="v" data-i="LG">—</b><b class="bv-aj" data-draw="v" data-i="LG" data-aj hidden>—</b></div>
+      <div class="bv-r"><span>PMRE <span class="bv-u">dias</span></span><b data-draw="v" data-i="PMRE">—</b><b class="bv-aj" data-draw="v" data-i="PMRE" data-aj hidden>—</b></div>
+      <div class="bv-r"><span>PMRV <span class="bv-u">dias</span></span><b data-draw="v" data-i="PMRV">—</b><b class="bv-aj" data-draw="v" data-i="PMRV" data-aj hidden>—</b></div>
+      <div class="bv-r"><span>PMPF <span class="bv-u">dias</span></span><b data-draw="v" data-i="PMPF">—</b><b class="bv-aj" data-draw="v" data-i="PMPF" data-aj hidden>—</b></div>
+      <div class="bv-r"><span>CCL <span class="bv-u">R$ mil</span></span><b data-draw="v" data-i="CCL">—</b><b class="bv-aj" data-draw="v" data-i="CCL" data-aj hidden>—</b></div>
+      <p class="bv-tot" data-draw="totais">—</p>
+      <div class="bv-diag">
+        <span data-draw="frase"></span>
+        <p data-frase="cheio" hidden>Liquidez corrente <b data-draw="v-lc">—</b>: a Alfa cobre <b data-draw="v-lcpct">—</b>% do passivo circulante com ativos circulantes. Compare com o setor antes de concluir.</p>
+        <p data-frase="ajuste" hidden>A foto diz <b data-draw="v-lc">—</b>; a carteira e o estoque reais dizem <b data-draw="v-lcaj">—</b>. Liquidez alta com ativo ruim é a primeira armadilha.</p>
+        <p data-frase="negativo" hidden>Passivo circulante maior que o ativo circulante: CCL negativo — curto prazo financiando a estrutura.</p>
+        <p data-frase="media" hidden>A foto de 31/12 dá <b data-draw="v-lcfoto">—</b>; a média dos quatro trimestres dá <b data-draw="v-lc">—</b>. A diferença é a sazonalidade.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="bv-help" id="perguntas" data-source="balanco_alfa trimestres">
+    <summary>? Perguntas-guia</summary>
+    <div class="bv-help-body">
+      <ol>
+        <li>Liquidez corrente de 2,0 com 30% da carteira em atraso é melhor ou pior que 1,0 com carteira sã?
+          <details><summary>mostrar resposta</summary><p>Com "Exigível LP", leve Clientes a <b data-draw="q1-cli">—</b> (LC = <b data-draw="q1-lc">—</b>) e aplique <b data-draw="q1-inad">—</b>% de inadimplência: a LC ajustada cai para <b data-draw="q1-lcaj">—</b> e a carteira que "sustenta" o índice não vira caixa. O índice de 1,0 com carteira sã paga as contas; o de 2,0 inflado pode não pagar.</p></details>
+        </li>
+        <li>Por que a liquidez imediata não muda com a inadimplência?
+          <details><summary>mostrar resposta</summary><p>Porque só usa Disponível no numerador — é o único índice imune à qualidade de clientes e estoques; por isso é o mais conservador.</p></details>
+        </li>
+        <li>Troque para "Média 4 trimestres". A Alfa é mais ou menos líquida do que a foto de dezembro sugere?
+          <details><summary>mostrar resposta</summary><p>LC média <b data-draw="q3-lcm">—</b> contra <b data-draw="q3-lcf">—</b> — pouco diferente aqui, mas o estoque médio (<b data-draw="q3-em">—</b>) é maior que o de dezembro (<b data-draw="q3-ed">—</b>): a foto de fim de ano subestima o estoque típico da Alfa.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>
+/* ============================================================
+   D1.1 · Balanço vivo — funções puras + desenhos
+   Testes de aderência (Spec §7), conferidos com fechar()/indicadores():
+   Alfa T0: AC 16.500 · PC 8.600 · Total 38.000 · LC 1,92 · LS 1,30 · LI 0,29 · LG 1,01 · PMRE 60 · PMRV 60 · PMPF 45 · CCL 7.900 · Emp. CP 3.500
+   Liquidez bonita (ELP, Clientes 12.000, inad 35%): LC 2,35 → ajustada 1,86 · ELP 12.700
+   Estoque encalhado (CP, Estoques 9.000, obs 40%): LC 1,64 · PMRE 101 → 61 · Emp. CP 7.200
+   Clientes 12.000 com CP: LC 1,64 · Média 4 trimestres: LC 1,89 · Estoques 5.575
+   Alfa T-1: AC 14.050 · PC 6.550 · LC 2,15 · CCL 7.500
+   ============================================================ */
+const BV = window.BV = { S: null, cen: null };
+const Q1 = { cli: 9000, inad: 30 };          // números sugeridos na pergunta-guia 1 (Spec §6)
+const CIRC = ['disp', 'cli', 'est', 'forn'];
+const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+const f = loc.format(',.0f');
+const f2 = loc.format('.2f');
+const COR = { ACO: 'var(--bv-aco)', PCO: 'var(--bv-pco)', ACF: 'var(--bv-acf)', PCF: 'var(--bv-pcf)', RLP: '#BFC4CA', ANC: '#9AA0A6', ELP: '#7A8088', PL: '#5F656D' };
+const TXT = { ACO: '#1a1a1a', PCO: '#fff', ACF: '#0b2340', PCF: '#fff', RLP: '#1a1a1a', ANC: '#1a1a1a', ELP: '#fff', PL: '#fff' };
+
+/* ---------- funções puras ---------- */
+function bases(rows) {
+  const o = { t_1: {}, t0: {} };
+  rows.forEach((r) => {
+    if (r.t_1 !== null && r.t_1 !== undefined && r.t_1 !== '') o.t_1[r.chave] = Number(r.t_1);
+    o.t0[r.chave] = Number(r.t0);
+  });
+  ['rec', 'cmv', 'compras'].forEach((k) => { o.t_1[k] = o.t0[k]; });   // DRE constante (Spec §5)
+  return o;
+}
+function media(tri) {
+  const m = {};
+  ['disp', 'cli', 'est', 'oaco', 'forn', 'opco', 'emp'].forEach((k) => { m[k] = d3.mean(tri, (r) => Number(r[k])); });
+  return m;
+}
+function fechar(B, S) {
+  const d = { ...B, disp: S.disp, cli: S.cli, est: S.est, forn: S.forn };
+  const delta = (S.disp - B.disp) + (S.cli - B.cli) + (S.est - B.est) - (S.forn - B.forn);
+  let excesso = 0;
+  const k = S.fin === 'ELP' ? 'elp' : 'emp';
+  d[k] = B[k] + delta;
+  if (d[k] < 0) { excesso = -d[k]; d[k] = 0; d.disp += excesso; }
+  return { d, excesso };
+}
+function indicadores(d, inad, obs) {
+  const PC = d.forn + d.opco + d.emp;
+  const ind = (cli, est) => {
+    const AC = d.disp + cli + est + d.oaco;
+    return {
+      AC, LC: AC / PC, LS: (AC - est) / PC, LI: d.disp / PC, LG: (AC + d.rlp) / (PC + d.elp),
+      PMRE: est / d.cmv * 360, PMRV: cli / d.rec * 360, PMPF: d.forn / d.compras * 360, CCL: AC - PC,
+    };
+  };
+  const cheio = ind(d.cli, d.est);
+  return {
+    PC, cheio, aj: ind(d.cli * (1 - inad / 100), d.est * (1 - obs / 100)),
+    ativo: cheio.AC + d.rlp + d.imob, passivo: PC + d.elp + d.pl,
+  };
+}
+
+function estado() {
+  const a = dash.data('balanco_alfa');
+  if (a.status !== 'ok' || !BV.S) {
+    const c = dash.data('cenarios');
+    return { ok: false, s: (a.status === 'loading' || c.status === 'loading') ? 'loading' : 'error' };
+  }
+  const S = BV.S;
+  const bs = bases(a.data);
+  const B = bs[S.base];
+  const foto = fechar(B, S).d;
+  let d = foto;
+  if (S.modo === 'media') {
+    const t = dash.data('trimestres');
+    if (t.status !== 'ok') return { ok: false, s: t.status === 'loading' ? 'loading' : 'error' };
+    d = { ...bs.t0, ...media(t.data) };
+  }
+  return { ok: true, S, d, ind: indicadores(d, S.inad, S.obs), foto: indicadores(foto, 0, 0), ajusteAtivo: S.inad > 0 || S.obs > 0 };
+}
+
+/* ---------- controles ---------- */
+const NOMES_DESENHO = ['blocos', 'aj-sel', 'v', 'totais', 'frase', 'v-lc', 'v-lcpct', 'v-lcaj', 'v-lcfoto'];
+const redraw = () => NOMES_DESENHO.forEach((n) => dash.draw(n));
+function ajustaFechamento() {
+  const a = dash.data('balanco_alfa');
+  if (a.status !== 'ok' || !BV.S || BV.S.modo === 'media') return;
+  const r = fechar(bases(a.data)[BV.S.base], BV.S);
+  if (r.excesso > 0) BV.S.disp = r.d.disp;     // o excedente vai para Disponível: o slider se move sozinho
+}
+function sincroniza() {
+  const S = BV.S;
+  const t = dash.data('trimestres');
+  const med = S.modo === 'media' && t.status === 'ok' ? media(t.data) : null;
+  document.querySelectorAll('input[data-k]').forEach((i) => {
+    const k = i.dataset.k;
+    const circ = CIRC.includes(k);
+    i.value = circ && med ? Math.round(med[k]) : S[k];
+    i.disabled = circ && S.modo === 'media';
+  });
+  document.querySelectorAll('.bv-fin').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.fin === S.fin)));
+  document.querySelectorAll('.bv-modo').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === S.modo)));
+  document.querySelectorAll('.bv-media-nota').forEach((n) => { n.hidden = S.modo !== 'media'; });
+}
+const marca = (nome) => {
+  document.querySelectorAll('.bv-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === nome)));
+};
+function aplicar(nome) {
+  const a = dash.data('balanco_alfa');
+  const row = (BV.cen || []).find((r) => r.cenario === nome);
+  if (!row || a.status !== 'ok') return false;
+  const B = bases(a.data)[row.base];
+  const ou = (v, b) => (v === null || v === undefined || v === '' ? b : Number(v));
+  BV.S = {
+    base: row.base, fin: row.financia, modo: 'foto',
+    disp: ou(row.disp, B.disp), cli: ou(row.cli, B.cli), est: ou(row.est, B.est), forn: ou(row.forn, B.forn),
+    inad: Number(row.inad), obs: Number(row.obs),
+  };
+  ajustaFechamento();
+  sincroniza();
+  marca(nome);
+  return true;
+}
+const limita = (k, v) => {
+  const i = document.querySelector('input[type=range][data-k="' + k + '"]');
+  return i ? Math.min(Number(i.max), Math.max(Number(i.min), v)) : v;
+};
+
+dash.onData(() => {
+  const c = dash.data('cenarios');
+  if (c.status === 'ok') {
+    BV.cen = c.data;
+    if (!BV.S) aplicar('Alfa T0');
+  }
+});
+document.querySelectorAll('input[data-k]').forEach((inp) => {
+  inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+    if (!BV.S) return;
+    const v = Number(inp.value);
+    if (inp.value === '' || !Number.isFinite(v)) { sincroniza(); return; }
+    BV.S[inp.dataset.k] = limita(inp.dataset.k, v);
+    ajustaFechamento();
+    sincroniza();
+    marca(null);
+    redraw();
+  });
+});
+document.querySelectorAll('.bv-fin').forEach((b) => b.addEventListener('click', () => {
+  if (!BV.S) return;
+  BV.S.fin = b.dataset.fin;
+  ajustaFechamento();
+  sincroniza();
+  marca(null);
+  redraw();
+}));
+document.querySelectorAll('.bv-modo').forEach((b) => b.addEventListener('click', () => {
+  if (!BV.S) return;
+  BV.S.modo = b.dataset.modo;
+  sincroniza();
+  redraw();
+}));
+document.querySelectorAll('.bv-cen').forEach((b) => b.addEventListener('click', () => { if (aplicar(b.dataset.cen)) redraw(); }));
+
+/* ---------- auxiliares ---------- */
+function mk(tag, cls, txt) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt != null) n.textContent = txt;
+  return n;
+}
+function caixa(el, e) {
+  el.classList.toggle('dash-skeleton', e.s === 'loading');
+  if (e.s === 'loading') { el.replaceChildren(); return; }
+  const d = mk('div', 'bv-fail');
+  d.append(mk('i'), 'Não carregou');
+  el.replaceChildren(d);
+}
+function texto(name, fn) {
+  dash.draw(name, (el) => {
+    const e = estado();
+    if (!e.ok) { el.textContent = '—'; return; }
+    fn(el, e);
+  });
+}
+
+/* ---------- balanço em blocos ---------- */
+dash.draw('blocos', (el) => {
+  const e = estado();
+  if (!e.ok) { caixa(el, e); return; }
+  el.classList.remove('dash-skeleton');
+  const { d, S, ind } = e;
+  const W = Math.max(300, el.clientWidth), H = 400, top = 24;
+  const G = Math.max(84, Math.min(120, W * 0.24));
+  const colW = (W - G) / 2;
+  const k = (H - top - 2) / Math.max(ind.ativo, ind.passivo);
+  const foto = S.modo !== 'media';
+  const ativo = [
+    { n: 'Disponível', v: d.disp, g: 'ACF' },
+    { n: 'Clientes', v: d.cli, g: 'ACO', podre: S.inad / 100 },
+    { n: 'Estoques', v: d.est, g: 'ACO', podre: S.obs / 100 },
+    { n: 'Outros operacionais', v: d.oaco, g: 'ACO' },
+    { n: 'Realizável LP', v: d.rlp, g: 'RLP' },
+    { n: 'Imobilizado e outros', v: d.imob, g: 'ANC' },
+  ];
+  const passivo = [
+    { n: 'Fornecedores', v: d.forn, g: 'PCO' },
+    { n: 'Outros operacionais', v: d.opco, g: 'PCO' },
+    { n: 'Empréstimos CP', v: d.emp, g: 'PCF', fecha: foto && S.fin === 'CP' },
+    { n: 'Exigível LP', v: d.elp, g: 'ELP', fecha: foto && S.fin === 'ELP' },
+    { n: 'Patrimônio líquido', v: d.pl, g: 'PL' },
+  ];
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  el.replaceChildren(svg.node());
+  const pid = 'bvh' + Math.random().toString(36).slice(2, 8);
+  const pat = svg.append('defs').append('pattern').attr('id', pid).attr('patternUnits', 'userSpaceOnUse')
+    .attr('width', 7).attr('height', 7).attr('patternTransform', 'rotate(45)');
+  pat.append('rect').attr('width', 7).attr('height', 7).attr('fill', '#F3D3D3');
+  pat.append('line').attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', 7).attr('stroke', '#D64545').attr('stroke-width', 3);
+  const tt = mk('div', 'bv-tt');
+  tt.style.display = 'none';
+  el.append(tt);
+  const mostra = (ev, b) => {
+    tt.replaceChildren(mk('div', 'bv-ttd', b.g), b.n + ' ' + f(b.v) + (b.podre ? ' · ajustado ' + f(b.v * (1 - b.podre)) : ''));
+    tt.style.display = 'block';
+    const r = el.getBoundingClientRect();
+    tt.style.left = Math.max(0, Math.min(ev.clientX - r.left + 12, el.clientWidth - tt.offsetWidth - 2)) + 'px';
+    tt.style.top = Math.max(0, ev.clientY - r.top - 40) + 'px';
+  };
+  const coluna = (blocos, x0, titulo, total) => {
+    svg.append('text').attr('class', 'bv-svgh').attr('x', x0).attr('y', 15).text(titulo + ' · ' + f(total));
+    let y = top;
+    blocos.forEach((b) => {
+      const h = Math.max(0, b.v * k);
+      const g = svg.append('g');
+      g.append('rect').attr('x', x0).attr('y', y).attr('width', colW).attr('height', Math.max(0.5, h - 1))
+        .attr('fill', COR[b.g]).attr('rx', 2);
+      if (b.podre && h > 2) {
+        const hp = h * b.podre;
+        g.append('rect').attr('x', x0).attr('y', y + h - hp).attr('width', colW).attr('height', Math.max(0, hp - 1)).attr('fill', `url(#${pid})`);
+      }
+      g.on('pointermove', (ev) => mostra(ev, b)).on('pointerleave', () => { tt.style.display = 'none'; });
+      const nome = (b.fecha ? '⇄ ' : '') + b.n;
+      const valor = b.podre ? f(b.v) + ' → ' + f(b.v * (1 - b.podre)) : f(b.v);
+      const linhas = h >= 52 && b.fecha ? [nome, valor, '(fecha o balanço)'] : h >= 36 ? [nome, valor] : h >= 18 ? [nome + ' ' + valor] : [];
+      const ys = y + 15;
+      linhas.forEach((l, i) => {
+        const t = g.append('text').attr('class', 'bv-svgt').attr('x', x0 + 7).attr('y', ys + i * 16).style('fill', TXT[b.g])
+          .style('pointer-events', 'none').text(l);
+        if (t.node().getComputedTextLength() > colW - 12) {
+          t.text(i === 0 && linhas.length === 1 ? valor : l);
+          if (t.node().getComputedTextLength() > colW - 12) t.remove();
+        }
+      });
+      y += h;
+    });
+  };
+  coluna(ativo, 0, 'Ativo', ind.ativo);
+  coluna(passivo, colW + G, 'Passivo + PL', ind.passivo);
+  // fronteiras circulante / não circulante e o CCL entre elas
+  const yA = top + ind.cheio.AC * k, yP = top + ind.PC * k, xm = colW + G / 2;
+  const cor = ind.cheio.CCL >= 0 ? 'var(--bv-ccl)' : 'var(--bv-neg)';
+  svg.append('line').attr('x1', 0).attr('x2', xm).attr('y1', yA).attr('y2', yA).attr('stroke', 'var(--color-fg)').attr('stroke-width', 2);
+  svg.append('line').attr('x1', xm).attr('x2', W).attr('y1', yP).attr('y2', yP).attr('stroke', 'var(--color-fg)').attr('stroke-width', 2);
+  svg.append('line').attr('x1', xm).attr('x2', xm).attr('y1', yA).attr('y2', yP).attr('stroke', cor).attr('stroke-width', 3);
+  const yl = Math.abs(yA - yP) >= 40 ? (yA + yP) / 2 - 8 : Math.max(yA, yP) + 14;
+  const bg = svg.append('rect').attr('fill', 'var(--color-panel)').attr('rx', 3);
+  const t1 = svg.append('text').attr('class', 'bv-svgh').attr('text-anchor', 'middle').attr('x', xm).attr('y', yl + 4).style('fill', cor).text('CCL');
+  const t2 = svg.append('text').attr('class', 'bv-svgh').attr('text-anchor', 'middle').attr('x', xm).attr('y', yl + 20).style('fill', cor).text(f(ind.cheio.CCL));
+  const wl = Math.max(t1.node().getComputedTextLength(), t2.node().getComputedTextLength()) + 10;
+  bg.attr('x', xm - wl / 2).attr('y', yl - 10).attr('width', wl).attr('height', 36);
+});
+
+/* ---------- leitura ---------- */
+dash.draw('aj-sel', (el) => {
+  const e = estado();
+  const on = e.ok && e.ajusteAtivo;
+  el.parentElement.querySelectorAll('.bv-aj').forEach((x) => { x.hidden = !on; });
+});
+const fmtInd = (i, v) => (i.startsWith('PM') ? f(Math.round(v)) : i === 'CCL' ? f(v) : f2(v));
+dash.draw('v', (el) => {
+  const e = estado();
+  if (!e.ok) { el.textContent = '—'; return; }
+  const src = el.hasAttribute('data-aj') ? e.ind.aj : e.ind.cheio;
+  el.textContent = fmtInd(el.dataset.i, src[el.dataset.i]);
+});
+texto('totais', (el, e) => {
+  el.textContent = 'AC ' + f(e.ind.cheio.AC) + ' · PC ' + f(e.ind.PC) + ' · Total do ativo ' + f(e.ind.ativo)
+    + (e.S.modo === 'media' ? ' · passivo + PL ' + f(e.ind.passivo) : '')
+    + (e.S.base === 't_1' ? ' · base T-1' : '');
+});
+dash.draw('frase', (el) => {
+  const e = estado();
+  let k = '';
+  if (e.ok) {
+    if (e.S.modo === 'media') k = 'media';
+    else if (e.ind.cheio.LC < 1) k = 'negativo';
+    else if (e.ajusteAtivo && e.ind.aj.LC < e.ind.cheio.LC - 0.15) k = 'ajuste';
+    else k = 'cheio';
+  }
+  el.parentElement.querySelectorAll('[data-frase]').forEach((p) => { p.hidden = p.dataset.frase !== k; });
+});
+texto('v-lc', (el, e) => { el.textContent = f2(e.ind.cheio.LC); });
+texto('v-lcpct', (el, e) => { el.textContent = f(e.ind.cheio.LC * 100); });
+texto('v-lcaj', (el, e) => { el.textContent = f2(e.ind.aj.LC); });
+texto('v-lcfoto', (el, e) => { el.textContent = f2(e.foto.cheio.LC); });
+
+/* ---------- perguntas-guia ---------- */
+function pergunta(name, fn) {
+  dash.draw(name, (el) => {
+    const a = dash.data('balanco_alfa');
+    if (a.status !== 'ok') { el.textContent = '—'; return; }
+    const B = bases(a.data).t0;
+    const t = dash.data('trimestres');
+    const r = fn(B, t.status === 'ok' ? t.data : null);
+    el.textContent = r == null ? '—' : r;
+  });
+}
+const q1 = (B) => indicadores(fechar(B, { disp: B.disp, cli: Q1.cli, est: B.est, forn: B.forn, fin: 'ELP' }).d, Q1.inad, 0);
+pergunta('q1-cli', () => f(Q1.cli));
+pergunta('q1-inad', () => String(Q1.inad));
+pergunta('q1-lc', (B) => f2(q1(B).cheio.LC));
+pergunta('q1-lcaj', (B) => f2(q1(B).aj.LC));
+pergunta('q3-lcm', (B, tri) => (tri ? f2(indicadores({ ...B, ...media(tri) }, 0, 0).cheio.LC) : null));
+pergunta('q3-lcf', (B) => f2(indicadores(B, 0, 0).cheio.LC));
+pergunta('q3-em', (B, tri) => (tri ? f(media(tri).est) : null));
+pergunta('q3-ed', (B) => f(B.est));
+</script>

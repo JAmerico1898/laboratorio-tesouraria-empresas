@@ -1,0 +1,44 @@
+[
+ {
+  "id": "alfa-ANC",
+  "caso": "Alfa",
+  "item": "ANC",
+  "t_1": 20500,
+  "t0": 21500
+ },
+ {
+  "id": "alfa-ELP",
+  "caso": "Alfa",
+  "item": "ELP",
+  "t_1": 8500,
+  "t0": 9000
+ },
+ {
+  "id": "alfa-PL",
+  "caso": "Alfa",
+  "item": "PL",
+  "t_1": 19500,
+  "t0": 20400
+ },
+ {
+  "id": "varejista-ANC",
+  "caso": "Varejista",
+  "item": "ANC",
+  "t_1": null,
+  "t0": 10000
+ },
+ {
+  "id": "varejista-ELP",
+  "caso": "Varejista",
+  "item": "ELP",
+  "t_1": null,
+  "t0": 2000
+ },
+ {
+  "id": "varejista-PL",
+  "caso": "Varejista",
+  "item": "PL",
+  "t_1": null,
+  "t0": 8000
+ }
+]

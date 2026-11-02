@@ -1,0 +1,7 @@
+[
+ {"ordem":1,"variavel":"Tempo de empresa","familia":"cadastral","alimenta":"Capital · Condições","unidade":"anos","rho":0.55,"beta":-0.26,"betaFraco":-0.5,"transf":"exp","media":1.9,"escala":0.7,"min":0,"max":1000,"arred":"int","horizonte":12},
+ {"ordem":2,"variavel":"Atraso médio 12 m","familia":"comportamental","alimenta":"Caráter · Capacidade","unidade":"dias","rho":0.60,"beta":0.47,"betaFraco":0.9,"transf":"lin","media":6,"escala":8,"min":0,"max":1000,"arred":"no","horizonte":4},
+ {"ordem":3,"variavel":"% pago no vencimento","familia":"comportamental","alimenta":"Caráter","unidade":"%","rho":0.50,"beta":-0.37,"betaFraco":-0.7,"transf":"lin","media":85,"escala":10,"min":30,"max":100,"arred":"no","horizonte":92},
+ {"ordem":4,"variavel":"Score bureau","familia":"bureau","alimenta":"Caráter · Capacidade","unidade":"pontos","rho":0.65,"beta":-0.53,"betaFraco":-1.0,"transf":"lin","media":650,"escala":120,"min":300,"max":1000,"arred":"int","horizonte":740},
+ {"ordem":5,"variavel":"Uso do limite","familia":"comportamental","alimenta":"Capacidade","unidade":"%","rho":0.45,"beta":0.32,"betaFraco":0.6,"transf":"lin","media":55,"escala":25,"min":0,"max":100,"arred":"no","horizonte":48}
+]

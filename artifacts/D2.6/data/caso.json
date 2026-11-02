@@ -1,0 +1,4 @@
+[{"chave":"valor","valor":3000},{"chave":"dur","valor":150},{"chave":"recorrencia","valor":"anual"},
+{"chave":"carteira","valor":8300},{"chave":"dividaCP","valor":3500},{"chave":"txAplic","valor":0.105},
+{"chave":"iofFixo","valor":0.0038},{"chave":"iofDia","valor":0.000041},{"chave":"iofTeto","valor":365},{"chave":"tribTAC","valor":0.1425},
+{"chave":"teto","valor":0.40},{"chave":"minBancos","valor":3}]

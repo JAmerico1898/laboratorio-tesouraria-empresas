@@ -1,0 +1,182 @@
+[
+ {
+  "id": "alfa-01",
+  "caso": "Alfa",
+  "conta": "Caixa e bancos",
+  "lado": "ativo",
+  "grupo": "ACF",
+  "t_1": 1400,
+  "t0": 1200,
+  "criterio": "Saldo de caixa é decisão de tesouraria, não da operação — ACF"
+ },
+ {
+  "id": "alfa-02",
+  "caso": "Alfa",
+  "conta": "Aplicações financeiras CP",
+  "lado": "ativo",
+  "grupo": "ACF",
+  "t_1": 1500,
+  "t0": 1300,
+  "criterio": "Aplicar sobra de caixa é decisão financeira — ACF"
+ },
+ {
+  "id": "alfa-03",
+  "caso": "Alfa",
+  "conta": "Duplicatas a receber (clientes)",
+  "lado": "ativo",
+  "grupo": "ACO",
+  "t_1": 6600,
+  "t0": 8300,
+  "criterio": "Nascem das vendas a prazo e renovam-se com o ciclo — ACO"
+ },
+ {
+  "id": "alfa-04",
+  "caso": "Alfa",
+  "conta": "Estoques",
+  "lado": "ativo",
+  "grupo": "ACO",
+  "t_1": 4200,
+  "t0": 5300,
+  "criterio": "Renovam-se com o ciclo de compra, produção e venda — ACO"
+ },
+ {
+  "id": "alfa-05",
+  "caso": "Alfa",
+  "conta": "Adiantamentos a fornecedores",
+  "lado": "ativo",
+  "grupo": "ACO",
+  "t_1": 150,
+  "t0": 150,
+  "criterio": "Ligados às compras da operação — ACO"
+ },
+ {
+  "id": "alfa-06",
+  "caso": "Alfa",
+  "conta": "Impostos a recuperar (operacionais)",
+  "lado": "ativo",
+  "grupo": "ACO",
+  "t_1": 200,
+  "t0": 250,
+  "criterio": "Impostos a recuperar operacionais: renovam-se com o ciclo — ACO"
+ },
+ {
+  "id": "alfa-07",
+  "caso": "Alfa",
+  "conta": "Fornecedores",
+  "lado": "passivo",
+  "grupo": "PCO",
+  "t_1": 3400,
+  "t0": 4100,
+  "criterio": "Financiamento espontâneo das compras — PCO"
+ },
+ {
+  "id": "alfa-08",
+  "caso": "Alfa",
+  "conta": "Salários e encargos a pagar",
+  "lado": "passivo",
+  "grupo": "PCO",
+  "t_1": 450,
+  "t0": 600,
+  "criterio": "Renovam-se a cada mês com a operação — PCO"
+ },
+ {
+  "id": "alfa-09",
+  "caso": "Alfa",
+  "conta": "Tributos operacionais a recolher",
+  "lado": "passivo",
+  "grupo": "PCO",
+  "t_1": 300,
+  "t0": 400,
+  "criterio": "Nascem do faturamento e renovam-se com ele — PCO"
+ },
+ {
+  "id": "alfa-10",
+  "caso": "Alfa",
+  "conta": "Empréstimos e financiamentos CP",
+  "lado": "passivo",
+  "grupo": "PCF",
+  "t_1": 1600,
+  "t0": 2300,
+  "criterio": "Dívida onerosa: decisão de financiamento — PCF"
+ },
+ {
+  "id": "alfa-11",
+  "caso": "Alfa",
+  "conta": "Duplicatas descontadas",
+  "lado": "passivo",
+  "grupo": "PCF",
+  "t_1": 600,
+  "t0": 900,
+  "criterio": "Duplicatas descontadas: decisão financeira — PCF, embora nasça da operação"
+ },
+ {
+  "id": "alfa-12",
+  "caso": "Alfa",
+  "conta": "Dividendos a pagar",
+  "lado": "passivo",
+  "grupo": "PCF",
+  "t_1": 200,
+  "t0": 300,
+  "criterio": "Dividendos a pagar: decisão de sócio — PCF"
+ },
+ {
+  "id": "varejista-01",
+  "caso": "Varejista",
+  "conta": "Caixa e bancos",
+  "lado": "ativo",
+  "grupo": "ACF",
+  "t_1": null,
+  "t0": 3000,
+  "criterio": "Saldo de caixa é decisão de tesouraria, não da operação — ACF"
+ },
+ {
+  "id": "varejista-02",
+  "caso": "Varejista",
+  "conta": "Duplicatas a receber (clientes)",
+  "lado": "ativo",
+  "grupo": "ACO",
+  "t_1": null,
+  "t0": 500,
+  "criterio": "Nascem das vendas a prazo e renovam-se com o ciclo — ACO"
+ },
+ {
+  "id": "varejista-03",
+  "caso": "Varejista",
+  "conta": "Estoques",
+  "lado": "ativo",
+  "grupo": "ACO",
+  "t_1": null,
+  "t0": 2500,
+  "criterio": "Renovam-se com o ciclo de compra e venda — ACO"
+ },
+ {
+  "id": "varejista-04",
+  "caso": "Varejista",
+  "conta": "Fornecedores",
+  "lado": "passivo",
+  "grupo": "PCO",
+  "t_1": null,
+  "t0": 5500,
+  "criterio": "Financiamento espontâneo das compras — PCO"
+ },
+ {
+  "id": "varejista-05",
+  "caso": "Varejista",
+  "conta": "Salários e encargos a pagar",
+  "lado": "passivo",
+  "grupo": "PCO",
+  "t_1": null,
+  "t0": 500,
+  "criterio": "Renovam-se a cada mês com a operação — PCO"
+ },
+ {
+  "id": "varejista-06",
+  "caso": "Varejista",
+  "conta": "Empréstimos e financiamentos CP",
+  "lado": "passivo",
+  "grupo": "PCF",
+  "t_1": null,
+  "t0": 0,
+  "criterio": "Dívida onerosa: decisão de financiamento — PCF"
+ }
+]

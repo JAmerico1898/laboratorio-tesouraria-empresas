@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D4.1 · Venda a prazo: o fluxo</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"slide","nome":"Slide V4.1","venda":10000,"unidade":"R$","custo":70,"prazo":60,"parcelas":"","inad":2,"taxa":1.2,"adm":0},{"id":"alfa","nome":"Na escala da Alfa","venda":4166.6667,"unidade":"R$ mil","custo":65,"prazo":60,"parcelas":"","inad":2,"taxa":1.2,"adm":0},{"id":"horizonte","nome":"Horizonte 30/60/90","venda":500,"unidade":"R$ mil","custo":65,"prazo":60,"parcelas":"30/60/90","inad":2,"taxa":1.2,"adm":0}]},"politica":{"format":"json","data":[{"id":"slide5","nome":"Política do slide 5","dV":200,"m":35,"pmr":60,"taxa":1.2,"inadAd":1.5,"adm":1.2}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 e M3 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+
+</style>
+<style>
+.d41-tabs { margin: 0 0 var(--cds-gap-md); }
+.d41-linha { min-height: 290px; }
+.d41-preco { min-height: 74px; }
+.d41-cascata { min-height: 300px; }
+.d41-leg { display: grid; gap: 3px; font-size: 13px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.d41-leg i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+.d41-sep { margin-top: 16px; border-top: 1px solid var(--color-border-line); padding-top: 10px; }
+.d41-dec { display: inline-block; font-family: var(--font-anthropic-sans); font-weight: 600; font-size: 1.25rem; letter-spacing: .04em; padding: 3px 14px; border-radius: var(--cds-radius); color: #fff; margin: 8px 0 2px; }
+.d41-dec.d41-sim { background: var(--k-pos); }
+.d41-dec.d41-nao { background: var(--k-neg); }
+.d41-unit { margin-top: 2px; }
+.d41 .k-kn.d41-sm { font-size: 1.6rem; }
+</style>
+
+<div class="k d41" id="d41">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D4.1 · Venda a prazo: o fluxo</h1>
+      <p class="k-sub">Conceder prazo é empatar capital. Quanto volta, quando volta — e vale a pena?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios politica">
+      <span class="k-cens" data-group="v" data-pane="venda">
+        <button class="k-btn d41-cen" data-cen="slide" aria-pressed="false">Slide V4.1</button>
+        <button class="k-btn d41-cen" data-cen="alfa" aria-pressed="false">Na escala da Alfa</button>
+        <button class="k-btn d41-cen" data-cen="horizonte" aria-pressed="false">Horizonte 30/60/90</button>
+      </span>
+      <span class="k-cens" data-group="v" data-pane="politica" hidden>
+        <button class="k-btn d41-pol" data-pol="slide5" aria-pressed="false">Política do slide 5</button>
+      </span>
+    </div>
+  </header>
+
+  <div class="k-tabs d41-tabs" role="tablist">
+    <button class="k-tab" id="tab-venda" data-group="v" data-tab="venda" role="tab" aria-selected="true">Uma venda</button>
+    <button class="k-tab" id="tab-politica" data-group="v" data-tab="politica" role="tab" aria-selected="false">A política</button>
+  </div>
+
+  <div class="k-zones">
+    <!-- ===================== CONTROLES ===================== -->
+    <div class="k-zone" id="controles" data-source="cenarios politica">
+      <section data-group="v" data-pane="venda">
+        <h2 class="k-zt">A venda</h2>
+        <div class="k-ctl"><label for="c-venda">Valor da venda <span class="k-u" data-draw="v" data-q="un">—</span></label>
+          <input type="number" class="k-num" id="c-venda" data-k="venda" min="1" max="100000" step="any" aria-label="Valor da venda"></div>
+        <div class="k-ctl"><span class="k-lab">Unidade <span class="k-info" tabindex="0">i<span class="k-tip">O cenário do slide está em reais; os da Alfa e da Horizonte, em R$ mil. Só muda o rótulo: as contas são as mesmas.</span></span></span>
+          <div class="k-seg"><button data-k="un" data-v="R$">R$</button><button data-k="un" data-v="R$ mil">R$ mil</button></div></div>
+        <div class="k-ctl"><label for="c-custo">Custo <span class="k-u">% da venda, sai em t = 0</span></label>
+          <div class="k-in"><input type="range" id="c-custo" data-k="custo" min="40" max="90" step="1"><input type="number" data-k="custo" min="40" max="90" step="1" aria-label="Custo, % da venda"></div></div>
+        <div class="k-ctl"><span class="k-lab">Recebimento</span>
+          <div class="k-seg"><button data-k="parc" data-v="false">Parcela única</button><button data-k="parc" data-v="true">30/60/90</button></div></div>
+        <div class="k-ctl"><label for="c-prazo">Prazo <span class="k-u">dias</span></label>
+          <div class="k-in"><input type="range" id="c-prazo" data-k="prazo" min="0" max="180" step="1"><input type="number" data-k="prazo" min="0" max="180" step="1" aria-label="Prazo, dias"></div>
+          <p class="k-note d41-parcnote" hidden>Em 30/60/90 o prazo vem das parcelas: 1/3 em cada vencimento.</p></div>
+        <div class="k-ctl"><label for="c-inad">Inadimplência esperada <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-inad" data-k="inad" min="0" max="10" step="0.1"><input type="number" data-k="inad" min="0" max="10" step="0.1" aria-label="Inadimplência, %"></div></div>
+        <div class="k-ctl"><label for="c-taxa">Taxa de desconto <span class="k-u">% a.m.</span> <span class="k-info" tabindex="0">i<span class="k-tip">Custo do capital empatado no prazo: o funding da Alfa (CDI + spread, em base mensal).</span></span></label>
+          <div class="k-in"><input type="range" id="c-taxa" data-k="taxa" min="0.5" max="3" step="0.05"><input type="number" data-k="taxa" min="0.5" max="3" step="0.05" aria-label="Taxa, % a.m."></div></div>
+        <div class="k-ctl"><label for="c-adm">Custos adm. + cobrança <span class="k-u">% da venda</span></label>
+          <div class="k-in"><input type="range" id="c-adm" data-k="adm" min="0" max="5" step="0.1"><input type="number" data-k="adm" min="0" max="5" step="0.1" aria-label="Custos adm. e cobrança, % da venda"></div></div>
+      </section>
+
+      <section data-group="v" data-pane="politica" hidden>
+        <h2 class="k-zt">Mudança de política <span class="k-u">R$ mil/mês</span></h2>
+        <div class="k-ctl"><label for="p-dv">Δ vendas por conceder prazo <span class="k-u">R$ mil/mês</span> <span class="k-info" tabindex="0">i<span class="k-tip">Só as vendas que não aconteceriam à vista. As que já ocorreriam não entram: só o que muda entra na conta.</span></span></label>
+          <div class="k-in"><input type="range" id="p-dv" data-k="dV" min="0" max="2000" step="10"><input type="number" data-k="dV" min="0" max="2000" step="10" aria-label="Δ vendas, R$ mil/mês"></div></div>
+        <div class="k-ctl"><label for="p-m">Margem de contribuição <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="p-m" data-k="m" min="10" max="60" step="1"><input type="number" data-k="m" min="10" max="60" step="1" aria-label="Margem de contribuição, %"></div></div>
+        <div class="k-ctl"><label for="p-pmr">PMR <span class="k-u">dias</span></label>
+          <div class="k-in"><input type="range" id="p-pmr" data-k="pmr" min="0" max="180" step="1"><input type="number" data-k="pmr" min="0" max="180" step="1" aria-label="PMR, dias"></div></div>
+        <div class="k-ctl"><label for="p-taxa">Taxa <span class="k-u">% a.m.</span></label>
+          <div class="k-in"><input type="range" id="p-taxa" data-k="ptaxa" min="0.5" max="3" step="0.05"><input type="number" data-k="ptaxa" min="0.5" max="3" step="0.05" aria-label="Taxa, % a.m."></div></div>
+        <div class="k-ctl"><label for="p-inad">Inadimplência adicional <span class="k-u">% do Δ vendas</span></label>
+          <div class="k-in"><input type="range" id="p-inad" data-k="inadAd" min="0" max="10" step="0.1"><input type="number" data-k="inadAd" min="0" max="10" step="0.1" aria-label="Inadimplência adicional, %"></div></div>
+        <div class="k-ctl"><label for="p-adm">Adm + cobrança <span class="k-u">R$ mil/mês</span></label>
+          <div class="k-in"><input type="range" id="p-adm" data-k="padm" min="0" max="20" step="0.1"><input type="number" data-k="padm" min="0" max="20" step="0.1" aria-label="Adm e cobrança, R$ mil/mês"></div></div>
+        <label class="k-toggle"><input type="checkbox" data-k="arm"> Armadilha: usar a receita total no numerador</label>
+      </section>
+    </div>
+
+    <!-- ===================== VISUAL ===================== -->
+    <div class="k-zone" id="visual" data-source="cenarios politica">
+      <section data-group="v" data-pane="venda" id="venda">
+        <div class="k-ch"><h3>Linha do tempo da venda</h3><span><b data-draw="v" data-q="un">—</b> · dias</span></div>
+        <div class="k-chart d41-linha dash-skeleton" id="linha" data-draw="linha" role="img" aria-label="Saída do custo em t = 0, recebimento no vencimento e seu valor presente trazido a t = 0"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-neg)"></i>Saída: custo + adm</span>
+          <span><i style="background: var(--k-pos)"></i>Recebimento esperado</span>
+          <span><i style="background: var(--k-blue-l)"></i>VP em t = 0</span>
+        </div>
+
+        <div class="d41-sep">
+          <div class="k-ch"><h3>Preço efetivo do crédito</h3><span>para onde vai a venda nominal · <b data-draw="v" data-q="un">—</b></span></div>
+          <div class="k-chart d41-preco dash-skeleton" id="preco" data-draw="preco" role="img" aria-label="Barra empilhada: inadimplência, custo de oportunidade, adm, custo do produto e caixa líquido"></div>
+          <div class="d41-leg">
+            <span><i style="background: var(--k-neg)"></i>Inadimplência · <b data-draw="v" data-q="inad">—</b></span>
+            <span><i style="background: var(--k-amber)"></i>Custo de oportunidade (venda líquida − VP) · <b data-draw="v" data-q="oport">—</b></span>
+            <span><i style="background: var(--k-blue)"></i>Adm + cobrança · <b data-draw="v" data-q="adm">—</b></span>
+            <span><i style="background: var(--k-neutro)"></i>Custo do produto · <b data-draw="v" data-q="custo">—</b></span>
+            <span><i style="background: var(--k-pos)"></i>Caixa líquido (VP) · <b data-draw="v" data-q="caixa">—</b></span>
+          </div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="politica" id="politica" hidden>
+        <div class="k-ch"><h3>Análise marginal da política</h3><span>R$ mil/mês</span></div>
+        <div class="k-chart d41-cascata dash-skeleton" id="cascata" data-draw="cascata" role="img" aria-label="Cascata: receita marginal menos custo financeiro, inadimplência e adm, igual ao ganho líquido"></div>
+        <p class="k-alert d41-arm" hidden><b>ERRADO</b> — vendas que já ocorreriam à vista e a receita inteira (não a margem) inflam o ganho.</p>
+        <p class="k-note">Receita marginal = Δ vendas × margem · custo financeiro = Δ vendas × taxa × PMR ÷ 30 · inadimplência = Δ vendas × inadimplência adicional.</p>
+      </section>
+    </div>
+
+    <!-- ===================== LEITURA ===================== -->
+    <div class="k-zone" id="leitura" data-source="cenarios politica">
+      <section data-group="v" data-pane="venda">
+        <h2 class="k-zt">Leitura · <span data-draw="v" data-q="un">—</span></h2>
+        <div class="k-kpi"><span class="k-kl">Recebimento esperado</span><span class="k-kn" data-draw="v" data-q="receb">—</span></div>
+        <div class="k-kpi"><span class="k-kl">VP do recebimento</span><span class="k-kn" data-draw="v" data-q="vp">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Caixa líquido (VP)</span><span class="k-kn" data-draw="v" data-q="caixa">—</span></div>
+        <p class="k-note">Custo do crédito nesta venda: <b data-draw="v" data-q="custoCred">—</b> = inadimplência <b data-draw="v" data-q="inad">—</b> + oportunidade <b data-draw="v" data-q="oport">—</b> + adm <b data-draw="v" data-q="adm">—</b></p>
+        <p class="k-note d41-pmrnote" hidden>PMR efetivo das parcelas: <b data-draw="v" data-q="pmr">—</b> dias; o VP é a soma das três parcelas, cada uma descontada ao seu prazo.</p>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase"></span>
+          <p data-frase="cria" hidden>Vender a prazo nestas condições cria valor: cada R$ 100 vendidos devolvem R$ <b data-draw="v" data-q="porCem">—</b> em VP, após custo.</p>
+          <p data-frase="destroi" hidden>A venda destrói valor em VP: o prazo e a inadimplência consomem toda a margem.</p>
+          <p data-frase="semsalva" hidden>Inadimplência de <b data-draw="v" data-q="inadPct">—</b> com margem de <b data-draw="v" data-q="margem">—</b>: nenhum prazo salva esta venda.</p>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="politica" hidden>
+        <h2 class="k-zt">Leitura · R$ mil/mês</h2>
+        <div class="k-kpi"><span class="k-kl">Ganho marginal mensal</span><span class="k-kn" data-draw="v" data-q="gl">—</span></div>
+        <div data-frases>
+          <span data-draw="decisao"></span>
+          <span class="d41-dec d41-sim" data-frase="aprovar" hidden>APROVAR</span>
+          <span class="d41-dec d41-nao" data-frase="recusar" hidden>RECUSAR</span>
+        </div>
+        <p class="k-note">Custos marginais: <b data-draw="v" data-q="custos">—</b> = fin <b data-draw="v" data-q="fin">—</b> + inad <b data-draw="v" data-q="inadR">—</b> + adm <b data-draw="v" data-q="padm">—</b></p>
+        <div class="k-diag">
+          <p>Ponto de equilíbrio: a política deixa de compensar com inadimplência adicional de <b data-draw="v" data-q="istar">—</b> ou PMR de <b data-draw="v" data-q="pstar">—</b> dias. <span class="k-info" tabindex="0">i<span class="k-tip">Cada um mantendo os demais parâmetros. O PMR exibido é o maior número inteiro de dias com ganho ainda não negativo.</span></span></p>
+          <p>Cada 30 dias a mais de PMR custam R$ <b data-draw="v" data-q="c30">—</b> mil/mês.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="cenarios politica">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>No cenário-slide, por que o VP (<span data-draw="v" data-q="g-vp">—</span>) é menor que o recebimento esperado (<span data-draw="v" data-q="g-receb">—</span>)?
+          <details><summary>mostrar resposta</summary><p>Porque R$ <b data-draw="v" data-q="g-receb">—</b> daqui a <b data-draw="v" data-q="g-prazo">—</b> dias valem menos hoje: <b data-draw="v" data-q="g-receb">—</b> ÷ <b data-draw="v" data-q="g-fator">—</b> = <b data-draw="v" data-q="g-vp">—</b>. Os R$ <b data-draw="v" data-q="g-oport">—</b> de diferença são o custo de oportunidade do capital empatado — o maior componente do custo do crédito nesta venda (a inadimplência é <b data-draw="v" data-q="g-inad">—</b>).</p></details>
+        </li>
+        <li>Na aba "A política", ligue a armadilha. Quanto o ganho muda e por quê?
+          <details><summary>mostrar resposta</summary><p>A receita marginal salta de <b data-draw="v" data-q="g-rm">—</b> para <b data-draw="v" data-q="g-rmA">—</b> e o ganho de <b data-draw="v" data-q="g-gl">—</b> para <b data-draw="v" data-q="g-glA">—</b> — <b data-draw="v" data-q="g-x">—</b> vezes maior, mas errado: só a margem de contribuição (<b data-draw="v" data-q="g-m">—</b>) das vendas que não ocorreriam à vista é ganho; o resto é custo de produto que já saiu do caixa.</p></details>
+        </li>
+        <li>Com os defaults da política, até que inadimplência adicional ela ainda compensa?
+          <details><summary>mostrar resposta</summary><p>≈ <b data-draw="v" data-q="g-istar">—</b> = (<b data-draw="v" data-q="g-rm">—</b> − <b data-draw="v" data-q="g-fin">—</b> − <b data-draw="v" data-q="g-padm">—</b>) ÷ <b data-draw="v" data-q="g-dv">—</b>. Folga enorme; o número a vigiar é o PMR: cada 30 dias a mais custam R$ <b data-draw="v" data-q="g-c30">—</b> mil/mês.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 e M3 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+
+})();</script>
+<script>(function () {
+
+/* D4.1 · Venda a prazo: o fluxo — funções puras (sem DOM).
+   Percentuais entram como número de pontos (2 = 2%). Prazos em dias; taxa em % a.m. */
+(function (root) {
+  const M = {};
+  M.parcelas = (txt) => String(txt || '').split('/').map((s) => Number(s.trim())).filter((v) => Number.isFinite(v) && v > 0);
+  // Uma venda. C = {venda, custo, prazo, inad, taxa, adm, parcelas:[dias] | null}
+  M.venda = function (C) {
+    const i = C.taxa / 100, inad = C.inad / 100;
+    const dias = C.parcelas && C.parcelas.length ? C.parcelas : [C.prazo];
+    const receb = C.venda * (1 - inad);
+    const fl = dias.map((t) => { const r = receb / dias.length; const f = Math.pow(1 + i, t / 30); return { t, receb: r, fator: f, vp: r / f }; });
+    const vp = fl.reduce((a, p) => a + p.vp, 0);
+    const custo = C.venda * C.custo / 100, adm = C.venda * C.adm / 100, inadV = C.venda * inad;
+    const oport = receb - vp, caixa = vp - custo - adm;
+    return {
+      venda: C.venda, receb, vp, oport, custo, adm, inad: inadV, caixa, fluxos: fl,
+      pmr: dias.reduce((a, t) => a + t, 0) / dias.length, parcelado: dias.length > 1,
+      custoCredito: C.venda - caixa - custo, porCem: C.venda ? caixa / C.venda * 100 : 0,
+      margem: 100 - C.custo, semSalva: C.inad >= 100 - C.custo,
+    };
+  };
+  // Análise marginal (R$ mil/mês). P = {dV, m, pmr, taxa, inadAd, adm, arm}
+  M.politica = function (P) {
+    const i = P.taxa / 100;
+    const recMarg = P.arm ? P.dV : P.dV * P.m / 100;
+    const fin = P.dV * i * P.pmr / 30, inadR = P.dV * P.inadAd / 100, adm = P.adm;
+    const GL = recMarg - fin - inadR - adm;
+    const inadStar = P.dV > 0 ? (recMarg - fin - adm) / P.dV : null;
+    const pmrStar = P.dV > 0 ? (recMarg - inadR - adm) / (P.dV * i) * 30 : null;
+    return { recMarg, fin, inadR, adm, GL, custos: fin + inadR + adm, aprova: GL > 0, inadStar, pmrStar, custo30: P.dV * i };
+  };
+  root.M41 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<script>(function () {
+
+/* ============================================================
+   D4.1 · Venda a prazo: o fluxo
+   Testes de aderência (Spec §7), conferidos com M41 em node (25 PASS / 0 FAIL):
+   Slide V4.1: receb 9.800 · VP 9.569 · caixa líquido 2.569 · oportunidade 231 · inadimplência 200
+   Escala da Alfa: VP 3.987 · caixa 1.279 · Horizonte 30/60/90: VP 478,5 · caixa 153,5 · PMR 60
+   Política: receita marginal 70,0 · fin 4,8 · inad 3,0 · adm 1,2 · GL 61,0 · APROVAR
+   Armadilha: receita marginal 200 · GL 191 · Break-even: inad* 32,0% · PMR* 822,5 (exibido 822)
+   ============================================================ */
+const ST = window.D41 = { S: null, cen: null, pol: null, mexV: false, mexP: false };
+const IDS = ['cenarios', 'politica'];
+const NOMES = ['linha', 'preco', 'cascata', 'v', 'frase', 'decisao'];
+const KV = ['venda', 'un', 'custo', 'prazo', 'parc', 'inad', 'taxa', 'adm'];
+const KP = ['dV', 'm', 'pmr', 'ptaxa', 'inadAd', 'padm', 'arm'];
+
+/* ---------- dados ---------- */
+const linhas = (id) => K.num(dash.data(id).data);
+const cenario = (id) => linhas('cenarios').find((r) => r.id === id);
+const politica = (id) => linhas('politica').find((r) => r.id === id);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const parcelasRef = () => { const r = linhas('cenarios').find((x) => String(x.parcelas || '').trim() !== ''); return r ? M41.parcelas(r.parcelas) : []; };
+const ctlVenda = (S) => ({ venda: S.venda, custo: S.custo, prazo: S.prazo, inad: S.inad, taxa: S.taxa, adm: S.adm, parcelas: S.parc ? parcelasRef() : null });
+const ctlPol = (S) => ({ dV: S.dV, m: S.m, pmr: S.pmr, taxa: S.ptaxa, inadAd: S.inadAd, adm: S.padm, arm: !!S.arm });
+const deCen = (r) => ({ venda: r.venda, un: r.unidade, custo: r.custo, prazo: r.prazo, parc: String(r.parcelas || '').trim() !== '', inad: r.inad, taxa: r.taxa, adm: r.adm });
+const dePol = (r) => ({ dV: r.dV, m: r.m, pmr: r.pmr, ptaxa: r.taxa, inadAd: r.inadAd, padm: r.adm, arm: false });
+const V = () => M41.venda(ctlVenda(ST.S));
+const P = () => M41.politica(ctlPol(ST.S));
+// casas decimais do valor em reais: R$ → 0; R$ mil abaixo de 1.000 → 1
+const dec = () => (ST.S.un === 'R$ mil' && Math.abs(ST.S.venda) < 1000 ? 1 : 0);
+const baseV = () => M41.venda(ctlVenda({ ...deCen(cenario('slide')) }));
+const baseP = (arm) => M41.politica(ctlPol({ ...dePol(politica('slide5')), arm: !!arm }));
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  document.querySelectorAll('input[data-k="prazo"]').forEach((i) => { i.disabled = !!ST.S.parc; });
+  document.querySelectorAll('.d41-parcnote, .d41-pmrnote').forEach((x) => { x.hidden = !ST.S.parc; });
+  document.querySelectorAll('.d41-arm').forEach((x) => { x.hidden = !ST.S.arm; });
+  document.querySelectorAll('.d41-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexV && b.dataset.cen === ST.cen)));
+  document.querySelectorAll('.d41-pol').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexP && b.dataset.pol === ST.pol)));
+}
+function aplicaCen(id) { const r = cenario(id); if (!r) return; Object.assign(ST.S, deCen(r)); ST.cen = id; ST.mexV = false; }
+function aplicaPol(id) { const r = politica(id); if (!r) return; Object.assign(ST.S, dePol(r)); ST.pol = id; ST.mexP = false; }
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  ST.S = {};
+  aplicaCen('slide'); aplicaPol('slide5');
+  sincroniza(); K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  if (KV.includes(k)) ST.mexV = true;
+  if (KP.includes(k)) ST.mexP = true;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d41-cen').forEach((b) => b.addEventListener('click', () => { if (!pronto()) return; aplicaCen(b.dataset.cen); sincroniza(); K.redraw(NOMES); }));
+document.querySelectorAll('.d41-pol').forEach((b) => b.addEventListener('click', () => { if (!pronto()) return; aplicaPol(b.dataset.pol); sincroniza(); K.redraw(NOMES); }));
+K.tabs('v', () => K.redraw(NOMES));
+
+/* ---------- linha do tempo ---------- */
+dash.draw('linha', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = V(), d = dec(), fx = (v) => K.n(v, d);
+  const { svg, W, H } = K.svg(el, 290, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const tLast = d3.max(R.fluxos, (f) => f.t) || 0;
+  const tMax = Math.max(30, Math.ceil(tLast / 30) * 30);
+  const mL = 46, mR = 46;
+  const x = d3.scaleLinear([0, tMax], [mL, W - mR]);
+  const saida = R.custo + R.adm;
+  const top = Math.max(R.receb / (R.fluxos.length > 1 ? R.fluxos.length : 1), R.vp, 1e-9);
+  const y = d3.scaleLinear([-saida, top], [H - 34, 46]);
+  const bw = Math.max(14, Math.min(34, (W - mL - mR) / 14));
+  // eixo do tempo
+  svg.append('line').attr('x1', mL - 20).attr('x2', W - mR + 10).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  const ticks = d3.range(0, tMax + 1, tMax > 120 ? 60 : 30);
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 8).text((t) => (t === 0 ? 't = 0' : K.n(t) + ' d'));
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', (t) => x(t)).attr('x2', (t) => x(t)).attr('y1', y(0) - 4).attr('y2', y(0) + 4).attr('stroke', 'var(--cds-chart-axis)');
+  const hover = (sel, head, linhasTip) => sel.on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(head, linhasTip, px, py); }).on('mouseleave', () => tip.hide());
+  // saída em t = 0
+  const xS = x(0) - bw - 2;
+  hover(svg.append('rect').attr('x', xS).attr('width', bw).attr('y', y(0)).attr('height', Math.max(0, y(-saida) - y(0))).attr('fill', 'var(--k-neg)').attr('rx', 2),
+    't = 0 · saída', [['var(--k-neg)', 'Custo do produto', fx(R.custo)], ['var(--k-neg)', 'Adm + cobrança', fx(R.adm)]]);
+  svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'end').attr('x', xS + bw).attr('y', y(-saida) + 16).text('−' + fx(saida));
+  // VP em t = 0
+  const xV = x(0) + 2;
+  hover(svg.append('rect').attr('x', xV).attr('width', bw).attr('y', y(R.vp)).attr('height', Math.max(0, y(0) - y(R.vp))).attr('fill', 'var(--k-blue-l)').attr('rx', 2),
+    't = 0 · valor presente', [['var(--k-blue-l)', 'VP do recebimento', fx(R.vp)], [null, 'Custo de oportunidade', fx(R.oport)]]);
+  const tVP = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', xV).attr('y', y(R.vp) - 8).text('VP ' + fx(R.vp));
+  // recebimentos
+  R.fluxos.forEach((f) => {
+    if (f.t === 0) return;
+    const xr = x(f.t) - bw / 2;
+    hover(svg.append('rect').attr('x', xr).attr('width', bw).attr('y', y(f.receb)).attr('height', Math.max(0, y(0) - y(f.receb))).attr('fill', 'var(--k-pos)').attr('rx', 2),
+      K.n(f.t) + ' dias · recebimento', [['var(--k-pos)', 'Esperado', fx(f.receb)], ['var(--k-blue-l)', 'VP', fx(f.vp)], [null, 'Fator', K.n(f.fator, 4)]]);
+    svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', x(f.t)).attr('y', y(f.receb) - 8).text(fx(f.receb));
+    // seta tracejada de volta a t = 0
+    const x1 = xr - 2, y1 = y(f.receb) + 2, x2 = xV + bw + 4, y2 = y(f.vp) + 2;
+    const cx = (x1 + x2) / 2, cy = Math.min(y1, y2) - 18;
+    svg.append('path').attr('d', `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`).attr('fill', 'none').attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5).attr('stroke-dasharray', '5 4');
+    svg.append('path').attr('d', `M${x2 + 7},${y2 - 5} L${x2},${y2} L${x2 + 8},${y2 + 3}`).attr('fill', 'none').attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5);
+  });
+  // rótulo do desconto
+  const ult = R.fluxos[R.fluxos.length - 1];
+  if (ult && ult.t > 0) {
+    const lab = R.parcelado ? '÷ (1 + i)^(prazoⱼ/30) em cada parcela' : '÷ (1 + i)^(prazo/30) = ÷ ' + K.n(ult.fator, 4);
+    const tx = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (x(0) + x(ult.t)) / 2).attr('y', 16).text(lab);
+    const b = tx.node().getBBox(); if (b.x < 2) tx.attr('text-anchor', 'start').attr('x', 2);
+  } else {
+    svg.append('text').attr('class', 'k-svgm').attr('x', xV + bw + 8).attr('y', y(R.vp / 2)).text('à vista: VP = recebimento');
+  }
+  if (tVP.node().getBBox().x + tVP.node().getBBox().width > W) tVP.attr('text-anchor', 'end').attr('x', xV + bw);
+});
+
+/* ---------- barra do preço efetivo ---------- */
+dash.draw('preco', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = V(), d = dec();
+  const { svg, W, H } = K.svg(el, 74, 280);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const segs = [['Inadimplência', R.inad, 'var(--k-neg)'], ['Custo de oportunidade', R.oport, 'var(--k-amber)'], ['Adm + cobrança', R.adm, 'var(--k-blue)'], ['Custo do produto', R.custo, 'var(--k-neutro)'], ['Caixa líquido', Math.max(0, R.caixa), 'var(--k-pos)']];
+  const tot = Math.max(R.venda, segs.reduce((a, s) => a + s[1], 0));
+  const x = d3.scaleLinear([0, tot], [4, W - 4]);
+  let acc = 0;
+  segs.forEach(([nome, v, cor]) => {
+    if (v <= 0) return;
+    svg.append('rect').attr('x', x(acc)).attr('width', Math.max(0, x(acc + v) - x(acc))).attr('y', 14).attr('height', 30).attr('fill', cor)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(nome, [[cor, '', K.n(v, d)], [null, '% da venda', K.p(v / R.venda, 1)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+    acc += v;
+  });
+  // marca da venda nominal
+  svg.append('line').attr('x1', x(R.venda)).attr('x2', x(R.venda)).attr('y1', 8).attr('y2', 50).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
+  const t = svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'end').attr('x', x(R.venda)).attr('y', 66).text('venda nominal ' + K.n(R.venda, d));
+  if (t.node().getBBox().x < 0) t.attr('text-anchor', 'start').attr('x', 2);
+  if (R.caixa < 0) svg.append('text').attr('class', 'k-svgt').style('fill', 'var(--k-neg)').attr('x', 4).attr('y', 66).text('caixa líquido ' + K.n(R.caixa, d));
+});
+
+/* ---------- cascata da política ---------- */
+dash.draw('cascata', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = P(), arm = !!ST.S.arm;
+  const { svg, W, H } = K.svg(el, 300, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const passos = [
+    { nome: 'Receita marginal', v: R.recMarg, de: 0, ate: R.recMarg, cor: arm ? 'var(--k-neg)' : 'var(--k-navy)', nota: arm ? 'Δ vendas inteiro' : 'Δ vendas × margem' },
+    { nome: 'Custo financeiro', v: -R.fin, cor: 'var(--k-amber)', nota: 'Δ vendas × taxa × PMR ÷ 30' },
+    { nome: 'Inadimplência', v: -R.inadR, cor: 'var(--k-amber-d)', nota: 'Δ vendas × inadimplência adicional' },
+    { nome: 'Adm + cobrança', v: -R.adm, cor: 'var(--k-neutro)', nota: 'custo fixo mensal' },
+  ];
+  let acc = R.recMarg;
+  for (let i = 1; i < passos.length; i++) { passos[i].de = acc; acc += passos[i].v; passos[i].ate = acc; }
+  passos.push({ nome: 'Ganho líquido', v: R.GL, de: 0, ate: R.GL, cor: R.GL > 0 ? 'var(--k-pos)' : 'var(--k-neg)', total: true });
+  const lo = Math.min(0, d3.min(passos, (p) => Math.min(p.de, p.ate))), hi = Math.max(0, d3.max(passos, (p) => Math.max(p.de, p.ate)));
+  const y = d3.scaleLinear([lo, hi || 1], [H - 44, 30]).nice();
+  const ticks = y.ticks(5);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t)); mL = Math.max(mL, meas.node().getComputedTextLength()); }); meas.remove();
+  const x = d3.scaleBand(passos.map((p) => p.nome), [mL + 12, W - 6]).padding(0.28);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', mL + 8).attr('x2', W - 6).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  svg.append('line').attr('x1', mL + 8).attr('x2', W - 6).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  passos.forEach((p, i) => {
+    const y1 = y(Math.max(p.de, p.ate)), y2 = y(Math.min(p.de, p.ate));
+    svg.append('rect').attr('x', x(p.nome)).attr('width', x.bandwidth()).attr('y', y1).attr('height', Math.max(1, y2 - y1)).attr('fill', p.cor).attr('rx', 2)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(p.nome, [[p.cor, 'R$ mil/mês', K.s(p.v, 1)], ...(p.nota ? [[null, p.nota, null]] : [])], px, py); })
+      .on('mouseleave', () => tip.hide());
+    const neg = p.v < 0;
+    svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', x(p.nome) + x.bandwidth() / 2).attr('y', neg ? y2 + 15 : y1 - 6).text(p.total ? K.n(p.v, 1) : K.s(p.v, 1));
+    if (i < passos.length - 1 && !passos[i + 1].total) {
+      svg.append('line').attr('x1', x(p.nome) + x.bandwidth()).attr('x2', x(passos[i + 1].nome)).attr('y1', y(p.ate)).attr('y2', y(p.ate)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+    }
+  });
+  // rótulos do eixo x, quebrados em duas linhas quando estreito
+  passos.forEach((p) => {
+    const t = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(p.nome) + x.bandwidth() / 2).attr('y', H - 26);
+    const ws = p.nome.split(' ');
+    if (x.step() < 90 && ws.length > 1) { t.append('tspan').text(ws[0]); t.append('tspan').attr('x', x(p.nome) + x.bandwidth() / 2).attr('dy', 14).text(ws.slice(1).join(' ')); }
+    else t.text(p.nome);
+  });
+  // selo da armadilha
+  if (arm) {
+    const p = passos[0], bx = x(p.nome) + x.bandwidth() / 2, by = y(p.ate) - 26;
+    const g = svg.append('g').style('cursor', 'help');
+    const tx = g.append('text').attr('class', 'k-svgb').style('fill', '#fff').attr('text-anchor', 'middle').attr('x', bx).attr('y', Math.max(14, by) + 5).text('ERRADO');
+    const b = tx.node().getBBox();
+    g.insert('rect', 'text').attr('x', b.x - 6).attr('y', b.y - 2).attr('width', b.width + 12).attr('height', b.height + 4).attr('rx', 3).attr('fill', 'var(--k-neg)');
+    g.on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('ERRADO', [[null, 'vendas que já ocorreriam à vista e a receita inteira', null], [null, '(não a margem) inflam o ganho', null]], px, py); }).on('mouseleave', () => tip.hide());
+  }
+});
+
+/* ---------- números ---------- */
+const VAL = {
+  un: () => ST.S.un,
+  receb: (R) => K.n(R.receb, dec()), vp: (R) => K.n(R.vp, dec()), caixa: (R) => K.n(R.caixa, dec()), custoCred: (R) => K.n(R.custoCredito, dec()),
+  inad: (R) => K.n(R.inad, dec()), oport: (R) => K.n(R.oport, dec()), adm: (R) => K.n(R.adm, dec()), custo: (R) => K.n(R.custo, dec()),
+  porCem: (R) => K.n(R.porCem, 2), inadPct: () => K.n(ST.S.inad, 1) + '%', margem: (R) => K.n(R.margem, 0) + '%', pmr: (R) => K.n(R.pmr),
+  gl: (R, Q) => K.n(Q.GL, 1), custos: (R, Q) => K.n(Q.custos, 1), fin: (R, Q) => K.n(Q.fin, 1), inadR: (R, Q) => K.n(Q.inadR, 1), padm: (R, Q) => K.n(Q.adm, 1),
+  istar: (R, Q) => (Q.inadStar == null ? null : K.p(Math.max(0, Q.inadStar), 1)),
+  pstar: (R, Q) => (Q.pmrStar == null ? null : K.n(Math.max(0, Math.floor(Q.pmrStar + 1e-9)))), c30: (R, Q) => K.n(Q.custo30, 1),
+  'g-vp': () => K.n(baseV().vp), 'g-receb': () => K.n(baseV().receb), 'g-prazo': () => K.n(baseV().pmr), 'g-fator': () => K.n(baseV().fluxos[0].fator, 4),
+  'g-oport': () => K.n(baseV().oport), 'g-inad': () => K.n(baseV().inad),
+  'g-rm': () => K.n(baseP().recMarg, 1), 'g-rmA': () => K.n(baseP(true).recMarg, 1), 'g-gl': () => K.n(baseP().GL, 1), 'g-glA': () => K.n(baseP(true).GL, 1),
+  'g-x': () => K.n(baseP(true).GL / baseP().GL, 1), 'g-m': () => K.n(politica('slide5').m, 0) + '%',
+  'g-istar': () => K.p(baseP().inadStar, 1), 'g-fin': () => K.n(baseP().fin, 1), 'g-padm': () => K.n(baseP().adm, 1), 'g-dv': () => K.n(politica('slide5').dV),
+  'g-c30': () => K.n(baseP().custo30, 1),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(V(), P()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) { const R = V(); keys.push(R.semSalva ? 'semsalva' : R.caixa > 0 ? 'cria' : 'destroi'); }
+  K.frases(el, keys);
+});
+dash.draw('decisao', (el) => {
+  const keys = [];
+  if (pronto()) keys.push(P().aprova ? 'aprovar' : 'recusar');
+  K.frases(el, keys);
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

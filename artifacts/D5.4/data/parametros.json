@@ -1,0 +1,50 @@
+[
+ {
+  "chave": "principal",
+  "valor": 1000000
+ },
+ {
+  "chave": "prazo",
+  "valor": 12
+ },
+ {
+  "chave": "cdi",
+  "valor": 12
+ },
+ {
+  "chave": "spread",
+  "valor": 5
+ },
+ {
+  "chave": "iofFixo",
+  "valor": 0.38
+ },
+ {
+  "chave": "iofDia",
+  "valor": 0.0041
+ },
+ {
+  "chave": "iofTeto",
+  "valor": 365
+ },
+ {
+  "chave": "tarifa",
+  "valor": 0.44
+ },
+ {
+  "chave": "tributos",
+  "valor": 14.25
+ },
+ {
+  "chave": "garantia",
+  "valor": 2000
+ },
+ {
+  "chave": "recip",
+  "valor": 0
+ },
+ {
+  "chave": "base",
+  "valor": 252
+ }
+]

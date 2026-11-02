@@ -1,0 +1,435 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<style>
+.d46-chart { min-height: 300px; }
+.d46-funil { min-height: 96px; }
+.d46-gauge { min-height: 44px; margin-top: 2px; }
+.d46-fbox { margin-top: 14px; border-top: 1px solid var(--color-border-line); padding-top: 10px; }
+.d46-med { padding: 4px 0 8px; border-bottom: 1px solid var(--color-border-line); }
+.d46-med .k-kpi { border-bottom: 0; padding-bottom: 0; }
+.d46-med .k-note { margin-top: 2px; }
+.d46-ctx { font-size: 13px; color: var(--color-fg-muted); margin: 1px 0 0; }
+.d46-dash { display: inline-block; width: .9rem; height: 0; border-top: 2px dashed var(--color-fg); vertical-align: 3px; margin-right: 4px; }
+.d46 .d46-med b, .d46 .d46-ctx b { font-variant-numeric: tabular-nums; }
+</style>
+
+<div class="k d46" id="d46">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D4.6 · KS, AUC e PSI</h1>
+      <p class="k-sub">Ele separa bons de maus? É melhor que o acaso? A população de hoje ainda parece a do treino?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d46-cen" data-cen="saudavel" aria-pressed="false">Saudável</button>
+      <button class="k-btn d46-cen" data-cen="deriva" aria-pressed="false">Deriva</button>
+      <button class="k-btn d46-cen" data-cen="fraco" aria-pressed="false">Modelo fraco</button>
+      <button class="k-btn d46-cen" data-cen="frouxa" aria-pressed="false">Régua frouxa</button>
+      <button class="k-btn d46-cen" data-cen="overfit" aria-pressed="false">Overfitting aparente</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone" id="controles" data-source="gerador cenarios">
+      <h2 class="k-zt">Alavancas</h2>
+      <div class="k-ctl"><label for="c-sep">Poder de separação <span class="k-info" tabindex="0">i<span class="k-tip">Distância entre as médias de score de bons e maus, em desvios-padrão (d'). Bons ~ N(700, 100); maus ~ N(700 − 100·d', 100).</span></span></label>
+        <div class="k-in"><input type="range" id="c-sep" data-k="sep" min="0" max="150" step="1"><input type="number" data-k="sep" min="0" max="150" step="1" aria-label="Poder de separação"></div>
+        <p class="d46-ctx">Qualidade do modelo · d' = <b data-draw="v" data-q="dp">—</b> · média dos maus <b data-draw="v" data-q="mMaus">—</b></p></div>
+      <div class="k-ctl"><label for="c-taxa">Taxa de inadimplência <span class="k-u">%</span></label>
+        <div class="k-in"><input type="range" id="c-taxa" data-k="taxa" min="2" max="30" step="1"><input type="number" data-k="taxa" min="2" max="30" step="1" aria-label="Taxa de inadimplência, %"></div>
+        <p class="d46-ctx">Ciclo econômico / mix da carteira</p></div>
+      <div class="k-ctl"><label for="c-der">Deriva populacional <span class="k-info" tabindex="0">i<span class="k-tip">A base de produção é a mesma mistura de bons e maus, deslocada para baixo. Deriva 100 = 1,1 desvio-padrão da base de treino.</span></span></label>
+        <div class="k-in"><input type="range" id="c-der" data-k="deriva" min="0" max="100" step="1"><input type="number" data-k="deriva" min="0" max="100" step="1" aria-label="Deriva populacional"></div>
+        <p class="d46-ctx">A carteira de hoje mudou (novos canais, novo perfil de cliente) · deslocamento <b data-draw="v" data-q="desloc">—</b> pontos = <b data-draw="v" data-q="deslocSig">—</b> desvio-padrão</p></div>
+      <div class="k-ctl"><label for="c-corte">Cutoff da faixa verde <span class="k-u">score mínimo</span></label>
+        <div class="k-in"><input type="range" id="c-corte" data-k="corte" min="300" max="900" step="10"><input type="number" data-k="corte" min="300" max="900" step="10" aria-label="Cutoff, score mínimo"></div>
+        <p class="d46-ctx">Apetite a risco</p></div>
+      <p class="k-note">Base de treino e de produção com <b data-draw="v" data-q="n">—</b> contas cada; <b data-draw="v" data-q="nMaus">—</b> maus no treino.</p>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="gerador cenarios faixas">
+      <div class="k-tabs" role="tablist">
+        <button class="k-tab" id="tab-ks" data-group="p" data-tab="ks" role="tab" aria-selected="true">KS · separa?</button>
+        <button class="k-tab" id="tab-roc" data-group="p" data-tab="roc" role="tab" aria-selected="false">AUC · melhor que o acaso?</button>
+        <button class="k-tab" id="tab-psi" data-group="p" data-tab="psi" role="tab" aria-selected="false">PSI · a população mudou?</button>
+      </div>
+
+      <section data-group="p" data-pane="ks" id="painel-ks">
+        <div class="k-ch"><h3>Distribuições acumuladas do score</h3><span>base de treino · KS = maior distância vertical</span></div>
+        <div class="k-chart d46-chart dash-skeleton" id="graf-ks" data-draw="ks" data-source="gerador" role="img" aria-label="Curvas acumuladas de bons e maus com a distância KS"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-blue)"></i>Bons</span>
+          <span><i style="background: var(--k-neg)"></i>Maus</span>
+          <span><i style="background: var(--k-navy)"></i>KS</span>
+          <span><span class="d46-dash"></span>Cutoff</span>
+        </div>
+      </section>
+
+      <section data-group="p" data-pane="roc" id="painel-roc" hidden>
+        <div class="k-ch"><h3>Curva ROC</h3><span>base de treino · área sob a curva = AUC</span></div>
+        <div class="k-chart d46-chart dash-skeleton" id="graf-roc" data-draw="roc" data-source="gerador" role="img" aria-label="Curva ROC com a diagonal do acaso e a área AUC"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-navy)"></i>Modelo</span>
+          <span><span class="d46-dash"></span>Acaso (AUC 0,5)</span>
+          <span><i style="background: var(--k-amber)"></i>Ponto do cutoff</span>
+        </div>
+      </section>
+
+      <section data-group="p" data-pane="psi" id="painel-psi" hidden>
+        <div class="k-ch"><h3>Treino × produção por decil do treino</h3><span>% da base em cada faixa</span></div>
+        <div class="k-chart d46-chart dash-skeleton" id="graf-psi" data-draw="psi" data-source="gerador" role="img" aria-label="Barras pareadas por decil: treino e produção"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-neutro)"></i>Treino</span>
+          <span><i style="background: var(--k-amber)"></i>Produção</span>
+        </div>
+        <h2 class="k-zt2">PSI = Σ (produção − treino) × ln(produção ÷ treino)</h2>
+        <div class="d46-gauge dash-skeleton" data-draw="gauge" data-m="psi" data-source="faixas"></div>
+      </section>
+
+      <div class="d46-fbox" id="funil" data-source="gerador">
+        <div class="k-ch"><h3>O funil pelo cutoff</h3><span>base de treino · score ≥ cutoff = faixa verde</span></div>
+        <div class="k-chart d46-funil dash-skeleton" data-draw="funil" role="img" aria-label="Bons e maus acima e abaixo do cutoff"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-neutro); opacity: .45"></i>Abaixo do cutoff</span>
+          <span><i style="background: var(--k-pos)"></i>Bons na faixa verde</span>
+          <span><i style="background: var(--k-neg)"></i>Maus na faixa verde (aprovados sem análise)</span>
+        </div>
+        <p class="k-note">Maus aprovados automaticamente: <b data-draw="v" data-q="mausVerde">—</b> (<b data-draw="v" data-q="pctMaus">—</b> dos maus) · bons abaixo do corte: <b data-draw="v" data-q="bonsAbaixo">—</b> (<b data-draw="v" data-q="pctBonsAb">—</b> dos bons).</p>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="gerador cenarios faixas">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="d46-med" id="med-ks">
+        <div class="k-kpi"><span class="k-kl">KS <span class="k-u">discriminação</span></span><span class="k-kn" data-draw="v" data-q="ks">—</span></div>
+        <div class="d46-gauge dash-skeleton" data-draw="gauge" data-m="ks" data-source="faixas"></div>
+        <p class="k-note" data-frases><span data-draw="faixa" data-m="ks"></span>Faixa: <b data-frase="fraco" hidden>fraco</b><b data-frase="regular" hidden>regular</b><b data-frase="bom" hidden>bom</b><b data-frase="excelente" hidden>excelente</b></p>
+        <p class="k-note" data-frases><span data-draw="alav" data-m="ks"></span>Última alavanca que mexeu neste número: <b data-frase="sep" hidden>Separação</b><b data-frase="taxa" hidden>Taxa</b><b data-frase="deriva" hidden>Deriva</b><b data-frase="corte" hidden>Cutoff</b><b data-frase="nenhuma" hidden>nenhuma</b></p>
+      </div>
+      <div class="d46-med" id="med-auc">
+        <div class="k-kpi"><span class="k-kl">AUC <span class="k-u">melhor que o acaso</span></span><span class="k-kn" data-draw="v" data-q="auc">—</span></div>
+        <div class="d46-gauge dash-skeleton" data-draw="gauge" data-m="auc" data-source="faixas"></div>
+        <p class="k-note" data-frases><span data-draw="faixa" data-m="auc"></span>Faixa: <b data-frase="fraco" hidden>fraco</b><b data-frase="regular" hidden>regular</b><b data-frase="bom" hidden>bom</b><b data-frase="atencao" hidden>atenção (overfitting?)</b></p>
+        <p class="k-note" data-frases><span data-draw="alav" data-m="auc"></span>Última alavanca que mexeu neste número: <b data-frase="sep" hidden>Separação</b><b data-frase="taxa" hidden>Taxa</b><b data-frase="deriva" hidden>Deriva</b><b data-frase="corte" hidden>Cutoff</b><b data-frase="nenhuma" hidden>nenhuma</b></p>
+      </div>
+      <div class="d46-med" id="med-psi">
+        <div class="k-kpi"><span class="k-kl">PSI <span class="k-u">estabilidade</span></span><span class="k-kn" data-draw="v" data-q="psi">—</span></div>
+        <div class="d46-gauge dash-skeleton" data-draw="gauge" data-m="psi" data-source="faixas"></div>
+        <p class="k-note" data-frases><span data-draw="faixa" data-m="psi"></span>Faixa: <b data-frase="bom" hidden>estável</b><b data-frase="alerta" hidden>alerta</b><b data-frase="retreinar" hidden>retreinar</b></p>
+        <p class="k-note" data-frases><span data-draw="alav" data-m="psi"></span>Última alavanca que mexeu neste número: <b data-frase="sep" hidden>Separação</b><b data-frase="taxa" hidden>Taxa</b><b data-frase="deriva" hidden>Deriva</b><b data-frase="corte" hidden>Cutoff</b><b data-frase="nenhuma" hidden>nenhuma</b></p>
+      </div>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="saudavel" hidden>Modelo saudável e população estável. Discrimina bem e a base de hoje parece a do treino.</p>
+        <p data-frase="retreinar" hidden>O modelo não piorou (KS <b data-draw="v" data-q="ks">—</b>); a população mudou (PSI <b data-draw="v" data-q="psi">—</b>). Retreinar com a base recente.</p>
+        <p data-frase="fraca" hidden>Discriminação fraca: o modelo pouco separa bons de maus. Não é problema de população nem de cutoff — é de modelo.</p>
+        <p data-frase="overfit" hidden>Atenção: discriminação alta demais pode ser overfitting — validar fora da amostra.</p>
+        <p data-frase="alerta" hidden>PSI de <b data-draw="v" data-q="psi">—</b> em alerta: a carteira de hoje começa a se afastar da do treino. Monitorar mês a mês antes de retreinar.</p>
+        <p data-frase="moderado" hidden>Discriminação aceitável (KS <b data-draw="v" data-q="ks">—</b>) e população estável: o modelo serve, com espaço para melhorar as variáveis.</p>
+        <p data-frase="corte" hidden>Cutoff de <b data-draw="v" data-q="corte">—</b>: <b data-draw="v" data-q="mausVerde">—</b> maus na faixa verde. KS, AUC e PSI não mudaram um dígito.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="gerador cenarios faixas">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Suba a deriva para <span data-draw="v" data-q="g-der">—</span>. O que o PSI acusa — e por que KS e AUC não se mexeram?
+          <details><summary>mostrar resposta</summary><p>A base de produção deslocou <b data-draw="v" data-q="g-sig">—</b> desvio-padrão (PSI <b data-draw="v" data-q="g-psi">—</b>, faixa “retreinar”). KS e AUC medem a separação entre bons e maus na base de treino: o modelo não piorou, a população deixou de parecer a do treino.</p></details>
+        </li>
+        <li>Baixe o corte de <span data-draw="v" data-q="g-c0">—</span> para <span data-draw="v" data-q="g-c1">—</span>. Quantos maus a mais entram na faixa verde? E quanto mudou o KS?
+          <details><summary>mostrar resposta</summary><p>Os maus aprovados passam de <b data-draw="v" data-q="g-m0">—</b> (<b data-draw="v" data-q="g-p0">—</b> dos maus) para <b data-draw="v" data-q="g-m1">—</b> (<b data-draw="v" data-q="g-p1">—</b>); o KS continua em <b data-draw="v" data-q="g-ks">—</b>. Cutoff é régua, não modelo — quem decide é o comitê de crédito, pelo apetite a risco.</p></details>
+        </li>
+        <li>Com separação <span data-draw="v" data-q="g-sep">—</span> o AUC vai a <span data-draw="v" data-q="g-auc">—</span>. Isso é bom?
+          <details><summary>mostrar resposta</summary><p>Na amostra de treino parece ótimo, mas em crédito B2B um AUC acima de <b data-draw="v" data-q="g-lim">—</b> é alerta de overfitting (o modelo decorou a amostra) — julgue sempre fora da amostra.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<script>
+/* ============================================================
+   D4.6 · KS, AUC e PSI
+   Testes de aderência (Spec §7 e §4.4), conferidos com M46.estado() em node (semente 70):
+   Saudável: KS 0,59 · AUC 0,88 · PSI 0,00 · 12,3% dos maus no verde (123 de 1.000)
+   Deriva 50: PSI 0,28 · KS e AUC idênticos · Deriva 30: PSI 0,10
+   Separação 40: KS 0,26 · AUC 0,68 · Separação 150: KS 0,79 · AUC 0,96
+   Corte 550: 43,8% dos maus no verde · KS, AUC e PSI idênticos
+   Taxa 2–30 e cutoff 300–900 não mudam KS/AUC/PSI exibidos (deriva 0); deriva não muda KS/AUC.
+   ============================================================ */
+const ST = window.D46 = { S: null, cen: null, mexido: false, alav: null, prev: null, ultima: null };
+const IDS = ['gerador', 'cenarios', 'faixas'];
+const NOMES = ['ks', 'roc', 'psi', 'funil', 'gauge', 'v', 'faixa', 'alav', 'frase'];
+const METR = ['ks', 'auc', 'psi'];
+const COR_FAIXA = { fraco: 'var(--k-neg)', regular: 'var(--k-amber)', bom: 'var(--k-pos)', excelente: 'var(--k-pos)', atencao: 'var(--k-amber)', alerta: 'var(--k-amber)', retreinar: 'var(--k-neg)' };
+
+/* ---------- dados ---------- */
+const P = () => K.obj(dash.data('gerador').data);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const faixas = (m) => K.num(dash.data('faixas').data).filter((r) => r.metrica === m);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const atual = () => M46.estado(P(), ST.S);
+const com = (id, extra) => M46.estado(P(), { ...ctlDe(cenario(id)), ...(extra || {}) });
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+function ctlDe(r) { return { sep: r.sep, taxa: r.taxa, deriva: r.deriva, corte: r.corte }; }
+const r2 = (v) => Math.round(v * 100) / 100;
+const exib = (R) => ({ ks: K.n(R.ks, 2), auc: K.n(R.auc, 2), psi: K.n(R.psi, 2) });
+function faixaDe(m, v) {
+  const fs = faixas(m), x = r2(v);
+  let f = fs[0];
+  fs.forEach((r) => { if (x >= r.de) f = r; });
+  return f;
+}
+const limiar = (m, faixa) => { const r = faixas(m).find((x) => x.faixa === faixa); return r ? r.de : NaN; };
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  document.querySelectorAll('.d46-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDe(r); ST.cen = id; ST.mexido = false; ST.ultima = null;
+  ST.alav = { ks: 'nenhuma', auc: 'nenhuma', psi: 'nenhuma' };
+  ST.prev = exib(atual());
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  aplicar('saudavel');
+  K.redraw(NOMES);
+});
+const MAPA = { sep: 'sep', taxa: 'taxa', deriva: 'deriva', corte: 'corte' };
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  ST.mexido = true; ST.ultima = MAPA[k] || null;
+  const novo = exib(atual());
+  METR.forEach((m) => { if (novo[m] !== ST.prev[m]) ST.alav[m] = MAPA[k]; });
+  ST.prev = novo;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d46-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+K.tabs('p', () => K.redraw(['ks', 'roc', 'psi', 'gauge']));
+
+/* ---------- eixos: margem medida pelo maior rótulo ---------- */
+function largura(svg, textos, cls) {
+  const t = svg.append('text').attr('class', cls || 'k-svgm');
+  let w = 0; textos.forEach((s) => { t.text(s); w = Math.max(w, t.node().getComputedTextLength()); });
+  t.remove(); return w;
+}
+
+/* ---------- KS: acumuladas ---------- */
+dash.draw('ks', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const p = P(), R = atual(), G = M46.gerar(p), C = ST.S;
+  const lo = 100, hi = 1000;
+  const pts = M46.cdfs(p, G, R.dp, lo, hi, 5);
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const y = d3.scaleLinear([0, 1], [H - 28, 14]);
+  const yt = [0, 0.25, 0.5, 0.75, 1];
+  const mL = largura(svg, yt.map((t) => K.p(t, 0)));
+  const x = d3.scaleLinear([lo, hi], [mL + 10, W - 10]);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', x(lo)).attr('x2', x(hi)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.p(t, 0));
+  const xt = d3.range(lo, hi + 1, W < 420 ? 200 : 100);
+  svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 8).text((t) => K.n(t));
+  svg.append('line').attr('x1', x(lo)).attr('x2', x(hi)).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  [['fb', 'var(--k-blue)'], ['fm', 'var(--k-neg)']].forEach(([k, cor]) => {
+    svg.append('path').attr('d', d3.line().x((d) => x(d.s)).y((d) => y(d[k]))(pts)).attr('fill', 'none').attr('stroke', cor).attr('stroke-width', 2.5).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  });
+  // cutoff
+  const xc = x(Math.min(hi, Math.max(lo, C.corte)));
+  svg.append('line').attr('x1', xc).attr('x2', xc).attr('y1', 14).attr('y2', y(0)).attr('stroke', 'var(--color-fg)').attr('stroke-dasharray', '4 3');
+  const tc = svg.append('text').attr('class', 'k-svgm').attr('x', xc + 4).attr('y', 24).text('cutoff ' + K.n(C.corte));
+  if (xc + 4 + tc.node().getComputedTextLength() > W - 4) tc.attr('text-anchor', 'end').attr('x', xc - 4);
+  // segmento KS
+  const sk = Math.min(hi, Math.max(lo, R.ksScore));
+  const q = M46.cdfs(p, G, R.dp, sk, sk, 1)[0];
+  const xk = x(sk);
+  svg.append('line').attr('x1', xk).attr('x2', xk).attr('y1', y(q.fm)).attr('y2', y(q.fb)).attr('stroke', 'var(--k-navy)').attr('stroke-width', 4);
+  const tk = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--k-navy)').attr('x', xk + 8).attr('y', (y(q.fm) + y(q.fb)) / 2 + 5).text('KS ' + K.n(R.ks, 2));
+  if (xk + 8 + tk.node().getComputedTextLength() > W - 4) tk.attr('text-anchor', 'end').attr('x', xk - 8);
+  // tooltip
+  const hb = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-blue)').attr('opacity', 0);
+  const hm = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-neg)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(lo)).attr('width', x(hi) - x(lo)).attr('y', 14).attr('height', y(0) - 14).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const i = Math.max(0, Math.min(pts.length - 1, Math.round((x.invert(d3.pointer(ev)[0]) - lo) / 5)));
+      const d = pts[i];
+      hb.attr('cx', x(d.s)).attr('cy', y(d.fb)).attr('opacity', 1); hm.attr('cx', x(d.s)).attr('cy', y(d.fm)).attr('opacity', 1);
+      tip.show('Score ≤ ' + K.n(d.s), [['var(--k-blue)', 'Bons', K.p(d.fb, 1)], ['var(--k-neg)', 'Maus', K.p(d.fm, 1)], [null, 'Distância', K.n(d.fm - d.fb, 2)]], px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hb.attr('opacity', 0); hm.attr('opacity', 0); });
+});
+
+/* ---------- ROC ---------- */
+dash.draw('roc', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const p = P(), R = atual(), G = M46.gerar(p);
+  const pts = M46.roc(G, R.dp, 200);
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const tt = [0, 0.25, 0.5, 0.75, 1];
+  const mL = largura(svg, tt.map((t) => K.p(t, 0))) + 22;
+  const top = 12, bot = H - 40;
+  const lado = Math.min(bot - top, W - mL - 16);
+  const x = d3.scaleLinear([0, 1], [mL + 6, mL + 6 + lado]);
+  const y = d3.scaleLinear([0, 1], [bot, bot - lado]);
+  svg.append('g').selectAll('line').data(tt).join('line').attr('x1', x(0)).attr('x2', x(1)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(tt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x(0) - 6).attr('y', (t) => y(t) + 4).text((t) => K.p(t, 0));
+  svg.append('g').selectAll('text').data(tt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', bot + 16).text((t) => K.p(t, 0));
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (x(0) + x(1)) / 2).attr('y', bot + 32).text('maus aprovados (FPR)');
+  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('transform', `translate(${12},${(y(0) + y(1)) / 2}) rotate(-90)`).text('bons aprovados (TPR)');
+  const area = d3.area().x((d) => x(d.fpr)).y0(y(0)).y1((d) => y(d.tpr));
+  svg.append('path').attr('d', area(pts)).attr('fill', 'var(--k-navy)').attr('opacity', 0.14);
+  svg.append('line').attr('x1', x(0)).attr('y1', y(0)).attr('x2', x(1)).attr('y2', y(1)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+  svg.append('path').attr('d', d3.line().x((d) => x(d.fpr)).y((d) => y(d.tpr))(pts)).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2.5).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--k-navy)').attr('text-anchor', 'middle').attr('x', x(0.62)).attr('y', y(0.3)).text('AUC ' + K.n(R.auc, 2));
+  // ponto do cutoff
+  const f = R.funil;
+  svg.append('circle').attr('cx', x(f.fracMaus)).attr('cy', y(f.fracBons)).attr('r', 6).attr('fill', 'var(--k-amber)').attr('stroke', 'var(--color-bg)').attr('stroke-width', 1.5);
+  const tc = svg.append('text').attr('class', 'k-svgt').attr('x', x(f.fracMaus) + 9).attr('y', y(f.fracBons) + 14).text('cutoff ' + K.n(ST.S.corte));
+  if (x(f.fracMaus) + 9 + tc.node().getComputedTextLength() > W - 4) tc.attr('text-anchor', 'end').attr('x', x(f.fracMaus) - 9);
+  const hv = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-navy)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(0)).attr('width', x(1) - x(0)).attr('y', y(1)).attr('height', y(0) - y(1)).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const fx = x.invert(d3.pointer(ev)[0]);
+      let best = pts[0]; pts.forEach((d) => { if (Math.abs(d.fpr - fx) < Math.abs(best.fpr - fx)) best = d; });
+      hv.attr('cx', x(best.fpr)).attr('cy', y(best.tpr)).attr('opacity', 1);
+      tip.show('Um cutoff qualquer', [['var(--k-navy)', 'Bons aprovados', K.p(best.tpr, 1)], [null, 'Maus aprovados', K.p(best.fpr, 1)]], px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hv.attr('opacity', 0); });
+});
+
+/* ---------- PSI por decil ---------- */
+dash.draw('psi', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const R = atual();
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const mx = d3.max(R.bins, (b) => Math.max(b.p, b.q)) * 1.12;
+  const y = d3.scaleLinear([0, mx], [H - 28, 14]).nice();
+  const yt = y.ticks(5);
+  const mL = largura(svg, yt.map((t) => K.p(t, 0)));
+  const x = d3.scaleBand(R.bins.map((b) => b.decil), [mL + 10, W - 6]).padding(0.22);
+  const xi = d3.scaleBand(['p', 'q'], [0, x.bandwidth()]).padding(0.08);
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', mL + 10).attr('x2', W - 6).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.p(t, 0));
+  svg.append('g').selectAll('text').data(R.bins).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (b) => x(b.decil) + x.bandwidth() / 2).attr('y', H - 8).text((b) => 'D' + b.decil);
+  const g = svg.append('g');
+  R.bins.forEach((b) => {
+    [['p', b.p, 'var(--k-neutro)', 'Treino'], ['q', b.q, 'var(--k-amber)', 'Produção']].forEach(([k, v, cor]) => {
+      g.append('rect').attr('x', x(b.decil) + xi(k)).attr('width', xi.bandwidth()).attr('y', y(v)).attr('height', Math.max(0, y(0) - y(v))).attr('rx', 2).attr('fill', cor);
+    });
+    const contrib = (Math.max(b.q, 1e-6) - Math.max(b.p, 1e-6)) * Math.log(Math.max(b.q, 1e-6) / Math.max(b.p, 1e-6));
+    g.append('rect').attr('x', x(b.decil)).attr('width', x.bandwidth()).attr('y', 14).attr('height', y(0) - 14).attr('fill', 'transparent')
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('Decil ' + b.decil + ' do treino', [['var(--k-neutro)', 'Treino', K.p(b.p, 1)], ['var(--k-amber)', 'Produção', K.p(b.q, 1)], [null, 'Contribuição ao PSI', K.n(contrib, 3)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+  });
+  svg.append('line').attr('x1', mL + 10).attr('x2', W - 6).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  svg.append('text').attr('class', 'k-svgm').attr('x', mL + 12).attr('y', 12).text('score baixo  →  score alto');
+});
+
+/* ---------- medidor com faixas ---------- */
+dash.draw('gauge', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const m = el.dataset.m, fs = faixas(m), R = atual();
+  if (!fs.length) { el.replaceChildren(); return; }
+  const v = R[m];
+  const { svg, W, H } = K.svg(el, 44, 180);
+  el.replaceChildren(svg.node());
+  const lo = fs[0].de, hi = fs[fs.length - 1].ate;
+  const x = d3.scaleLinear([lo, hi], [4, W - 4]).clamp(true);
+  fs.forEach((f, i) => {
+    svg.append('rect').attr('x', x(f.de)).attr('width', Math.max(0, x(f.ate) - x(f.de) - 1)).attr('y', 10).attr('height', 12).attr('fill', COR_FAIXA[f.faixa] || 'var(--k-neutro)').attr('opacity', f.faixa === faixaDe(m, v).faixa ? 0.95 : 0.3);
+    if (i > 0) svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(f.de)).attr('y', 38).text(K.n(f.de, 2));
+  });
+  const xv = x(v);
+  svg.append('path').attr('d', `M${xv},8 l-6,-7 h12 z`).attr('fill', 'var(--color-fg)');
+  svg.append('line').attr('x1', xv).attr('x2', xv).attr('y1', 8).attr('y2', 24).attr('stroke', 'var(--color-fg)').attr('stroke-width', 2);
+});
+
+/* ---------- funil ---------- */
+dash.draw('funil', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const f = atual().funil;
+  const { svg, W } = K.svg(el, 96);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const rot = ['Bons · ' + K.n(f.nBons), 'Maus · ' + K.n(f.nMaus)];
+  const mL = largura(svg, rot, 'k-svgt') + 10;
+  const x = d3.scaleLinear([0, 1], [mL, W - 4]);
+  const linhas = [
+    { nome: rot[0], ab: f.bonsAbaixo, ve: f.bonsVerde, fr: 1 - f.fracBons, cor: 'var(--k-pos)', y: 14, quem: 'Bons' },
+    { nome: rot[1], ab: f.mausAbaixo, ve: f.mausVerde, fr: 1 - f.fracMaus, cor: 'var(--k-neg)', y: 58, quem: 'Maus' },
+  ];
+  linhas.forEach((l) => {
+    svg.append('text').attr('class', 'k-svgt').attr('x', 0).attr('y', l.y + 21).text(l.nome);
+    const segs = [['abaixo do corte', 0, l.fr, l.ab, 'var(--k-neutro)', 0.45], ['faixa verde', l.fr, 1, l.ve, l.cor, 0.9]];
+    segs.forEach(([nome, a, b, n, cor, op]) => {
+      const w = Math.max(0, x(b) - x(a));
+      svg.append('rect').attr('x', x(a)).attr('width', w).attr('y', l.y).attr('height', 32).attr('fill', cor).attr('opacity', op).attr('rx', 2)
+        .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(l.quem + ' · ' + nome, [[cor, 'Contas', K.n(n)], [null, 'Participação', K.p(b - a, 1)]], px, py); })
+        .on('mouseleave', () => tip.hide());
+      const t = svg.append('text').attr('class', 'k-svgt').style('fill', op > 0.5 ? '#fff' : 'var(--color-fg)').style('font-weight', 600).attr('text-anchor', 'middle').attr('x', x(a) + w / 2).attr('y', l.y + 21).text(K.n(n));
+      if (t.node().getComputedTextLength() + 8 > w) t.remove();
+    });
+  });
+});
+
+/* ---------- números ---------- */
+const VAL = {
+  ks: (R) => K.n(R.ks, 2), auc: (R) => K.n(R.auc, 2), psi: (R) => K.n(R.psi, 2), dp: (R) => K.n(R.dp, 2), mMaus: (R) => K.n(R.mediaMaus),
+  desloc: (R) => K.n(R.deslocPts), deslocSig: (R) => K.n(R.deslocSigma, 2), corte: () => K.n(ST.S.corte), n: () => K.n(P().n),
+  nMaus: (R) => K.n(R.funil.nMaus), mausVerde: (R) => K.n(R.funil.mausVerde), pctMaus: (R) => K.p(R.funil.fracMaus, 1),
+  bonsAbaixo: (R) => K.n(R.funil.bonsAbaixo), pctBonsAb: (R) => K.p(1 - R.funil.fracBons, 1),
+  'g-der': () => K.n(cenario('deriva').deriva), 'g-sig': () => K.n(com('deriva').deslocSigma, 2), 'g-psi': () => K.n(com('deriva').psi, 2),
+  'g-c0': () => K.n(cenario('saudavel').corte), 'g-c1': () => K.n(cenario('frouxa').corte),
+  'g-m0': () => K.n(com('saudavel').funil.mausVerde), 'g-p0': () => K.p(com('saudavel').funil.fracMaus, 0),
+  'g-m1': () => K.n(com('frouxa').funil.mausVerde), 'g-p1': () => K.p(com('frouxa').funil.fracMaus, 0), 'g-ks': () => K.n(com('frouxa').ks, 2),
+  'g-sep': () => K.n(cenario('overfit').sep), 'g-auc': () => K.n(com('overfit').auc, 2), 'g-lim': () => K.n(limiar('auc', 'atencao'), 2),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('faixa', (el) => {
+  const m = el.dataset.m;
+  K.frases(el, pronto() ? [faixaDe(m, atual()[m]).faixa] : []);
+});
+dash.draw('alav', (el) => {
+  const m = el.dataset.m;
+  K.frases(el, pronto() && ST.alav ? [ST.alav[m]] : []);
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const R = atual(), ks = r2(R.ks), auc = r2(R.auc), psi = r2(R.psi);
+    if (ks < limiar('ks', 'regular')) keys.push('fraca');
+    else if (auc >= limiar('auc', 'atencao')) keys.push('overfit');
+    else if (psi > limiar('psi', 'retreinar')) keys.push('retreinar');
+    else if (psi >= limiar('psi', 'alerta')) keys.push('alerta');
+    else if (ks >= limiar('ks', 'excelente')) keys.push('saudavel');
+    else keys.push('moderado');
+    if (ST.ultima === 'corte') keys.push('corte');
+  }
+  K.frases(el, keys);
+});
+</script>

@@ -1,0 +1,13 @@
+[
+ {"chave":"d","valor":100,"descricao":"Demanda média, rolos por dia útil (V3.5)"},
+ {"chave":"preco","valor":90,"descricao":"Preço de compra, R$ por rolo"},
+ {"chave":"cdi","valor":12,"descricao":"Componente financeiro de H, % a.a."},
+ {"chave":"outrosH","valor":0.06,"descricao":"Armazenagem + seguro + obsolescência, fração a.a. (H = 90 × 18% = 16,20)"},
+ {"chave":"margem","valor":20,"descricao":"Margem de contribuição, R$ por rolo não vendido"},
+ {"chave":"diasUteis","valor":250,"descricao":"Dias úteis por ano"},
+ {"chave":"diasSim","valor":2000,"descricao":"Dias simulados para as estatísticas"},
+ {"chave":"diasTela","valor":200,"descricao":"Dias exibidos no gráfico"},
+ {"chave":"seed","valor":26,"descricao":"Semente do gerador (LCG + Box-Muller)"},
+ {"chave":"ltAlfa","valor":3,"descricao":"Lead time se a Alfa mantiver produto acabado, dias (extensão)"},
+ {"chave":"nDistrib","valor":10,"descricao":"Distribuidores iguais atendidos pela Alfa (pooling)"}
+]

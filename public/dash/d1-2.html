@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D1.2 · Linha do tempo do ciclo</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"alfa_t0":{"format":"json","data":[{"item":"Receita líquida","chave":"rec","t0":50000},{"item":"CMV","chave":"cmv","t0":32000},{"item":"Compras","chave":"compras","t0":33000},{"item":"Clientes","chave":"cli","t0":8300},{"item":"Estoques","chave":"est","t0":5300},{"item":"Fornecedores","chave":"forn","t0":4100},{"item":"Saldo de tesouraria (ST)","chave":"st","t0":-1000},{"item":"NCG","chave":"ncg","t0":8900}]},"presets":{"format":"json","data":[{"setor":"Indústria Alfa","pmre":60,"pmrv":60,"pmpf":45,"fonte":"V1.3/V1.4"},{"setor":"Varejo de larga escala","pmre":15,"pmrv":3,"pmpf":45,"fonte":"V1.4 slide 3"},{"setor":"Indústria pesada","pmre":120,"pmrv":60,"pmpf":60,"fonte":"V1.3 slide 4 (CO 90–180)"},{"setor":"Construção civil","pmre":240,"pmrv":90,"pmpf":60,"fonte":"V1.3 slide 4 (CO 300+)"}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.lt {
+  --lt-est: #F2C96B; --lt-cli: #E3A21A; --lt-ccl: #2A3F7A; --lt-pos: #2E9E5B; --lt-neg: #D64545; --lt-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.lt-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.lt-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.lt-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.lt-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.lt-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.lt-btn:hover { border-color: var(--color-fg-muted); }
+.lt-btn[aria-pressed="true"] { background: var(--lt-ccl); border-color: var(--lt-ccl); color: #fff; }
+
+.lt-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .lt-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2fr) minmax(16rem, 1fr); }
+}
+.lt-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.lt-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+
+.lt-ctl { margin-bottom: 10px; }
+.lt-ctl label { display: block; font-size: 14px; margin-bottom: 1px; }
+.lt-u { color: var(--color-fg-muted); font-size: 13px; }
+.lt-in { display: grid; grid-template-columns: 1fr 4.4rem; gap: 8px; align-items: center; }
+.lt-in input[type=range] { width: 100%; accent-color: var(--lt-ccl); }
+.lt-in input[type=number] { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.lt-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+
+.lt-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.lt-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.lt-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.lt-linha { position: relative; min-height: 204px; margin-top: 8px; }
+.lt-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.lt-svgm { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.lt-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+@keyframes lt-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: no-preference) { .lt-fade { animation: lt-in var(--cds-dur-slow) var(--cds-ease-out) both; } }
+
+.lt-cards { display: grid; gap: 6px; margin-top: 10px; }
+.lt-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--lt-cli); border-radius: var(--cds-radius); padding: 7px 10px; font-size: 14px; background: var(--color-bg); }
+.lt-card b { font-weight: var(--cds-font-weight-medium); }
+.lt-card.lt-alerta { border-left-color: var(--lt-neg); }
+
+.lt-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.lt-kl { font-size: 14px; color: var(--color-fg-muted); }
+.lt-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.lt-kn.lt-pos { color: var(--lt-pos); }
+.lt-kn.lt-neg { color: var(--lt-neg); }
+.lt-note { font-size: 13px; color: var(--color-fg-muted); margin: 4px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.lt-dias { margin: 8px 0 0; padding: 0; list-style: none; font-size: 13px; color: var(--color-fg-muted); line-height: 1.5; font-variant-numeric: tabular-nums; }
+.lt-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--lt-ccl); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.lt-diag p { margin: 0; }
+.lt-diag b { font-variant-numeric: tabular-nums; }
+
+.lt-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.lt-info .lt-tip { display: none; position: absolute; right: 0; top: 130%; width: 16rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; }
+.lt-info:hover .lt-tip, .lt-info:focus .lt-tip { display: block; }
+
+.lt-calc { margin-top: 10px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); }
+.lt-calc > summary { cursor: pointer; padding: 6px 10px; font-size: 14px; }
+.lt-calc-body { padding: 0 10px 8px; font-size: 13px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.lt-calc-body h4 { margin: 6px 0 2px; font-size: 13px; font-weight: var(--cds-font-weight-medium); }
+.lt-calc-body p { margin: 0; }
+.lt-errado { color: var(--lt-neg); }
+
+.lt-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.lt-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.lt-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.lt-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.lt-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.lt-help details p { margin: 4px 0 0; font-size: 14px; }
+.lt-help b { font-variant-numeric: tabular-nums; }
+
+.lt-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.lt-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="lt" id="d12">
+  <header class="lt-head">
+    <div>
+      <h1 class="lt-title">D1.2 · Linha do tempo do ciclo</h1>
+      <p class="lt-sub">Quem financia os dias entre pagar o fornecedor e receber do cliente?</p>
+    </div>
+    <div class="lt-cens" id="setores" data-source="presets" role="group" aria-label="Setor">
+      <button class="lt-btn lt-pre" data-pre="Indústria Alfa" aria-pressed="false">Indústria Alfa</button>
+      <button class="lt-btn lt-pre" data-pre="Varejo de larga escala" aria-pressed="false">Varejo de larga escala</button>
+      <button class="lt-btn lt-pre" data-pre="Indústria pesada" aria-pressed="false">Indústria pesada</button>
+      <button class="lt-btn lt-pre" data-pre="Construção civil" aria-pressed="false">Construção civil</button>
+    </div>
+  </header>
+
+  <div class="lt-zones">
+    <div class="lt-zone" id="controles" data-source="presets">
+      <h2 class="lt-zt">Prazos médios · dias</h2>
+      <div class="lt-ctl"><label for="c-pmre">PMRE <span class="lt-u">dias em estoque</span></label>
+        <div class="lt-in"><input type="range" id="c-pmre" data-k="pmre" min="0" max="300" step="1"><input type="number" data-k="pmre" min="0" max="300" step="1" aria-label="PMRE, dias"></div></div>
+      <div class="lt-ctl"><label for="c-pmrv">PMRV <span class="lt-u">dias para receber</span></label>
+        <div class="lt-in"><input type="range" id="c-pmrv" data-k="pmrv" min="0" max="180" step="1"><input type="number" data-k="pmrv" min="0" max="180" step="1" aria-label="PMRV, dias"></div></div>
+      <div class="lt-ctl"><label for="c-pmpf">PMPF <span class="lt-u">dias para pagar</span></label>
+        <div class="lt-in"><input type="range" id="c-pmpf" data-k="pmpf" min="0" max="180" step="1"><input type="number" data-k="pmpf" min="0" max="180" step="1" aria-label="PMPF, dias"></div></div>
+      <label class="lt-toggle"><input type="checkbox" class="lt-reais" checked> Mostrar R$ (escala Alfa)</label>
+    </div>
+
+    <div class="lt-zone" id="linha" data-source="presets">
+      <div class="lt-ch"><h3>Compra → venda → recebimento</h3><span>dias desde a compra</span></div>
+      <div class="lt-linha dash-skeleton" data-draw="linha" role="img" aria-label="Linha do tempo do ciclo operacional e financeiro"></div>
+      <div class="lt-cards">
+        <span data-draw="cartoes"></span>
+        <div class="lt-card" data-card="pf-up" hidden><b>PMPF ↑</b> Preço: perda de desconto à vista ou preço maior — o fornecedor cobra pela espera.</div>
+        <div class="lt-card" data-card="rv-down" hidden><b>PMRV ↓</b> Preço: risco de perder vendas para quem dá mais prazo.</div>
+        <div class="lt-card" data-card="re-down" hidden><b>PMRE ↓</b> Preço: risco de ruptura e compra emergencial mais cara.</div>
+        <div class="lt-card lt-alerta" data-card="alerta" hidden><b>CO ↑</b> Alerta: CO subindo sem mudança operacional é sinal de clientes atrasando ou estoque encalhando (V1.3).</div>
+      </div>
+    </div>
+
+    <div class="lt-zone" id="leitura" data-source="presets alfa_t0">
+      <h2 class="lt-zt">Leitura</h2>
+      <div class="lt-kpi"><span class="lt-kl">Ciclo operacional (CO) <span class="lt-u">dias</span></span><span class="lt-kn dash-skeleton" data-draw="co">—</span></div>
+      <div class="lt-kpi"><span class="lt-kl">Ciclo financeiro (CF) <span class="lt-u">dias</span></span><span class="lt-kn dash-skeleton" data-draw="cf">—</span></div>
+      <div class="lt-rs">
+        <div class="lt-kpi"><span class="lt-kl">Giro preso no ciclo <span class="lt-u">R$ mil</span> <span class="lt-info" tabindex="0">i<span class="lt-tip">Clientes + Estoques − Fornecedores implícitos nos prazos, na escala da Alfa; difere dos <b data-draw="pz" data-q="ncg">—</b> da NCG porque não inclui "outros operacionais" e porque os prazos são arredondados.</span></span></span><span class="lt-kn dash-skeleton" data-draw="giro">—</span></div>
+        <p class="lt-note">Estoque + Clientes − Fornecedores = <span data-draw="giro-conta">—</span></p>
+        <ul class="lt-dias">
+          <li>1 dia a menos de PMRV libera R$ <b data-draw="pz" data-q="dia-rv">—</b> mil</li>
+          <li>1 dia a menos de PMRE libera R$ <b data-draw="pz" data-q="dia-re">—</b> mil</li>
+          <li>1 dia a mais de PMPF libera R$ <b data-draw="pz" data-q="dia-pf">—</b> mil</li>
+        </ul>
+      </div>
+      <div class="lt-diag">
+        <span data-draw="frase"></span>
+        <p data-frase="longo" hidden>CF de <b data-draw="v-cf">—</b> dias exige funding longo: não se financia isso com conta garantida — capital de giro de 12+ meses ou folga da estrutura permanente (V1.3).</p>
+        <p data-frase="banca" hidden>A Alfa banca <b data-draw="v-cf">—</b> dias de operação com recursos próprios ou dívida. É esse intervalo que vira NCG em reais (próximo dashboard).</p>
+        <p data-frase="negativo" hidden>O fornecedor financia toda a operação e ainda sobra caixa por <b data-draw="v-cfabs">—</b> dias. Vantagem estrutural do modelo — típica do varejo.</p>
+        <p data-frase="zero" hidden>Equilíbrio exato: recebe no dia em que paga. Raro na prática.</p>
+      </div>
+      <details class="lt-calc" id="como-calcula" data-source="alfa_t0">
+        <summary><span class="lt-info">i</span> Como a Alfa calcula seus prazos</summary>
+        <div class="lt-calc-body">
+          <h4>Certo</h4>
+          <p>PMRE = Estoques ÷ CMV × 360 = <span data-draw="pz" data-q="est">—</span> ÷ <span data-draw="pz" data-q="cmv">—</span> × 360 = <b data-draw="pz" data-q="pmre">—</b></p>
+          <p>PMRV = Clientes ÷ Receita × 360 = <span data-draw="pz" data-q="cli">—</span> ÷ <span data-draw="pz" data-q="rec">—</span> × 360 = <b data-draw="pz" data-q="pmrv">—</b></p>
+          <p>PMPF = Fornecedores ÷ Compras × 360 = <span data-draw="pz" data-q="forn">—</span> ÷ <span data-draw="pz" data-q="compras">—</span> × 360 = <b data-draw="pz" data-q="pmpf">—</b></p>
+          <p>CO = <b data-draw="pz" data-q="co">—</b> dias</p>
+          <h4 class="lt-errado">Erro clássico: trocar os denominadores</h4>
+          <p class="lt-errado">PMRE com Receita = <span data-draw="pz" data-q="est">—</span> ÷ <span data-draw="pz" data-q="rec">—</span> × 360 = <b data-draw="pz" data-q="pmre-err">—</b></p>
+          <p class="lt-errado">PMRV com CMV = <span data-draw="pz" data-q="cli">—</span> ÷ <span data-draw="pz" data-q="cmv">—</span> × 360 = <b data-draw="pz" data-q="pmrv-err">—</b></p>
+          <p class="lt-errado">CO "errado" = <b data-draw="pz" data-q="co-err">—</b> contra <b data-draw="pz" data-q="co">—</b> correto</p>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <details class="lt-help" id="perguntas" data-source="presets alfa_t0">
+    <summary>? Perguntas-guia</summary>
+    <div class="lt-help-body">
+      <ol>
+        <li>Escolha "Varejo de larga escala". Quem está financiando a loja?
+          <details><summary>mostrar resposta</summary><p>O fornecedor — a loja recebe em <b data-draw="pz" data-q="v-co">—</b> dias e paga em <b data-draw="pz" data-q="v-pmpf">—</b>; CF = <b data-draw="pz" data-q="v-cf">—</b> dias: a operação gera caixa antes de pagar. Por isso a NCG do varejo é negativa (V1.6).</p></details>
+        </li>
+        <li>Volte à Alfa e reduza o PMRV para <b data-draw="pz" data-q="q2-novo">—</b> dias. Quanto giro é liberado e qual o preço?
+          <details><summary>mostrar resposta</summary><p><b data-draw="pz" data-q="q2-dias">—</b> × <b data-draw="pz" data-q="dia-rv">—</b> = R$ <b data-draw="pz" data-q="q2-lib">—</b> mil liberados — mais do que o dobro do ST negativo da Alfa (<b data-draw="pz" data-q="st">—</b>). O preço: clientes sensíveis a prazo podem migrar para concorrentes.</p></details>
+        </li>
+        <li>Por que um dia de PMRV vale R$ <b data-draw="pz" data-q="dia-rv">—</b> mil e um dia de PMPF só R$ <b data-draw="pz" data-q="dia-pf">—</b> mil?
+          <details><summary>mostrar resposta</summary><p>Porque o dia de recebimento é medido sobre a receita (<b data-draw="pz" data-q="rec">—</b> ÷ 360) e o de pagamento sobre as compras (<b data-draw="pz" data-q="compras">—</b> ÷ 360) — a margem que separa venda de custo também separa o valor de cada dia.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* ============================================================
+   D1.2 · Linha do tempo do ciclo — funções puras + desenhos
+   Testes de aderência (Spec §7), conferidos com ciclo()/giro():
+   Alfa: CO 120 · CF 75 · giro preso 9.541       Varejo: CO 18 · CF −27 (faixa verde)
+   Indústria pesada: CO 180 · CF 120 ("exige funding longo")   Construção: CO 330 · CF 270
+   Alfa, PMRV 45: CF 60 · giro 7.458 · cartão "risco de perder vendas"
+   Alfa, PMPF 60: CF 60 · giro 8.166 · cartão "perda de desconto"
+   Painel ⓘ: 38 / 93 / 131 (errado) × 60 / 60 / 120 (correto)
+   ============================================================ */
+const LT = window.LT = { Z: null, presets: null, prev: null, animar: false };
+const Q2 = { pmrv: 45 };                     // PMRV sugerido na pergunta-guia 2 (Spec §6)
+const LIMITE_LONGO = 90;                     // CF acima disso pede funding longo (Spec §4.3)
+const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+const f = loc.format(',.0f');
+const fsg = loc.format('+,.0f');
+const fs = (v) => (v === 0 ? '0' : fsg(v));
+
+/* ---------- funções puras ---------- */
+function ciclo(p) { const CO = p.pmre + p.pmrv; return { CO, CF: CO - p.pmpf }; }
+function valorDia(a) { return { rv: a.rec / 360, re: a.cmv / 360, pf: a.compras / 360 }; }
+function giro(p, a) {
+  // soma de parcelas arredondadas a R$ mil, como na Spec §4.3 (5.333 + 8.333 − 4.125 = 9.541)
+  const d = valorDia(a);
+  const re = Math.round(p.pmre * d.re), rv = Math.round(p.pmrv * d.rv), pf = Math.round(p.pmpf * d.pf);
+  return { re, rv, pf, total: re + rv - pf };
+}
+function prazosAlfa(a) {
+  const r = (v) => Math.round(v);
+  const pmre = r(a.est / a.cmv * 360), pmrv = r(a.cli / a.rec * 360), pmpf = r(a.forn / a.compras * 360);
+  const pmreErr = r(a.est / a.rec * 360), pmrvErr = r(a.cli / a.cmv * 360);
+  return { pmre, pmrv, pmpf, co: pmre + pmrv, pmreErr, pmrvErr, coErr: pmreErr + pmrvErr };
+}
+function alfa(rows) { const o = {}; rows.forEach((r) => { o[r.chave] = Number(r.t0); }); return o; }
+function presetDe(row) { return { pmre: Number(row.pmre), pmrv: Number(row.pmrv), pmpf: Number(row.pmpf) }; }
+
+function estado() {
+  const p = dash.data('presets');
+  if (p.status !== 'ok' || !LT.Z) return { ok: false, s: p.status === 'loading' ? 'loading' : 'error' };
+  const a = dash.data('alfa_t0');
+  const A = a.status === 'ok' ? alfa(a.data) : null;
+  const Z = LT.Z;
+  const ref = (LT.presets || []).find((r) => r.setor === Z.preset);
+  return { ok: true, Z, A, ref: ref ? presetDe(ref) : null, c: ciclo(Z), g: A ? giro(Z, A) : null };
+}
+
+/* ---------- controles ---------- */
+const NOMES_DESENHO = ['linha', 'cartoes', 'co', 'cf', 'giro', 'giro-conta', 'frase', 'v-cf', 'v-cfabs'];
+const redraw = () => NOMES_DESENHO.forEach((n) => dash.draw(n));
+const sincroniza = () => {
+  document.querySelectorAll('input[data-k]').forEach((i) => { i.value = LT.Z[i.dataset.k]; });
+  document.querySelectorAll('.lt-pre').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pre === LT.Z.preset && !LT.Z.mexido)));
+};
+function aplicar(nome) {
+  const row = (LT.presets || []).find((r) => r.setor === nome);
+  if (!row) return false;
+  LT.prev = LT.Z ? { pmre: LT.Z.pmre, pmrv: LT.Z.pmrv, pmpf: LT.Z.pmpf } : null;
+  LT.animar = !!LT.prev;
+  LT.Z = { ...presetDe(row), preset: nome, mexido: false };
+  sincroniza();
+  return true;
+}
+const limita = (k, v) => {
+  const i = document.querySelector('input[type=range][data-k="' + k + '"]');
+  return i ? Math.min(Number(i.max), Math.max(Number(i.min), Math.round(v))) : v;
+};
+dash.onData(() => {
+  const p = dash.data('presets');
+  if (p.status === 'ok') {
+    LT.presets = p.data;
+    if (!LT.Z) aplicar('Indústria Alfa');
+  }
+});
+document.querySelectorAll('input[data-k]').forEach((inp) => {
+  inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+    if (!LT.Z) return;
+    const v = Number(inp.value);
+    if (inp.value === '' || !Number.isFinite(v)) { sincroniza(); return; }
+    LT.Z[inp.dataset.k] = limita(inp.dataset.k, v);
+    LT.Z.mexido = true;
+    LT.animar = false;
+    sincroniza();
+    redraw();
+  });
+});
+document.querySelectorAll('.lt-pre').forEach((b) => b.addEventListener('click', () => { if (aplicar(b.dataset.pre)) redraw(); }));
+document.querySelectorAll('.lt-reais').forEach((cb) => cb.addEventListener('change', () => {
+  document.querySelectorAll('.lt-rs').forEach((x) => { x.hidden = !cb.checked; });
+}));
+
+/* ---------- auxiliares ---------- */
+function mk(tag, cls, txt) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt != null) n.textContent = txt;
+  return n;
+}
+function caixa(el, e) {
+  el.classList.toggle('dash-skeleton', e.s === 'loading');
+  if (e.s === 'loading') { el.replaceChildren(); return; }
+  const d = mk('div', 'lt-fail');
+  d.append(mk('i'), 'Não carregou');
+  el.replaceChildren(d);
+}
+function texto(name, fn) {
+  dash.draw(name, (el) => {
+    const e = estado();
+    if (!e.ok) { el.classList.toggle('dash-skeleton', e.s === 'loading'); el.textContent = '—'; return; }
+    el.classList.remove('dash-skeleton');
+    fn(el, e);
+  });
+}
+const semMovimento = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- linha do tempo ---------- */
+dash.draw('linha', (el) => {
+  const e = estado();
+  if (!e.ok) { caixa(el, e); return; }
+  el.classList.remove('dash-skeleton');
+  const { Z, c } = e;
+  const W = Math.max(300, el.clientWidth), H = 204;
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  el.replaceChildren(svg.node());
+  const fim = Math.max(30, c.CO, Z.pmpf) * 1.1;
+  const x = d3.scaleLinear([0, fim], [12, W - 14]).nice();
+  const yBar = 46, hBar = 34, yCF = 98, hCF = 22;
+  const anima = LT.animar && LT.prev && !semMovimento();
+  const P = anima ? LT.prev : Z;
+  const cP = ciclo(P);
+  LT.animar = false;
+  const fade = anima ? ' lt-fade' : '';
+  const tr = (sel) => (anima ? sel.transition().duration(550).ease(d3.easeCubicOut) : sel);
+  // eixo
+  const ticks = x.ticks(Math.max(3, Math.floor(W / 80)));
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', (t) => x(t)).attr('x2', (t) => x(t))
+    .attr('y1', yBar - 4).attr('y2', 176).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('line').attr('x1', x(0)).attr('x2', x.range()[1]).attr('y1', 176).attr('y2', 176).attr('stroke', 'var(--cds-chart-axis)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'lt-svgm').attr('text-anchor', 'middle')
+    .attr('x', (t) => x(t)).attr('y', 192).text((t) => f(t));
+  // barras do ciclo operacional
+  const rEst = svg.append('rect').attr('y', yBar).attr('height', hBar).attr('rx', 3).attr('fill', 'var(--lt-est)')
+    .attr('x', x(0)).attr('width', Math.max(0, x(P.pmre) - x(0)));
+  tr(rEst).attr('width', Math.max(0, x(Z.pmre) - x(0)));
+  const rCli = svg.append('rect').attr('y', yBar).attr('height', hBar).attr('rx', 3).attr('fill', 'var(--lt-cli)')
+    .attr('x', x(P.pmre)).attr('width', Math.max(0, x(cP.CO) - x(P.pmre)));
+  tr(rCli).attr('x', x(Z.pmre)).attr('width', Math.max(0, x(c.CO) - x(Z.pmre)));
+  const dentro = (txt, a, b) => {
+    const t = svg.append('text').attr('class', 'lt-svgt' + fade).attr('x', x(a) + 6).attr('y', yBar + hBar / 2 + 5).style('fill', '#1a1a1a').text(txt);
+    if (t.node().getComputedTextLength() > x(b) - x(a) - 10) t.remove();
+  };
+  dentro('Estoque · ' + f(Z.pmre) + ' d', 0, Z.pmre);
+  dentro('Clientes · ' + f(Z.pmrv) + ' d', Z.pmre, c.CO);
+  // faixa do ciclo financeiro
+  const corCF = (v) => (v > 0 ? 'var(--lt-neg)' : v < 0 ? 'var(--lt-pos)' : 'var(--lt-neutro)');
+  const a0 = Math.min(P.pmpf, cP.CO), b0 = Math.max(P.pmpf, cP.CO);
+  const a1 = Math.min(Z.pmpf, c.CO), b1 = Math.max(Z.pmpf, c.CO);
+  const rCF = svg.append('rect').attr('y', yCF).attr('height', hCF).attr('rx', 3).attr('fill', corCF(c.CF)).attr('opacity', 0.85)
+    .attr('x', x(a0)).attr('width', Math.max(2, x(b0) - x(a0)));
+  tr(rCF).attr('x', x(a1)).attr('width', Math.max(2, x(b1) - x(a1)));
+  // marcos
+  const marco = (v0, v1, y1, y2, cor, w, dash2) => {
+    const l = svg.append('line').attr('x1', x(v0)).attr('x2', x(v0)).attr('y1', y1).attr('y2', y2)
+      .attr('stroke', cor).attr('stroke-width', w).attr('stroke-dasharray', dash2 || null);
+    tr(l).attr('x1', x(v1)).attr('x2', x(v1));
+  };
+  marco(0, 0, yBar - 6, yCF + hCF, 'var(--color-fg)', 1.5, '3 3');
+  marco(P.pmre, Z.pmre, yBar - 6, yBar + hBar + 4, 'var(--color-fg)', 1.5, '3 3');
+  marco(cP.CO, c.CO, yBar - 6, yCF + hCF, 'var(--color-fg)', 1.5, '3 3');
+  marco(P.pmpf, Z.pmpf, yBar + hBar + 2, 158, 'var(--lt-ccl)', 3);
+  // rótulos dos marcos de cima, escalonados para não se sobreporem
+  const topo = [
+    { t: 'Compra · 0', v: 0 },
+    { t: 'Venda · ' + f(Z.pmre), v: Z.pmre },
+    { t: 'Recebimento · ' + f(c.CO), v: c.CO },
+  ];
+  const fim1 = [-Infinity, -Infinity];
+  topo.forEach((m) => {
+    const t = svg.append('text').attr('class', 'lt-svgt' + fade).attr('text-anchor', 'middle').text(m.t);
+    const w = t.node().getComputedTextLength();
+    const cx = Math.max(w / 2 + 1, Math.min(W - w / 2 - 1, x(m.v)));
+    let row = fim1[0] < cx - w / 2 - 6 ? 0 : 1;
+    if (row === 1 && fim1[1] >= cx - w / 2 - 6) row = 0;
+    fim1[row] = cx + w / 2;
+    t.attr('x', cx).attr('y', row === 0 ? 34 : 16);
+  });
+  // rótulo do CF e do pagamento
+  const txtCF = c.CF > 0 ? 'a empresa financia ' + f(c.CF) + ' dias' : c.CF < 0 ? 'o fornecedor financia e ainda sobram ' + f(-c.CF) + ' dias' : 'equilíbrio';
+  const tc = svg.append('text').attr('class', 'lt-svgb' + fade).attr('text-anchor', 'middle').style('fill', corCF(c.CF)).attr('y', yCF + hCF + 18).text(txtCF);
+  const wc = tc.node().getComputedTextLength();
+  tc.attr('x', Math.max(wc / 2 + 1, Math.min(W - wc / 2 - 1, x((a1 + b1) / 2))));
+  const tp = svg.append('text').attr('class', 'lt-svgt' + fade).attr('text-anchor', 'middle').style('fill', 'var(--lt-ccl)').attr('y', 170)
+    .style('font-weight', '600').text('Pagamento ao fornecedor · ' + f(Z.pmpf));
+  const wp = tp.node().getComputedTextLength();
+  tp.attr('x', Math.max(wp / 2 + 1, Math.min(W - wp / 2 - 1, x(Z.pmpf))));
+  LT.prev = { pmre: Z.pmre, pmrv: Z.pmrv, pmpf: Z.pmpf };
+});
+
+/* ---------- cartões de preço da alavanca ---------- */
+dash.draw('cartoes', (el) => {
+  const e = estado();
+  const on = {};
+  if (e.ok && e.ref) {
+    on['pf-up'] = e.Z.pmpf > e.ref.pmpf;
+    on['rv-down'] = e.Z.pmrv < e.ref.pmrv;
+    on['re-down'] = e.Z.pmre < e.ref.pmre;
+    on.alerta = e.Z.pmre > e.ref.pmre || e.Z.pmrv > e.ref.pmrv;
+  }
+  el.parentElement.querySelectorAll('[data-card]').forEach((c) => { c.hidden = !on[c.dataset.card]; });
+});
+
+/* ---------- leitura ---------- */
+texto('co', (el, e) => { el.textContent = f(e.c.CO); });
+texto('cf', (el, e) => {
+  el.textContent = fs(e.c.CF);
+  el.classList.toggle('lt-neg', e.c.CF > 0);
+  el.classList.toggle('lt-pos', e.c.CF < 0);
+});
+texto('giro', (el, e) => { el.textContent = e.g ? f(e.g.total) : '—'; });
+texto('giro-conta', (el, e) => { el.textContent = e.g ? f(e.g.re) + ' + ' + f(e.g.rv) + ' − ' + f(e.g.pf) : '—'; });
+dash.draw('frase', (el) => {
+  const e = estado();
+  let k = '';
+  if (e.ok) k = e.c.CF > LIMITE_LONGO ? 'longo' : e.c.CF > 0 ? 'banca' : e.c.CF < 0 ? 'negativo' : 'zero';
+  el.parentElement.querySelectorAll('[data-frase]').forEach((p) => { p.hidden = p.dataset.frase !== k; });
+});
+texto('v-cf', (el, e) => { el.textContent = f(e.c.CF); });
+texto('v-cfabs', (el, e) => { el.textContent = f(Math.abs(e.c.CF)); });
+
+/* ---------- números do painel ⓘ e das perguntas ---------- */
+const PZ = {
+  ncg: (A) => f(A.ncg), st: (A) => f(A.st), est: (A) => f(A.est), cli: (A) => f(A.cli), forn: (A) => f(A.forn),
+  rec: (A) => f(A.rec), cmv: (A) => f(A.cmv), compras: (A) => f(A.compras),
+  'dia-rv': (A) => f(Math.round(A.rec / 360)), 'dia-re': (A) => f(Math.round(A.cmv / 360)), 'dia-pf': (A) => f(Math.round(A.compras / 360)),
+  pmre: (A) => f(prazosAlfa(A).pmre), pmrv: (A) => f(prazosAlfa(A).pmrv), pmpf: (A) => f(prazosAlfa(A).pmpf), co: (A) => f(prazosAlfa(A).co),
+  'pmre-err': (A) => f(prazosAlfa(A).pmreErr), 'pmrv-err': (A) => f(prazosAlfa(A).pmrvErr), 'co-err': (A) => f(prazosAlfa(A).coErr),
+  'v-co': (A, P) => { const v = P('Varejo de larga escala'); return v ? f(ciclo(v).CO) : null; },
+  'v-pmpf': (A, P) => { const v = P('Varejo de larga escala'); return v ? f(v.pmpf) : null; },
+  'v-cf': (A, P) => { const v = P('Varejo de larga escala'); return v ? fs(ciclo(v).CF) : null; },
+  'q2-novo': () => f(Q2.pmrv),
+  'q2-dias': (A, P) => { const v = P('Indústria Alfa'); return v ? f(v.pmrv - Q2.pmrv) : null; },
+  'q2-lib': (A, P) => { const v = P('Indústria Alfa'); return v ? f((v.pmrv - Q2.pmrv) * A.rec / 360) : null; },
+};
+dash.draw('pz', (el) => {
+  const a = dash.data('alfa_t0'), p = dash.data('presets');
+  const fn = PZ[el.dataset.q];
+  if (!fn || a.status !== 'ok') { el.textContent = '—'; return; }
+  const P = (nome) => {
+    if (p.status !== 'ok') return null;
+    const r = p.data.find((x) => x.setor === nome);
+    return r ? presetDe(r) : null;
+  };
+  const v = fn(alfa(a.data), P);
+  el.textContent = v == null ? '—' : v;
+});
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

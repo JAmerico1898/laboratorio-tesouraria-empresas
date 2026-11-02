@@ -1,0 +1,402 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<style>
+.d31-pair { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 44rem) { .d31-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.d31-box { min-height: 270px; }
+.d31-curva { min-height: 300px; }
+.d31-leg { display: grid; gap: 3px; font-size: 13px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.d31-leg i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
+.d31-leg .k-u { margin-left: 4px; }
+.d31-perfis { margin-top: 14px; border-top: 1px solid var(--color-border-line); padding-top: 10px; }
+.d31-pbar { min-height: 96px; }
+.d31-prow { display: grid; grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr) 3.4rem; align-items: center; gap: 8px; width: 100%; font: inherit; font-size: 13px; text-align: left; background: none; border: 1px solid transparent; border-radius: var(--cds-radius); padding: 3px 6px; color: var(--color-fg); cursor: pointer; }
+.d31-prow:hover { border-color: var(--color-border-line); }
+.d31-prow[aria-pressed="true"] { border-color: var(--k-navy); }
+.d31-prow .d31-track { height: 12px; background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: 3px; overflow: hidden; }
+.d31-prow .d31-fill { height: 100%; background: var(--k-amber); }
+.d31-prow .d31-pct { text-align: right; font-variant-numeric: tabular-nums; }
+.d31-fixa { font-size: 13px; color: var(--color-fg-muted); margin: 10px 0 0; font-variant-numeric: tabular-nums; }
+.d31 .k-card .d31-val { font-family: var(--font-anthropic-serif); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.d31-adv { margin-top: 4px; font-size: 14px; }
+.d31-adv > summary { cursor: pointer; color: var(--color-fg-muted); font-size: 13px; margin-bottom: 6px; }
+</style>
+
+<div class="k d31" id="d31">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D3.1 · Estoque é dinheiro parado</h1>
+      <p class="k-sub">Quanto custa, por ano, cada dia que a mercadoria fica na prateleira — e quanto custa ela não estar lá?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d31-cen" data-cen="t0" aria-pressed="false">Horizonte T0</button>
+      <button class="k-btn d31-cen" data-cen="cdi" aria-pressed="false">CDI alto</button>
+      <button class="k-btn d31-cen" data-cen="giro" aria-pressed="false">Giro de distribuidor eficiente</button>
+      <button class="k-btn d31-cen" data-cen="moda" aria-pressed="false">Moda / tecnologia</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone" id="controles" data-source="perfis cenarios">
+      <h2 class="k-zt">Prateleira</h2>
+      <div class="k-ctl"><label for="c-pme">PME <span class="k-u">dias de estoque</span> <span class="k-info" tabindex="0">i<span class="k-tip">Estoque = CMV × PME ÷ 360. Clientes, outros ativos operacionais e o PCO ficam fixos: só o estoque se move.</span></span></label>
+        <div class="k-in"><input type="range" id="c-pme" data-k="pme" min="20" max="150" step="1"><input type="number" class="d31-pmenum" data-k="pme" min="20" max="150" step="1" aria-label="PME, dias"></div></div>
+
+      <h2 class="k-zt2">Custo de carregamento H <span class="k-u">% a.a. do valor estocado</span></h2>
+      <div class="k-ctl"><label for="c-cdi">Financeiro (CDI)</label>
+        <div class="k-in"><input type="range" id="c-cdi" data-k="cdi" min="5" max="20" step="0.5"><input type="number" data-k="cdi" min="5" max="20" step="0.5" aria-label="CDI, % a.a."></div></div>
+      <div class="k-ctl"><label for="c-armaz">Armazenagem</label>
+        <div class="k-in"><input type="range" id="c-armaz" data-k="armaz" min="1" max="5" step="0.5"><input type="number" data-k="armaz" min="1" max="5" step="0.5" aria-label="Armazenagem, % a.a."></div></div>
+      <div class="k-ctl"><label for="c-seg">Seguros e perdas</label>
+        <div class="k-in"><input type="range" id="c-seg" data-k="seguro" min="0" max="3" step="0.5"><input type="number" data-k="seguro" min="0" max="3" step="0.5" aria-label="Seguros e perdas, % a.a."></div></div>
+      <div class="k-ctl"><label for="c-obs">Obsolescência</label>
+        <div class="k-in"><input type="range" id="c-obs" data-k="obsol" min="0" max="10" step="0.5"><input type="number" data-k="obsol" min="0" max="10" step="0.5" aria-label="Obsolescência, % a.a."></div></div>
+      <p class="k-note">H total = <b data-draw="v" data-q="H">—</b></p>
+
+      <h2 class="k-zt2">Ruptura</h2>
+      <div class="k-ctl"><label for="c-mult">Multiplicador de perda de cliente <span class="k-info" tabindex="0">i<span class="k-tip">1,0 = só a margem da venda perdida. Acima de 1, a falta também afasta o cliente das compras seguintes.</span></span></label>
+        <div class="k-in"><input type="range" id="c-mult" data-k="mult" min="1" max="3" step="0.1"><input type="number" data-k="mult" min="1" max="3" step="0.1" aria-label="Multiplicador de perda de cliente"></div></div>
+      <details class="d31-adv">
+        <summary>Avançado</summary>
+        <div class="k-ctl"><label for="c-tau">Sensibilidade à ruptura τ <span class="k-u">dias</span> <span class="k-info" tabindex="0">i<span class="k-tip">Fração da receita perdida por falta = f₀ · e^(−PME/τ), com f₀ = 25%. Construção didática: τ maior = ruptura mais sensível a pouco estoque.</span></span></label>
+          <div class="k-in"><input type="range" id="c-tau" data-k="tau" min="20" max="80" step="1"><input type="number" data-k="tau" min="20" max="80" step="1" aria-label="τ, dias"></div></div>
+      </details>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="perfis cenarios">
+      <div class="k-tabs" role="tablist">
+        <button class="k-tab" id="tab-dinheiro" data-group="v" data-tab="dinheiro" role="tab" aria-selected="true">Dinheiro parado</button>
+        <button class="k-tab" id="tab-balanca" data-group="v" data-tab="balanca" role="tab" aria-selected="false">A balança</button>
+      </div>
+
+      <section data-group="v" data-pane="dinheiro" id="dinheiro">
+        <div class="d31-pair">
+          <div>
+            <div class="k-ch"><h3>Ativo × passivo operacional</h3><span>R$ mil · <b data-draw="v" data-q="empresa">—</b></span></div>
+            <div class="k-chart d31-box dash-skeleton" id="barras" data-draw="barras" role="img" aria-label="Barras do ACO e do PCO com a NCG anotada"></div>
+            <div class="k-legend">
+              <span><i style="background: var(--k-amber)"></i>Estoque</span>
+              <span><i style="background: var(--k-amber-l)"></i>Clientes</span>
+              <span><i style="background: var(--k-neutro)"></i>Outros ACO</span>
+              <span><i style="background: var(--k-amber-d)"></i>PCO</span>
+            </div>
+          </div>
+          <div>
+            <div class="k-ch"><h3>Custo de carregamento por ano</h3><span>R$ mil</span></div>
+            <div class="k-chart d31-box dash-skeleton" id="anel" data-draw="anel" role="img" aria-label="Anel do custo de carregamento nas quatro famílias"></div>
+            <div class="d31-leg">
+              <span><i style="background: var(--k-navy)"></i>Financeiro (CDI) · <b data-draw="v" data-q="fam-fin">—</b> <span class="k-u">não aparece na nota fiscal</span></span>
+              <span><i style="background: var(--k-blue)"></i>Armazenagem · <b data-draw="v" data-q="fam-armaz">—</b></span>
+              <span><i style="background: var(--k-blue-l)"></i>Seguros e perdas · <b data-draw="v" data-q="fam-seguro">—</b></span>
+              <span><i style="background: var(--k-neutro)"></i>Obsolescência · <b data-draw="v" data-q="fam-obsol">—</b></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="balanca" id="balanca" hidden>
+        <div class="k-ch"><h3>Carregamento × ruptura</h3><span>R$ mil por ano · PME em dias</span></div>
+        <p class="k-note d31-semest" hidden>Sem estoque: a NCG mora no prazo de recebimento e nos contratos — M4.</p>
+        <div class="k-chart d31-curva dash-skeleton" id="curva" data-draw="curva" role="img" aria-label="Custos de carregamento, ruptura e total em função do PME"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-amber)"></i>Carregamento</span>
+          <span><i style="background: var(--k-blue)"></i>Ruptura esperada</span>
+          <span><i style="background: var(--k-navy); height: 4px; vertical-align: 3px"></i>Total</span>
+        </div>
+        <div class="k-cards">
+          <div class="k-card" id="card-venda"><h4>Venda perdida</h4><span class="d31-val" data-draw="v" data-q="venda">—</span> <span class="k-u">R$ mil/ano</span><p class="k-note">Conta a margem de contribuição (<b data-draw="v" data-q="mc">—</b>), não o preço.</p></div>
+          <div class="k-card" id="card-cliente"><h4>Perda de cliente</h4><span class="d31-val" data-draw="v" data-q="perdaCli">—</span> <span class="k-u">R$ mil/ano</span><p class="k-note">Multiplicador <b data-draw="v" data-q="mult">—</b>: a falta de hoje custa compras futuras.</p></div>
+          <div class="k-card d31-parada" id="card-parada"><h4>Parada de linha</h4>
+            <p class="k-note d31-par-off">Não se aplica a distribuidor: falta de mercadoria não para fábrica.</p>
+            <p class="k-note d31-par-on" hidden>Capacidade ociosa: a fábrica para por falta de insumo e o custo fixo corre. Não entra no total desta curva.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="d31-perfis" id="perfis" data-source="perfis">
+        <h2 class="k-zt">Participação do estoque no ACO · clique para trocar de perfil</h2>
+        <div class="d31-pbar dash-skeleton" data-draw="perfis"></div>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="perfis cenarios">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">Estoque <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="est">—</span></div>
+      <div class="k-kpi"><span class="k-kl">NCG <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="ncg">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Carregamento/ano <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="carreg">—</span></div>
+      <p class="k-note"><b data-draw="v" data-q="pct">—</b> do EBITDA · ruptura <b data-draw="v" data-q="rup">—</b> · total <b data-draw="v" data-q="total">—</b></p>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="acima" hidden><b data-draw="v" data-q="pme">—</b> dias de prateleira custam R$ <b data-draw="v" data-q="carreg">—</b> mil por ano — <b data-draw="v" data-q="pct">—</b> do EBITDA. Cada 10 dias a menos de PME liberam R$ <b data-draw="v" data-q="dez">—</b> mil de NCG.</p>
+        <p data-frase="equilibrio" hidden>Perto do equilíbrio entre carregamento e ruptura (ótimo em <b data-draw="v" data-q="ot">—</b> dias). A partir daqui, reduzir estoque só vale com cadeia mais confiável (D3.4).</p>
+        <p data-frase="abaixo" hidden>Estoque baixo barateia o carregamento, mas a ruptura já custa R$ <b data-draw="v" data-q="rup">—</b> mil em margem perdida. O barato sai caro.</p>
+        <p data-frase="st" hidden>Com PME de <b data-draw="v" data-q="pme">—</b> dias, o ST da Horizonte sairia de <b data-draw="v" data-q="st0">—</b> para <b data-draw="v" data-q="stNovo">—</b>: <b data-draw="v" data-q="menosDias">—</b> dias de estoque a menos pagariam toda a dívida de curto prazo.</p>
+        <p data-frase="nuvem" hidden>Sem estoque, não há o que carregar: a NCG de <b data-draw="v" data-q="ncg">—</b> mora no prazo de recebimento e nos contratos — tema do M4.</p>
+      </div>
+      <p class="d31-fixa">Cada 10 dias de PME = R$ <b data-draw="v" data-q="dez">—</b> mil de estoque = R$ <b data-draw="v" data-q="dezCarreg">—</b> mil/ano de carregamento (a <b data-draw="v" data-q="H">—</b>).</p>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="perfis cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Quanto a Horizonte paga por ano para manter R$ <span data-draw="v" data-q="g-est">—</span> mil em estoque, e onde esse custo aparece na contabilidade?
+          <details><summary>mostrar resposta</summary><p>R$ <b data-draw="v" data-q="g-carreg">—</b> mil (<b data-draw="v" data-q="g-H">—</b>): R$ <b data-draw="v" data-q="g-fin">—</b> mil são custo financeiro — estão nos juros do CG rotativo e no rendimento que a aplicação não gerou, em nenhuma conta de estoque. Os outros R$ <b data-draw="v" data-q="g-outros">—</b> mil aparecem diluídos em aluguel, energia, seguro e perdas.</p></details>
+        </li>
+        <li>Leve o PME para <span data-draw="v" data-q="g-pme2">—</span> dias. O que acontece com a NCG e com o ST da Horizonte?
+          <details><summary>mostrar resposta</summary><p>Estoque cai para <b data-draw="v" data-q="g-est2">—</b>, NCG de <b data-draw="v" data-q="g-ncg">—</b> para <b data-draw="v" data-q="g-ncg2">—</b>: os R$ <b data-draw="v" data-q="g-lib">—</b> mil liberados mais que cobrem o ST de <b data-draw="v" data-q="st0">—</b> e ainda sobra caixa. O preço: a ruptura sobe de <b data-draw="v" data-q="g-rup">—</b> para <b data-draw="v" data-q="g-rup2">—</b>.</p></details>
+        </li>
+        <li>Na aba "A balança", o mínimo fica perto de <span data-draw="v" data-q="g-ot">—</span> dias. Por que então a Horizonte opera com <span data-draw="v" data-q="g-pme">—</span>?
+          <details><summary>mostrar resposta</summary><p>Porque a curva agrega 3.500 SKUs com comportamentos diferentes: itens C de giro lento puxam o PME médio para cima. O ótimo agregado esconde que a resposta certa é por classe — tema do D3.2.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<script>
+/* ============================================================
+   D3.1 · Estoque é dinheiro parado
+   Testes de aderência (Spec §7), conferidos com M31.estado() em node:
+   Horizonte T0: estoque 7.500 · ACO 9.800 · 76,5% · NCG 5.500 · H 18% · carregamento 1.350 · 56% do EBITDA · ruptura 148 · total 1.498
+   PME 60: estoque 4.500 · NCG 2.500 · carregamento 810 · ruptura 402 · total 1.212 · ST novo 500
+   Ótimo: 48 dias · total 1.190 · CDI 18%: 1.800 · Obsolescência 10%: H 26% · 1.950
+   Alfa: estoque 5.300 (PME 59,6) · ACO 14.000 · 37,9% · NCG 8.900 · Nuvem: 0% · PME desabilitado
+   ============================================================ */
+const ST = window.D31 = { S: null, perfil: 'horizonte', cen: null, mexido: false };
+const IDS = ['perfis', 'cenarios'];
+const NOMES = ['barras', 'anel', 'curva', 'perfis', 'v', 'frase'];
+const FAIXA_OTIMO = 15;   // ± dias em torno do ótimo para a frase "equilíbrio" (Spec §4.3)
+const NCG_ST = 2500;      // NCG a partir da qual a frase do ST aparece (Spec §4.3)
+const Q2_PME = 60;        // PME sugerido na pergunta-guia 2
+
+/* ---------- dados ---------- */
+const perfis = () => K.num(dash.data('perfis').data);
+const perfil = (id) => perfis().find((r) => r.perfil === id);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const pme0 = (e) => (e.temEstoque ? e.estoque0 / e.cmv * 360 : 0);
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const E = () => perfil(ST.perfil);
+const atual = () => M31.estado(E(), ST.S);
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const base = (extra) => M31.estado(perfil('horizonte'), { ...ctlDe(cenario('t0')), ...(extra || {}) });
+function ctlDe(r) { return { pme: r.pme, cdi: r.cdi, armaz: r.armaz, seguro: r.seguro, obsol: r.obsol, mult: r.mult, tau: r.tau }; }
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  K.sync(ST.S);
+  const e = E();
+  document.querySelectorAll('.d31-pmenum').forEach((i) => { if (i !== document.activeElement) i.value = String(Math.round(ST.S.pme)); });
+  document.querySelectorAll('input[data-k="pme"]').forEach((i) => { i.disabled = !!e && !e.temEstoque; });
+  document.querySelectorAll('.d31-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+  document.querySelectorAll('.d31-semest').forEach((x) => { x.hidden = !e || !!e.temEstoque; });
+  document.querySelectorAll('.d31-par-off').forEach((x) => { x.hidden = !!e && !!e.paradaLinha; });
+  document.querySelectorAll('.d31-par-on').forEach((x) => { x.hidden = !e || !e.paradaLinha; });
+  document.querySelectorAll('.d31-parada').forEach((x) => { x.classList.toggle('k-dim', !e || !e.paradaLinha); });
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDe(r); ST.perfil = 'horizonte'; ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+function trocaPerfil(id) {
+  const e = perfil(id);
+  if (!e || !ST.S) return;
+  ST.perfil = id; ST.S.pme = e.temEstoque ? pme0(e) : ST.S.pme; ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  aplicar('t0');
+  K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), () => {
+  if (!ST.S) return;
+  ST.mexido = true; sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d31-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+K.tabs('v', () => K.redraw(['curva', 'barras', 'anel']));
+
+/* ---------- barras ACO × PCO ---------- */
+dash.draw('barras', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const e = E(), R = atual();
+  const { svg, W, H } = K.svg(el, 270, 260);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const maxV = Math.max(M31.estoque(e, 150) + e.clientes + e.outrosACO, e.pco) * 1.05;
+  const y = d3.scaleLinear([0, maxV], [H - 26, 14]);
+  const cw = Math.min(90, (W - 40) / 4), xA = W / 2 - cw - 18, xP = W / 2 + 18;
+  const ticks = y.ticks(5);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', 8).attr('x2', W - 8).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('x', 8).attr('y', (t) => y(t) - 3).text((t) => K.n(t));
+  const segs = [['Estoque', R.est, 'var(--k-amber)'], ['Clientes', e.clientes, 'var(--k-amber-l)'], ['Outros ACO', e.outrosACO, 'var(--k-neutro)']];
+  let acc = 0;
+  segs.forEach(([nome, v, cor]) => {
+    if (v <= 0) return;
+    svg.append('rect').attr('x', xA).attr('width', cw).attr('y', y(acc + v)).attr('height', Math.max(0, y(acc) - y(acc + v))).attr('fill', cor)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('ACO', [[cor, nome, K.n(v)]], px, py); }).on('mouseleave', () => tip.hide());
+    if (y(acc) - y(acc + v) > 18) svg.append('text').attr('class', 'k-svgt').style('fill', '#1a1a1a').attr('text-anchor', 'middle').attr('x', xA + cw / 2).attr('y', y(acc + v / 2) + 5).text(K.n(v));
+    acc += v;
+  });
+  svg.append('rect').attr('x', xP).attr('width', cw).attr('y', y(e.pco)).attr('height', Math.max(0, y(0) - y(e.pco))).attr('fill', 'var(--k-amber-d)')
+    .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('PCO', [['var(--k-amber-d)', 'Passivo operacional', K.n(e.pco)]], px, py); }).on('mouseleave', () => tip.hide());
+  svg.append('text').attr('class', 'k-svgt').style('fill', '#fff').attr('text-anchor', 'middle').attr('x', xP + cw / 2).attr('y', y(e.pco / 2) + 5).text(K.n(e.pco));
+  svg.append('line').attr('x1', 8).attr('x2', W - 8).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', xA + cw / 2).attr('y', H - 8).text('ACO ' + K.n(R.aco));
+  svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', xP + cw / 2).attr('y', H - 8).text('PCO ' + K.n(e.pco));
+  // NCG: colchete entre o topo do PCO e o topo do ACO
+  if (R.ncg > 0) {
+    const bx = xP + cw + 8, y1 = y(R.aco), y2 = y(e.pco);
+    svg.append('line').attr('x1', xA + cw).attr('x2', bx).attr('y1', y1).attr('y2', y1).attr('stroke', 'var(--color-fg)').attr('stroke-dasharray', '3 3');
+    svg.append('path').attr('d', `M${bx},${y1} h6 V${y2} h-6`).attr('fill', 'none').attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
+    const t = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', bx + 10).attr('y', (y1 + y2) / 2 - 2).text('NCG');
+    svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', bx + 10).attr('y', (y1 + y2) / 2 + 15).text(K.n(R.ncg));
+    if (bx + 10 + t.node().getComputedTextLength() > W) t.attr('x', W - t.node().getComputedTextLength());
+  }
+});
+
+/* ---------- anel do carregamento ---------- */
+dash.draw('anel', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const e = E(), R = atual();
+  const { svg, W, H } = K.svg(el, 270, 260);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const cx = W / 2, cy = H / 2, r = Math.min(W, H) / 2 - 10;
+  const cores = { fin: 'var(--k-navy)', armaz: 'var(--k-blue)', seguro: 'var(--k-blue-l)', obsol: 'var(--k-neutro)' };
+  const nomes = { fin: 'Financeiro (CDI)', armaz: 'Armazenagem', seguro: 'Seguros e perdas', obsol: 'Obsolescência' };
+  const g = svg.append('g').attr('transform', `translate(${cx},${cy})`);
+  const dados = R.familias.filter(([, v]) => v > 0);
+  if (!dados.length) {
+    g.append('circle').attr('r', r * 0.8).attr('fill', 'none').attr('stroke', 'var(--color-border-line)').attr('stroke-width', r * 0.36);
+  } else {
+    const arcs = d3.pie().sort(null).value((d) => d[1])(dados);
+    const arc = d3.arc().innerRadius(r * 0.62).outerRadius(r).padAngle(0.01).cornerRadius(2);
+    g.selectAll('path').data(arcs).join('path').attr('d', arc).attr('fill', (d) => cores[d.data[0]])
+      .on('mousemove', (ev, d) => { const [px, py] = d3.pointer(ev, el); tip.show(nomes[d.data[0]], [[cores[d.data[0]], 'R$ mil/ano', K.n(d.data[1])], [null, 'Participação', K.p(d.data[1] / R.carreg, 0)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+  }
+  g.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('y', -22).text('R$ mil/ano');
+  g.append('text').attr('text-anchor', 'middle').attr('y', 8).style('font-family', 'var(--font-anthropic-serif)').style('font-size', '30px').style('fill', 'var(--color-fg)').style('font-variant-numeric', 'tabular-nums').text(K.n(R.carreg));
+  g.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('y', 30).text('= ' + K.p(R.pctEbitda, 0) + ' do EBITDA');
+});
+
+/* ---------- a balança ---------- */
+dash.draw('curva', (el) => {
+  if (!pronto()) { falha(el); return; }
+  const e = E();
+  el.classList.remove('dash-skeleton');
+  if (!e.temEstoque) { el.replaceChildren(); return; }
+  const R = atual(), C = ST.S;
+  const pts = M31.curva(e, C, 20, 150, 1);
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const yMax = d3.max(pts, (p) => Math.max(p.total, p.carreg, p.rup)) * 1.05;
+  const y = d3.scaleLinear([0, yMax], [H - 28, 12]).nice();
+  const ticks = y.ticks(5);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t)); mL = Math.max(mL, meas.node().getComputedTextLength()); });
+  meas.text('Carregamento'); const mR = meas.node().getComputedTextLength() + 14; meas.remove();
+  const x = d3.scaleLinear([20, 150], [mL + 10, W - mR]);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x(20)).attr('x2', x(150)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  const xt = [20, 40, 60, 80, 100, 120, 150];
+  svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 8).text((t) => K.n(t));
+  svg.append('line').attr('x1', x(20)).attr('x2', x(150)).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  const series = [['carreg', 'var(--k-amber)', 2, 'Carregamento'], ['rup', 'var(--k-blue)', 2, 'Ruptura'], ['total', 'var(--k-navy)', 3.5, 'Total']];
+  series.forEach(([k, cor, w]) => {
+    svg.append('path').attr('d', d3.line().x((p) => x(p.pme)).y((p) => y(p[k]))(pts)).attr('fill', 'none').attr('stroke', cor).attr('stroke-width', w).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  });
+  // rótulos de fim de linha, afastados para não se tocarem
+  const fim = pts[pts.length - 1];
+  const labs = series.map(([k, cor, , nome]) => ({ y: y(fim[k]), cor, nome })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 15) labs[i].y = labs[i - 1].y + 15;
+  labs.forEach((l) => svg.append('text').attr('class', 'k-svgt').style('fill', l.cor).style('font-weight', 600).attr('x', x(150) + 6).attr('y', l.y + 4).text(l.nome));
+  // ótimo
+  const ot = R.ot;
+  svg.append('line').attr('x1', x(ot.pme)).attr('x2', x(ot.pme)).attr('y1', y(ot.total)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+  svg.append('circle').attr('cx', x(ot.pme)).attr('cy', y(ot.total)).attr('r', 5).attr('fill', 'var(--color-bg)').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2);
+  const tOt = svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', x(ot.pme)).attr('y', y(ot.total) - 10).text('ótimo ' + K.n(ot.pme) + ' d · ' + K.n(ot.total));
+  // atual
+  const pa = Math.min(150, Math.max(20, C.pme));
+  const tAt = M31.total(e, C, pa);
+  svg.append('line').attr('x1', x(pa)).attr('x2', x(pa)).attr('y1', 12).attr('y2', y(0)).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
+  svg.append('circle').attr('cx', x(pa)).attr('cy', y(tAt)).attr('r', 5).attr('fill', 'var(--k-navy)');
+  const tA = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', x(pa) + 6).attr('y', 24).text('atual ' + K.n(pa) + ' d');
+  if (x(pa) + 6 + tA.node().getComputedTextLength() > x(150)) tA.attr('text-anchor', 'end').attr('x', x(pa) - 6);
+  // evita o rótulo do ótimo sobre o do atual
+  const bO = tOt.node().getBBox(), bA = tA.node().getBBox();
+  if (bO.x < bA.x + bA.width && bA.x < bO.x + bO.width && bO.y < bA.y + bA.height && bA.y < bO.y + bO.height) tOt.attr('y', y(ot.total) + 22);
+  // tooltip
+  const hover = svg.append('circle').attr('r', 4).attr('fill', 'var(--k-navy)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(20)).attr('width', x(150) - x(20)).attr('y', 12).attr('height', y(0) - 12).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const p = pts[Math.max(0, Math.min(pts.length - 1, Math.round(x.invert(d3.pointer(ev)[0]) - 20)))];
+      hover.attr('cx', x(p.pme)).attr('cy', y(p.total)).attr('opacity', 1);
+      tip.show('PME ' + K.n(p.pme) + ' dias', [['var(--k-amber)', 'Carregamento', K.n(p.carreg)], ['var(--k-blue)', 'Ruptura', K.n(p.rup)], ['var(--k-navy)', 'Total', K.n(p.total)]], px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hover.attr('opacity', 0); });
+});
+
+/* ---------- barra de perfis ---------- */
+dash.draw('perfis', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  el.replaceChildren();
+  perfis().forEach((p) => {
+    const R = M31.estado(p, { ...ST.S, pme: pme0(p) });
+    const b = document.createElement('button');
+    b.className = 'd31-prow'; b.type = 'button';
+    b.setAttribute('aria-pressed', String(p.perfil === ST.perfil));
+    const nome = document.createElement('span'); nome.textContent = p.empresa;
+    const tr = document.createElement('span'); tr.className = 'd31-track';
+    const fi = document.createElement('span'); fi.className = 'd31-fill'; fi.style.display = 'block'; fi.style.width = (R.part * 100) + '%'; tr.append(fi);
+    const pc = document.createElement('span'); pc.className = 'd31-pct'; pc.textContent = K.p(R.part, 1);
+    b.title = p.setor;
+    b.append(nome, tr, pc);
+    b.addEventListener('click', () => trocaPerfil(p.perfil));
+    el.append(b);
+  });
+});
+
+/* ---------- números ---------- */
+const VAL = {
+  empresa: () => E().empresa, H: (R) => K.p(R.H, 0), pme: (R) => K.n(R.pme), est: (R) => K.n(R.est), ncg: (R) => K.n(R.ncg),
+  carreg: (R) => K.n(R.carreg), pct: (R) => K.p(R.pctEbitda, 0), rup: (R) => K.n(R.rup), total: (R) => K.n(R.total),
+  venda: (R) => K.n(R.venda), perdaCli: (R) => K.n(R.perdaCliente), mc: () => K.p(E().mc, 0), mult: () => K.n(ST.S.mult, 1),
+  ot: (R) => (R.ot.pme == null ? null : K.n(R.ot.pme)), dez: (R) => K.n(R.dezDias), dezCarreg: (R) => K.n(R.dezDias * R.H),
+  stNovo: (R) => K.n(R.stNovo), st0: () => K.n(E().st), menosDias: (R) => K.n(pme0(E()) - R.pme),
+  'fam-fin': (R) => K.n(R.familias[0][1]), 'fam-armaz': (R) => K.n(R.familias[1][1]), 'fam-seguro': (R) => K.n(R.familias[2][1]), 'fam-obsol': (R) => K.n(R.familias[3][1]),
+  'g-est': () => K.n(base().est), 'g-carreg': () => K.n(base().carreg), 'g-H': () => K.p(base().H, 0), 'g-fin': () => K.n(base().familias[0][1]),
+  'g-outros': () => { const b = base(); return K.n(b.carreg - b.familias[0][1]); }, 'g-pme2': () => K.n(Q2_PME), 'g-est2': () => K.n(base({ pme: Q2_PME }).est),
+  'g-ncg': () => K.n(base().ncg), 'g-ncg2': () => K.n(base({ pme: Q2_PME }).ncg), 'g-lib': () => K.n(base().est - base({ pme: Q2_PME }).est),
+  'g-rup': () => K.n(base().rup), 'g-rup2': () => K.n(base({ pme: Q2_PME }).rup), 'g-ot': () => K.n(base().ot.pme), 'g-pme': () => K.n(base().pme),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() && E() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto() && E()) {
+    const e = E(), R = atual();
+    if (!e.temEstoque) keys.push('nuvem');
+    else {
+      keys.push(R.pme > R.ot.pme + FAIXA_OTIMO ? 'acima' : R.pme < R.ot.pme - FAIXA_OTIMO ? 'abaixo' : 'equilibrio');
+      if (ST.perfil === 'horizonte' && R.ncg <= NCG_ST) keys.push('st');
+    }
+  }
+  K.frases(el, keys);
+});
+</script>

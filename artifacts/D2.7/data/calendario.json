@@ -1,0 +1,10 @@
+[{"tipo":"dow","posicao":0,"efeito":0.6,"rotulo":"segunda"},
+{"tipo":"dow","posicao":1,"efeito":0.2,"rotulo":"terça"},
+{"tipo":"dow","posicao":2,"efeito":0,"rotulo":"quarta"},
+{"tipo":"dow","posicao":3,"efeito":-0.3,"rotulo":"quinta"},
+{"tipo":"dow","posicao":4,"efeito":-0.5,"rotulo":"sexta"},
+{"tipo":"dom","posicao":0,"efeito":0.4,"rotulo":"entradas do início do mês"},
+{"tipo":"dom","posicao":1,"efeito":0.4,"rotulo":"entradas do início do mês"},
+{"tipo":"dom","posicao":3,"efeito":-1,"rotulo":"dia 5: folha"},
+{"tipo":"dom","posicao":13,"efeito":-1,"rotulo":"dia 20: encargos e ICMS"},
+{"tipo":"dom","posicao":17,"efeito":-1,"rotulo":"dia 25: PIS/COFINS"}]

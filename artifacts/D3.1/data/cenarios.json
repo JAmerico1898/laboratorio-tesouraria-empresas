@@ -1,0 +1,6 @@
+[
+ {"id":"t0","nome":"Horizonte T0","pme":100,"cdi":12,"armaz":3,"seguro":1,"obsol":2,"mult":1,"tau":40},
+ {"id":"cdi","nome":"CDI alto","pme":100,"cdi":18,"armaz":3,"seguro":1,"obsol":2,"mult":1,"tau":40},
+ {"id":"giro","nome":"Giro de distribuidor eficiente","pme":60,"cdi":12,"armaz":3,"seguro":1,"obsol":2,"mult":1,"tau":40},
+ {"id":"moda","nome":"Moda / tecnologia","pme":100,"cdi":12,"armaz":3,"seguro":1,"obsol":10,"mult":1,"tau":40}
+]

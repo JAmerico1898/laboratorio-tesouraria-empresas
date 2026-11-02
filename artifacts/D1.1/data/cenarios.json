@@ -1,0 +1,46 @@
+[
+ {
+  "cenario": "Alfa T0",
+  "base": "t0",
+  "financia": "CP",
+  "disp": null,
+  "cli": null,
+  "est": null,
+  "forn": null,
+  "inad": 0,
+  "obs": 0
+ },
+ {
+  "cenario": "Liquidez bonita, carteira podre",
+  "base": "t0",
+  "financia": "ELP",
+  "disp": null,
+  "cli": 12000,
+  "est": null,
+  "forn": null,
+  "inad": 35,
+  "obs": 0
+ },
+ {
+  "cenario": "Estoque encalhado",
+  "base": "t0",
+  "financia": "CP",
+  "disp": null,
+  "cli": null,
+  "est": 9000,
+  "forn": null,
+  "inad": 0,
+  "obs": 40
+ },
+ {
+  "cenario": "Alfa T-1",
+  "base": "t_1",
+  "financia": "CP",
+  "disp": null,
+  "cli": null,
+  "est": null,
+  "forn": null,
+  "inad": 0,
+  "obs": 0
+ }
+]

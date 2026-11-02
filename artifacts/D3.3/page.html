@@ -1,0 +1,366 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<style>
+.d33-chart { min-height: 320px; }
+.d33-saw { min-height: 170px; }
+.d33-sub { margin: 4px 0 6px 12px; padding-left: 10px; border-left: 2px solid var(--color-border-line); }
+.d33-sub .k-ctl { margin-bottom: 6px; }
+.d33-deriv { margin-top: 10px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); }
+.d33-deriv > summary { cursor: pointer; padding: 6px 10px; font-size: 14px; }
+.d33-deriv div { padding: 0 10px 8px; font-size: 14px; line-height: 1.6; font-variant-numeric: tabular-nums; }
+.d33-fx tr.d33-best td { font-weight: 600; background: color-mix(in srgb, var(--k-pos) 12%, transparent); }
+</style>
+
+<div class="k d33" id="d33">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D3.3 · Lote econômico</h1>
+      <p class="k-sub">Quanto comprar de cada vez — e quando a fórmula deixa de valer?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
+      <button class="k-btn d33-cen" data-cen="slide" aria-pressed="false">Slide (didático)</button>
+      <button class="k-btn d33-cen" data-cen="hreal" aria-pressed="false">H realista</button>
+      <button class="k-btn d33-cen" data-cen="desconto" aria-pressed="false">Desconto da Alfa</button>
+      <button class="k-btn d33-cen" data-cen="epq" aria-pressed="false">Alfa produz (EPQ)</button>
+      <button class="k-btn d33-cen" data-cen="caro" aria-pressed="false">Pedido caro</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone k-scroll" id="controles" data-source="item faixas cenarios">
+      <h2 class="k-zt">Cabo flexível 2,5 mm² · rolo de 100 m</h2>
+      <div class="k-ctl"><label for="c-d">D <span class="k-u">demanda anual, rolos</span></label>
+        <div class="k-in"><input type="range" id="c-d" data-k="D" min="2000" max="40000" step="500"><input type="number" data-k="D" min="2000" max="40000" step="500" aria-label="Demanda anual, rolos"></div></div>
+      <div class="k-ctl"><label for="c-s">S <span class="k-u">R$ por pedido</span></label>
+        <div class="k-in"><input type="range" id="c-s" data-k="S" min="10" max="300" step="5"><input type="number" data-k="S" min="10" max="300" step="5" aria-label="Custo por pedido, R$"></div></div>
+      <div class="k-ctl"><label for="c-h">H <span class="k-u">R$ por rolo·ano</span></label>
+        <div class="k-in"><input type="range" id="c-h" data-k="H" min="0.5" max="40" step="0.5"><input type="number" data-k="H" min="0.5" max="40" step="0.5" aria-label="Custo de carregamento, R$ por rolo·ano"></div></div>
+
+      <label class="k-toggle"><input type="checkbox" data-k="hReal"> H realista decomposto <span class="k-info" tabindex="0">i<span class="k-tip">H = P × (CDI + armazenagem + seguro + obsolescência). O H = 2 do slide é didático; o carregamento de verdade é proporcional ao preço, porque capital parado em cabo custa CDI.</span></span></label>
+      <div class="d33-sub d33-hr" hidden>
+        <div class="k-ctl"><label for="c-cdi">CDI <span class="k-u">% a.a.</span></label>
+          <div class="k-in"><input type="range" id="c-cdi" data-k="cdi" min="5" max="20" step="0.5"><input type="number" data-k="cdi" min="5" max="20" step="0.5" aria-label="CDI, % a.a."></div></div>
+        <div class="k-ctl"><label for="c-ar">Armazenagem <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-ar" data-k="armaz" min="1" max="5" step="0.5"><input type="number" data-k="armaz" min="1" max="5" step="0.5" aria-label="Armazenagem, %"></div></div>
+        <div class="k-ctl"><label for="c-se">Seguro <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-se" data-k="seguro" min="0" max="3" step="0.5"><input type="number" data-k="seguro" min="0" max="3" step="0.5" aria-label="Seguro, %"></div></div>
+        <div class="k-ctl"><label for="c-ob">Obsolescência <span class="k-u">%</span></label>
+          <div class="k-in"><input type="range" id="c-ob" data-k="obsol" min="0" max="10" step="0.5"><input type="number" data-k="obsol" min="0" max="10" step="0.5" aria-label="Obsolescência, %"></div></div>
+        <p class="k-note">H = <b data-draw="v" data-q="P">—</b> × <b data-draw="v" data-q="hPct">—</b> = R$ <b data-draw="v" data-q="H">—</b></p>
+      </div>
+      <div class="k-ctl d33-preco" hidden><label for="c-p">Preço P <span class="k-u">R$ por rolo</span></label>
+        <div class="k-in"><input type="range" id="c-p" data-k="P" min="80" max="200" step="1"><input type="number" data-k="P" min="80" max="200" step="1" aria-label="Preço, R$ por rolo"></div></div>
+
+      <h2 class="k-zt2">Relaxar premissas</h2>
+      <label class="k-toggle"><input type="checkbox" data-k="ext1"> Extensão 1 · desconto por volume</label>
+      <label class="k-toggle"><input type="checkbox" data-k="ext2"> Extensão 2 · produção contínua (EPQ)</label>
+      <div class="d33-sub d33-e2" hidden>
+        <div class="k-ctl"><label for="c-pp">p <span class="k-u">produção, rolos/dia útil</span></label>
+          <div class="k-in"><input type="range" id="c-pp" data-k="p" min="50" max="400" step="5"><input type="number" data-k="p" min="50" max="400" step="5" aria-label="Taxa de produção, rolos por dia útil"></div></div>
+        <p class="k-note">Consumo d = D ÷ <b data-draw="v" data-q="diasUteis">—</b> = <b data-draw="v" data-q="d">—</b> rolos/dia</p>
+      </div>
+      <label class="k-toggle"><input type="checkbox" data-k="multiplo"> Arredondar ao múltiplo prático <span class="k-u">(caixa fechada de <span data-draw="v" data-q="mult">—</span>)</span></label>
+
+      <details class="d33-deriv">
+        <summary><span class="k-info">i</span> De onde vem a fórmula</summary>
+        <div>
+          <p>CT(Q) = S·D/Q + H·Q/2</p>
+          <p>dCT/dQ = −S·D/Q² + H/2 = 0</p>
+          <p>Q* = √(2DS/H) = √(2 × <span data-draw="v" data-q="Dn">—</span> × <span data-draw="v" data-q="Sn">—</span> ÷ <span data-draw="v" data-q="H">—</span>) = <b data-draw="v" data-q="eoq">—</b></p>
+          <p>Cálculo I — não é mágica.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="item faixas cenarios">
+      <div class="k-ch"><h3 class="d33-t-sem">Custo anual × tamanho do lote</h3><h3 class="d33-t-com" hidden>Custo anual com a compra × tamanho do lote</h3><span>R$ por ano · Q em rolos</span></div>
+      <div class="k-chart d33-chart dash-skeleton" id="grafico" data-draw="grafico" role="img" aria-label="Curvas de custo de pedido, carregamento e total em função do lote"></div>
+      <div class="k-legend d33-leg-sem">
+        <span><i style="background: var(--k-blue)"></i>Custo de pedido S·D/Q</span>
+        <span><i style="background: var(--k-amber)"></i>Custo de carregamento</span>
+        <span><i style="background: var(--k-navy); height: 4px; vertical-align: 3px"></i>Custo total</span>
+      </div>
+      <div class="k-legend d33-leg-com" hidden>
+        <span><i style="background: var(--k-navy); height: 4px; vertical-align: 3px"></i>Compra + pedido + carregamento</span>
+        <span><i style="background: var(--k-pos)"></i>Melhor faixa</span>
+      </div>
+
+      <div class="d33-e1" hidden>
+        <div class="k-tw">
+          <table class="k-table d33-fx" id="faixas-tab" aria-label="Custo anual por faixa de desconto">
+            <thead><tr><th>Faixa</th><th>Lote</th><th>Preço</th><th>Q avaliado</th><th>Compra</th><th>Pedido</th><th>Carregamento</th><th>CT anual</th></tr></thead>
+            <tbody data-draw="faixas"></tbody>
+          </table>
+        </div>
+        <p class="k-note">Q avaliado = EOQ da faixa se cair dentro dela; senão, o limite inferior. H da faixa = <span data-draw="v" data-q="hPct">—</span> × preço da faixa.</p>
+      </div>
+
+      <div class="d33-e2" hidden>
+        <div class="k-ch" style="margin-top: 12px"><h3>Estoque em produção contínua</h3><span>rolos · dias úteis · √(p/(p−d)) = <b data-draw="v" data-q="fator">—</b></span></div>
+        <div class="k-chart d33-saw dash-skeleton" id="serra" data-draw="serra" role="img" aria-label="Dente de serra do estoque em produção contínua"></div>
+        <p class="k-note">Sobe a p − d enquanto produz, desce a d depois: o pico é Q·(1 − d/p), nunca o lote inteiro.</p>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="item faixas cenarios">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl"><span class="d33-lq">Q*</span> <span class="k-u">rolos</span></span><span class="k-kn" data-draw="v" data-q="Q">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Pedidos/ano</span><span class="k-kn" data-draw="v" data-q="pedidos">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Estoque médio <span class="k-u">rolos</span></span><span class="k-kn" data-draw="v" data-q="estMedio">—</span></div>
+      <div class="k-kpi d33-k-ct"><span class="k-kl">Custo total/ano <span class="k-u">R$</span></span><span class="k-kn" data-draw="v" data-q="ct">—</span></div>
+      <div class="k-kpi d33-k-ctc" hidden><span class="k-kl">CT anual com compra <span class="k-u">R$</span></span><span class="k-kn" data-draw="v" data-q="ctBest">—</span></div>
+      <p class="k-note d33-k-ctc" hidden>Economia contra comprar no EOQ: R$ <b data-draw="v" data-q="economia">—</b> por ano</p>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="base" hidden>Lote de <b data-draw="v" data-q="Q">—</b> rolos, <b data-draw="v" data-q="pedidos">—</b> pedidos por ano. No ótimo, pedido e carregamento custam o mesmo: R$ <b data-draw="v" data-q="cPedido">—</b> cada.</p>
+        <p data-frase="hreal" hidden>Com capital a <b data-draw="v" data-q="cdi">—</b> e carregamento total de <b data-draw="v" data-q="hPct">—</b>, o lote cai de <b data-draw="v" data-q="eoqDid">—</b> para <b data-draw="v" data-q="Q">—</b>: estoque é dinheiro — e dinheiro tem preço.</p>
+        <p data-frase="ext1" hidden>Comprar <b data-draw="v" data-q="Qbest">—</b> rolos custa R$ <b data-draw="v" data-q="ctBest">—</b> por ano; comprar o EOQ custaria R$ <b data-draw="v" data-q="ct1">—</b>. O desconto de <b data-draw="v" data-q="descBest">—</b> vale R$ <b data-draw="v" data-q="ganhoPreco">—</b> — mais que o carregamento extra de R$ <b data-draw="v" data-q="carregExtra">—</b>.</p>
+        <p data-frase="ext1sem" hidden>Com estes parâmetros o desconto não compensa: o EOQ da faixa sem desconto (<b data-draw="v" data-q="Qbest">—</b> rolos) é o menor custo anual.</p>
+        <p data-frase="ext2" hidden>Produzir a <b data-draw="v" data-q="p">—</b>/dia com consumo de <b data-draw="v" data-q="d">—</b>/dia: o estoque nunca atinge Q de uma vez; o lote ótimo sobe para <b data-draw="v" data-q="Q">—</b>.</p>
+        <p data-frase="semprod" hidden>Produção de <b data-draw="v" data-q="p">—</b>/dia não acompanha a demanda de <b data-draw="v" data-q="d">—</b>/dia: não há lote de produção que funcione.</p>
+        <p data-frase="extremo" hidden>Premissas fora do usual — o modelo responde, mas confira se D ainda é estável e o lead time fixo (D3.4).</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="item faixas cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>Dobre a demanda D. O EOQ dobra?
+          <details><summary>mostrar resposta</summary><p>Não — sobe √2 ≈ <b data-draw="v" data-q="g-raiz">—</b> (<b data-draw="v" data-q="g-eoq">—</b> → <b data-draw="v" data-q="g-eoq2">—</b>). O lote cresce com a raiz da demanda: pedidos por ano também sobem <b data-draw="v" data-q="g-raiz">—</b>. Isso é a economia de escala embutida na fórmula.</p></details>
+        </li>
+        <li>Ligue o H realista. Por que o lote cai para <span data-draw="v" data-q="g-eoqR">—</span> se nada mudou na demanda nem no fornecedor?
+          <details><summary>mostrar resposta</summary><p>Porque o custo de carregamento verdadeiro inclui o custo financeiro do capital (CDI) e vale <b data-draw="v" data-q="g-hPct">—</b> do preço — R$ <b data-draw="v" data-q="g-hR">—</b>/rolo·ano, dez vezes o H didático. Estoque caro pede lotes pequenos e pedidos frequentes.</p></details>
+        </li>
+        <li>Com a tabela de desconto da Alfa, vale comprar <span data-draw="v" data-q="g-q3">—</span> rolos (quase 5× o EOQ)?
+          <details><summary>mostrar resposta</summary><p>Sim: a economia de <b data-draw="v" data-q="g-desc">—</b> no preço (R$ <b data-draw="v" data-q="g-ganho">—</b>/ano) supera o carregamento adicional (R$ <b data-draw="v" data-q="g-c3">—</b> − <b data-draw="v" data-q="g-c1">—</b> ≈ R$ <b data-draw="v" data-q="g-cx">—</b>). A fórmula é guia, não dogma — mas a decisão só está certa se a demanda for estável e o cabo não obsolescer.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<script>
+/* ============================================================
+   D3.3 · Lote econômico
+   Testes de aderência (Spec §7), conferidos com M33.estado() em node:
+   Default: EOQ 707 · 14,1 pedidos · estoque médio 354 · CT 1.414 · pedido = carregamento = 707
+   S 200: 1.414 · 7,1 pedidos · D 20.000: 1.000 · Múltiplo prático: 700
+   H realista: H 21,60 · EOQ 215 · 46,5 pedidos · CT 4.648
+   Extensão 1: 1.204.648 / 1.176.265 / 1.150.760 · melhor faixa 3 (1.000) · economia 53.888
+   EPQ p 80: 1.000 · fator 1,414 · p 200: 791
+   ============================================================ */
+const ST = window.D33 = { S: null, P: null, F: null, cen: null, mexido: false };
+const IDS = ['item', 'faixas', 'cenarios'];
+const NOMES = ['grafico', 'faixas', 'serra', 'v', 'frase'];
+const Q_MIN = 50, Q_MAX = 3000;          // eixo do lote (Spec §4.2)
+const S_ALTO = 250, H_BAIXO = 0.5;       // premissas fora do usual (Spec §4.3)
+
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const bool = (v) => v === true || v === 'true';
+const cenario = (id) => (dash.data('cenarios').data || []).find((r) => r.id === id);
+function ctlDe(r) {
+  const P = ST.P;
+  return { D: Number(r.D), S: Number(r.S), H: Number(r.H), P: Number(r.P), hReal: bool(r.hReal), ext1: bool(r.ext1), ext2: bool(r.ext2), p: Number(r.p), multiplo: bool(r.multiplo),
+    cdi: P.cdi, armaz: P.armaz, seguro: P.seguro, obsol: P.obsol };
+}
+const calc = (C) => M33.estado(ST.P, ST.F, C);
+const atual = () => calc(ST.S);
+
+/* ---------- controles ---------- */
+function sincroniza() {
+  const S = ST.S;
+  K.sync(S);
+  document.querySelectorAll('input[data-k="H"]').forEach((i) => { i.disabled = S.hReal || S.ext1; });
+  document.querySelectorAll('input[data-k="hReal"]').forEach((i) => { i.checked = S.hReal || S.ext1; i.disabled = S.ext1; });
+  document.querySelectorAll('.d33-hr').forEach((x) => { x.hidden = !(S.hReal || S.ext1); });
+  document.querySelectorAll('.d33-preco').forEach((x) => { x.hidden = !(S.hReal || S.ext1); });
+  document.querySelectorAll('.d33-e1').forEach((x) => { x.hidden = !S.ext1; });
+  document.querySelectorAll('.d33-e2').forEach((x) => { x.hidden = !S.ext2; });
+  document.querySelectorAll('.d33-leg-sem, .d33-t-sem, .d33-k-ct').forEach((x) => { x.hidden = S.ext1; });
+  document.querySelectorAll('.d33-leg-com, .d33-t-com, .d33-k-ctc').forEach((x) => { x.hidden = !S.ext1; });
+  document.querySelectorAll('.d33-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  ST.S = ctlDe(r); ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok' || ST.S) return;
+  ST.P = K.obj(dash.data('item').data);
+  ST.F = K.num(dash.data('faixas').data).map((f) => ({ ...f, hi: f.hi === '' || f.hi == null ? null : Number(f.hi) }));
+  aplicar('slide');
+  K.redraw(NOMES);
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), () => {
+  if (!ST.S) return;
+  ST.mexido = true; sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d33-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+
+/* ---------- gráfico principal ---------- */
+dash.draw('grafico', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const C = ST.S, R = atual();
+  const { svg, W, H } = K.svg(el, 320);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const qs = d3.range(Q_MIN, Q_MAX + 1, 10);
+  let series, yDom;
+  if (C.ext1) {
+    const pts = qs.map((q) => ({ q, ct: M33.ctCompra(C, ST.F, q) }));
+    series = [{ k: 'ct', cor: 'var(--k-navy)', w: 3, pts, nome: 'Com compra' }];
+    const lo = d3.min(pts, (p) => p.ct), hi = d3.max(pts, (p) => p.ct);
+    yDom = [lo - (hi - lo) * 0.08, hi + (hi - lo) * 0.05];
+  } else {
+    const pts = qs.map((q) => ({ q, ped: R.pedidoQ(q), car: R.carregQ(q), tot: R.pedidoQ(q) + R.carregQ(q) }));
+    series = [{ k: 'ped', cor: 'var(--k-blue)', w: 2, pts, nome: 'Pedido' }, { k: 'car', cor: 'var(--k-amber)', w: 2, pts, nome: 'Carregamento' }, { k: 'tot', cor: 'var(--k-navy)', w: 3.5, pts, nome: 'Total' }];
+    const ref = R.ct ? R.ct : d3.min(pts, (p) => p.tot);
+    yDom = [0, Math.min(d3.max(pts, (p) => p.tot), ref * 3.2)];
+  }
+  const y = d3.scaleLinear(yDom, [H - 28, 14]).nice();
+  const ticks = y.ticks(5);
+  const meas = svg.append('text').attr('class', 'k-svgm');
+  let mL = 0; ticks.forEach((t) => { meas.text(K.n(t)); mL = Math.max(mL, meas.node().getComputedTextLength()); });
+  meas.text(K.n(Q_MAX)); const wMax = meas.node().getComputedTextLength(); meas.remove();
+  const x = d3.scaleLinear([Q_MIN, Q_MAX], [mL + 10, W - wMax / 2 - 6]);
+  svg.append('defs').append('clipPath').attr('id', 'd33-clip').append('rect').attr('x', x(Q_MIN)).attr('y', 10).attr('width', x(Q_MAX) - x(Q_MIN)).attr('height', y.range()[0] - 10);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x(Q_MIN)).attr('x2', x(Q_MAX)).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL + 4).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
+  const xt = x.ticks(Math.max(3, Math.floor(W / 90)));
+  svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 8).text((t) => K.n(t));
+  svg.append('line').attr('x1', x(Q_MIN)).attr('x2', x(Q_MAX)).attr('y1', y.range()[0]).attr('y2', y.range()[0]).attr('stroke', 'var(--cds-chart-axis)');
+  const g = svg.append('g').attr('clip-path', 'url(#d33-clip)');
+  series.forEach((s) => g.append('path').attr('d', d3.line().defined((p) => Number.isFinite(p[s.k])).x((p) => x(p.q)).y((p) => y(p[s.k]))(s.pts)).attr('fill', 'none').attr('stroke', s.cor).attr('stroke-width', s.w).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round'));
+  if (C.ext1) {
+    const E1 = R.ext1;
+    E1.fx.forEach((f) => {
+      if (f.lo > Q_MIN) g.append('line').attr('x1', x(f.lo)).attr('x2', x(f.lo)).attr('y1', 14).attr('y2', y.range()[0]).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
+      const best = f === E1.best;
+      if (f.Q < Q_MIN || f.Q > Q_MAX) return;
+      svg.append('circle').attr('cx', x(f.Q)).attr('cy', y(f.ct)).attr('r', best ? 7 : 5).attr('fill', best ? 'var(--k-pos)' : 'var(--color-bg)').attr('stroke', best ? 'var(--k-pos)' : 'var(--k-navy)').attr('stroke-width', 2);
+      const t = svg.append('text').attr('class', best ? 'k-svgb' : 'k-svgt').style('fill', best ? 'var(--k-pos)' : 'var(--color-fg)').attr('text-anchor', 'middle').attr('x', x(f.Q)).attr('y', y(f.ct) - 12).text('F' + f.faixa + ' · ' + K.n(f.ct));
+      const w = t.node().getComputedTextLength();
+      t.attr('x', Math.max(x(Q_MIN) + w / 2, Math.min(W - w / 2 - 2, x(f.Q))));
+    });
+  } else if (R.Q) {
+    const qx = Math.min(Q_MAX, Math.max(Q_MIN, R.Q));
+    svg.append('line').attr('x1', x(qx)).attr('x2', x(qx)).attr('y1', 14).attr('y2', y.range()[0]).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3');
+    if (R.ct <= y.domain()[1]) svg.append('circle').attr('cx', x(qx)).attr('cy', y(R.ct)).attr('r', 5).attr('fill', 'var(--k-navy)');
+    const nome = C.ext2 ? 'EPQ' : C.multiplo ? 'Q prático' : 'EOQ';
+    const t = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', x(qx) + 6).attr('y', 26).text(nome + ' = ' + K.n(R.Q));
+    if (x(qx) + 6 + t.node().getComputedTextLength() > W - 4) t.attr('text-anchor', 'end').attr('x', x(qx) - 6);
+    // cruzamento pedido = carregamento (no lote ótimo sem arredondar)
+    const qb = R.Qbase;
+    if (qb >= Q_MIN && qb <= Q_MAX && R.pedidoQ(qb) <= y.domain()[1]) {
+      const yc = y(R.pedidoQ(qb));
+      svg.append('circle').attr('cx', x(qb)).attr('cy', yc).attr('r', 4).attr('fill', 'var(--color-bg)').attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
+      const a = svg.append('text').attr('class', 'k-svgm').attr('x', x(qb) + 8).attr('y', yc + 16).text('no ótimo, as duas parcelas se igualam');
+      if (x(qb) + 8 + a.node().getComputedTextLength() > W - 4) a.attr('text-anchor', 'end').attr('x', x(qb) - 8);
+    }
+  }
+  // tooltip
+  const hov = svg.append('line').attr('y1', 14).attr('y2', y.range()[0]).attr('stroke', 'var(--cds-chart-reference)').attr('opacity', 0);
+  svg.append('rect').attr('x', x(Q_MIN)).attr('width', x(Q_MAX) - x(Q_MIN)).attr('y', 14).attr('height', y.range()[0] - 14).attr('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [px, py] = d3.pointer(ev, el);
+      const q = Math.max(Q_MIN, Math.min(Q_MAX, Math.round(x.invert(d3.pointer(ev)[0]))));
+      hov.attr('x1', x(q)).attr('x2', x(q)).attr('opacity', 1);
+      const linhas = C.ext1
+        ? [['var(--k-navy)', 'Custo com compra', 'R$ ' + K.n(M33.ctCompra(C, ST.F, q))], [null, 'Preço', 'R$ ' + K.n(M33.precoDe(C, ST.F, q), 2)]]
+        : [['var(--k-blue)', 'Pedido', 'R$ ' + K.n(R.pedidoQ(q))], ['var(--k-amber)', 'Carregamento', 'R$ ' + K.n(R.carregQ(q))], ['var(--k-navy)', 'Total', 'R$ ' + K.n(R.pedidoQ(q) + R.carregQ(q))]];
+      tip.show('Lote de ' + K.n(q) + ' rolos', linhas, px, py);
+    })
+    .on('mouseleave', () => { tip.hide(); hov.attr('opacity', 0); });
+});
+
+/* ---------- tabela de faixas ---------- */
+dash.draw('faixas', (el) => {
+  el.replaceChildren();
+  if (!pronto() || !ST.S.ext1) return;
+  const E1 = atual().ext1;
+  E1.fx.forEach((f) => {
+    const tr = document.createElement('tr');
+    if (f === E1.best) tr.className = 'd33-best';
+    const lote = Number.isFinite(f.hi) ? K.n(f.lo) + ' – ' + K.n(f.hi) : K.n(f.lo) + ' +';
+    [K.n(f.faixa), lote, K.n(f.preco, 2), K.n(f.Q) + (f.eoqDentro ? ' (EOQ)' : ''), K.n(f.compra), K.n(f.pedido), K.n(f.carreg), K.n(f.ct)].forEach((t) => { const td = document.createElement('td'); td.textContent = t; tr.append(td); });
+    el.append(tr);
+  });
+});
+
+/* ---------- dente de serra da produção ---------- */
+dash.draw('serra', (el) => {
+  if (!pronto() || !ST.S.ext2) { if (!pronto()) falha(el); else el.replaceChildren(); return; }
+  el.classList.remove('dash-skeleton');
+  const C = ST.S, R = atual();
+  const { svg, W, H } = K.svg(el, 170);
+  el.replaceChildren(svg.node());
+  if (!R.fator) {
+    svg.append('text').attr('class', 'k-svgt').attr('x', W / 2).attr('y', H / 2).attr('text-anchor', 'middle').text('p ≤ d: a produção não acompanha a demanda');
+    return;
+  }
+  const Q = R.Q, d = R.d, p = C.p, tp = Q / p, T = Q / d, pico = Q * (1 - d / p);
+  const ciclos = 3, pts = [];
+  for (let c = 0; c < ciclos; c++) { pts.push([c * T, 0], [c * T + tp, pico], [(c + 1) * T, 0]); }
+  const meas = svg.append('text').attr('class', 'k-svgm').text(K.n(pico));
+  const mL = meas.node().getComputedTextLength() + 10; meas.remove();
+  const x = d3.scaleLinear([0, ciclos * T], [mL, W - 10]), y = d3.scaleLinear([0, Q], [H - 24, 14]);
+  [0, pico, Q].forEach((t, i) => {
+    svg.append('line').attr('x1', x(0)).attr('x2', x(ciclos * T)).attr('y1', y(t)).attr('y2', y(t)).attr('stroke', i === 2 ? 'var(--cds-chart-reference)' : 'var(--cds-chart-grid)').attr('stroke-dasharray', i === 2 ? '4 3' : null);
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL - 6).attr('y', y(t) + 4).text(K.n(t));
+  });
+  const tq = svg.append('text').attr('class', 'k-svgm').attr('x', x(ciclos * T) - 4).attr('text-anchor', 'end').attr('y', y(Q) - 4).text('lote Q = ' + K.n(Q) + ' (nunca em estoque de uma vez)');
+  if (tq.node().getComputedTextLength() > x(ciclos * T) - x(0)) tq.text('lote Q = ' + K.n(Q));
+  svg.append('path').attr('d', d3.line().x((v) => x(v[0])).y((v) => y(v[1]))(pts)).attr('fill', 'color-mix(in srgb, var(--k-amber) 25%, transparent)').attr('stroke', 'var(--k-amber-d)').attr('stroke-width', 2).attr('stroke-linejoin', 'round');
+  x.ticks(6).forEach((t) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(t)).attr('y', H - 6).text(K.n(t)));
+  svg.append('text').attr('class', 'k-svgt').attr('x', x(tp / 2)).attr('y', y(pico / 2) - 8).attr('text-anchor', 'end').text('+' + K.n(p - d) + '/dia');
+  svg.append('text').attr('class', 'k-svgt').attr('x', x(tp + (T - tp) / 2) + 6).attr('y', y(pico / 2) - 8).text('−' + K.n(d) + '/dia');
+});
+
+/* ---------- números ---------- */
+const did = () => calc({ ...ctlDe(cenario('slide')) });
+const real = () => calc({ ...ctlDe(cenario('hreal')) });
+const desc = () => calc({ ...ctlDe(cenario('desconto')) });
+const VAL = {
+  P: () => 'R$ ' + K.n(ST.S.P, 2), hPct: () => K.p(M33.hPct(ST.S), 0), H: (R) => K.n(R.H, 2), mult: () => K.n(ST.P.multiplo), diasUteis: () => K.n(ST.P.diasUteis),
+  d: (R) => K.n(R.d, 0), p: () => K.n(ST.S.p), fator: (R) => (R.fator ? K.n(R.fator, 3) : null),
+  Dn: () => K.n(ST.S.D), Sn: () => K.n(ST.S.S), eoq: (R) => K.n(R.eoq), cdi: () => K.p(ST.S.cdi / 100, 0),
+  Q: (R) => (ST.S.ext1 ? K.n(R.ext1.best.Q) : R.Q ? K.n(R.Q) : null),
+  pedidos: (R) => (ST.S.ext1 ? K.n(ST.S.D / R.ext1.best.Q, 1) : R.pedidos ? K.n(R.pedidos, 1) : null),
+  estMedio: (R) => (ST.S.ext1 ? K.n(R.ext1.best.Q / 2) : R.estMedio ? K.n(R.estMedio) : null),
+  ct: (R) => (R.ct ? K.n(R.ct) : null), cPedido: (R) => (R.cPedido ? K.n(R.cPedido) : null),
+  eoqDid: () => K.n(M33.eoq(ST.S.D, ST.S.S, ST.S.H)),
+  Qbest: (R) => (R.ext1 ? K.n(R.ext1.best.Q) : null), ctBest: (R) => (R.ext1 ? K.n(R.ext1.best.ct) : null), ct1: (R) => (R.ext1 ? K.n(R.ext1.fx[0].ct) : null),
+  economia: (R) => (R.ext1 ? K.n(R.ext1.economia) : null), descBest: (R) => (R.ext1 ? K.p(R.ext1.best.desconto, 1) : null),
+  ganhoPreco: (R) => (R.ext1 ? K.n(R.ext1.fx[0].compra - R.ext1.best.compra) : null),
+  carregExtra: (R) => (R.ext1 ? K.n(R.ext1.best.carreg - R.ext1.fx[0].carreg) : null),
+  'g-eoq': () => K.n(did().eoq), 'g-eoq2': () => K.n(calc({ ...ctlDe(cenario('slide')), D: 2 * ST.P.D }).eoq), 'g-raiz': () => K.p(Math.SQRT2 - 1, 0),
+  'g-eoqR': () => K.n(real().eoq), 'g-hPct': () => K.p(M33.hPct(ctlDe(cenario('hreal'))), 0), 'g-hR': () => K.n(real().H, 2),
+  'g-q3': () => K.n(desc().ext1.best.Q), 'g-desc': () => K.p(desc().ext1.best.desconto, 0), 'g-ganho': () => K.n(desc().ext1.fx[0].compra - desc().ext1.best.compra),
+  'g-c3': () => K.n(desc().ext1.best.carreg), 'g-c1': () => K.n(desc().ext1.fx[0].carreg), 'g-cx': () => K.n(desc().ext1.best.carreg - desc().ext1.fx[0].carreg),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const C = ST.S, R = atual();
+    if (C.ext1) keys.push(R.ext1.best === R.ext1.fx[0] ? 'ext1sem' : 'ext1');
+    else if (C.ext2) keys.push(R.fator ? 'ext2' : 'semprod');
+    else keys.push(C.hReal ? 'hreal' : 'base');
+    if (C.S >= S_ALTO || (!C.hReal && !C.ext1 && C.H <= H_BAIXO)) keys.push('extremo');
+  }
+  K.frases(el, keys);
+});
+</script>

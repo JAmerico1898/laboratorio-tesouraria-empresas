@@ -1,0 +1,581 @@
+<meta name="dash-one-writer">
+<style>
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.ts {
+  --ts-ncg: #E3A21A; --ts-ccl: #2A3F7A; --ts-pos: #2E9E5B; --ts-neg: #D64545; --ts-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.ts-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.ts-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.ts-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.ts-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.ts-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.ts-btn:hover { border-color: var(--color-fg-muted); }
+.ts-btn[aria-pressed="true"] { background: var(--ts-ccl); border-color: var(--ts-ccl); color: #fff; }
+
+.ts-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .ts-zones { grid-template-columns: minmax(16rem, .95fr) minmax(0, 1.9fr) minmax(16rem, 1fr); }
+}
+.ts-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.ts-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+
+.ts-ctl { margin-bottom: 7px; }
+.ts-ctl label { display: block; font-size: 14px; margin-bottom: 1px; }
+.ts-u { color: var(--color-fg-muted); font-size: 13px; }
+.ts-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.ts-in input[type=range] { width: 100%; accent-color: var(--ts-ccl); }
+.ts-in input[type=number] { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.ts-fechar { margin-top: var(--cds-gap-md); border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-sm); }
+.ts-fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ts-fgrid h3 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.ts-acao { display: block; width: 100%; text-align: left; font: inherit; font-size: 13px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 6px 8px; border-radius: var(--cds-radius); cursor: pointer; margin-bottom: 6px; }
+.ts-acao:hover { border-color: var(--color-fg-muted); }
+.ts-acao b { display: block; font-weight: var(--cds-font-weight-medium); font-size: 14px; }
+.ts-acao span { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.ts-up { border-left: 4px solid var(--ts-ccl); }
+.ts-down { border-left: 4px solid var(--ts-ncg); }
+
+.ts-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.ts-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.ts-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.ts-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--color-fg-muted); margin: 4px 0 2px; }
+.ts-legend i { display: inline-block; width: 14px; height: 4px; border-radius: 2px; vertical-align: 3px; margin-right: 5px; }
+.ts-legend i.ts-sq { height: 12px; width: 12px; vertical-align: -1px; opacity: .45; }
+.ts-chart { position: relative; min-height: 300px; }
+.ts-bars { position: relative; min-height: 120px; }
+.ts-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.ts-svgm { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.ts-tt { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; z-index: 4; }
+.ts-tt .ts-ttd { color: var(--cds-text-secondary); }
+.ts-tt i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; }
+
+.ts-sinal { border: 1px solid var(--color-border-line); border-left: 5px solid var(--ts-neutro); border-radius: var(--cds-radius); padding: 6px 9px; margin-bottom: 6px; background: var(--color-bg); }
+.ts-sinal:has(.ts-aceso) { border-color: var(--ts-neg); border-left-color: var(--ts-neg); background: color-mix(in srgb, var(--ts-neg) 9%, var(--color-bg)); }
+.ts-sh { display: flex; align-items: baseline; gap: 6px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.ts-sh .ts-sl { flex: 1; }
+.ts-est { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--color-fg-muted); font-weight: 700; }
+.ts-est.ts-aceso { color: var(--ts-neg); }
+.ts-sj { font-size: 13px; color: var(--color-fg-muted); margin-top: 2px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+
+.ts-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--color-border-line); }
+.ts-kl { font-size: 14px; color: var(--color-fg-muted); }
+.ts-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.85rem; line-height: 1.15; font-variant-numeric: tabular-nums; min-width: 4rem; text-align: right; }
+.ts-kn.ts-pos { color: var(--ts-pos); }
+.ts-kn.ts-neg { color: var(--ts-neg); }
+.ts-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0; font-variant-numeric: tabular-nums; }
+.ts-gs { margin-top: 8px; padding: 8px 10px; border-radius: var(--cds-radius); background: var(--color-bg); border: 1px solid var(--color-border-line); font-size: 15px; }
+.ts-gs b { font-variant-numeric: tabular-nums; }
+.ts-gs p { margin: 4px 0 0; font-size: 13px; color: var(--color-fg-muted); }
+.ts-diag { margin-top: 8px; padding: 9px 11px; border-left: 4px solid var(--ts-ccl); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 14px; line-height: 1.4; }
+.ts-diag p { margin: 0; }
+.ts-diag b { font-variant-numeric: tabular-nums; }
+
+.ts-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.ts-info .ts-tip { display: none; position: absolute; left: 50%; top: 130%; transform: translateX(-50%); width: 14rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); text-transform: none; letter-spacing: 0; pointer-events: none; text-align: left; }
+.ts-info:hover .ts-tip, .ts-info:focus .ts-tip { display: block; }
+
+.ts-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.ts-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.ts-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.ts-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.ts-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.ts-help details p { margin: 4px 0 0; font-size: 14px; }
+.ts-help b { font-variant-numeric: tabular-nums; }
+
+.ts-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ts-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="ts" id="d14">
+  <header class="ts-head">
+    <div>
+      <h1 class="ts-title">D1.4 · Efeito Tesoura</h1>
+      <p class="ts-sub">Crescer mata? O que abre as duas lâminas — e o que as fecha.</p>
+    </div>
+    <div class="ts-cens" id="cenarios" data-source="cenarios" role="group" aria-label="Cenários">
+      <button class="ts-btn ts-cen" data-cen="Alfa T0" aria-pressed="false">Alfa T0</button>
+      <button class="ts-btn ts-cen" data-cen="Alfa, tendência atual" aria-pressed="false">Tendência atual</button>
+      <button class="ts-btn ts-cen" data-cen="Expansão eufórica" aria-pressed="false">Expansão eufórica</button>
+      <button class="ts-btn ts-cen" data-cen="Mitigação" aria-pressed="false">Mitigação</button>
+    </div>
+  </header>
+
+  <div class="ts-zones">
+    <div class="ts-zone" id="controles" data-source="cenarios">
+      <h2 class="ts-zt">Premissas da projeção</h2>
+      <div class="ts-ctl"><label for="c-n">Horizonte <span class="ts-u">trimestres</span></label>
+        <div class="ts-in"><input type="range" id="c-n" data-k="n" min="4" max="16" step="1"><input type="number" data-k="n" min="4" max="16" step="1" aria-label="Horizonte em trimestres"></div></div>
+      <div class="ts-ctl"><label for="c-g">Crescimento da receita <span class="ts-u">% a.a.</span></label>
+        <div class="ts-in"><input type="range" id="c-g" data-k="g" min="0" max="50" step="1"><input type="number" data-k="g" min="0" max="50" step="1" aria-label="Crescimento da receita, % ao ano"></div></div>
+      <div class="ts-ctl"><label for="c-m">Margem líquida <span class="ts-u">%</span></label>
+        <div class="ts-in"><input type="range" id="c-m" data-k="m" min="0" max="15" step="0.5"><input type="number" data-k="m" min="0" max="15" step="0.5" aria-label="Margem líquida, %"></div></div>
+      <div class="ts-ctl"><label for="c-pay">Payout <span class="ts-u">%</span></label>
+        <div class="ts-in"><input type="range" id="c-pay" data-k="pay" min="0" max="100" step="5"><input type="number" data-k="pay" min="0" max="100" step="5" aria-label="Payout, %"></div></div>
+      <div class="ts-ctl"><label for="c-rv">ΔPMRV por ano <span class="ts-u">dias</span></label>
+        <div class="ts-in"><input type="range" id="c-rv" data-k="dRV" min="-20" max="20" step="1"><input type="number" data-k="dRV" min="-20" max="20" step="1" aria-label="Variação do PMRV por ano, dias"></div></div>
+      <div class="ts-ctl"><label for="c-re">ΔPMRE por ano <span class="ts-u">dias</span></label>
+        <div class="ts-in"><input type="range" id="c-re" data-k="dRE" min="-20" max="20" step="1"><input type="number" data-k="dRE" min="-20" max="20" step="1" aria-label="Variação do PMRE por ano, dias"></div></div>
+      <div class="ts-ctl"><label for="c-pf">ΔPMPF por ano <span class="ts-u">dias</span></label>
+        <div class="ts-in"><input type="range" id="c-pf" data-k="dPF" min="-20" max="20" step="1"><input type="number" data-k="dPF" min="-20" max="20" step="1" aria-label="Variação do PMPF por ano, dias"></div></div>
+      <div class="ts-ctl"><label for="c-capex">CAPEX líquido de depreciação <span class="ts-u">R$ mil/ano</span></label>
+        <div class="ts-in"><input type="range" id="c-capex" data-k="capex" min="0" max="4000" step="100"><input type="number" data-k="capex" min="0" max="4000" step="100" aria-label="CAPEX líquido, R$ mil por ano"></div></div>
+      <div class="ts-ctl"><label for="c-cap">Captação LP / equity em T+1 <span class="ts-u">R$ mil</span></label>
+        <div class="ts-in"><input type="range" id="c-cap" data-k="cap" min="0" max="6000" step="100"><input type="number" data-k="cap" min="0" max="6000" step="100" aria-label="Captação de longo prazo ou equity em T+1, R$ mil"></div></div>
+
+      <div class="ts-fechar" id="fechar">
+        <h2 class="ts-zt">Fechar a tesoura</h2>
+        <div class="ts-fgrid">
+          <div>
+            <h3>↑ Subir o CCL</h3>
+            <button class="ts-acao ts-up" data-acao="along"><b>Alongar perfil da dívida <span class="ts-info">i<span class="ts-tip">Troca PCF por ELP: o endividamento total fica igual, o CCL e o ST sobem.</span></span></b><span data-draw="a-along">—</span></button>
+            <button class="ts-acao ts-up" data-acao="equity"><b>Captar equity / LP</b><span data-draw="a-equity">—</span></button>
+          </div>
+          <div>
+            <h3>↓ Frear a NCG</h3>
+            <button class="ts-acao ts-down" data-acao="payout"><b>Rever payout</b><span data-draw="a-payout">—</span></button>
+            <button class="ts-acao ts-down" data-acao="margem"><b>Mais margem ou menos crescimento</b><span data-draw="a-margem">—</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ts-zone" id="laminas" data-source="alfa_base">
+      <div class="ts-ch"><h3>As duas lâminas</h3><span>R$ mil · trimestres · fundo cinza = histórico</span></div>
+      <div class="ts-legend"><span><i style="background: var(--ts-ncg)"></i>NCG</span><span><i style="background: var(--ts-ccl)"></i>CCL</span><span><i class="ts-sq" style="background: var(--ts-pos)"></i>ST &gt; 0 (CCL acima)</span><span><i class="ts-sq" style="background: var(--ts-neg)"></i>ST &lt; 0 (NCG acima)</span></div>
+      <div class="ts-chart dash-skeleton" data-draw="laminas"></div>
+      <div class="ts-ch" style="margin-top: 6px"><h3>ST por trimestre</h3><span>ST = CCL − NCG</span></div>
+      <div class="ts-bars dash-skeleton" data-draw="barras"></div>
+    </div>
+
+    <div class="ts-zone" id="leitura" data-source="alfa_base">
+      <h2 class="ts-zt">Três sinais inegociáveis</h2>
+      <div class="ts-sinal"><div class="ts-sh"><span class="ts-sl">1 · ST cai 3 trimestres seguidos</span><span class="ts-est" data-draw="s1-estado">—</span></div><div class="ts-sj" data-draw="s1-just">—</div></div>
+      <div class="ts-sinal"><div class="ts-sh"><span class="ts-sl">2 · PMRV ou PMRE crescem sem causa operacional</span><span class="ts-est" data-draw="s2-estado">—</span></div><div class="ts-sj" data-draw="s2-just">—</div></div>
+      <div class="ts-sinal"><div class="ts-sh"><span class="ts-sl">3 · Dívida CP cresce sem investimento</span><span class="ts-est" data-draw="s3-estado">—</span></div><div class="ts-sj" data-draw="s3-just">—</div></div>
+
+      <h2 class="ts-zt" style="margin-top: var(--cds-gap-md)">Leitura · R$ mil</h2>
+      <div class="ts-kpi"><span class="ts-kl">ST em T+<span data-draw="n">—</span></span><span class="ts-kn dash-skeleton" data-draw="st-n">—</span></div>
+      <div class="ts-kpi"><span class="ts-kl">ΔNCG acumulada</span><span class="ts-kn dash-skeleton" data-draw="dncg">—</span></div>
+      <div class="ts-kpi"><span class="ts-kl">ΔCCL acumulada</span><span class="ts-kn dash-skeleton" data-draw="dccl">—</span></div>
+      <div class="ts-note">ΔST = ΔCCL − ΔNCG = <span data-draw="decomp">—</span></div>
+      <div class="ts-gs">Crescimento autofinanciável: g* = <b data-draw="gstar">—</b>% a.a. <span class="ts-info" tabindex="0">i<span class="ts-tip">g* = margem líquida × (1 − payout) ÷ (NCG ÷ Receita em T0). Acima dele, cada real novo de receita pede mais NCG do que o lucro retido cobre.</span></span>
+        <span data-draw="gap-sel"></span>
+        <p data-gap="acima" hidden>Você está crescendo <b data-draw="gap">—</b> pp acima do que a retenção de lucro financia.</p>
+        <p data-gap="dentro" hidden>O crescimento escolhido cabe no que a retenção de lucro financia.</p>
+      </div>
+      <div class="ts-diag">
+        <span data-draw="frase"></span>
+        <p data-frase="saudavel" hidden><b>Saudável.</b> A estrutura permanente financia o crescimento; bancos confortáveis.</p>
+        <p data-frase="alerta" hidden><b>Alerta.</b> A tesoura está aberta: <b data-draw="div-n">—</b> de dívida CP sustentam a operação. Ainda há tempo de corrigir.</p>
+        <p data-frase="crise" hidden><b>Crise projetada.</b> Com <b data-draw="div-n">—</b> de dívida CP para rolar, a estrutura é insustentável — bancos param de rolar. Reestruturação tardia custa capital, equity e reputação.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="ts-help" id="perguntas" data-source="alfa_base cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="ts-help-body">
+      <ol>
+        <li>No cenário "Alfa T0", o ST quase não se move apesar do crescimento de <b data-draw="q1-g">—</b>%. Por quê? A partir de que crescimento a tesoura abre?
+          <details><summary>mostrar resposta</summary><p>A Alfa retém <b data-draw="q1-ret">—</b>% da receita (margem <b data-draw="q1-m">—</b>% × retenção <b data-draw="q1-retx">—</b>%) e a NCG consome <b data-draw="q1-nr">—</b>% de cada real novo de receita: <b data-draw="q1-ret">—</b>% ÷ <b data-draw="q1-nr">—</b>% = <b data-draw="q1-gs">—</b>% — o crescimento autofinanciável. Suba o crescimento para 25% e veja o ST despencar.</p></details>
+        </li>
+        <li>Compare "tendência atual" com "Alfa T0". A diferença está no crescimento?
+          <details><summary>mostrar resposta</summary><p>Não — o crescimento é o mesmo (<b data-draw="q2-g">—</b>%). O que abre a tesoura são o payout de <b data-draw="q2-pay">—</b>% (retenção cai para <b data-draw="q2-ret">—</b>% da receita; g* vira <b data-draw="q2-gs">—</b>%) e os prazos esticando (<b data-draw="q2-rv">—</b> dias de PMRV/ano, <b data-draw="q2-re">—</b> de PMRE). É o "alongamento involuntário" do slide 4 de V1.8.</p></details>
+        </li>
+        <li>Feche a tesoura da "tendência atual" usando só um botão de cada coluna. Qual par basta?
+          <details><summary>mostrar resposta</summary><p>"Alongar perfil da dívida" (<b data-draw="q3-al">—</b>) sozinho leva o ST a <b data-draw="q3-st">—</b> em T+4 — melhora, mas não resolve; é preciso também frear a NCG: zerar o alongamento de prazos ou cortar o payout. Antecipar é metade do plano: quanto mais tarde, maior a captação necessária.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>
+/* ============================================================
+   D1.4 · Efeito Tesoura — modelo trimestral (Spec §3) + desenhos
+   Testes de aderência (Spec §7), conferidos com simular():
+   Histórico: T-1 NCG 7.000 · CCL 7.500 · ST +500 — T0 8.900 · 7.900 · −1.000
+   Alfa T0, T+4: NCG 10.235 · CCL 9.265 · ST −970 · g* 14,0%
+   Tendência atual, T+4: NCG 11.596 · CCL 8.719 · ST −2.877 · dívida CP 5.377 · 3 sinais · "Crise projetada"
+   Tendência atual, T+8: ST −5.239   ·   Expansão eufórica, T+8: ST −7.976
+   Mitigação: T+1 +1.637 · T+4 +2.076 · dívida CP zera em T+7 · sinal 3 apagado
+   Alfa T0 + payout 70: g* 8,4%
+   ============================================================ */
+const TS = window.TS = { P: null, cen: null, seq: 0, memo: { key: '', val: null } };
+const ACOES = { along: 2000, equity: 3000, payout: 20, margem: 1, cresc: 5 };   // botões "Fechar a tesoura" (Spec §4.1)
+const PM0 = { RV: 60, RE: 60, PF: 45 };                                      // prazos-base da Alfa em T0 (00_Convencoes §3.2)
+const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+const f = loc.format(',.0f');
+const fsg = loc.format('+,.0f');
+const fs = (v) => (Math.round(v) === 0 ? '0' : fsg(v));
+const fp = loc.format('.1f');
+const fpn = (v) => (Number.isInteger(v) ? String(v) : loc.format('.1f')(v));
+
+/* ---------- funções puras ---------- */
+function base(rows) {
+  const v = (item, col) => Number((rows.find((r) => r.item === item) || {})[col]);
+  const soma = (grupo, col) => rows.filter((r) => r.grupo === grupo).reduce((s, r) => s + Number(r[col]), 0);
+  const hist = (col) => {
+    const ncg = soma('ACO', col) - soma('PCO', col);
+    const ccl = (soma('PL', col) + soma('ELP', col)) - soma('ANC', col);
+    return { ncg, ccl, st: ccl - ncg, div: soma('PCF', col) };
+  };
+  return {
+    cli: v('Clientes', 't0'), est: v('Estoques', 't0'), oaco: v('Outros operacionais (ativo)', 't0'),
+    forn: v('Fornecedores', 't0'), opco: v('Outros operacionais (passivo)', 't0'),
+    rec: v('Receita líquida', 't0'), caixaMin: v('Disponível', 't0'),
+    h1: hist('t_1'), h0: hist('t0'),
+  };
+}
+function simular(p, b) {
+  const g = p.g / 100, m = p.m / 100, pay = p.pay / 100;
+  const gq = Math.pow(1 + g, 0.25) - 1;
+  const s = [
+    { rot: 'T-1', t: -1, hist: true, ...b.h1 },
+    { rot: 'T0', t: 0, hist: true, ...b.h0 },
+  ];
+  let ccl = b.h0.ccl;
+  for (let t = 1; t <= p.n; t += 1) {
+    const fa = Math.pow(1 + gq, t);
+    const pmrv = PM0.RV + p.dRV * t / 4, pmre = PM0.RE + p.dRE * t / 4, pmpf = PM0.PF + p.dPF * t / 4;
+    const ncg = b.cli * fa * pmrv / PM0.RV + b.est * fa * pmre / PM0.RE + b.oaco * fa
+      - b.forn * fa * pmpf / PM0.PF - b.opco * fa;
+    const rec = (b.rec / 4) * fa;
+    ccl = ccl + rec * m * (1 - pay) - p.capex / 4 + (t === 1 ? p.cap : 0);
+    const st = ccl - ncg;
+    s.push({ rot: 'T+' + t, t, hist: false, rec, ncg, ccl, st, div: Math.max(0, b.caixaMin - st) });
+  }
+  return s;
+}
+function gEstrela(p, b) { return (p.m / 100) * (1 - p.pay / 100) / (b.h0.ncg / b.rec); }
+function sinais(s, p) {
+  let s1 = null;
+  for (let i = 3; i < s.length; i += 1) {
+    if (s[i].st < s[i - 1].st && s[i - 1].st < s[i - 2].st && s[i - 2].st < s[i - 3].st) { s1 = i; break; }
+  }
+  const t0 = s[1], fim = s[s.length - 1];
+  return {
+    s1: s1 !== null, i1: s1,
+    s2: p.dRV > 0 || p.dRE > 0,
+    s3: fim.div > t0.div && p.capex === 0,
+  };
+}
+function estado() {
+  const a = dash.data('alfa_base');
+  const c = dash.data('cenarios');
+  if (a.status !== 'ok' || !TS.P) {
+    return { ok: false, s: (a.status === 'loading' || c.status === 'loading') ? 'loading' : 'error' };
+  }
+  const key = JSON.stringify(TS.P);
+  if (TS.memo.key === key && TS.memo.rows === a.data) return TS.memo.val;
+  const b = base(a.data);
+  const s = simular(TS.P, b);
+  const fim = s[s.length - 1], t0 = s[1];
+  const val = { ok: true, p: TS.P, b, s, fim, t0, gs: gEstrela(TS.P, b), sin: sinais(s, TS.P) };
+  TS.memo = { key, rows: a.data, val };
+  return val;
+}
+function paramsDe(row) {
+  return {
+    n: Number(row.horizonte), g: Number(row.crescimento), m: Number(row.margem), pay: Number(row.payout),
+    dRV: Number(row.dPMRV), dRE: Number(row.dPMRE), dPF: Number(row.dPMPF),
+    capex: Number(row.capex), cap: Number(row.captacao),
+  };
+}
+
+/* ---------- estado dos controles ---------- */
+const NOMES_DESENHO = ['laminas', 'barras', 's1-estado', 's1-just', 's2-estado', 's2-just', 's3-estado', 's3-just',
+  'n', 'st-n', 'dncg', 'dccl', 'decomp', 'gstar', 'gap-sel', 'gap', 'frase', 'div-n'];
+const redraw = () => NOMES_DESENHO.forEach((n) => dash.draw(n));
+const sincroniza = () => {
+  document.querySelectorAll('input[data-k]').forEach((i) => { i.value = TS.P[i.dataset.k]; });
+};
+const marca = (nome) => {
+  document.querySelectorAll('.ts-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === nome)));
+};
+function aplicar(nome) {
+  const row = (TS.cen || []).find((r) => r.cenario === nome);
+  if (!row) return false;
+  TS.P = paramsDe(row);
+  sincroniza();
+  marca(nome);
+  return true;
+}
+const limita = (k, v) => {
+  const i = document.querySelector('input[type=range][data-k="' + k + '"]');
+  return i ? Math.min(Number(i.max), Math.max(Number(i.min), v)) : v;
+};
+
+dash.onData(() => {
+  const c = dash.data('cenarios');
+  if (c.status === 'ok') {
+    TS.cen = c.data;
+    if (!TS.P) aplicar('Alfa T0');
+  }
+});
+
+document.querySelectorAll('input[data-k]').forEach((inp) => {
+  inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+    if (!TS.P) return;
+    const v = Number(inp.value);
+    if (inp.value === '' || !Number.isFinite(v)) { sincroniza(); return; }
+    TS.P[inp.dataset.k] = limita(inp.dataset.k, v);
+    sincroniza();
+    marca(null);
+    redraw();
+  });
+});
+document.querySelectorAll('.ts-cen').forEach((b) => b.addEventListener('click', () => {
+  if (aplicar(b.dataset.cen)) redraw();
+}));
+document.querySelectorAll('.ts-acao').forEach((b) => b.addEventListener('click', () => {
+  if (!TS.P) return;
+  const P = TS.P;
+  if (b.dataset.acao === 'along') P.cap = limita('cap', P.cap + ACOES.along);
+  if (b.dataset.acao === 'equity') P.cap = limita('cap', P.cap + ACOES.equity);
+  if (b.dataset.acao === 'payout') P.pay = limita('pay', P.pay - ACOES.payout);
+  if (b.dataset.acao === 'margem') { P.m = limita('m', P.m + ACOES.margem); P.g = limita('g', P.g - ACOES.cresc); }
+  sincroniza();
+  marca(null);
+  redraw();
+}));
+
+dash.draw('a-along', (el) => { el.textContent = 'captação +' + f(ACOES.along); });
+dash.draw('a-equity', (el) => { el.textContent = 'captação +' + f(ACOES.equity); });
+dash.draw('a-payout', (el) => { el.textContent = 'payout −' + ACOES.payout + ' pp'; });
+dash.draw('a-margem', (el) => { el.textContent = 'margem +' + ACOES.margem + ' pp · crescimento −' + ACOES.cresc + ' pp'; });
+
+/* ---------- auxiliares de desenho ---------- */
+function mk(tag, cls, txt) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt != null) n.textContent = txt;
+  return n;
+}
+function caixa(el, e) {
+  el.classList.toggle('dash-skeleton', e.s === 'loading');
+  if (e.s === 'loading') { el.replaceChildren(); return; }
+  const d = mk('div', 'ts-fail');
+  d.append(mk('i'), 'Não carregou');
+  el.replaceChildren(d);
+}
+function texto(name, fn) {
+  dash.draw(name, (el) => {
+    const e = estado();
+    if (!e.ok) { el.classList.toggle('dash-skeleton', e.s === 'loading'); el.textContent = '—'; return; }
+    el.classList.remove('dash-skeleton');
+    fn(el, e);
+  });
+}
+const corST = (v) => (v > 0 ? 'var(--ts-pos)' : v < 0 ? 'var(--ts-neg)' : 'var(--ts-neutro)');
+function eixoY(s, H, top, bottom) {
+  const vals = s.flatMap((d) => [d.ncg, d.ccl]);
+  const [lo, hi] = d3.extent(vals);
+  const pad = (hi - lo) * 0.08 || 500;
+  return d3.scaleLinear([lo - pad, hi + pad], [H - bottom, top]).nice();
+}
+function margemEsq(svg, s) {
+  // mesma margem nos dois gráficos: medida pelos rótulos do eixo das lâminas
+  const y = eixoY(s, 300, 22, 26);
+  const t = svg.append('g').selectAll('text').data(y.ticks(5)).join('text').attr('class', 'ts-svgm').text((v) => f(v));
+  let w = 0;
+  t.each(function () { w = Math.max(w, this.getComputedTextLength()); });
+  t.remove();
+  return w + 14;
+}
+function eixoX(s, left, W) {
+  return d3.scalePoint(s.map((d) => d.rot), [left, W - 12]).padding(0.45);
+}
+function rotulosX(svg, s, x, yPos) {
+  const every = Math.max(1, Math.ceil(34 / x.step()));
+  const last = s.length - 1;
+  svg.append('g').selectAll('text').data(s.filter((d, i) => (last - i) % every === 0)).join('text')
+    .attr('class', 'ts-svgm').attr('text-anchor', 'middle').attr('x', (d) => x(d.rot)).attr('y', yPos).text((d) => d.rot);
+}
+function fundoHist(svg, x, top, bottom) {
+  const st = x.step();
+  const x0 = Math.max(0, x('T-1') - st / 2), x1 = x('T0') + st / 2;
+  svg.append('rect').attr('x', x0).attr('y', top).attr('width', x1 - x0).attr('height', bottom - top)
+    .attr('fill', 'var(--color-fg)').attr('opacity', 0.06);
+  return [x0, x1];
+}
+
+/* ---------- gráfico das lâminas ---------- */
+dash.draw('laminas', (el) => {
+  const e = estado();
+  if (!e.ok) { caixa(el, e); return; }
+  el.classList.remove('dash-skeleton');
+  const s = e.s;
+  const W = Math.max(300, el.clientWidth), H = 300, top = 22, bottom = 26;
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  el.replaceChildren(svg.node());
+  const left = margemEsq(svg, s);
+  const y = eixoY(s, H, top, bottom);
+  const x = eixoX(s, left, W);
+  const [hx0] = fundoHist(svg, x, top, H - bottom);
+  svg.append('text').attr('class', 'ts-svgm').attr('x', hx0 + 4).attr('y', top - 7).text('histórico');
+  const ticks = y.ticks(5);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', left).attr('x2', W - 6)
+    .attr('y1', (v) => y(v)).attr('y2', (v) => y(v)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'ts-svgm').attr('text-anchor', 'end')
+    .attr('x', left - 8).attr('y', (v) => y(v) + 4).text((v) => f(v));
+  // área do ST: verde onde CCL > NCG, vermelha onde CCL < NCG (recorte pela linha da NCG)
+  const id = 'tsclip' + (TS.seq += 1);
+  const entre = d3.area().x((d) => x(d.rot)).y0((d) => y(d.ncg)).y1((d) => y(d.ccl));
+  const defs = svg.append('defs');
+  defs.append('clipPath').attr('id', id + 'a').append('path').attr('d', d3.area().x((d) => x(d.rot)).y0(0).y1((d) => y(d.ncg))(s));
+  defs.append('clipPath').attr('id', id + 'b').append('path').attr('d', d3.area().x((d) => x(d.rot)).y0(H).y1((d) => y(d.ncg))(s));
+  svg.append('path').attr('d', entre(s)).attr('fill', 'var(--ts-pos)').attr('opacity', 0.3).attr('clip-path', `url(#${id}a)`);
+  svg.append('path').attr('d', entre(s)).attr('fill', 'var(--ts-neg)').attr('opacity', 0.3).attr('clip-path', `url(#${id}b)`);
+  [['ncg', 'var(--ts-ncg)'], ['ccl', 'var(--ts-ccl)']].forEach(([k, cor]) => {
+    svg.append('path').attr('d', d3.line().x((d) => x(d.rot)).y((d) => y(d[k]))(s)).attr('fill', 'none')
+      .attr('stroke', cor).attr('stroke-width', 2.5).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+    svg.append('g').selectAll('circle').data(s).join('circle').attr('cx', (d) => x(d.rot)).attr('cy', (d) => y(d[k]))
+      .attr('r', (d) => (d.hist ? 4.5 : 2.5)).attr('fill', (d) => (d.hist ? cor : 'var(--color-panel)'))
+      .attr('stroke', cor).attr('stroke-width', 1.5);
+  });
+  rotulosX(svg, s, x, H - 7);
+  // dica
+  const regra = svg.append('line').attr('y1', top).attr('y2', H - bottom).attr('stroke', 'var(--cds-chart-reference)').style('display', 'none');
+  const tt = mk('div', 'ts-tt');
+  tt.style.display = 'none';
+  el.append(tt);
+  svg.append('rect').attr('x', left).attr('y', top).attr('width', W - left).attr('height', H - bottom - top)
+    .attr('fill', 'transparent')
+    .on('pointermove', (ev) => {
+      const [mx] = d3.pointer(ev);
+      const i = Math.max(0, Math.min(s.length - 1, Math.round((mx - x(s[0].rot)) / x.step())));
+      const d = s[i];
+      regra.attr('x1', x(d.rot)).attr('x2', x(d.rot)).style('display', null);
+      const linha = (cor, txt) => { const r = mk('div'); if (cor) { const i2 = mk('i'); i2.style.background = cor; r.append(i2); } r.append(txt); return r; };
+      tt.replaceChildren(mk('div', 'ts-ttd', d.rot + (d.hist ? ' · histórico' : '')),
+        linha('var(--ts-ncg)', 'NCG ' + f(d.ncg)), linha('var(--ts-ccl)', 'CCL ' + f(d.ccl)),
+        linha(null, 'ST ' + fs(d.st) + ' · dívida CP ' + f(d.div)));
+      tt.style.display = 'block';
+      const px = x(d.rot) * el.clientWidth / W;
+      tt.style.left = Math.max(0, Math.min(px + 12, el.clientWidth - tt.offsetWidth - 2)) + 'px';
+      tt.style.top = top + 'px';
+    })
+    .on('pointerleave', () => { tt.style.display = 'none'; regra.style('display', 'none'); });
+});
+
+/* ---------- faixa do ST ---------- */
+dash.draw('barras', (el) => {
+  const e = estado();
+  if (!e.ok) { caixa(el, e); return; }
+  el.classList.remove('dash-skeleton');
+  const s = e.s;
+  const W = Math.max(300, el.clientWidth), H = 120, top = 18, bottom = 18;
+  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  el.replaceChildren(svg.node());
+  const left = margemEsq(svg, s);
+  const x = eixoX(s, left, W);
+  fundoHist(svg, x, 0, H);
+  const lo = Math.min(0, d3.min(s, (d) => d.st)), hi = Math.max(0, d3.max(s, (d) => d.st));
+  const y = d3.scaleLinear([lo, hi === lo ? lo + 1 : hi], [H - bottom, top]);
+  const bw = Math.min(28, x.step() * 0.62);
+  svg.append('g').selectAll('rect').data(s).join('rect')
+    .attr('x', (d) => x(d.rot) - bw / 2).attr('width', bw)
+    .attr('y', (d) => y(Math.max(0, d.st))).attr('height', (d) => Math.max(1, Math.abs(y(d.st) - y(0))))
+    .attr('rx', 2).attr('fill', (d) => corST(d.st)).attr('opacity', (d) => (d.hist ? 0.6 : 1));
+  svg.append('line').attr('x1', left).attr('x2', W - 6).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  svg.append('text').attr('class', 'ts-svgm').attr('text-anchor', 'end').attr('x', left - 8).attr('y', y(0) + 4).text('0');
+  // rótulos nos extremos
+  const iMax = d3.maxIndex(s, (d) => d.st), iMin = d3.minIndex(s, (d) => d.st);
+  const ext = [];
+  if (s[iMax].st > 0) ext.push({ d: s[iMax], yy: y(s[iMax].st) - 5 });
+  if (s[iMin].st < 0) ext.push({ d: s[iMin], yy: y(s[iMin].st) + 14 });
+  ext.forEach(({ d, yy }) => {
+    const t = svg.append('text').attr('class', 'ts-svgt').attr('text-anchor', 'middle').attr('y', yy)
+      .style('fill', corST(d.st)).text(fs(d.st));
+    const w = t.node().getComputedTextLength();
+    t.attr('x', Math.max(left + w / 2, Math.min(W - 2 - w / 2, x(d.rot))));
+  });
+});
+
+/* ---------- sinais ---------- */
+const estadoSinal = (el, on) => { el.textContent = on ? 'aceso' : 'apagado'; el.classList.toggle('ts-aceso', on); };
+texto('s1-estado', (el, e) => estadoSinal(el, e.sin.s1));
+texto('s2-estado', (el, e) => estadoSinal(el, e.sin.s2));
+texto('s3-estado', (el, e) => estadoSinal(el, e.sin.s3));
+texto('s1-just', (el, e) => {
+  if (!e.sin.s1) { el.textContent = 'ST sem três quedas seguidas no horizonte.'; return; }
+  const a = e.s[e.sin.i1 - 3], b = e.s[e.sin.i1];
+  el.textContent = 'ST cai de ' + fs(a.st) + ' (' + a.rot + ') a ' + fs(b.st) + ' (' + b.rot + ').';
+});
+texto('s2-just', (el, e) => {
+  const p = e.p, partes = [];
+  if (p.dRV > 0) partes.push('+' + fpn(p.dRV) + ' dias/ano de PMRV');
+  if (p.dRE > 0) partes.push('+' + fpn(p.dRE) + ' dias/ano de PMRE');
+  el.textContent = partes.length ? partes.join(' · ') : 'PMRV e PMRE sem alongamento.';
+});
+texto('s3-just', (el, e) => {
+  const d0 = e.t0.div, dn = e.fim.div;
+  if (e.sin.s3) el.textContent = 'dívida CP de ' + f(d0) + ' → ' + f(dn) + '; CAPEX zero: captando para custear o cotidiano.';
+  else if (dn <= d0) el.textContent = 'dívida CP de ' + f(d0) + ' → ' + f(dn) + ': não cresce.';
+  else el.textContent = 'dívida CP de ' + f(d0) + ' → ' + f(dn) + ', mas financia CAPEX de ' + f(e.p.capex) + '/ano.';
+});
+
+/* ---------- leitura ---------- */
+texto('n', (el, e) => { el.textContent = String(e.p.n); });
+texto('st-n', (el, e) => {
+  el.textContent = fs(e.fim.st);
+  el.classList.toggle('ts-pos', e.fim.st > 0);
+  el.classList.toggle('ts-neg', e.fim.st < 0);
+});
+texto('dncg', (el, e) => { el.textContent = fs(e.fim.ncg - e.t0.ncg); });
+texto('dccl', (el, e) => { el.textContent = fs(e.fim.ccl - e.t0.ccl); });
+texto('decomp', (el, e) => {
+  const dc = e.fim.ccl - e.t0.ccl, dn = e.fim.ncg - e.t0.ncg;
+  el.textContent = fs(dc) + ' − (' + fs(dn) + ') = ' + fs(dc - dn);
+});
+texto('gstar', (el, e) => { el.textContent = fp(e.gs * 100); });
+texto('gap', (el, e) => { el.textContent = fp(e.p.g - e.gs * 100); });
+dash.draw('gap-sel', (el) => {
+  const e = estado();
+  const k = !e.ok ? '' : (e.p.g > e.gs * 100 + 1e-9 ? 'acima' : 'dentro');
+  el.parentElement.querySelectorAll('[data-gap]').forEach((p) => { p.hidden = p.dataset.gap !== k; });
+});
+dash.draw('frase', (el) => {
+  const e = estado();
+  let k = '';
+  if (e.ok) k = e.fim.st >= 0 ? 'saudavel' : e.fim.st > -e.b.caixaMin ? 'alerta' : 'crise';
+  el.parentElement.querySelectorAll('[data-frase]').forEach((p) => { p.hidden = p.dataset.frase !== k; });
+});
+texto('div-n', (el, e) => { el.textContent = f(e.fim.div); });
+
+/* ---------- perguntas-guia (números dos cenários) ---------- */
+function cenario(nome, ajuste) {
+  const a = dash.data('alfa_base'), c = dash.data('cenarios');
+  if (a.status !== 'ok' || c.status !== 'ok') return null;
+  const row = c.data.find((r) => r.cenario === nome);
+  if (!row) return null;
+  const p = { ...paramsDe(row), ...(ajuste || {}) };
+  const b = base(a.data);
+  return { p, b, s: simular(p, b), gs: gEstrela(p, b) };
+}
+function pergunta(name, nome, fn, ajuste) {
+  dash.draw(name, (el) => {
+    const r = cenario(nome, ajuste);
+    el.textContent = r ? fn(r) : '—';
+  });
+}
+pergunta('q1-g', 'Alfa T0', (r) => fpn(r.p.g));
+pergunta('q1-ret', 'Alfa T0', (r) => fp(r.p.m * (1 - r.p.pay / 100)));
+pergunta('q1-m', 'Alfa T0', (r) => fpn(r.p.m));
+pergunta('q1-retx', 'Alfa T0', (r) => fpn(100 - r.p.pay));
+pergunta('q1-nr', 'Alfa T0', (r) => fp(100 * r.b.h0.ncg / r.b.rec));
+pergunta('q1-gs', 'Alfa T0', (r) => fp(100 * r.gs));
+pergunta('q2-g', 'Alfa, tendência atual', (r) => fpn(r.p.g));
+pergunta('q2-pay', 'Alfa, tendência atual', (r) => fpn(r.p.pay));
+pergunta('q2-ret', 'Alfa, tendência atual', (r) => fp(r.p.m * (1 - r.p.pay / 100)));
+pergunta('q2-gs', 'Alfa, tendência atual', (r) => fp(100 * r.gs));
+pergunta('q2-rv', 'Alfa, tendência atual', (r) => '+' + fpn(r.p.dRV));
+pergunta('q2-re', 'Alfa, tendência atual', (r) => '+' + fpn(r.p.dRE));
+pergunta('q3-al', 'Alfa, tendência atual', () => '+' + f(ACOES.along));
+pergunta('q3-st', 'Alfa, tendência atual', (r) => fs((r.s.find((d) => d.t === 4) || {}).st), { cap: ACOES.along });
+</script>

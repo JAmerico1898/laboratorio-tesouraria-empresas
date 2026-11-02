@@ -1,0 +1,10 @@
+{
+  "code": "D3.4",
+  "title": "D3.4 · Dente de serra",
+  "slug": "c125344f-48ae-4f67-8a56-0e7355bce88f",
+  "datasets": {
+    "cenarios": { "file": "cenarios.json", "sha256": "cc25438e25ad1537b4cc238848e234bcea7dd81c09122aaab991d64e49b0206d" },
+    "item": { "file": "item.json", "sha256": "65cf44499d4b336ccc761f9c5b60c12356ca9fc444f15e7e0bbb4cc4e58e5af3" },
+    "niveis": { "file": "niveis.json", "sha256": "0fe06e5d47229ab73343dca329d4d0c903e66f1cccfebd36c9ab676791704bc9" }
+  }
+}

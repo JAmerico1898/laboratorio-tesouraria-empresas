@@ -1,0 +1,10 @@
+{
+  "code": "D1.1",
+  "title": "D1.1 · Balanço vivo",
+  "slug": "7cfa018d-a6b0-4b65-bb4c-b1d77697dde2",
+  "datasets": {
+    "balanco_alfa": { "file": "balanco_alfa.json", "sha256": "e700edae3cde558e4e24cdd7057acc115eef40b5def9db844a2076bf5e622ffc" },
+    "cenarios": { "file": "cenarios.json", "sha256": "68202ca1585dae6592d1a01eb56fa5543e955c6afe3884be4bc2f3df0dca6aea" },
+    "trimestres": { "file": "trimestres.json", "sha256": "7229c5c92dbc5e0c3cf384669661205640b66881419fecf8a5c7598b273b4a01" }
+  }
+}

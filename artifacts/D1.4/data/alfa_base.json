@@ -1,0 +1,68 @@
+[
+ {
+  "item": "Disponível",
+  "grupo": "ACF",
+  "t_1": 2900,
+  "t0": 2500
+ },
+ {
+  "item": "Clientes",
+  "grupo": "ACO",
+  "t_1": 6600,
+  "t0": 8300
+ },
+ {
+  "item": "Estoques",
+  "grupo": "ACO",
+  "t_1": 4200,
+  "t0": 5300
+ },
+ {
+  "item": "Outros operacionais (ativo)",
+  "grupo": "ACO",
+  "t_1": 350,
+  "t0": 400
+ },
+ {
+  "item": "Fornecedores",
+  "grupo": "PCO",
+  "t_1": 3400,
+  "t0": 4100
+ },
+ {
+  "item": "Outros operacionais (passivo)",
+  "grupo": "PCO",
+  "t_1": 750,
+  "t0": 1000
+ },
+ {
+  "item": "Empréstimos CP",
+  "grupo": "PCF",
+  "t_1": 2400,
+  "t0": 3500
+ },
+ {
+  "item": "Ativo não circulante",
+  "grupo": "ANC",
+  "t_1": 20500,
+  "t0": 21500
+ },
+ {
+  "item": "Exigível LP",
+  "grupo": "ELP",
+  "t_1": 8500,
+  "t0": 9000
+ },
+ {
+  "item": "Patrimônio líquido",
+  "grupo": "PL",
+  "t_1": 19500,
+  "t0": 20400
+ },
+ {
+  "item": "Receita líquida",
+  "grupo": "DRE",
+  "t_1": 43500,
+  "t0": 50000
+ }
+]

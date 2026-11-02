@@ -1,0 +1,13 @@
+{
+  "code": "D2.6",
+  "title": "D2.6 · Financiar o déficit",
+  "slug": "5edc98de-f73c-4f77-a63f-6d15c8f95941",
+  "datasets": {
+    "bancos": { "file": "bancos.json", "sha256": "12e621bb1a7601b044c818314b3867f6bba0dd61f6ee54b10c1a953a1a522833" },
+    "caso": { "file": "caso.json", "sha256": "8274c0dc2e7307aa1cc52a1e8821cfeab9c9d8e7e99e385700482257a13b0c19" },
+    "cenarios": { "file": "cenarios.json", "sha256": "99c848dcd69f575c72bc1d57cf50af100898417141918cf27a3cae85f17c14da" },
+    "cotacoes": { "file": "cotacoes.json", "sha256": "2be7cf1eaec896459603f7e5292ecdaf088ea9ae6bbbf9ed13e744a6f71f3f5f" },
+    "modalidades": { "file": "modalidades.json", "sha256": "375eb6dd39040a51202e5cfacdea1cf3e55939cdcf892de38801b801c8509384" },
+    "ref_composicao": { "file": "ref_composicao.json", "sha256": "fef7da1610539da3923826b5d52c2eb008182407169a508becc08aa6373e8c3c" }
+  }
+}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DASHBOARD_MODULES } from "@/data/dashboards";
+import { DASHBOARD_MODULES, dashboardSlug } from "@/data/dashboards";
 
 export default function DashboardsPage() {
   return (
@@ -17,7 +17,7 @@ export default function DashboardsPage() {
         </h1>
         <p className="text-on-surface-variant text-lg max-w-3xl leading-relaxed mb-12">
           Dashboards interativos de cada módulo do curso. Clique em um dashboard
-          para abri-lo em nova aba.
+          para abri-lo.
         </p>
 
         <div className="space-y-8">
@@ -38,11 +38,9 @@ export default function DashboardsPage() {
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {m.dashboards.map((d) => (
-                    <a
+                    <Link
                       key={d.code}
-                      href={d.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={`/dashboards/${dashboardSlug(d.code)}`}
                       className="group rounded-lg border border-primary/10 bg-white p-5 flex flex-col justify-between min-h-[130px] transition-all hover:border-primary/40 hover:shadow-[0_12px_32px_rgba(25,28,29,0.06)]"
                     >
                       <div>
@@ -55,9 +53,9 @@ export default function DashboardsPage() {
                       </div>
                       <div className="mt-4 flex items-center font-bold text-xs text-primary group-hover:translate-x-1 transition-transform">
                         <span>Abrir dashboard</span>
-                        <span className="ml-2">↗</span>
+                        <span className="ml-2">→</span>
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>

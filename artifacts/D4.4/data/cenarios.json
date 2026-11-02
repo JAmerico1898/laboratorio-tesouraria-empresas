@@ -1,0 +1,7 @@
+[
+  {"id": "hoje", "nome": "Horizonte hoje", "neg": 0, "protestos": 0, "processos": 0, "semHist": 0, "pctVenc": 92, "atraso": 4, "ebitda": 2400, "despFin": 1000, "divBruta": 5500, "pcf": 3500, "pl": 9000, "plCresc": 1, "cessao": 0, "aval": 0, "selic": 12, "setor": "neutro", "prazoPedido": 60},
+  {"id": "cessao", "nome": "Com cessão de recebíveis", "neg": 0, "protestos": 0, "processos": 0, "semHist": 0, "pctVenc": 92, "atraso": 4, "ebitda": 2400, "despFin": 1000, "divBruta": 5500, "pcf": 3500, "pl": 9000, "plCresc": 1, "cessao": 1, "aval": 0, "selic": 12, "setor": "neutro", "prazoPedido": 60},
+  {"id": "fraca", "nome": "Colateral forte, capacidade fraca", "neg": 0, "protestos": 0, "processos": 0, "semHist": 0, "pctVenc": 92, "atraso": 4, "ebitda": 1200, "despFin": 1200, "divBruta": 9000, "pcf": 3500, "pl": 9000, "plCresc": 1, "cessao": 1, "aval": 1, "selic": 12, "setor": "neutro", "prazoPedido": 60},
+  {"id": "retracao", "nome": "Retração setorial, Selic 14%", "neg": 0, "protestos": 0, "processos": 0, "semHist": 0, "pctVenc": 92, "atraso": 4, "ebitda": 2400, "despFin": 1000, "divBruta": 5500, "pcf": 3500, "pl": 9000, "plCresc": 1, "cessao": 0, "aval": 0, "selic": 14, "setor": "retracao", "prazoPedido": 60},
+  {"id": "novo", "nome": "Cliente novo sem histórico", "neg": 0, "protestos": 0, "processos": 0, "semHist": 1, "pctVenc": 92, "atraso": 4, "ebitda": 2400, "despFin": 1000, "divBruta": 5500, "pcf": 3500, "pl": 9000, "plCresc": 1, "cessao": 0, "aval": 0, "selic": 12, "setor": "neutro", "prazoPedido": 60}
+]

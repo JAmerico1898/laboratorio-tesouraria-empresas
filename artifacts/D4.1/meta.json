@@ -1,0 +1,9 @@
+{
+  "code": "D4.1",
+  "title": "D4.1 · Venda a prazo: o fluxo",
+  "slug": "1370a3cc-71f0-4ec7-b530-765a7cbfc6d5",
+  "datasets": {
+    "cenarios": { "file": "cenarios.json", "sha256": "a31f56e19902cee2a6446e8264e56bf31deddd0dff6db9f0c9349c8f6f7ca6ad" },
+    "politica": { "file": "politica.json", "sha256": "8b2eb6a2d5f0d0a70e531501e9ee18e487355280fa96776e86c5d198695b89b7" }
+  }
+}

@@ -1,0 +1,14 @@
+[
+  {"chave": "volAlfa", "valor": 6000, "descricao": "Compras anuais da Horizonte à Alfa (R$ mil)"},
+  {"chave": "fornAlfa", "valor": 1000, "descricao": "Fornecedores — Alfa no balanço da Horizonte (R$ mil)"},
+  {"chave": "comprasTotal", "valor": 27500, "descricao": "Compras anuais totais da Horizonte (R$ mil)"},
+  {"chave": "partCategoria", "valor": 65, "descricao": "Participação da Alfa na categoria cabos (%)"},
+  {"chave": "limCatMin", "valor": 25, "descricao": "Limite de referência por categoria, piso da faixa (%)"},
+  {"chave": "limCatMax", "valor": 30, "descricao": "Limite de referência por categoria, teto da faixa (%)"},
+  {"chave": "fundingH", "valor": 20, "descricao": "CG rotativo da Horizonte, CDI + 7% (% a.a.)"},
+  {"chave": "d", "valor": 2, "descricao": "Desconto proposto pela Alfa para pagar em 10 dias (%)"},
+  {"chave": "k", "valor": 10, "descricao": "Janela do desconto (dias)"},
+  {"chave": "n", "valor": 60, "descricao": "Prazo efetivo da condição 30/60/90 (dias)"},
+  {"chave": "descTabela", "valor": 1, "descricao": "Preço à vista mais barato que a prazo na tabela da Alfa (%)"},
+  {"chave": "pRetirada", "valor": 10, "descricao": "Probabilidade de a Alfa virar 'à vista' sob estresse (%)"}
+]

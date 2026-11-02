@@ -1,0 +1,7 @@
+[
+ {"id":"saudavel","nome":"Saudável","sep":100,"taxa":10,"deriva":0,"corte":650},
+ {"id":"deriva","nome":"Deriva","sep":100,"taxa":10,"deriva":50,"corte":650},
+ {"id":"fraco","nome":"Modelo fraco","sep":40,"taxa":10,"deriva":0,"corte":650},
+ {"id":"frouxa","nome":"Régua frouxa","sep":100,"taxa":10,"deriva":0,"corte":550},
+ {"id":"overfit","nome":"Overfitting aparente","sep":150,"taxa":10,"deriva":0,"corte":650}
+]

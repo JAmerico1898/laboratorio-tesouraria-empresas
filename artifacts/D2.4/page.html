@@ -1,0 +1,390 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<style>
+@container (min-width: 62rem) {
+  .d24-zones { grid-template-columns: minmax(13rem, .6fr) minmax(0, 3fr) minmax(14rem, .8fr); }
+}
+.d24-cols { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 48rem) {
+  .d24-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) minmax(0, 1fr); }
+  .d24-cols.d24-so { grid-template-columns: minmax(0, 1fr); }
+}
+.d24-col { min-width: 0; }
+.d24-col h3 { margin: 0 0 6px; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.d24-col .d24-cap { font-size: 13px; color: var(--color-fg-muted); margin: -4px 0 6px; }
+.d24-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 3px 4px; border-bottom: 1px solid var(--color-border-line); font-size: 14px; }
+.d24-row > span:first-child { min-width: 0; }
+.d24 .d24-row b { font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.d24-row.d24-sub { color: var(--color-fg-muted); }
+.d24 .d24-row.d24-tot b, .d24-row.d24-tot span { font-weight: 600; }
+.d24-row.d24-ll { border-left: 4px solid var(--k-navy); }
+.d24-row.d24-fco { border-left: 4px solid var(--k-amber); }
+.d24-row.d24-hl { background: color-mix(in srgb, var(--k-amber) 16%, transparent); }
+.d24-row.d24-zero { opacity: .55; }
+.d24-wf { min-height: 330px; }
+.d24-wf svg text.d24-hl { font-weight: 600; }
+.d24-selo { margin: 0 0 10px; padding: 8px 10px; border: 2px solid var(--k-neutro); border-radius: var(--cds-radius); text-align: center; font-size: 15px; }
+.d24-selo b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; font-variant-numeric: tabular-nums; margin-left: 4px; vertical-align: -2px; }
+.d24-selo.d24-ok { border-color: var(--k-pos); color: var(--k-pos); }
+.d24-selo.d24-bad { border-color: var(--k-neg); color: var(--k-neg); }
+.d24-exps { display: grid; gap: 6px; margin-top: 4px; }
+.d24-exps .k-btn { text-align: left; }
+.d24-kn-ll { color: var(--k-navy); }
+.d24-kn-fco { color: var(--k-amber-d); }
+.d24 .k-kn.k-neg { color: var(--k-neg); }
+.d24 .k-kn.k-pos { color: var(--k-pos); }
+</style>
+
+<div class="k d24" id="d24">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D2.4 · Lucro × caixa</h1>
+      <p class="k-sub" data-source="dre balanco premissas">A Alfa lucrou <span data-draw="g" data-q="ll">—</span>. Por que o caixa operacional foi <span data-draw="g" data-q="fco">—</span> — e o caixa total caiu <span data-draw="g" data-q="dcaixaAbs">—</span>?</p>
+    </div>
+    <div class="k-cens" role="group" aria-label="Cenários">
+      <button class="k-btn d24-reset" id="reset" aria-pressed="false">Alfa T0</button>
+    </div>
+  </header>
+
+  <div class="k-zones d24-zones">
+    <div class="k-zone" id="controles" data-source="premissas experimentos">
+      <h2 class="k-zt">Prazos médios · dias</h2>
+      <div class="k-ctl"><label for="c-pmrv">PMRV <span class="k-u">receber de clientes</span></label>
+        <div class="k-in"><input type="range" id="c-pmrv" data-k="pmrv" min="30" max="120" step="1"><input type="number" data-k="pmrv" min="30" max="120" step="1" aria-label="PMRV, dias"></div></div>
+      <div class="k-ctl"><label for="c-pmpf">PMPF <span class="k-u">pagar fornecedores</span></label>
+        <div class="k-in"><input type="range" id="c-pmpf" data-k="pmpf" min="15" max="90" step="1"><input type="number" data-k="pmpf" min="15" max="90" step="1" aria-label="PMPF, dias"></div></div>
+      <div class="k-ctl"><label for="c-pmre">PMRE <span class="k-u">estocar</span></label>
+        <div class="k-in"><input type="range" id="c-pmre" data-k="pmre" min="30" max="120" step="1"><input type="number" data-k="pmre" min="30" max="120" step="1" aria-label="PMRE, dias"></div></div>
+      <p class="k-note">Os prazos movem só o capital de giro: a DRE não muda.</p>
+
+      <h2 class="k-zt2">Juros pagos <span class="k-info" tabindex="0">i<span class="k-tip">O CPC 03 permite classificar os juros pagos como operacionais (padrão adotado) ou de financiamento. A escolha muda a linha, não o caixa.</span></span></h2>
+      <div class="k-seg" role="group" aria-label="Classificação dos juros">
+        <button data-k="juros" data-v="op" aria-pressed="true">operacional</button>
+        <button data-k="juros" data-v="fin" aria-pressed="false">financiamento</button>
+      </div>
+
+      <h2 class="k-zt2">Mostrar</h2>
+      <div class="k-seg" role="group" aria-label="O que mostrar">
+        <button data-k="mostrar" data-v="ano" aria-pressed="true">ano completo</button>
+        <button data-k="mostrar" data-v="ponte" aria-pressed="false">só a ponte</button>
+      </div>
+
+      <h2 class="k-zt2">Experimentos</h2>
+      <div class="d24-exps">
+        <button class="k-btn d24-exp" data-exp="recebimento" aria-pressed="false">Piore o recebimento <span class="k-u">PMRV</span></button>
+        <button class="k-btn d24-exp" data-exp="fornecedores" aria-pressed="false">Alongue fornecedores <span class="k-u">PMPF</span></button>
+        <button class="k-btn d24-exp" data-exp="estoque" aria-pressed="false">Infle o estoque <span class="k-u">PMRE</span></button>
+      </div>
+      <p class="k-note">Combináveis; clique de novo para desfazer.</p>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="dre balanco premissas">
+      <div class="d24-cols" id="colunas">
+        <div class="d24-col d24-lado" id="col-dre">
+          <h3>DRE</h3>
+          <p class="d24-cap">competência · R$ mil</p>
+          <div class="d24-row"><span>Receita líquida</span><b data-draw="v" data-q="receita">—</b></div>
+          <div class="d24-row"><span>CMV</span><b data-draw="v" data-q="cmv">—</b></div>
+          <div class="d24-row d24-tot"><span>Lucro bruto</span><b data-draw="v" data-q="lb">—</b></div>
+          <div class="d24-row"><span>Pessoal</span><b data-draw="v" data-q="pessoal">—</b></div>
+          <div class="d24-row"><span>Despesas gerais</span><b data-draw="v" data-q="gerais">—</b></div>
+          <div class="d24-row"><span>Tributos s/ vendas</span><b data-draw="v" data-q="tribVendas">—</b></div>
+          <div class="d24-row"><span>Depreciação</span><b data-draw="v" data-q="deprec">—</b></div>
+          <div class="d24-row d24-tot"><span>EBIT</span><b data-draw="v" data-q="ebit">—</b></div>
+          <div class="d24-row"><span>Juros</span><b data-draw="v" data-q="juros">—</b></div>
+          <div class="d24-row d24-tot"><span>LAIR</span><b data-draw="v" data-q="lair">—</b></div>
+          <div class="d24-row"><span>IR/CSLL</span><b data-draw="v" data-q="ir">—</b></div>
+          <div class="d24-row d24-tot d24-ll"><span>Lucro líquido</span><b data-draw="v" data-q="ll">—</b></div>
+          <p class="k-note">Margem líquida <b data-draw="v" data-q="margem">—</b>. Compras do período <b data-draw="v" data-q="compras">—</b> = CMV + Δ estoques.</p>
+        </div>
+
+        <div class="d24-col" id="col-ponte">
+          <h3>A ponte · método indireto</h3>
+          <p class="d24-cap">do lucro líquido ao Δ caixa · R$ mil</p>
+          <div class="k-chart d24-wf dash-skeleton" data-draw="ponte" role="img" aria-label="Waterfall do lucro líquido ao fluxo de caixa operacional e à variação do caixa"></div>
+          <div class="k-legend">
+            <span><i style="background: var(--k-navy)"></i>Lucro líquido</span>
+            <span><i style="background: var(--k-pos)"></i>soma ao caixa</span>
+            <span><i style="background: var(--k-neg)"></i>tira do caixa</span>
+            <span><i style="background: var(--k-amber)"></i>FCO</span>
+            <span><i style="background: var(--k-neutro)"></i>CAPEX</span>
+            <span><i style="background: var(--k-blue-d)"></i>financiamento</span>
+          </div>
+        </div>
+
+        <div class="d24-col d24-lado" id="col-direto">
+          <div class="d24-selo" id="selo"><span>Direto − Indireto =</span><b data-draw="prova">—</b></div>
+          <h3>Orçamento direto</h3>
+          <p class="d24-cap">o tesoureiro · recebimentos − pagamentos · R$ mil</p>
+          <div class="d24-row"><span>Recebimentos de clientes</span><b data-draw="v" data-q="d-receb">—</b></div>
+          <div class="d24-row"><span>Pagamentos a fornecedores</span><b data-draw="v" data-q="d-forn">—</b></div>
+          <div class="d24-row"><span>Pagamentos de pessoal</span><b data-draw="v" data-q="d-pessoal">—</b></div>
+          <div class="d24-row"><span>Despesas gerais pagas</span><b data-draw="v" data-q="d-gerais">—</b></div>
+          <div class="d24-row"><span>Tributos pagos</span><b data-draw="v" data-q="d-trib">—</b></div>
+          <div class="d24-row"><span>IR/CSLL pago</span><b data-draw="v" data-q="d-ir">—</b></div>
+          <div class="d24-row"><span>Juros pagos</span><b data-draw="v" data-q="d-juros">—</b></div>
+          <div class="d24-row d24-tot d24-fco"><span>FCO direto</span><b data-draw="v" data-q="fcoDir">—</b></div>
+          <div class="d24-row d24-sub"><span>FCO indireto (ponte)</span><b data-draw="v" data-q="fcoInd">—</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="dre balanco premissas">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">Lucro líquido <span class="k-u">R$ mil</span></span><span class="k-kn d24-kn-ll" data-draw="kpi" data-q="ll">—</span></div>
+      <div class="k-kpi"><span class="k-kl">FCO <span class="k-u">R$ mil</span></span><span class="k-kn d24-kn-fco" data-draw="kpi" data-q="fco">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Δ Caixa <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="kpi" data-q="dcaixa">—</span></div>
+      <p class="k-note" data-frases>A diferença lucro → FCO (<b data-draw="v" data-q="llmenosfco">—</b>) é explicada por: depreciação <b data-draw="v" data-q="s-deprec">—</b>, capital de giro <b data-draw="v" data-q="s-giro">—</b><span data-frase="juros" hidden>, juros reclassificados <b data-draw="v" data-q="s-juros">—</b></span>.<span data-draw="frase-nota"></span></p>
+      <p class="k-note" data-frases><span data-frase="extra" hidden>O caixa ficaria negativo: <b data-draw="v" data-q="extra">—</b> de empréstimo CP adicional fecham o balanço.</span><span data-draw="frase-extra"></span></p>
+      <div class="k-diag" data-frases>
+        <span data-draw="frase"></span>
+        <p data-frase="base" hidden>A Alfa lucrou <b data-draw="v" data-q="ll">—</b>, gerou <b data-draw="v" data-q="fcoInd">—</b> de caixa operacional, investiu <b data-draw="v" data-q="capex">—</b> e pagou <b data-draw="v" data-q="divPagos">—</b> de dividendos — financiados com <b data-draw="v" data-q="captacao">—</b> de dívida nova. O caixa <span data-sub="caixa-cai">caiu</span><span data-sub="caixa-sobe" hidden>subiu</span> <b data-draw="v" data-q="dcaixaAbs">—</b> e o ST <span data-sub="st-cai">caiu</span><span data-sub="st-sobe" hidden>subiu</span> <b data-draw="v" data-q="dstAbs">—</b> (D1.3).</p>
+        <p data-frase="fconeg" hidden>Lucro de <b data-draw="v" data-q="ll">—</b> e caixa operacional negativo (<b data-draw="v" data-q="fcoInd">—</b>): o crescimento está sendo financiado por clientes e estoques. Uma empresa lucrativa pode quebrar por falta de caixa.</p>
+        <p data-frase="forn" hidden>O fornecedor financiou <b data-draw="v" data-q="fornExtra">—</b> a mais. O lucro é o mesmo; o caixa operacional subiu para <b data-draw="v" data-q="fcoInd">—</b> — capital de giro gerado sem alterar receita.</p>
+        <p data-frase="juros" hidden>FCO em <b data-draw="v" data-q="fcoInd">—</b> nos dois métodos: a classificação muda a linha, não o caixa.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="dre balanco premissas experimentos">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>A Alfa lucrou <b data-draw="g" data-q="ll">—</b> e o caixa caiu <b data-draw="g" data-q="dcaixaAbs">—</b>. Para onde foi o dinheiro?
+          <details><summary>mostrar resposta</summary><p><b data-draw="g" data-q="cli">—</b> ficaram em clientes, <b data-draw="g" data-q="est">—</b> em estoques e <b data-draw="g" data-q="imp">—</b> em impostos a recuperar (<b data-draw="g" data-q="negs">—</b>), parcialmente compensados por fornecedores e contas a pagar (<b data-draw="g" data-q="poss">—</b>); somando a depreciação (<b data-draw="g" data-q="dep">—</b>) o FCO foi <b data-draw="g" data-q="fco">—</b>. Daí saíram <b data-draw="g" data-q="capex">—</b> de CAPEX e <b data-draw="g" data-q="div">—</b> de dividendos, cobertos por <b data-draw="g" data-q="capt">—</b> de dívida nova. Sobrou <b data-draw="g" data-q="dcaixa">—</b>.</p></details>
+        </li>
+        <li>Clique "Piore o recebimento". O lucro mudou?
+          <details><summary>mostrar resposta</summary><p>Não — a DRE é por competência. O FCO vira <b data-draw="g" data-q="pFco">—</b>: <b data-draw="g" data-q="pDias">—</b> dias a mais de prazo custam <b data-draw="g" data-q="pCusto">—</b> de caixa. É a tradução, em DFC, do "ΔPMRV sem causa operacional" de D1.4.</p></details>
+        </li>
+        <li>Por que a depreciação é somada de volta no método indireto?
+          <details><summary>mostrar resposta</summary><p>Porque reduziu o lucro sem sair do caixa — o desembolso aconteceu quando a máquina foi comprada (CAPEX, atividade de investimento). O indireto desfaz a competência; o direto nunca a viu.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<script>
+/* ============================================================
+   D2.4 · Lucro × caixa — estado, controles e desenhos
+   Testes de aderência (Spec §7), conferidos com M24.ponte() em test.js:
+   Reset: LL 2.783 · FCO direto 1.883 = indireto 1.883 · prova 0 · CAPEX −2.000 · FCF −283 · Δcaixa −400
+   Direto: 48.300 / −32.300 / −5.250 / −2.680 / −3.050 / −1.433 / −1.704
+   Piore o recebimento (PMRV 75): FCO −200 · Δcaixa −2.483 · Alongue (PMPF 60): 3.258 · Infle (PMRE 75): 550
+   Juros em financiamento: FCO 3.587 · FCF −1.987 · Δcaixa −400 · prova = 0 em toda a grade de sliders
+   ============================================================ */
+const IDS = ['dre', 'balanco', 'premissas'];
+const S = { pmrv: null, pmpf: null, pmre: null, juros: 'op', mostrar: 'ano' };
+let BASE = null;
+const NOMES = ['v', 'kpi', 'prova', 'ponte', 'frase', 'frase-nota', 'frase-extra'];
+
+function dados() {
+  if (K.status(IDS) !== 'ok') return null;
+  const D = K.obj(dash.data('dre').data), P = K.obj(dash.data('premissas').data);
+  const B = {};
+  K.num(dash.data('balanco').data).forEach((r) => { B[r.chave] = { t1: r.t1, t0: r.t0 }; });
+  return { D, B, P };
+}
+function calc(c) { const d = dados(); return d ? M24.ponte(d.D, d.B, d.P, c) : null; }
+function atual() { return S.pmrv == null ? null : calc(S); }
+function base() { return BASE ? calc(BASE) : null; }
+function exps() {
+  const e = dash.data('experimentos');
+  return e.status === 'ok' ? K.num(e.data) : [];
+}
+
+/* ---------- controles ---------- */
+function aplicar() {
+  K.sync(S);
+  const ehBase = BASE && S.pmrv === BASE.pmrv && S.pmpf === BASE.pmpf && S.pmre === BASE.pmre && S.juros === 'op';
+  document.querySelectorAll('.d24-reset').forEach((b) => b.setAttribute('aria-pressed', String(!!ehBase)));
+  const ex = exps();
+  document.querySelectorAll('.d24-exp').forEach((b) => {
+    const x = ex.find((r) => r.id === b.dataset.exp);
+    b.setAttribute('aria-pressed', String(!!x && S[x.param] === x.valor));
+  });
+  document.querySelectorAll('.d24-lado').forEach((c) => { c.hidden = S.mostrar === 'ponte'; });
+  document.querySelectorAll('.d24-cols').forEach((c) => c.classList.toggle('d24-so', S.mostrar === 'ponte'));
+}
+function mudou() { aplicar(); K.redraw(NOMES); }
+K.bind(S, mudou);
+dash.onData(() => {
+  const d = dados();
+  if (d && !BASE) {
+    BASE = { pmrv: d.P.pmrv, pmpf: d.P.pmpf, pmre: d.P.pmre, juros: 'op' };
+    Object.assign(S, BASE);
+  }
+  if (BASE) aplicar();
+});
+document.querySelectorAll('.d24-reset').forEach((b) => b.addEventListener('click', () => {
+  if (!BASE) return;
+  Object.assign(S, BASE); mudou();
+}));
+document.querySelectorAll('.d24-exp').forEach((b) => b.addEventListener('click', () => {
+  const x = exps().find((r) => r.id === b.dataset.exp);
+  if (!x || !BASE) return;
+  S[x.param] = S[x.param] === x.valor ? BASE[x.param] : x.valor;
+  mudou();
+}));
+
+/* ---------- valores das listas e frases ---------- */
+const V = {
+  receita: (r) => K.n(r.R.receita), cmv: (r) => K.n(-r.R.cmv), lb: (r) => K.n(r.R.lb), pessoal: (r) => K.n(-r.R.pessoal),
+  gerais: (r) => K.n(-r.R.gerais), tribVendas: (r) => K.n(-r.R.tribVendas), deprec: (r) => K.n(-r.R.deprec), ebit: (r) => K.n(r.R.ebit),
+  juros: (r) => K.n(-r.R.juros), lair: (r) => K.n(r.R.lair), ir: (r) => K.n(-r.R.ir), ll: (r) => K.n(r.R.ll),
+  margem: (r) => K.p(r.R.margem, 1), compras: (r) => K.n(r.compras),
+  'd-receb': (r) => K.n(r.dir.receb), 'd-forn': (r) => K.n(r.dir.forn), 'd-pessoal': (r) => K.n(r.dir.pessoal),
+  'd-gerais': (r) => K.n(r.dir.gerais), 'd-trib': (r) => K.n(r.dir.trib), 'd-ir': (r) => K.n(r.dir.ir), 'd-juros': (r) => K.n(r.dir.juros),
+  fcoDir: (r) => K.n(r.fcoDir), fcoInd: (r) => K.n(r.fcoInd),
+  llmenosfco: (r) => K.n(r.R.ll - r.fcoInd), 's-deprec': (r) => K.s(r.R.deprec), 's-giro': (r) => K.s(r.giro), 's-juros': (r) => K.s(r.R.juros),
+  extra: (r) => K.n(r.extra), capex: (r) => K.n(r.capex), divPagos: (r) => K.n(r.divPagos), captacao: (r) => K.n(r.captacao),
+  dcaixaAbs: (r) => K.n(Math.abs(r.dCaixa)), dstAbs: (r) => K.n(Math.abs(r.dST)),
+  fornExtra: (r) => { const b = base(); return b ? K.n(r.dForn - b.dForn) : null; },
+};
+// linhas que acendem quando um prazo sai do valor de T0
+const ACENDE = { 'd-receb': ['pmrv'], 'd-forn': ['pmpf', 'pmre'], 'd-juros': ['juros'], compras: ['pmre'] };
+function mexidos() {
+  if (!BASE) return new Set();
+  return new Set(['pmrv', 'pmpf', 'pmre', 'juros'].filter((k) => S[k] !== BASE[k]));
+}
+dash.draw('v', (el) => {
+  const r = atual(), fn = V[el.dataset.q];
+  const v = r && fn ? fn(r) : null;
+  el.textContent = v == null ? '—' : v;
+  const row = el.closest('.d24-row');
+  if (row) {
+    const m = mexidos();
+    row.classList.toggle('d24-hl', !!r && (ACENDE[el.dataset.q] || []).some((k) => m.has(k)));
+    row.classList.toggle('d24-zero', !!r && el.dataset.q === 'd-juros' && r.fin);
+  }
+});
+dash.draw('kpi', (el) => {
+  const r = atual();
+  el.classList.remove('dash-skeleton');
+  if (!r) { el.textContent = '—'; el.classList.remove('k-neg', 'k-pos'); return; }
+  const v = { ll: r.R.ll, fco: r.fcoInd, dcaixa: r.dCaixa }[el.dataset.q];
+  el.textContent = el.dataset.q === 'dcaixa' ? K.s(v) : K.n(v);
+  el.classList.toggle('k-neg', v < 0);
+  el.classList.toggle('k-pos', el.dataset.q === 'dcaixa' && v > 0);
+});
+dash.draw('prova', (el) => {
+  const r = atual();
+  const selo = el.closest('.d24-selo');
+  if (!r) { el.textContent = '—'; if (selo) selo.classList.remove('d24-ok', 'd24-bad'); return; }
+  const ok = Math.abs(r.prova) < 0.5;
+  el.textContent = K.n(r.prova);
+  if (selo) { selo.classList.toggle('d24-ok', ok); selo.classList.toggle('d24-bad', !ok); }
+});
+dash.draw('frase', (el) => {
+  const r = atual();
+  const keys = [];
+  if (r) {
+    if (r.fcoInd < 0) keys.push('fconeg');
+    else if (BASE && S.pmpf > BASE.pmpf) keys.push('forn');
+    else keys.push('base');
+    if (r.fin) keys.push('juros');
+    const box = el.closest('[data-frases]');
+    if (box) {
+      const sub = (n, on) => box.querySelectorAll('[data-sub="' + n + '"]').forEach((s) => { s.hidden = !on; });
+      sub('caixa-cai', r.dCaixa < 0); sub('caixa-sobe', r.dCaixa >= 0);
+      sub('st-cai', r.dST < 0); sub('st-sobe', r.dST >= 0);
+    }
+  }
+  K.frases(el, keys);
+});
+dash.draw('frase-nota', (el) => { const r = atual(); K.frases(el, r && r.fin ? ['juros'] : []); });
+dash.draw('frase-extra', (el) => { const r = atual(); K.frases(el, r && r.extra > 0.5 ? ['extra'] : []); });
+
+/* ---------- perguntas-guia: números do caso em T0 e do experimento ---------- */
+const G = {
+  ll: (b) => K.n(b.R.ll), fco: (b) => K.n(b.fcoInd), dcaixaAbs: (b) => K.n(Math.abs(b.dCaixa)), dcaixa: (b) => K.n(b.dCaixa),
+  cli: (b) => K.n(b.dCli), est: (b) => K.n(b.dEst), imp: (b) => K.n(b.dImp),
+  negs: (b) => K.n(-(b.dCli + b.dEst + b.dImp + b.dAdi)), poss: (b) => K.s(b.dForn + b.dSal + b.dTrib),
+  dep: (b) => K.s(b.R.deprec), capex: (b) => K.n(b.capex), div: (b) => K.n(b.divPagos), capt: (b) => K.n(b.captacao),
+  pFco: (b, p) => (p ? K.n(p.fcoInd) : null), pDias: (b, p, x) => (x ? K.n(x.valor - BASE.pmrv) : null),
+  pCusto: (b, p) => (p ? K.n(p.dCli - b.dCli) : null),
+};
+dash.draw('g', (el) => {
+  const b = base(), fn = G[el.dataset.q];
+  let v = null;
+  if (b && fn) {
+    const x = exps().find((r) => r.id === 'recebimento');
+    const p = x ? calc({ ...BASE, [x.param]: x.valor }) : null;
+    v = fn(b, p, x);
+  }
+  el.textContent = v == null ? '—' : v;
+});
+
+/* ---------- a ponte (waterfall horizontal, de cima para baixo) ---------- */
+const ROTULO = { deprec: 'Depreciação', cli: 'Δ Clientes', est: 'Δ Estoques', adiant: 'Δ Adiantamentos', imprec: 'Δ Impostos a recuperar',
+  forn: 'Δ Fornecedores', sal: 'Δ Salários a pagar', trib: 'Δ Tributos a recolher', juros: 'Juros → financiamento' };
+const PARAM = { cli: 'pmrv', forn: 'pmpf', est: 'pmre', juros: 'juros' };
+function linhas(r) {
+  const L = [];
+  let acc = r.R.ll;
+  L.push({ lab: 'Lucro líquido', a: 0, b: acc, v: acc, cor: 'var(--k-navy)', tot: true });
+  r.ajustes.forEach((x) => {
+    if (Math.abs(x.v) < 0.5 && x.k === 'adiant') return;
+    L.push({ lab: ROTULO[x.k], a: acc, b: acc + x.v, v: x.v, cor: x.v >= 0 ? 'var(--k-pos)' : 'var(--k-neg)', k: x.k });
+    acc += x.v;
+  });
+  L.push({ lab: 'FCO', a: 0, b: r.fcoInd, v: r.fcoInd, cor: 'var(--k-amber)', tot: true, gapDepois: true });
+  acc = r.fcoInd;
+  L.push({ lab: 'CAPEX', a: acc, b: acc - r.capex, v: -r.capex, cor: 'var(--k-neutro)' }); acc -= r.capex;
+  L.push({ lab: 'Financiamento', a: acc, b: acc + r.fcf, v: r.fcf, cor: 'var(--k-blue-d)' }); acc += r.fcf;
+  L.push({ lab: 'Δ Caixa', a: 0, b: r.dCaixa, v: r.dCaixa, cor: r.dCaixa >= 0 ? 'var(--k-pos)' : 'var(--k-neg)', tot: true });
+  return L;
+}
+dash.draw('ponte', (el) => {
+  const r = atual();
+  if (!r) { K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS)); return; }
+  el.classList.remove('dash-skeleton');
+  const L = linhas(r), m = mexidos();
+  const RH = 24, GAP = 12, top = 6;
+  const H = top + L.length * RH + GAP + 22;
+  const { svg, W } = K.svg(el, H, 280);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  // larguras medidas: rótulos à esquerda, valores à direita
+  const medir = (txts, cls) => {
+    const g = svg.append('g').attr('opacity', 0);
+    const w = d3.max(txts, (t) => g.append('text').attr('class', cls).text(t).node().getComputedTextLength()) || 0;
+    g.remove(); return w;
+  };
+  const wl = medir(L.map((l) => l.lab), 'k-svgt') + 10;
+  const wv = medir(L.map((l) => (l.tot ? K.n(l.v) : K.s(l.v))), 'k-svgt') + 8;
+  const vals = L.flatMap((l) => [l.a, l.b]).concat([0]);
+  const x = d3.scaleLinear([d3.min(vals), d3.max(vals)], [wl, Math.max(wl + 60, W - wv)]).nice();
+  let y = top;
+  const ys = L.map((l) => { const yy = y; y += RH + (l.gapDepois ? GAP : 0); return yy; });
+  // grade e zero
+  x.ticks(Math.max(2, Math.floor((W - wl - wv) / 70))).forEach((t) => {
+    svg.append('line').attr('x1', x(t)).attr('x2', x(t)).attr('y1', top - 2).attr('y2', y).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(t)).attr('y', y + 14).text(K.n(t));
+  });
+  svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', top - 2).attr('y2', y).attr('stroke', 'var(--cds-chart-axis)');
+  L.forEach((l, i) => {
+    const yy = ys[i];
+    const hl = l.k && PARAM[l.k] && m.has(PARAM[l.k]);
+    if (hl) svg.append('rect').attr('x', 0).attr('y', yy).attr('width', W).attr('height', RH - 2).attr('fill', 'var(--k-amber)').attr('opacity', 0.14);
+    const x0 = x(Math.min(l.a, l.b)), x1 = x(Math.max(l.a, l.b));
+    svg.append('rect').attr('x', x0).attr('y', yy + 4).attr('width', Math.max(1.5, x1 - x0)).attr('height', RH - 10).attr('rx', 2).attr('fill', l.cor);
+    // conector até a próxima barra (cada barra começa onde a anterior termina)
+    if (i < L.length - 1) {
+      svg.append('line').attr('x1', x(l.b)).attr('x2', x(l.b)).attr('y1', yy + RH - 6).attr('y2', ys[i + 1] + 4)
+        .attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '2 2');
+    }
+    svg.append('text').attr('class', 'k-svgt' + (hl || l.tot ? ' d24-hl' : '')).attr('x', 0).attr('y', yy + RH / 2 + 4).text(l.lab);
+    svg.append('text').attr('class', 'k-svgt' + (l.tot ? ' d24-hl' : '')).attr('text-anchor', 'end').attr('x', W).attr('y', yy + RH / 2 + 4)
+      .text(l.tot ? K.n(l.v) : K.s(l.v));
+    svg.append('rect').attr('x', 0).attr('y', yy).attr('width', W).attr('height', RH).attr('fill', 'transparent')
+      .on('mousemove', (ev) => {
+        const [px, py] = d3.pointer(ev, el);
+        tip.show(l.lab, [[l.cor, l.tot ? 'valor' : 'efeito no caixa', l.tot ? K.n(l.v) : K.s(l.v)], [null, 'acumulado', K.n(l.b)]], px, py);
+      })
+      .on('mouseleave', () => tip.hide());
+  });
+});
+</script>

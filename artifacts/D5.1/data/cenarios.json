@@ -1,0 +1,5 @@
+[
+  {"id": "slide", "nome": "Slide V5.1", "P": 100, "n": 30, "k": 10, "d": 2, "f": 17, "iMes": 1.2},
+  {"id": "horizonte", "nome": "Horizonte ← Alfa", "P": 500, "n": 60, "k": 10, "d": 2, "f": 20, "iMes": null},
+  {"id": "net30", "nome": "2/10 net 30 na Horizonte", "P": 500, "n": 30, "k": 10, "d": 2, "f": 20, "iMes": null}
+]

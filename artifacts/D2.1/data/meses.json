@@ -1,0 +1,12 @@
+[{"mes":"jan","peso":0.80,"decimo":0,"plr":0,"amortELP":0},
+{"mes":"fev","peso":0.75,"decimo":0,"plr":0,"amortELP":0},
+{"mes":"mar","peso":0.82,"decimo":0,"plr":200,"amortELP":0},
+{"mes":"abr","peso":0.88,"decimo":0,"plr":0,"amortELP":0},
+{"mes":"mai","peso":0.90,"decimo":0,"plr":0,"amortELP":0},
+{"mes":"jun","peso":0.96,"decimo":0,"plr":0,"amortELP":750},
+{"mes":"jul","peso":1.05,"decimo":0,"plr":0,"amortELP":0},
+{"mes":"ago","peso":1.15,"decimo":0,"plr":0,"amortELP":0},
+{"mes":"set","peso":1.30,"decimo":0,"plr":0,"amortELP":0},
+{"mes":"out","peso":1.40,"decimo":0,"plr":0,"amortELP":0},
+{"mes":"nov","peso":1.10,"decimo":150,"plr":0,"amortELP":0},
+{"mes":"dez","peso":0.89,"decimo":250,"plr":0,"amortELP":750}]

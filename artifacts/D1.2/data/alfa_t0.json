@@ -1,0 +1,42 @@
+[
+ {
+  "item": "Receita líquida",
+  "chave": "rec",
+  "t0": 50000
+ },
+ {
+  "item": "CMV",
+  "chave": "cmv",
+  "t0": 32000
+ },
+ {
+  "item": "Compras",
+  "chave": "compras",
+  "t0": 33000
+ },
+ {
+  "item": "Clientes",
+  "chave": "cli",
+  "t0": 8300
+ },
+ {
+  "item": "Estoques",
+  "chave": "est",
+  "t0": 5300
+ },
+ {
+  "item": "Fornecedores",
+  "chave": "forn",
+  "t0": 4100
+ },
+ {
+  "item": "Saldo de tesouraria (ST)",
+  "chave": "st",
+  "t0": -1000
+ },
+ {
+  "item": "NCG",
+  "chave": "ncg",
+  "t0": 8900
+ }
+]

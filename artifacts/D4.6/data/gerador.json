@@ -1,0 +1,9 @@
+[
+ {"chave":"semente","valor":70,"descricao":"Semente do LCG (s = 1664525·s + 1013904223 mod 2^32) usado no Box-Muller"},
+ {"chave":"n","valor":10000,"descricao":"Contas na base de treino e na base de produção"},
+ {"chave":"mediaBons","valor":700,"descricao":"Média do score dos bons pagadores (pontos)"},
+ {"chave":"dp","valor":100,"descricao":"Desvio-padrão do score em cada classe (pontos)"},
+ {"chave":"fatorD","valor":1.66,"descricao":"d' = (Separação/100) × fatorD"},
+ {"chave":"fatorDeriva","valor":1.1,"descricao":"Deslocamento da produção = (Deriva/100) × fatorDeriva desvios-padrão da base de treino"},
+ {"chave":"decis","valor":10,"descricao":"Faixas do PSI, definidas pelos decis da base de treino"}
+]

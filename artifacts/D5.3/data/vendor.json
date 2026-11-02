@@ -1,0 +1,9 @@
+[
+ {"chave":"compras","valor":6000,"descricao":"Compras anuais da Horizonte à Alfa (R$ mil)"},
+ {"chave":"prazo","valor":60,"descricao":"Prazo comercial (dias)"},
+ {"chave":"fAlfa","valor":17,"descricao":"Custo de funding da Alfa para carregar o recebível (% a.a.)"},
+ {"chave":"perda","valor":2,"descricao":"Perda esperada da Alfa sobre a Horizonte (% das vendas)"},
+ {"chave":"tVendor","valor":21,"descricao":"Taxa do vendor, risco do comprador (% a.a.)"},
+ {"chave":"desc","valor":2,"descricao":"Desconto à vista que a Alfa repassa à Horizonte (% do preço)"},
+ {"chave":"alt","valor":20,"descricao":"Custo alternativo da Horizonte — CG rotativo (% a.a.)"}
+]

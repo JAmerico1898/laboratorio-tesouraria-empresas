@@ -1,0 +1,5 @@
+[{"chave":"compras","valor":33000,"descricao":"Compras do período (slide V1.2)"},
+{"chave":"pmrv","valor":60,"descricao":"PMRV de T0 (dias)"},
+{"chave":"pmpf","valor":45,"descricao":"PMPF de T0 (dias)"},
+{"chave":"pmre","valor":60,"descricao":"PMRE de T0 (dias)"},
+{"chave":"base","valor":360,"descricao":"Dias do ano comercial"}]

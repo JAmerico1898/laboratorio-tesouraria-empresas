@@ -1,0 +1,452 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<style>
+.d52-bal { min-height: 300px; }
+.d52-barra { min-height: 86px; }
+.d52-conc { min-height: 112px; }
+.d52-jogo { min-height: 190px; }
+.d52-forn { margin-bottom: 10px; }
+.d52-forn .k-seg { margin-top: 3px; }
+.d52-resp { margin-top: 10px; border: 1px solid var(--color-border-line); border-left: 6px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 10px 12px; background: var(--color-bg); }
+.d52-resp.d52-cede { border-left-color: var(--k-pos); }
+.d52-resp.d52-pricing { border-left-color: var(--k-amber); }
+.d52-resp.d52-nao { border-left-color: var(--k-neg); }
+.d52-resp h4 { margin: 0 0 4px; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.5rem; line-height: 1.2; }
+.d52-resp p { margin: 0; font-size: 14px; }
+.d52-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.d52-chips .k-chip { font-size: 13px; padding: 2px 9px; }
+.d52-ped { margin-top: 8px; display: grid; gap: 4px; font-size: 14px; }
+.d52 .d52-resp b, .d52 .k-chip b { font-variant-numeric: tabular-nums; }
+.d52-lab { font-size: 14px; margin: 10px 0 0; }
+</style>
+
+<div class="k d52" id="d52">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D5.2 · Mesa de negociação</h1>
+      <p class="k-sub">Negociar é mostrar valor. O que o fornecedor calcula quando você pede prazo?</p>
+    </div>
+    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios fornecedores">
+      <button class="k-btn d52-cen" data-cen="slide" aria-pressed="false">Slide V5.2</button>
+      <button class="k-btn d52-cen" data-cen="alfa" aria-pressed="false">Horizonte × Alfa</button>
+      <button class="k-btn d52-cen" data-cen="alfa90" aria-pressed="false">Alfa com prazo longo</button>
+      <button class="k-btn d52-cen" data-cen="pont80" aria-pressed="false">Pontualidade em queda</button>
+    </div>
+  </header>
+
+  <div class="k-tabs" role="tablist">
+    <button class="k-tab" id="tab-mesa" data-group="v" data-tab="mesa" role="tab" aria-selected="true">A mesa</button>
+    <button class="k-tab" id="tab-jogo" data-group="v" data-tab="jogo" role="tab" aria-selected="false">Jogo repetido</button>
+  </div>
+
+  <div class="k-zones">
+    <!-- ===================== CONTROLES ===================== -->
+    <div class="k-zone" id="controles" data-source="fornecedores regras cenarios jogo">
+      <section data-group="v" data-pane="mesa">
+        <div class="d52-forn">
+          <span class="k-lab">Fornecedor</span>
+          <div class="k-seg" role="group" aria-label="Fornecedor">
+            <button data-k="forn" data-v="fina">Margem fina</button><button data-k="forn" data-v="alfa">Alfa</button><button data-k="forn" data-v="disj">Disjuntores</button>
+          </div>
+          <p class="k-note">Margem <b data-draw="v" data-q="margem">—</b> sobre a venda · vende <b data-draw="v" data-q="volume">—</b> mil/ano à Horizonte</p>
+        </div>
+
+        <h2 class="k-zt">O que a Horizonte pede</h2>
+        <div class="k-ctl"><label for="c-prazo">Prazo pedido <span class="k-u">dias</span></label>
+          <div class="k-in"><input type="range" id="c-prazo" data-k="prazo" min="30" max="120" step="1"><input type="number" data-k="prazo" min="30" max="120" step="1" aria-label="Prazo pedido, dias"></div></div>
+        <label class="k-toggle"><input type="checkbox" data-k="desc"> Desconto por antecipação <span class="k-info" tabindex="0">i<span class="k-tip">Abre a opção X/<b data-draw="v" data-q="janela">—</b> net prazo. X é o desconto que deixa o fornecedor indiferente: o funding dele pelos dias que você antecipa.</span></span></label><br>
+        <label class="k-toggle"><input type="checkbox" data-k="volGar"> Volume garantido <span class="k-info" tabindex="0">i<span class="k-tip">Compromisso de volume mínimo: vale como o contrato anual das alavancas (−<b data-draw="v" data-q="compPp">—</b> p.p. no pricing; os dois não se somam).</span></span></label><br>
+        <label class="k-toggle"><input type="checkbox" data-k="dev"> Política de devolução</label>
+
+        <h2 class="k-zt2">As alavancas da Horizonte</h2>
+        <div class="k-ctl"><label for="c-vol">Volume anual <span class="k-u">R$ mil</span></label>
+          <div class="k-in"><input type="range" id="c-vol" data-k="volume" min="300" max="12000" step="50"><input type="number" data-k="volume" min="300" max="12000" step="50" aria-label="Volume anual, R$ mil"></div></div>
+        <div class="k-ctl"><label for="c-pont">Pontualidade <span class="k-u">% pago em dia</span> <span class="k-info" tabindex="0">i<span class="k-tip">Risco que o fornecedor aloca sobre a Horizonte: <b data-draw="v" data-q="pdBase">—</b> a.a. com <b data-draw="v" data-q="pontRef">—</b> em dia; cada ponto abaixo soma <b data-draw="v" data-q="pdAbaixo">—</b> p.p., cada ponto acima tira <b data-draw="v" data-q="pdAcima">—</b> p.p. (piso <b data-draw="v" data-q="pdPiso">—</b>).</span></span></label>
+          <div class="k-in"><input type="range" id="c-pont" data-k="pont" min="60" max="100" step="1"><input type="number" data-k="pont" min="60" max="100" step="1" aria-label="Pontualidade, %"></div></div>
+        <div class="k-ctl"><label for="c-part">Participação na categoria <span class="k-u">% · BATNA</span> <span class="k-info" tabindex="0">i<span class="k-tip">Regra do slide 6: no máximo ~<b data-draw="v" data-q="batnaLim">—</b> por categoria e ~<b data-draw="v" data-q="limTotal">—</b> das compras totais. Acima disso o fornecedor sabe que você não tem alternativa.</span></span></label>
+          <div class="k-in"><input type="range" id="c-part" data-k="partCat" min="10" max="100" step="1"><input type="number" data-k="partCat" min="10" max="100" step="1" aria-label="Participação na categoria, %"></div></div>
+        <label class="k-toggle"><input type="checkbox" data-k="compromisso"> Compromisso (contrato anual)</label>
+
+        <h2 class="k-zt2">Do lado do fornecedor</h2>
+        <div class="k-ctl"><label for="c-fund">Custo do funding <span class="k-u">% a.m.</span></label>
+          <div class="k-in"><input type="range" id="c-fund" data-k="fundingMes" min="0.5" max="3" step="0.05"><input type="number" data-k="fundingMes" min="0.5" max="3" step="0.05" aria-label="Custo do funding do fornecedor, % ao mês"></div></div>
+        <label class="k-toggle"><input type="checkbox" data-k="riscoZero"> Risco zerado (como no slide) <span class="k-info" tabindex="0">i<span class="k-tip">Slide 4 de V5.2: sem risco de crédito e sem custo administrativo — só o custo do funding contra a margem.</span></span></label>
+      </section>
+
+      <section data-group="v" data-pane="jogo" hidden>
+        <h2 class="k-zt">Espremer hoje</h2>
+        <div class="k-ctl"><label for="c-jvol">Volume anual com o fornecedor <span class="k-u">R$ mil</span></label>
+          <div class="k-in"><input type="range" id="c-jvol" data-k="jVol" min="300" max="12000" step="50"><input type="number" data-k="jVol" min="300" max="12000" step="50" aria-label="Volume anual com o fornecedor, R$ mil"></div></div>
+        <div class="k-ctl"><label for="c-dex">Desconto extra espremido <span class="k-u">% · um trimestre</span></label>
+          <div class="k-in"><input type="range" id="c-dex" data-k="dExtra" min="0" max="5" step="0.1"><input type="number" data-k="dExtra" min="0" max="5" step="0.1" aria-label="Desconto extra, %"></div></div>
+        <h2 class="k-zt2">Perder amanhã</h2>
+        <div class="k-ctl"><label for="c-rep">Repasse futuro <span class="k-u">% a.a. do volume</span> <span class="k-info" tabindex="0">i<span class="k-tip">O fornecedor recupera o que cedeu em pricing embutido, menor prioridade na falta e menos crédito.</span></span></label>
+          <div class="k-in"><input type="range" id="c-rep" data-k="repasse" min="0" max="10" step="0.5"><input type="number" data-k="repasse" min="0" max="10" step="0.5" aria-label="Repasse futuro, % ao ano do volume"></div></div>
+        <div class="k-ctl"><label for="c-anos">Memória do fornecedor <span class="k-u">anos</span></label>
+          <div class="k-in"><input type="range" id="c-anos" data-k="anos" min="1" max="8" step="1"><input type="number" data-k="anos" min="1" max="8" step="1" aria-label="Memória do fornecedor, anos"></div></div>
+        <div class="k-ctl"><label for="c-tx">Taxa de desconto <span class="k-u">% a.a.</span></label>
+          <div class="k-in"><input type="range" id="c-tx" data-k="taxa" min="5" max="30" step="0.5"><input type="number" data-k="taxa" min="5" max="30" step="0.5" aria-label="Taxa de desconto, % ao ano"></div></div>
+      </section>
+    </div>
+
+    <!-- ===================== VISUAL ===================== -->
+    <div class="k-zone" id="visual" data-source="fornecedores regras cenarios jogo">
+      <section data-group="v" data-pane="mesa" id="mesa">
+        <div class="k-ch"><h3>A balança do fornecedor</h3><span>R$ mil/ano · o que ganha × o que perde ao conceder o prazo</span></div>
+        <div class="k-chart d52-bal dash-skeleton" id="balanca" data-draw="balanca" role="img" aria-label="Balança: margem do fornecedor de um lado; custo do prazo, do risco e administrativo do outro"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-pos)"></i>Margem (ganha)</span>
+          <span><i style="background: var(--k-amber)"></i>Funding do prazo</span>
+          <span><i style="background: var(--k-neg)"></i>Risco de crédito</span>
+          <span><i style="background: var(--k-neutro)"></i>Administrativo</span>
+        </div>
+        <p class="d52-lab"><b data-draw="v" data-q="consumo">—</b> da margem consumida pelo prazo pedido</p>
+        <div class="k-chart d52-barra dash-skeleton" id="barra" data-draw="barra" role="img" aria-label="Barra da margem: fatias consumidas pelo prazo, pelo risco e pelo custo administrativo, e o que sobra"></div>
+
+        <div class="d52-resp" id="resposta">
+          <div data-frases>
+            <span data-draw="frase" data-grp="resp"></span>
+            <div data-frase="cede" hidden><h4>Cede o prazo</h4><p>Concede <b data-draw="v" data-q="prazo">—</b> dias sem mexer no preço.</p></div>
+            <div data-frase="pricing" hidden><h4>Cede com pricing embutido de +<span data-draw="v" data-q="pricing">—</span> no preço</h4><p>Concede <b data-draw="v" data-q="prazo">—</b> dias e cobra R$ <b data-draw="v" data-q="pricingRS">—</b> mil/ano a mais na tabela.</p></div>
+            <div data-frase="nao" hidden><h4>Não cede</h4><p>"À vista" ou preço muito maior: o prazo custa mais que a margem inteira.</p></div>
+          </div>
+          <div class="d52-chips">
+            <span class="k-chip" data-frases>Pontualidade → <span data-draw="frase" data-grp="cpont"></span><span data-frase="pd" hidden>risco <b data-draw="v" data-q="pd">—</b></span><span data-frase="zero" hidden>risco zerado</span></span>
+            <span class="k-chip" data-frases>Diversificação → <span data-draw="frase" data-grp="cbatna"></span><span data-frase="forte" hidden>BATNA forte</span><span data-frase="fraca" hidden>BATNA fraca (+<b data-draw="v" data-q="batnaPp">—</b> p.p.)</span></span>
+            <span class="k-chip" data-frases>Compromisso → <span data-draw="frase" data-grp="ccomp"></span><span data-frase="sim" hidden>−<b data-draw="v" data-q="compPp">—</b> p.p. no pricing</span><span data-frase="nao" hidden>sem efeito</span></span>
+          </div>
+          <div class="d52-ped" data-frases>
+            <span data-draw="frase" data-grp="ped"></span>
+            <span data-frase="desc" hidden>Desconto à vista: ele oferece <b data-draw="v" data-q="descIndif">—</b>/<b data-draw="v" data-q="janela">—</b> net <b data-draw="v" data-q="prazo">—</b> — mais que isso, prefere dar o prazo.</span>
+            <span data-frase="vol" hidden>Volume garantido: conta como compromisso (−<b data-draw="v" data-q="compPp">—</b> p.p. no pricing).</span>
+            <span data-frase="dev" hidden>Devolução: aceita para itens de giro; a logística reversa vai para o preço, fora desta conta.</span>
+          </div>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="jogo" id="jogo" hidden>
+        <div class="k-ch"><h3>Ganho de um trimestre × perda em valor presente</h3><span>R$ mil</span></div>
+        <div class="k-chart d52-jogo dash-skeleton" id="jogo-barras" data-draw="jogo" role="img" aria-label="Duas barras: o ganho do desconto espremido em um trimestre e a perda futura em valor presente, ano a ano"></div>
+        <div class="k-legend">
+          <span><i style="background: var(--k-pos)"></i>Ganho agora</span>
+          <span><i style="background: var(--k-neg)"></i>Repasse futuro, ano a ano, em VP</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- ===================== LEITURA ===================== -->
+    <div class="k-zone" id="leitura" data-source="fornecedores regras cenarios jogo">
+      <section data-group="v" data-pane="mesa">
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Margem consumida</span><span class="k-kn" data-draw="v" data-q="consumo">—</span></div>
+        <div class="k-kpi"><span class="k-kl">PMPF com este fornecedor <span class="k-u">dias</span></span><span class="k-kn" data-draw="v" data-q="pmpf">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Pricing embutido <span class="k-u">no preço</span></span><span class="k-kn" data-draw="v" data-q="pricingP">—</span></div>
+        <p class="k-note">R$ <b data-draw="v" data-q="pricingRS">—</b> mil/ano · margem do fornecedor R$ <b data-draw="v" data-q="margemAbs">—</b> mil, custo do prazo pedido R$ <b data-draw="v" data-q="custoAbs">—</b> mil</p>
+        <h2 class="k-zt2">Concentração</h2>
+        <div class="k-chart d52-conc dash-skeleton" id="concentracao" data-draw="conc" role="img" aria-label="Participação do fornecedor na categoria e nas compras totais da Horizonte, com as faixas acima do limite"></div>
+        <div class="k-diag" data-frases>
+          <span data-draw="frase" data-grp="mesa"></span>
+          <p data-frase="barato" hidden>O prazo é barato para este fornecedor: <b data-draw="v" data-q="consumo">—</b> da margem. Pedir <b data-draw="v" data-q="prazo">—</b> dias é razoável — ele cede sem repassar o prazo.</p>
+          <p data-frase="repassa" hidden>O prazo come <b data-draw="v" data-q="consumo">—</b> da margem: ele cede, mas repassa +<b data-draw="v" data-q="pricing">—</b> no preço. Pricing embutido entra automaticamente — você paga o prazo sem ver.</p>
+          <p data-frase="imp" hidden>Pedir <b data-draw="v" data-q="prazo">—</b> dias de quem tem <b data-draw="v" data-q="margem">—</b> de margem é pedir o impossível: o custo do prazo e do risco (<b data-draw="v" data-q="custo">—</b>) supera a margem. Resposta: "à vista" ou preço muito maior.</p>
+          <p data-frase="batna" hidden>Com <b data-draw="v" data-q="partCat">—</b> da categoria em um fornecedor, ele sabe que você não tem alternativa — a alavanca diversificação desapareceu e o repasse sobe +<b data-draw="v" data-q="batnaPp">—</b> p.p.</p>
+        </div>
+      </section>
+
+      <section data-group="v" data-pane="jogo" hidden>
+        <h2 class="k-zt">Leitura</h2>
+        <div class="k-kpi"><span class="k-kl">Ganho agora <span class="k-u">R$ mil</span></span><span class="k-kn k-pos" data-draw="v" data-q="ganho">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Perda em VP <span class="k-u">R$ mil</span></span><span class="k-kn k-neg" data-draw="v" data-q="perda">—</span></div>
+        <div class="k-kpi"><span class="k-kl">Perda ÷ ganho</span><span class="k-kn" data-draw="v" data-q="razao">—</span></div>
+        <div class="k-diag">
+          <p>Espremer hoje, perder amanhã: +<b data-draw="v" data-q="ganho">—</b> agora contra <b data-draw="v" data-q="perda">—</b> em valor presente (perda = <b data-draw="v" data-q="razao">—</b> o ganho). Cada negociação é rodada de um jogo repetido, não leilão único.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <details class="k-help" id="guia" data-source="fornecedores regras cenarios jogo">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>No cenário-slide, por que o fornecedor de margem fina repassa preço ao conceder <span data-draw="v" data-q="g1-prazo">—</span> dias?
+          <details><summary>mostrar resposta</summary><p><b data-draw="v" data-q="g1-fund">—</b> a.m. × <b data-draw="v" data-q="g1-meses">—</b> meses = <b data-draw="v" data-q="g1-cp">—</b> de custo de funding contra <b data-draw="v" data-q="g1-margem">—</b> de margem — <b data-draw="v" data-q="g1-consumo">—</b> da margem consumida. Para preservar metade da margem ele precisa de +<b data-draw="v" data-q="g1-pricing">—</b> no preço: o pricing embutido entra sozinho.</p></details>
+        </li>
+        <li>Troque para a Alfa e peça <span data-draw="v" data-q="g2-prazo">—</span> dias. Ela cede? Então por que a Horizonte não pede mais?
+          <details><summary>mostrar resposta</summary><p>Com <b data-draw="v" data-q="g2-margem">—</b> de margem, <b data-draw="v" data-q="g2-prazo">—</b> dias consomem só <b data-draw="v" data-q="g2-consumo">—</b> dela: cede sem repassar o prazo (o +<b data-draw="v" data-q="batnaPp">—</b> p.p. que aparece é só o da BATNA fraca). Mas a Alfa decide pela análise marginal (D4.3), onde alongar o prazo da carteira toda foi "frágil"; e a Horizonte já concentra <b data-draw="v" data-q="g2-part">—</b> da categoria na Alfa — cada dia a mais aumenta a dependência (custo ③ de D5.1).</p></details>
+        </li>
+        <li>Baixe a pontualidade para <span data-draw="v" data-q="g3-pont">—</span>. O que acontece com a resposta da Alfa e do fornecedor de disjuntores?
+          <details><summary>mostrar resposta</summary><p>O risco alocado sobe de <b data-draw="v" data-q="pdBase">—</b> para <b data-draw="v" data-q="g3-pd">—</b>. O de disjuntores (<b data-draw="v" data-q="g3-margem">—</b> de margem) passa de +<b data-draw="v" data-q="g3-dj0">—</b> para +<b data-draw="v" data-q="g3-dj1">—</b> de repasse (<b data-draw="v" data-q="g3-djc">—</b> da margem consumida); a Alfa ainda cede (<b data-draw="v" data-q="g3-ac">—</b>). Pontualidade é a moeda de barganha mais barata de produzir — e cumulativa.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<script>
+/* ============================================================
+   D5.2 · Mesa de negociação
+   Testes de aderência (Spec §7), conferidos com M52 em node (33 PASS / 0 FAIL):
+   Slide V5.2: custo do prazo 3,0% · consumo 75% · pricing +1,0% · "Cede com pricing"
+   Margem fina, 90 d, risco zerado: 4,5% · 112,5% · "Não cede"
+   Alfa, 60 d: 2,4% · consumo 10,3% · margem 2.100 · custo 216 · BATNA fraca → +1,0 p.p.
+   Alfa, 90 d: 3,6% · 13,7% · Pontualidade 80%: PD 4,0%
+   Jogo repetido (6.000 · 2,5% · 6% · 5 anos · 17%): ganho 37,5 · perda VP 1.151,8 · 31×
+   ============================================================ */
+const ST = window.D52 = { S: null, cen: null, mexido: false };
+const IDS = ['fornecedores', 'regras', 'cenarios', 'jogo'];
+const NOMES = ['balanca', 'barra', 'conc', 'jogo', 'v', 'frase'];
+const JOGO_KEYS = ['jVol', 'dExtra', 'repasse', 'anos', 'taxa'];
+
+/* ---------- dados ---------- */
+const pronto = () => ST.S != null && K.status(IDS) === 'ok';
+const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
+const regras = () => K.obj(dash.data('regras').data);
+const forn = (id) => K.num(dash.data('fornecedores').data).find((r) => r.id === id);
+const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
+const jogo0 = () => K.num(dash.data('jogo').data)[0];
+const ctl = (S) => ({ margem: S.margem, fundingMes: S.fundingMes, prazo: S.prazo, volume: S.volume, pont: S.pont, partCat: S.partCat, compromisso: !!S.compromisso, volGar: !!S.volGar, riscoZero: !!S.riscoZero });
+const doCenario = (id, over) => {
+  const r = cenario(id), f = forn(r.fornecedor);
+  return { margem: f.margem, fundingMes: f.fundingMes, volume: f.volume, partCat: f.partCat, prazo: r.prazo, pont: r.pont, compromisso: !!r.compromisso, volGar: false, riscoZero: !!r.riscoZero, ...(over || {}) };
+};
+const atual = () => M52.estado(ctl(ST.S), regras());
+const jogoAtual = () => M52.jogo({ volume: ST.S.jVol, dExtra: ST.S.dExtra, repasse: ST.S.repasse, anos: ST.S.anos, taxa: ST.S.taxa });
+const pct1 = (v) => K.n(v, 1) + '%';
+const pctS = (v) => K.n(v, 1).replace(/,0$/, '') + '%';
+const tx = (v) => K.n(v, 2).replace(/0$/, '') + '%';
+const mil = (v) => K.n(v, Math.abs(v) < 100 ? 1 : 0);
+
+/* ---------- controles ---------- */
+function marca() {
+  const ok = pronto();
+  document.querySelectorAll('.d52-cen').forEach((b) => b.setAttribute('aria-pressed', String(ok && !ST.mexido && b.dataset.cen === ST.cen)));
+}
+function sincroniza() { K.sync(ST.S); marca(); }
+function aplicaForn(id) {
+  const f = forn(id);
+  if (!f) return;
+  Object.assign(ST.S, { forn: f.id, margem: f.margem, fundingMes: f.fundingMes, volume: f.volume, partCat: f.partCat, riscoZero: false });
+}
+function aplicar(id) {
+  const r = cenario(id);
+  if (!r) return;
+  const J = jogo0();
+  if (!ST.S) ST.S = { jVol: J.volume, dExtra: J.dExtra, repasse: J.repasse, anos: J.anos, taxa: J.taxa };
+  aplicaForn(r.fornecedor);
+  Object.assign(ST.S, { prazo: r.prazo, pont: r.pont, riscoZero: !!r.riscoZero, compromisso: !!r.compromisso, volGar: false, desc: false, dev: false });
+  ST.cen = id; ST.mexido = false;
+  sincroniza();
+}
+dash.onData(() => {
+  if (K.status(IDS) !== 'ok') { marca(); return; }
+  if (!ST.S) { aplicar('slide'); K.redraw(NOMES); }
+});
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+  if (!ST.S) return;
+  if (k === 'forn') aplicaForn(ST.S.forn);
+  if (!JOGO_KEYS.includes(k)) ST.mexido = true;
+  sincroniza(); K.redraw(NOMES);
+});
+document.querySelectorAll('.d52-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
+K.tabs('v', () => K.redraw(NOMES));
+
+/* ---------- balança ---------- */
+dash.draw('balanca', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const E = atual();
+  const { svg, W, H } = K.svg(el, 300);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const cx = W / 2, py = 48, L = Math.min(W - 40, 560), pw = Math.min(150, L * 0.36);
+  const tot = E.margemAbs + E.custoAbs;
+  const f = tot > 0 ? Math.max(-1, Math.min(1, 2 * (E.custoAbs - E.margemAbs) / tot)) : 0;
+  const th = f * 14 * Math.PI / 180;
+  const ends = [-1, 1].map((s) => ({ x: cx + s * (L / 2) * Math.cos(th), y: py + s * (L / 2) * Math.sin(th) }));
+  // poste e fulcro
+  svg.append('line').attr('x1', cx).attr('x2', cx).attr('y1', py).attr('y2', H - 14).attr('stroke', 'var(--color-fg-muted)').attr('stroke-width', 3);
+  svg.append('line').attr('x1', cx - 34).attr('x2', cx + 34).attr('y1', H - 14).attr('y2', H - 14).attr('stroke', 'var(--color-fg-muted)').attr('stroke-width', 3).attr('stroke-linecap', 'round');
+  svg.append('path').attr('d', `M${cx},${py} L${cx - 12},${py + 20} L${cx + 12},${py + 20} Z`).attr('fill', 'var(--color-fg-muted)');
+  svg.append('line').attr('x1', ends[0].x).attr('y1', ends[0].y).attr('x2', ends[1].x).attr('y2', ends[1].y).attr('stroke', 'var(--color-fg)').attr('stroke-width', 4).attr('stroke-linecap', 'round');
+  svg.append('circle').attr('cx', cx).attr('cy', py).attr('r', 5).attr('fill', 'var(--color-fg)');
+  const maxV = Math.max(E.margemAbs, E.custoAbs, 1e-9), hMax = 130, drop = 158;
+  const pratos = [
+    { titulo: 'Ganha', total: E.margemAbs, blocos: [['Margem', E.margemAbs, 'var(--k-pos)']] },
+    { titulo: 'Perde', total: E.custoAbs, blocos: [['Funding do prazo', E.prazoAbs, 'var(--k-amber)'], ['Risco de crédito', E.riscoAbs, 'var(--k-neg)'], ['Administrativo', E.admAbs, 'var(--k-neutro)']] },
+  ];
+  pratos.forEach((p, i) => {
+    const e = ends[i], yp = e.y + drop;
+    svg.append('line').attr('x1', e.x).attr('y1', e.y).attr('x2', e.x - pw / 2).attr('y2', yp).attr('stroke', 'var(--cds-chart-axis)');
+    svg.append('line').attr('x1', e.x).attr('y1', e.y).attr('x2', e.x + pw / 2).attr('y2', yp).attr('stroke', 'var(--cds-chart-axis)');
+    svg.append('line').attr('x1', e.x - pw / 2 - 6).attr('x2', e.x + pw / 2 + 6).attr('y1', yp).attr('y2', yp).attr('stroke', 'var(--color-fg)').attr('stroke-width', 3).attr('stroke-linecap', 'round');
+    const bw = pw * 0.62;
+    let y = yp - 1.5;
+    p.blocos.forEach(([nome, v, cor]) => {
+      if (!(v > 0)) return;
+      const h = Math.max(2, v / maxV * hMax);
+      y -= h;
+      svg.append('rect').attr('x', e.x - bw / 2).attr('y', y).attr('width', bw).attr('height', h).attr('rx', 2).attr('fill', cor)
+        .on('mousemove', (ev) => { const [px, py2] = d3.pointer(ev, el); tip.show(p.titulo + ' · R$ mil/ano', [[cor, nome, mil(v)]], px, py2); })
+        .on('mouseleave', () => tip.hide());
+    });
+    const t = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('text-anchor', 'middle').attr('x', e.x).attr('y', yp + 20).text(p.titulo + ' · ' + mil(p.total));
+    const w = t.node().getComputedTextLength();
+    t.attr('x', Math.max(w / 2 + 2, Math.min(W - w / 2 - 2, e.x)));
+  });
+  const leg = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cx).attr('y', 16)
+    .text(f < 0 ? 'pende para a margem: o prazo cabe' : f > 0 ? 'pende para o custo: o prazo não cabe' : 'equilíbrio');
+  if (leg.node().getComputedTextLength() > W - 8) leg.remove();
+});
+
+/* ---------- barra de margem ---------- */
+dash.draw('barra', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const E = atual(), C = ST.S;
+  const { svg, W, H } = K.svg(el, 86);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const dom = Math.max(1, E.consumo) * 100;
+  const x = d3.scaleLinear([0, dom], [4, W - 4]);
+  const y0 = 26, hb = 30;
+  const seg = [
+    ['Funding do prazo', E.cp / C.margem * 100, 'var(--k-amber)', '#1a1a1a'],
+    ['Risco de crédito', E.pd / C.margem * 100, 'var(--k-neg)', '#fff'],
+    ['Administrativo', E.adm / C.margem * 100, 'var(--k-neutro)', '#1a1a1a'],
+    ['Sobra', Math.max(0, 100 - E.consumo * 100), 'var(--k-pos)', '#fff'],
+  ];
+  svg.append('rect').attr('x', x(0)).attr('y', y0).attr('width', x(100) - x(0)).attr('height', hb).attr('rx', 3).attr('fill', 'none').attr('stroke', 'var(--cds-chart-axis)');
+  let a = 0;
+  seg.forEach(([nome, v, cor, ink]) => {
+    if (!(v > 0)) return;
+    const r = svg.append('rect').attr('x', x(a)).attr('y', y0).attr('width', Math.max(1, x(a + v) - x(a))).attr('height', hb).attr('fill', cor)
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show('% da margem', [[cor, nome, pct1(v)]], px, py); })
+      .on('mouseleave', () => tip.hide());
+    const t = svg.append('text').attr('class', 'k-svgt').style('fill', ink).style('pointer-events', 'none').attr('x', x(a) + 5).attr('y', y0 + hb / 2 + 5).text(pctS(v));
+    if (t.node().getComputedTextLength() > x(a + v) - x(a) - 8) t.remove();
+    r.attr('opacity', 1);
+    a += v;
+  });
+  const marco = (v, txt, dashA) => {
+    svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', y0 - 6).attr('y2', y0 + hb + 6).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5).attr('stroke-dasharray', dashA || null);
+    const t = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('y', y0 + hb + 20).text(txt);
+    const w = t.node().getComputedTextLength();
+    t.attr('x', Math.max(w / 2 + 2, Math.min(W - w / 2 - 2, x(v))));
+    return t;
+  };
+  const t50 = marco(50, 'metade preservada', '4 3');
+  const t100 = marco(100, 'margem toda');
+  const b1 = t50.node().getBBox(), b2 = t100.node().getBBox();
+  if (b1.x + b1.width + 4 > b2.x) t50.attr('y', y0 - 10);
+  if (E.consumo > 1) svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--k-neg)').attr('text-anchor', 'end').attr('x', W - 6).attr('y', y0 - 8).text('excede em ' + pctS((E.consumo - 1) * 100));
+});
+
+/* ---------- concentração ---------- */
+dash.draw('conc', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const E = atual(), R = regras();
+  const { svg, W } = K.svg(el, 112, 220);
+  el.replaceChildren(svg.node());
+  const linhas = [
+    { rot: 'Na categoria', v: ST.S.partCat, lim: R.batnaLim, max: 100, y: 22 },
+    { rot: 'Nas compras totais', v: E.partTotal, lim: R.limTotal, max: 50, y: 74 },
+  ];
+  linhas.forEach((l) => {
+    const x = d3.scaleLinear([0, l.max], [4, W - 4]);
+    const hb = 12, yb = l.y + 8;
+    svg.append('text').attr('class', 'k-svgt').attr('x', 4).attr('y', l.y).text(l.rot);
+    const vt = svg.append('text').attr('class', 'k-svgb').style('fill', l.v > l.lim ? 'var(--k-neg)' : 'var(--color-fg)').attr('text-anchor', 'end').attr('x', W - 4).attr('y', l.y).text(pctS(Math.min(l.v, 999)) + (l.v > l.lim ? ' · acima de ' + pctS(l.lim) : ''));
+    void vt;
+    svg.append('rect').attr('x', x(0)).attr('width', x(l.lim) - x(0)).attr('y', yb).attr('height', hb).attr('rx', 2).attr('fill', 'var(--cds-chart-grid)');
+    svg.append('rect').attr('x', x(l.lim)).attr('width', x(l.max) - x(l.lim)).attr('y', yb).attr('height', hb).attr('rx', 2).attr('fill', 'var(--k-neg)').attr('opacity', 0.25);
+    const vv = Math.min(l.max, l.v);
+    svg.append('rect').attr('x', x(0)).attr('width', Math.max(0, x(vv) - x(0))).attr('y', yb + 3).attr('height', hb - 6).attr('rx', 2).attr('fill', l.v > l.lim ? 'var(--k-neg)' : 'var(--k-navy)');
+    svg.append('line').attr('x1', x(l.lim)).attr('x2', x(l.lim)).attr('y1', yb - 3).attr('y2', yb + hb + 3).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
+    const t = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('y', yb + hb + 14).text('limite ' + pctS(l.lim));
+    const w = t.node().getComputedTextLength();
+    t.attr('x', Math.max(w / 2 + 2, Math.min(W - w / 2 - 2, x(l.lim))));
+  });
+});
+
+/* ---------- jogo repetido ---------- */
+dash.draw('jogo', (el) => {
+  if (!pronto()) { falha(el); return; }
+  el.classList.remove('dash-skeleton');
+  const G = jogoAtual();
+  const { svg, W } = K.svg(el, 190);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const meas = svg.append('text').attr('class', 'k-svgb').text(mil(Math.max(G.perda, G.ganho)));
+  const mR = meas.node().getComputedTextLength() + 12; meas.remove();
+  const x = d3.scaleLinear([0, Math.max(G.perda, G.ganho, 1e-9)], [4, W - mR]);
+  const barras = [
+    { rot: 'Ganho de um trimestre', y: 30, total: G.ganho, partes: [{ v: G.ganho, cor: 'var(--k-pos)', op: 1, nome: 'Desconto espremido' }] },
+    { rot: 'Perda em valor presente (' + G.serie.length + (G.serie.length === 1 ? ' ano)' : ' anos)'), y: 112, total: G.perda, partes: G.serie.map((s, i) => ({ v: s.vp, cor: 'var(--k-neg)', op: i % 2 ? 0.7 : 1, nome: 'Ano ' + s.t })) },
+  ];
+  barras.forEach((b) => {
+    svg.append('text').attr('class', 'k-svgt').attr('x', 4).attr('y', b.y - 8).text(b.rot);
+    let a = 0;
+    b.partes.forEach((p) => {
+      if (!(p.v > 0)) return;
+      svg.append('rect').attr('x', x(a)).attr('y', b.y).attr('width', Math.max(1, x(a + p.v) - x(a))).attr('height', 32).attr('fill', p.cor).attr('opacity', p.op)
+        .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(b.rot + ' · R$ mil', [[p.cor, p.nome, mil(p.v)]], px, py); })
+        .on('mouseleave', () => tip.hide());
+      a += p.v;
+    });
+    svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', x(a) + 6).attr('y', b.y + 21).text(mil(b.total));
+  });
+});
+
+/* ---------- números ---------- */
+const E1 = () => M52.estado(doCenario('slide'), regras());
+const E2 = () => M52.estado(doCenario('alfa90'), regras());
+const P3 = () => cenario('pont80').pont;
+const E3d0 = () => M52.estado(doCenario('pont80', { pont: regras().pontRef }), regras());
+const E3d1 = () => M52.estado(doCenario('pont80'), regras());
+const E3a = () => M52.estado(doCenario('alfa', { pont: P3() }), regras());
+const VAL = {
+  margem: () => pctS(ST.S.margem), volume: () => K.n(ST.S.volume), prazo: () => K.n(ST.S.prazo), partCat: () => pctS(ST.S.partCat),
+  consumo: (E) => pctS(E.consumo * 100), cp: (E) => pct1(E.cp), pd: (E) => pct1(E.pd), custo: (E) => pct1(E.custo),
+  pricing: (E) => pct1(E.pricing), pricingP: (E) => (E.resposta === 'nao' ? '—' : '+' + pct1(E.pricing)), pricingRS: (E) => mil(E.pricingRS),
+  pmpf: (E) => K.n(E.pmpf), margemAbs: (E) => mil(E.margemAbs), custoAbs: (E) => mil(E.custoAbs), descIndif: (E) => pct1(E.descIndif),
+  janela: () => K.n(regras().janela), compPp: () => K.n(regras().compPp, 1), batnaPp: () => K.n(regras().batnaPp, 1),
+  batnaLim: () => pctS(regras().batnaLim), limTotal: () => pctS(regras().limTotal), pdBase: () => pct1(regras().pdBase), pontRef: () => pctS(regras().pontRef),
+  pdAbaixo: () => K.n(regras().pdAbaixo, 1), pdAcima: () => K.n(regras().pdAcima, 1), pdPiso: () => pct1(regras().pdPiso),
+  ganho: () => K.n(jogoAtual().ganho, 1), perda: () => K.n(jogoAtual().perda, 1),
+  razao: () => { const g = jogoAtual(); return Number.isFinite(g.razao) ? K.n(g.razao) + '×' : '—'; },
+  'g1-prazo': () => K.n(cenario('slide').prazo), 'g1-fund': () => tx(forn(cenario('slide').fornecedor).fundingMes), 'g1-meses': () => K.n(cenario('slide').prazo / 30),
+  'g1-cp': () => pct1(E1().cp), 'g1-margem': () => pctS(forn(cenario('slide').fornecedor).margem), 'g1-consumo': () => pctS(E1().consumo * 100), 'g1-pricing': () => pct1(E1().pricing),
+  'g2-prazo': () => K.n(cenario('alfa90').prazo), 'g2-margem': () => pctS(forn('alfa').margem), 'g2-consumo': () => pctS(E2().consumo * 100), 'g2-part': () => pctS(forn('alfa').partCat),
+  'g3-pont': () => pctS(P3()), 'g3-pd': () => pct1(M52.pd(P3(), regras())), 'g3-margem': () => pctS(forn('disj').margem),
+  'g3-dj0': () => pct1(E3d0().pricing), 'g3-dj1': () => pct1(E3d1().pricing), 'g3-djc': () => pctS(E3d1().consumo * 100), 'g3-ac': () => 'consumo de ' + pctS(E3a().consumo * 100),
+};
+dash.draw('v', (el) => {
+  const fn = VAL[el.dataset.q];
+  const v = fn && pronto() ? fn(atual()) : null;
+  el.classList.remove('dash-skeleton');
+  el.textContent = v == null ? '—' : v;
+});
+dash.draw('frase', (el) => {
+  const keys = [];
+  if (pronto()) {
+    const E = atual(), grp = el.dataset.grp;
+    if (grp === 'resp') {
+      keys.push(E.resposta);
+      document.querySelectorAll('.d52-resp').forEach((c) => { ['cede', 'pricing', 'nao'].forEach((k) => c.classList.toggle('d52-' + k, k === E.resposta)); });
+    } else if (grp === 'cpont') keys.push(ST.S.riscoZero ? 'zero' : 'pd');
+    else if (grp === 'cbatna') keys.push(E.batnaFraca ? 'fraca' : 'forte');
+    else if (grp === 'ccomp') keys.push(E.comp ? 'sim' : 'nao');
+    else if (grp === 'ped') { if (ST.S.desc) keys.push('desc'); if (ST.S.volGar) keys.push('vol'); if (ST.S.dev) keys.push('dev'); }
+    else if (grp === 'mesa') {
+      keys.push(E.consumo >= 1 ? 'imp' : E.base > 1e-9 && E.pricing > 1e-9 ? 'repassa' : 'barato');
+      if (E.batnaFraca && E.consumo < 1) keys.push('batna');
+    }
+  }
+  K.frases(el, keys);
+  marca();
+});
+</script>

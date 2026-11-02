@@ -1,0 +1,13 @@
+[
+ {"metrica":"ks","faixa":"fraco","de":0,"ate":0.30},
+ {"metrica":"ks","faixa":"regular","de":0.30,"ate":0.40},
+ {"metrica":"ks","faixa":"bom","de":0.40,"ate":0.50},
+ {"metrica":"ks","faixa":"excelente","de":0.50,"ate":1},
+ {"metrica":"auc","faixa":"fraco","de":0.5,"ate":0.70},
+ {"metrica":"auc","faixa":"regular","de":0.70,"ate":0.80},
+ {"metrica":"auc","faixa":"bom","de":0.80,"ate":0.90},
+ {"metrica":"auc","faixa":"atencao","de":0.90,"ate":1},
+ {"metrica":"psi","faixa":"bom","de":0,"ate":0.10},
+ {"metrica":"psi","faixa":"alerta","de":0.10,"ate":0.25},
+ {"metrica":"psi","faixa":"retreinar","de":0.25,"ate":0.5}
+]

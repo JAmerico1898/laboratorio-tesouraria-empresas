@@ -1,0 +1,13 @@
+[{"chave":"cli","conta":"Duplicatas a receber","t1":6600,"t0":8300},
+{"chave":"est","conta":"Estoques","t1":4300,"t0":5300},
+{"chave":"adiant","conta":"Adiantamentos a fornecedores","t1":150,"t0":150},
+{"chave":"imprec","conta":"Impostos a recuperar","t1":100,"t0":250},
+{"chave":"forn","conta":"Fornecedores","t1":3400,"t0":4100},
+{"chave":"sal","conta":"Salários e encargos a pagar","t1":450,"t0":600},
+{"chave":"trib","conta":"Tributos a recolher","t1":300,"t0":400},
+{"chave":"anc","conta":"ANC (inclui RLP)","t1":20500,"t0":21500},
+{"chave":"emprcp","conta":"Empréstimos CP + duplicatas descontadas","t1":2200,"t0":3200},
+{"chave":"elp","conta":"Exigível a longo prazo","t1":8500,"t0":9000},
+{"chave":"divpagar","conta":"Dividendos a pagar","t1":200,"t0":300},
+{"chave":"pl","conta":"Patrimônio líquido","t1":19500,"t0":20400},
+{"chave":"caixa","conta":"Caixa + aplicações (ACF)","t1":2900,"t0":2500}]

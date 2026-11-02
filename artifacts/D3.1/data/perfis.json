@@ -1,0 +1,5 @@
+[
+ {"perfil":"horizonte","empresa":"Comercial Horizonte","setor":"Distribuição / varejo","receita":36000,"cmv":27000,"ebitda":2400,"estoque0":7500,"clientes":2000,"outrosACO":300,"pco":4300,"st":-2500,"mc":0.20,"f0":0.25,"temEstoque":1,"paradaLinha":0},
+ {"perfil":"alfa","empresa":"Indústria Alfa","setor":"Indústria de transformação","receita":50000,"cmv":32000,"ebitda":6920,"estoque0":5300,"clientes":8300,"outrosACO":400,"pco":5100,"st":-1000,"mc":0.35,"f0":0.25,"temEstoque":1,"paradaLinha":1},
+ {"perfil":"nuvem","empresa":"Nuvem Ltda.","setor":"Serviços / SaaS","receita":12000,"cmv":0,"ebitda":2400,"estoque0":0,"clientes":1800,"outrosACO":0,"pco":1000,"st":0,"mc":0,"f0":0,"temEstoque":0,"paradaLinha":0}
+]

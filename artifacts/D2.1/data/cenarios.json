@@ -1,0 +1,80 @@
+[
+{
+"id": "t0",
+"crescimento": 0,
+"achatar": false,
+"pmrv": 60,
+"pmpf": 45,
+"inad": 2,
+"disc": 100,
+"dividendos": 1250,
+"capexJun": 800,
+"capexSet": 400,
+"k": 1
+},
+{
+"id": "flat",
+"crescimento": 0,
+"achatar": true,
+"pmrv": 60,
+"pmpf": 45,
+"inad": 2,
+"disc": 100,
+"dividendos": 1250,
+"capexJun": 800,
+"capexSet": 400,
+"k": 1
+},
+{
+"id": "rv30",
+"crescimento": 0,
+"achatar": false,
+"pmrv": 30,
+"pmpf": 45,
+"inad": 2,
+"disc": 100,
+"dividendos": 1250,
+"capexJun": 800,
+"capexSet": 400,
+"k": 1
+},
+{
+"id": "pf60",
+"crescimento": 0,
+"achatar": false,
+"pmrv": 60,
+"pmpf": 60,
+"inad": 2,
+"disc": 100,
+"dividendos": 1250,
+"capexJun": 800,
+"capexSet": 400,
+"k": 1
+},
+{
+"id": "g20",
+"crescimento": 20,
+"achatar": false,
+"pmrv": 60,
+"pmpf": 45,
+"inad": 2,
+"disc": 100,
+"dividendos": 1250,
+"capexJun": 800,
+"capexSet": 400,
+"k": 1
+},
+{
+"id": "div0",
+"crescimento": 0,
+"achatar": false,
+"pmrv": 60,
+"pmpf": 45,
+"inad": 2,
+"disc": 100,
+"dividendos": 0,
+"capexJun": 800,
+"capexSet": 400,
+"k": 1
+}
+]

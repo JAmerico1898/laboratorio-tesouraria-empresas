@@ -1,0 +1,5 @@
+[
+ {"banco":"A","perfil":"público","caixa":250,"aplic":0,"linhaCP":1250,"linhaLP":1250,"contaGar":300,"rotativo":0,"aprovado":1000},
+ {"banco":"B","perfil":"privado","caixa":100,"aplic":600,"linhaCP":750,"linhaLP":750,"contaGar":0,"rotativo":0,"aprovado":500},
+ {"banco":"C","perfil":"privado","caixa":50,"aplic":0,"linhaCP":0,"linhaLP":0,"contaGar":0,"rotativo":1200,"aprovado":1500}
+]

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D2.7 · Previsão de caixa</title>
+<link rel="stylesheet" href="runtime/dash.css">
+<script src="runtime/d3.v7.min.js"></script>
+<script>window.__DASH_DATA = {"calendario":{"format":"json","data":[{"tipo":"dow","posicao":0,"efeito":0.6,"rotulo":"segunda"},{"tipo":"dow","posicao":1,"efeito":0.2,"rotulo":"terça"},{"tipo":"dow","posicao":2,"efeito":0,"rotulo":"quarta"},{"tipo":"dow","posicao":3,"efeito":-0.3,"rotulo":"quinta"},{"tipo":"dow","posicao":4,"efeito":-0.5,"rotulo":"sexta"},{"tipo":"dom","posicao":0,"efeito":0.4,"rotulo":"entradas do início do mês"},{"tipo":"dom","posicao":1,"efeito":0.4,"rotulo":"entradas do início do mês"},{"tipo":"dom","posicao":3,"efeito":-1,"rotulo":"dia 5: folha"},{"tipo":"dom","posicao":13,"efeito":-1,"rotulo":"dia 20: encargos e ICMS"},{"tipo":"dom","posicao":17,"efeito":-1,"rotulo":"dia 25: PIS/COFINS"}]},"cenarios":{"format":"json","data":[{"id":"base","nome":"Base","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":1,"p":5,"W":20,"saldoMin":1000},{"id":"ruido","nome":"Só ruído","ampSem":0,"ampMes":0,"beta":0,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":1,"p":5,"W":20,"saldoMin":1000},{"id":"sazforte","nome":"Sazonalidade forte","ampSem":300,"ampMes":1200,"beta":0.5,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":1,"p":5,"W":20,"saldoMin":1000},{"id":"quebra","nome":"Quebra","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":true,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":1,"p":5,"W":20,"saldoMin":1000},{"id":"retreino","nome":"Quebra + retreino","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":true,"tQuebra":380,"magQuebra":-1200,"inicio":385,"h":60,"grau":1,"p":5,"W":20,"saldoMin":1000},{"id":"over8","nome":"Overfitting · grau 8","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":8,"p":5,"W":20,"saldoMin":1000},{"id":"over12","nome":"Overfitting · grau 12","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":12,"p":5,"W":20,"saldoMin":1000}]},"gerador":{"format":"json","data":[{"chave":"nivel","valor":3000},{"chave":"semente","valor":7},{"chave":"fimTreino","valor":440},{"chave":"hMax","valor":100},{"chave":"z","valor":1.96},{"chave":"limSerieCurta","valor":120},{"chave":"limRazao","valor":2},{"chave":"janelaVista","valor":160}]}};window.__DASH_PARAMS = {};</script>
+<script src="runtime/dash.js"></script>
+</head>
+<body>
+<div id="dash-root">
+<meta name="dash-one-writer">
+<style>
+/* kit.css — estilo comum dos dashboards M2 (mesmo desenho do D1.2) */
+#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
+.k {
+  --k-navy: #2A3F7A; --k-amber: #E3A21A; --k-amber-l: #F2C96B; --k-amber-d: #A86F0A;
+  --k-blue-l: #7FB2E5; --k-blue: #3D7CC9; --k-blue-d: #1F3A68;
+  --k-pos: #2E9E5B; --k-neg: #D64545; --k-neutro: #9AA0A6;
+  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
+  container-type: inline-size;
+}
+.k-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
+.k-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
+.k-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
+.k-cens { display: flex; flex-wrap: wrap; gap: 6px; }
+.k-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
+.k-btn:hover { border-color: var(--color-fg-muted); }
+.k-btn[aria-pressed="true"] { background: var(--k-navy); border-color: var(--k-navy); color: #fff; }
+.k-btn:disabled { opacity: .45; cursor: default; }
+
+.k-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
+@container (min-width: 62rem) {
+  .k-zones { grid-template-columns: minmax(15rem, .8fr) minmax(0, 2.2fr) minmax(16rem, 1fr); }
+}
+.k-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
+.k-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
+.k-zt2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 14px 0 6px; font-weight: var(--cds-font-weight-medium); }
+.k-scroll { max-height: 34rem; overflow: auto; }
+
+.k-ctl { margin-bottom: 10px; }
+.k-ctl > label, .k-ctl > .k-lab { display: block; font-size: 14px; margin-bottom: 1px; }
+.k-u { color: var(--color-fg-muted); font-size: 13px; }
+.k-in { display: grid; grid-template-columns: 1fr 4.6rem; gap: 8px; align-items: center; }
+.k-in input[type=range] { width: 100%; accent-color: var(--k-navy); }
+.k-in input[type=number], .k-num { font: inherit; font-size: 14px; width: 100%; box-sizing: border-box; padding: 2px 4px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-top: 4px; }
+.k-select { font: inherit; font-size: 14px; width: 100%; padding: 3px 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); }
+.k-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.k-seg button { font: inherit; font-size: 13px; border: 0; border-right: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 4px 10px; cursor: pointer; }
+.k-seg button:last-child { border-right: 0; }
+.k-seg button[aria-pressed="true"] { background: var(--k-navy); color: #fff; }
+.k-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 8px; }
+.k-mini { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.k-mini label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
+.k-mini input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
+
+.k-tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--color-border-line); }
+.k-tab { font: inherit; font-size: 14px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--color-fg-muted); padding: 6px 10px; cursor: pointer; }
+.k-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--k-navy); font-weight: var(--cds-font-weight-medium); }
+
+.k-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.k-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.k-ch span { font-size: 13px; color: var(--color-fg-muted); }
+.k-chart { position: relative; margin-top: 8px; }
+.k-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
+.k-legend i { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+.k-svgt { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
+.k-svgm { font-family: var(--font-anthropic-sans); font-size: 12px; fill: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.k-svgb { font-family: var(--font-anthropic-sans); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.k-tipbox { position: absolute; z-index: 8; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tipbox .k-tiph { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.k-tipbox i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: 4px; }
+
+.k-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.k-table th, .k-table td { padding: 3px 6px; text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.k-table th:first-child, .k-table td:first-child { text-align: left; }
+.k-table thead th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.k-table tr.k-strong td { font-weight: 600; }
+.k-table td.k-sel, .k-table th.k-sel { outline: 2px solid var(--k-navy); outline-offset: -2px; }
+.k-tw { overflow-x: auto; margin-top: 10px; }
+
+.k-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--color-border-line); }
+.k-kl { font-size: 14px; color: var(--color-fg-muted); }
+.k-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-kn small { font-family: var(--font-anthropic-sans); font-size: 14px; color: var(--color-fg-muted); margin-left: 4px; }
+.k-pos { color: var(--k-pos); }
+.k-neg { color: var(--k-neg); }
+.k-note { font-size: 13px; color: var(--color-fg-muted); margin: 6px 0 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.k-diag { margin-top: 10px; padding: 9px 11px; border-left: 4px solid var(--k-navy); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
+.k-diag p { margin: 0; }
+.k-diag p + p { margin-top: 6px; }
+.k .k-diag b, .k .k-note b, .k .k-help b { font-variant-numeric: tabular-nums; }
+.k-alert { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neg); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 14px; }
+.k-ok { border-left-color: var(--k-pos); }
+.k-cards { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); margin-top: 10px; }
+.k-card { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-neutro); border-radius: var(--cds-radius); padding: 8px 10px; font-size: 14px; background: var(--color-bg); }
+.k-card.k-on { border-left-color: var(--k-navy); box-shadow: 0 0 0 1px var(--k-navy); }
+.k-card.k-dim { opacity: .55; }
+.k-card.k-warn { border-left-color: var(--k-neg); }
+.k-card h4 { margin: 0 0 4px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-chip { display: inline-block; font-size: 12px; padding: 1px 8px; border: 1px solid var(--color-border-line); border-radius: 999px; color: var(--color-fg-muted); }
+
+.k-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.05rem; height: 1.05rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; font-weight: 400; cursor: help; color: var(--color-fg-muted); vertical-align: 1px; }
+.k-info .k-tip { display: none; position: absolute; right: 0; top: 130%; width: 17rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); pointer-events: none; text-align: left; white-space: normal; text-transform: none; letter-spacing: 0; }
+.k-info:hover .k-tip, .k-info:focus .k-tip { display: block; }
+
+.k-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+.k-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
+.k-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
+.k-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
+.k-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
+.k-help details p { margin: 4px 0 0; font-size: 14px; }
+
+.k-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.k-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+
+</style>
+<script>(function () {
+
+/* kit.js — utilitários comuns dos dashboards M2 (sem texto fixo: só formata, liga controles e desenha estados) */
+(function () {
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
+  const K = window.K = {};
+  const cache = {};
+  K.fmt = (d) => cache[d] || (cache[d] = loc.format(d));
+  K.n = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : K.fmt(',.' + d + 'f')(Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v));
+  K.s = (v, d = 0) => (v == null || !Number.isFinite(v) ? '—' : Math.abs(v) < 0.5 * Math.pow(10, -d) ? K.n(0, d) : K.fmt('+,.' + d + 'f')(v));
+  K.p = (v, d = 1) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 100, d) + '%');
+  K.MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+  K.MESL = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  K.obj = (rows, key = 'chave', val = 'valor') => { const o = {}; (rows || []).forEach((r) => { const v = r[val]; o[r[key]] = v === '' || v == null || isNaN(Number(v)) ? v : Number(v); }); return o; };
+  K.num = (rows) => (rows || []).map((r) => { const o = {}; Object.keys(r).forEach((c) => { const v = r[c]; o[c] = typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) ? Number(v) : v; }); return o; });
+  // status combinado de vários datasets
+  K.status = (ids) => {
+    let s = 'ok';
+    ids.forEach((id) => { const st = dash.data(id).status; if (st === 'loading' && s === 'ok') s = 'loading'; else if (st !== 'ok' && st !== 'loading') s = 'error'; });
+    return s;
+  };
+  // estado de falha/carregando dentro de um desenho
+  K.fail = (el, s) => {
+    el.classList.toggle('dash-skeleton', s === 'loading');
+    if (s === 'loading') { el.replaceChildren(); return; }
+    const d = document.createElement('div'); d.className = 'k-fail';
+    const i = document.createElement('i'); d.append(i, 'Não carregou');
+    el.replaceChildren(d);
+  };
+  // desenho de texto: fn(el) devolve string ou null
+  K.txt = (name, ready, fn) => dash.draw(name, (el) => {
+    const v = ready() ? fn(el) : null;
+    el.classList.remove('dash-skeleton');
+    el.textContent = v == null ? '—' : v;
+  });
+  // liga controles [data-k] ao objeto de estado S; onChange(k) após cada mudança
+  K.bind = (S, onChange, scope) => {
+    const root = scope || document;
+    const clamp = (inp, v) => {
+      const peer = root.querySelector('input[type=range][data-k="' + inp.dataset.k + '"]') || inp;
+      const lo = peer.min === '' ? -Infinity : Number(peer.min), hi = peer.max === '' ? Infinity : Number(peer.max);
+      return Math.min(hi, Math.max(lo, v));
+    };
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      if (inp.type === 'checkbox') {
+        inp.addEventListener('change', () => { S[inp.dataset.k] = inp.checked; onChange(inp.dataset.k); });
+        return;
+      }
+      inp.addEventListener(inp.type === 'range' ? 'input' : 'change', () => {
+        const v = Number(inp.value);
+        if (inp.value === '' || !Number.isFinite(v)) { K.sync(S, root); return; }
+        S[inp.dataset.k] = clamp(inp, v);
+        onChange(inp.dataset.k);
+      });
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => sel.addEventListener('change', () => {
+      const v = sel.value; S[sel.dataset.k] = v !== '' && !isNaN(Number(v)) ? Number(v) : v; onChange(sel.dataset.k);
+    }));
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.addEventListener('click', () => {
+      const v = b.dataset.v; S[b.dataset.k] = v === 'true' ? true : v === 'false' ? false : !isNaN(Number(v)) ? Number(v) : v; onChange(b.dataset.k);
+    }));
+  };
+  K.sync = (S, scope) => {
+    const root = scope || document;
+    root.querySelectorAll('input[data-k]').forEach((inp) => {
+      const v = S[inp.dataset.k]; if (v === undefined) return;
+      if (inp.type === 'checkbox') inp.checked = !!v;
+      else if (inp !== document.activeElement || inp.type === 'range') inp.value = String(Math.round(Number(v) * 1e6) / 1e6);
+    });
+    root.querySelectorAll('select[data-k]').forEach((sel) => { const v = S[sel.dataset.k]; if (v !== undefined) sel.value = String(v); });
+    root.querySelectorAll('button[data-k][data-v]').forEach((b) => b.setAttribute('aria-pressed', String(String(S[b.dataset.k]) === b.dataset.v)));
+  };
+  K.redraw = (names) => names.forEach((n) => dash.draw(n));
+  // abas: botões .k-tab[data-tab] e painéis [data-pane]; onShow(nome) depois de trocar
+  K.tabs = (group, onShow) => {
+    const btns = document.querySelectorAll('.k-tab[data-group="' + group + '"]');
+    const show = (name) => {
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
+      document.querySelectorAll('[data-pane][data-group="' + group + '"]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
+      if (onShow) onShow(name);
+    };
+    btns.forEach((b) => b.addEventListener('click', () => { show(b.dataset.tab); try { dash.setLink(b.dataset.tab); } catch (e) { /* ok */ } }));
+    return show;
+  };
+  // frases alternativas: mostra só [data-frase] cujo nome está em keys (dentro do pai de el)
+  K.frases = (el, keys) => {
+    const set = new Set(keys);
+    (el.closest('[data-frases]') || el.parentElement).querySelectorAll('[data-frase]').forEach((p) => { p.hidden = !set.has(p.dataset.frase); });
+  };
+  // tooltip dentro de um desenho: linhas = [[cor|null, rótulo, valor], …]
+  K.tip = (box) => {
+    const t = document.createElement('div'); t.className = 'k-tipbox'; t.hidden = true; box.append(t);
+    return {
+      show(head, linhas, x, y) {
+        t.replaceChildren();
+        if (head) { const h = document.createElement('div'); h.className = 'k-tiph'; h.textContent = head; t.append(h); }
+        linhas.forEach(([cor, lab, val]) => {
+          const l = document.createElement('div');
+          if (cor) { const i = document.createElement('i'); i.style.background = cor; l.append(i); }
+          l.append(lab + (val != null ? ': ' + val : '')); t.append(l);
+        });
+        t.hidden = false;
+        const W = box.clientWidth, w = t.offsetWidth, h = t.offsetHeight;
+        let left = x + 12; if (left + w > W) left = Math.max(0, x - w - 12);
+        t.style.left = left + 'px'; t.style.top = Math.max(0, y - h - 8) + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+  // svg responsivo dentro de el
+  K.svg = (el, H, minW = 300) => {
+    const W = Math.max(minW, el.clientWidth || minW);
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
+    return { svg, W, H };
+  };
+  K.cssVar = (name, el) => getComputedStyle(el || document.querySelector('.k') || document.body).getPropertyValue(name).trim();
+  // bisseção genérica para TIR: f(r) muda de sinal em [lo, hi]
+  K.bissec = (f, lo, hi, it = 200) => { let a = lo, b = hi, fa = f(a); for (let i = 0; i < it; i++) { const m = (a + b) / 2, fm = f(m); if ((fm > 0) === (fa > 0)) { a = m; fa = fm; } else b = m; } return (a + b) / 2; };
+  // LCG determinístico (semente fixa) e normal por soma de 12 uniformes
+  K.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  K.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+})();
+
+
+})();</script>
+<script>(function () {
+
+/* D2.7 · Previsão de caixa com banda — funções puras (sem DOM).
+   G = parâmetros fixos do gerador (dataset "gerador"), CAL = efeitos de calendário (dataset "calendario"),
+   S = estado dos controles (defaults no dataset "cenarios"). Valores em R$ mil.
+   Convenções adotadas onde a spec é omissa (ver NOTES.md):
+   - média móvel "trailing" dos W dias anteriores a t (sem incluir t); com treino curto, W fica limitado à metade do treino;
+   - efeitos sazonais estimados em sequência (dia da semana, depois dia do mês sobre o resíduo), nos três métodos;
+   - tendência e efeitos estimados alternadamente (backfitting, 6 rodadas) para que o erro de treino caia com o grau;
+   - tendência por MQO numa base de Chebyshev em t normalizado para [−1, 1] (mesmo polinômio do MQO em potências,
+     resolvido por eliminação de Gauss com pivotamento parcial, sem estourar no grau 12);
+   - MAPE de treino = erro um passo à frente dentro da amostra; MAPE de teste = previsão h passos à frente a partir do último dia do treino;
+   - a série é gerada com fimTreino + hMax dias para que o horizonte de teste possa ir até 100. */
+(function (root) {
+  const M = {};
+
+  M.lcg = (seed) => { let s = seed >>> 0; return () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; }; };
+  M.normal = (u) => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+
+  // efeitos de calendário: CAL = [{tipo:'dow'|'dom', posicao, efeito}]
+  M.calendario = (CAL) => {
+    const dow = [0, 0, 0, 0, 0], dom = new Array(21).fill(0);
+    (CAL || []).forEach((r) => { if (r.tipo === 'dow') dow[r.posicao] = r.efeito; else if (r.tipo === 'dom') dom[r.posicao] = r.efeito; });
+    return { dow, dom };
+  };
+
+  // série sintética determinística (§3)
+  M.gerar = (G, CAL, S) => {
+    const c = M.calendario(CAL), N = G.fimTreino + G.hMax, u = M.lcg(G.semente), y = new Array(N);
+    for (let t = 0; t < N; t++) {
+      const e = M.normal(u);
+      const semana = S.ampSem * c.dow[t % 5];
+      const mes = S.ampMes * c.dom[t % 21];
+      const quebra = S.quebra && t >= S.tQuebra ? S.magQuebra : 0;
+      y[t] = G.nivel + semana + mes + S.beta * t + quebra + S.sigma * e;
+    }
+    return y;
+  };
+
+  // sistema linear A x = b por eliminação de Gauss com pivotamento parcial
+  M.gauss = (A0, b0) => {
+    const n = b0.length, A = A0.map((r) => r.slice()), b = b0.slice();
+    for (let i = 0; i < n; i++) {
+      let p = i; for (let r = i + 1; r < n; r++) if (Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r;
+      if (Math.abs(A[p][i]) < 1e-12) continue;
+      [A[i], A[p]] = [A[p], A[i]]; [b[i], b[p]] = [b[p], b[i]];
+      for (let r = i + 1; r < n; r++) { const f = A[r][i] / A[i][i]; if (!f) continue; for (let c = i; c < n; c++) A[r][c] -= f * A[i][c]; b[r] -= f * b[i]; }
+    }
+    const x = new Array(n).fill(0);
+    for (let i = n - 1; i >= 0; i--) { if (Math.abs(A[i][i]) < 1e-12) { x[i] = 0; continue; } let s = b[i]; for (let c = i + 1; c < n; c++) s -= A[i][c] * x[c]; x[i] = s / A[i][i]; }
+    return x;
+  };
+  // MQO: linhas X (arrays), y → coeficientes
+  M.mqo = (X, y) => {
+    const k = X[0].length, A = Array.from({ length: k }, () => new Array(k).fill(0)), b = new Array(k).fill(0);
+    for (let i = 0; i < X.length; i++) { const x = X[i]; for (let a = 0; a < k; a++) { b[a] += x[a] * y[i]; for (let c = a; c < k; c++) A[a][c] += x[a] * x[c]; } }
+    for (let a = 0; a < k; a++) for (let c = 0; c < a; c++) A[a][c] = A[c][a];
+    return M.gauss(A, b);
+  };
+  const cheb = (u, g) => { const T = [1]; if (g >= 1) T.push(u); for (let k = 2; k <= g; k++) T.push(2 * u * T[k - 1] - T[k - 2]); return T; };
+
+  // efeitos sequenciais por dia da semana e por dia útil do mês sobre um resíduo r(t), t ∈ [a, b]
+  const efeitos = (r, a, b) => {
+    const sd = [0, 0, 0, 0, 0], nd = [0, 0, 0, 0, 0];
+    for (let t = a; t <= b; t++) { sd[t % 5] += r[t]; nd[t % 5]++; }
+    const ed = sd.map((s, i) => (nd[i] ? s / nd[i] : 0));
+    const sm = new Array(21).fill(0), nm = new Array(21).fill(0);
+    for (let t = a; t <= b; t++) { sm[t % 21] += r[t] - ed[t % 5]; nm[t % 21]++; }
+    const em = sm.map((s, i) => (nm[i] ? s / nm[i] : 0));
+    return { dow: ed, dom: em, f: (t) => ed[t % 5] + em[t % 21] };
+  };
+
+  const mape = (y, yh, a, b) => { let s = 0, n = 0; for (let t = a; t <= b; t++) { if (yh[t] == null || !Number.isFinite(yh[t]) || y[t] === 0) continue; s += Math.abs(y[t] - yh[t]) / Math.abs(y[t]); n++; } return n ? (s / n) * 100 : NaN; };
+  const desvio = (y, yh, a, b) => { const e = []; for (let t = a; t <= b; t++) if (yh[t] != null && Number.isFinite(yh[t])) e.push(y[t] - yh[t]); const m = e.reduce((x, z) => x + z, 0) / e.length; return Math.sqrt(e.reduce((x, z) => x + (z - m) ** 2, 0) / Math.max(1, e.length - 1)); };
+
+  // 1. média móvel sazonal
+  M.mediaMovel = (y, a, fim, H, W0) => {
+    const W = Math.max(2, Math.min(W0, Math.floor((fim - a) / 2))); // treino curto: janela limitada à metade do treino
+    const fit = new Array(y.length).fill(null), mm = new Array(y.length).fill(null);
+    let s = 0;
+    for (let t = a; t < fim; t++) { s += y[t]; if (t - a >= W) s -= y[t - W]; if (t - a >= W - 1 && t + 1 < fim) mm[t + 1] = s / W; }
+    const a2 = a + W, r = new Array(y.length).fill(0);
+    for (let t = a2; t < fim; t++) r[t] = y[t] - mm[t];
+    const ef = efeitos(r, a2, fim - 1);
+    for (let t = a2; t < fim; t++) fit[t] = mm[t] + ef.f(t);
+    let base = 0; for (let t = fim - W; t < fim; t++) base += y[t]; base /= W;
+    const prev = []; for (let k = 0; k < H; k++) prev.push(base + ef.f(fim + k));
+    return { fit, prev, a: a2 };
+  };
+
+  // 2. decomposição clássica: tendência polinomial de grau g + efeitos
+  M.decomposicao = (y, a, fim, H, g, iter = 6) => {
+    const L = fim - 1 - a, uu = (t) => (L > 0 ? (2 * (t - a)) / L - 1 : 0);
+    const X = []; for (let t = a; t < fim; t++) X.push(cheb(uu(t), g));
+    const tendDe = (b) => (t) => { const T = cheb(uu(t), g); let v = 0; for (let k = 0; k < T.length; k++) v += b[k] * T[k]; return v; };
+    // tendência e sazonalidade estimadas alternadamente (backfitting): converge ao MQO conjunto,
+    // então o erro de treino cai sempre que o grau sobe
+    let ef = { f: () => 0 }, tend = null;
+    const r = new Array(y.length).fill(0);
+    for (let it = 0; it < iter; it++) {
+      const Y = []; for (let t = a; t < fim; t++) Y.push(y[t] - ef.f(t));
+      tend = tendDe(M.mqo(X, Y));
+      for (let t = a; t < fim; t++) r[t] = y[t] - tend(t);
+      ef = efeitos(r, a, fim - 1);
+    }
+    const fit = new Array(y.length).fill(null);
+    for (let t = a; t < fim; t++) fit[t] = tend(t) + ef.f(t);
+    const prev = []; for (let k = 0; k < H; k++) prev.push(tend(fim + k) + ef.f(fim + k));
+    return { fit, prev, a };
+  };
+
+  // 3. AR(p) por mínimos quadrados, previsão recursiva
+  M.ar = (y, a, fim, H, p) => {
+    const X = [], Y = [];
+    for (let t = a + p; t < fim; t++) { const x = [1]; for (let j = 1; j <= p; j++) x.push(y[t - j]); X.push(x); Y.push(y[t]); }
+    const b = M.mqo(X, Y);
+    const fit = new Array(y.length).fill(null);
+    for (let t = a + p; t < fim; t++) { let v = b[0]; for (let j = 1; j <= p; j++) v += b[j] * y[t - j]; fit[t] = v; }
+    const hist = y.slice(0, fim), prev = [];
+    for (let k = 0; k < H; k++) { const t = fim + k; let v = b[0]; for (let j = 1; j <= p; j++) v += b[j] * hist[t - j]; hist.push(v); prev.push(v); }
+    return { fit, prev, a: a + p };
+  };
+
+  M.METODOS = ['mm', 'dec', 'ar'];
+
+  // execução completa para um estado S
+  M.rodar = (G, CAL, S) => {
+    const y = M.gerar(G, CAL, S), fim = G.fimTreino, H = S.h, a = Math.min(S.inicio, fim - 10);
+    const res = {
+      mm: M.mediaMovel(y, a, fim, H, S.W),
+      dec: M.decomposicao(y, a, fim, H, S.grau),
+      ar: M.ar(y, a, fim, H, S.p),
+    };
+    M.METODOS.forEach((k) => {
+      const r = res[k], yh = r.fit.slice(); r.prev.forEach((v, i) => { yh[fim + i] = v; });
+      r.mapeTr = mape(y, r.fit, r.a, fim - 1);
+      r.mapeTe = mape(y, yh, fim, fim + H - 1);
+      r.razao = r.mapeTr > 0 ? r.mapeTe / r.mapeTr : r.mapeTe > 0 ? Infinity : NaN;
+      r.sigma = desvio(y, r.fit, r.a, fim - 1);
+    });
+    const ordTe = M.METODOS.slice().sort((p, q) => res[p].mapeTe - res[q].mapeTe);
+    const ordTr = M.METODOS.slice().sort((p, q) => res[p].mapeTr - res[q].mapeTr);
+    M.METODOS.forEach((k) => { res[k].pos = ordTe.indexOf(k) + 1; });
+    const sel = res[S.metodo] || res.mm;
+    const lo = [], hi = [];
+    for (let k = 1; k <= H; k++) { const w = G.z * sel.sigma * Math.sqrt(k); lo.push(sel.prev[k - 1] - w); hi.push(sel.prev[k - 1] + w); }
+    let alerta = null; for (let k = 0; k < H; k++) if (lo[k] < S.saldoMin) { alerta = k + 1; break; }
+    const nTreino = fim - S.inicio;
+    const cartoes = {
+      curta: nTreino < G.limSerieCurta,
+      quebra: !!S.quebra && S.inicio < S.tQuebra,
+      overfit: M.METODOS.some((k) => res[k].razao > G.limRazao),
+      semBanda: !S.cone,
+    };
+    return { y, fim, H, a, res, ordTe, ordTr, melhorTe: ordTe[0], melhorTr: ordTr[0], lo, hi, alerta,
+      largura: G.z * sel.sigma * Math.sqrt(H), nTreino, cartoes, sel };
+  };
+
+  root.M27 = M;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+})();</script>
+<style>
+.d27-chart { min-height: 320px; }
+.d27-leg-real { background: var(--color-fg-muted); }
+.d27-leg-mm { background: var(--k-navy); }
+.d27-leg-dec { background: var(--k-amber); }
+.d27-leg-ar { background: var(--k-pos); }
+.d27-leg-cone { background: var(--k-navy); opacity: .2; }
+.d27-leg-min { background: var(--k-neg); height: .2rem !important; vertical-align: 3px !important; }
+.d27-chips { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.d27-chips .k-toggle { margin-top: 0; }
+.d27-placar { margin-top: 14px; }
+.k .d27-placar tr.d27-win td { font-weight: 600; }
+.d27-placar tr.d27-win td:first-child { box-shadow: inset 4px 0 0 var(--k-navy); }
+.d27-placar td i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.d27-cards { grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+.d27-cards .k-card p { margin: 0; font-size: 13px; line-height: 1.35; }
+.d27-cards .k-card.k-warn h4::before { content: "!"; display: inline-flex; align-items: center; justify-content: center; width: 1rem; height: 1rem; margin-right: 6px; border-radius: 50%; background: var(--k-neg); color: #fff; font-size: 11px; font-weight: 700; vertical-align: 1px; }
+.d27-sub { margin-left: 1.6rem; }
+</style>
+
+<div class="k" id="d27">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D2.7 · Previsão de caixa</h1>
+      <p class="k-sub">Três métodos, um placar honesto: quem acerta o caixa de amanhã — e com que margem de erro?</p>
+    </div>
+    <div class="k-cens" id="cenarios" data-source="cenarios" role="group" aria-label="Cenários">
+      <button class="k-btn d27-cen" data-cen="base" aria-pressed="false">Base</button>
+      <button class="k-btn d27-cen" data-cen="ruido" aria-pressed="false">Só ruído</button>
+      <button class="k-btn d27-cen" data-cen="sazforte" aria-pressed="false">Sazonalidade forte</button>
+      <button class="k-btn d27-cen" data-cen="quebra" aria-pressed="false">Quebra</button>
+      <button class="k-btn d27-cen" data-cen="retreino" aria-pressed="false">Quebra + retreino</button>
+      <button class="k-btn d27-cen" data-cen="over8" aria-pressed="false">Overfitting · grau 8</button>
+      <button class="k-btn d27-cen" data-cen="over12" aria-pressed="false">Overfitting · grau 12</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone k-scroll" id="controles" data-source="cenarios gerador">
+      <h2 class="k-zt">A série <span class="k-info" tabindex="0">i<span class="k-tip">Saldo diário sintético da Alfa em dias úteis: nível + dia da semana + dias de pagamento de folha, encargos e tributos + tendência + ruído. Gerador com semente fixa: os mesmos controles dão sempre a mesma série.</span></span></h2>
+      <div class="k-ctl"><label for="c-ampSem">Sazonalidade semanal <span class="k-u">R$ mil</span></label>
+        <div class="k-in"><input type="range" id="c-ampSem" data-k="ampSem" min="0" max="800" step="10"><input type="number" data-k="ampSem" min="0" max="800" step="10" aria-label="Sazonalidade semanal"></div></div>
+      <div class="k-ctl"><label for="c-ampMes">Sazonalidade mensal <span class="k-u">R$ mil</span></label>
+        <div class="k-in"><input type="range" id="c-ampMes" data-k="ampMes" min="0" max="1500" step="10"><input type="number" data-k="ampMes" min="0" max="1500" step="10" aria-label="Sazonalidade mensal"></div></div>
+      <div class="k-ctl"><label for="c-beta">Tendência <span class="k-u">R$ mil por dia</span></label>
+        <div class="k-in"><input type="range" id="c-beta" data-k="beta" min="-3" max="3" step="0.1"><input type="number" data-k="beta" min="-3" max="3" step="0.1" aria-label="Tendência"></div></div>
+      <div class="k-ctl"><label for="c-sigma">Ruído (σ) <span class="k-u">R$ mil</span></label>
+        <div class="k-in"><input type="range" id="c-sigma" data-k="sigma" min="0" max="500" step="5"><input type="number" data-k="sigma" min="0" max="500" step="5" aria-label="Ruído"></div></div>
+      <label class="k-toggle"><input type="checkbox" data-k="quebra"> Quebra estrutural</label>
+      <div class="d27-sub">
+        <div class="k-ctl"><label for="c-tQuebra">Dia da quebra</label>
+          <div class="k-in"><input type="range" id="c-tQuebra" data-k="tQuebra" min="200" max="450" step="5"><input type="number" data-k="tQuebra" min="200" max="450" step="5" aria-label="Dia da quebra"></div></div>
+        <div class="k-ctl"><label for="c-magQuebra">Magnitude <span class="k-u">R$ mil</span></label>
+          <div class="k-in"><input type="range" id="c-magQuebra" data-k="magQuebra" min="-2000" max="2000" step="50"><input type="number" data-k="magQuebra" min="-2000" max="2000" step="50" aria-label="Magnitude da quebra"></div></div>
+      </div>
+
+      <h2 class="k-zt2">Treino e teste</h2>
+      <div class="k-ctl"><label for="c-inicio">Início do treino <span class="k-u">dia</span></label>
+        <div class="k-in"><input type="range" id="c-inicio" data-k="inicio" min="0" max="420" step="5"><input type="number" data-k="inicio" min="0" max="420" step="5" aria-label="Início do treino"></div></div>
+      <div class="k-ctl"><label for="c-h">Horizonte de teste <span class="k-u">dias úteis</span></label>
+        <div class="k-in"><input type="range" id="c-h" data-k="h" min="10" max="100" step="5"><input type="number" data-k="h" min="10" max="100" step="5" aria-label="Horizonte de teste"></div></div>
+
+      <h2 class="k-zt2">Métodos</h2>
+      <div class="k-ctl"><label for="c-W">Janela da média móvel <span class="k-u">dias</span></label>
+        <div class="k-in"><input type="range" id="c-W" data-k="W" min="5" max="60" step="1"><input type="number" data-k="W" min="5" max="60" step="1" aria-label="Janela da média móvel"></div></div>
+      <div class="k-ctl"><label for="c-grau">Grau do polinômio de tendência <span class="k-u">decomposição</span></label>
+        <div class="k-in"><input type="range" id="c-grau" data-k="grau" min="1" max="12" step="1"><input type="number" data-k="grau" min="1" max="12" step="1" aria-label="Grau do polinômio"></div></div>
+      <div class="k-ctl"><label for="c-p">Ordem p do AR</label>
+        <div class="k-in"><input type="range" id="c-p" data-k="p" min="1" max="7" step="1"><input type="number" data-k="p" min="1" max="7" step="1" aria-label="Ordem do AR"></div></div>
+      <div class="k-ctl"><label for="c-saldoMin">Saldo mínimo <span class="k-u">R$ mil</span></label>
+        <input class="k-num" type="number" id="c-saldoMin" data-k="saldoMin" min="0" max="10000" step="50"></div>
+
+      <h2 class="k-zt2">No gráfico</h2>
+      <div class="d27-chips">
+        <label class="k-toggle"><input type="checkbox" data-k="showMM"> Média móvel sazonal</label>
+        <label class="k-toggle"><input type="checkbox" data-k="showDec"> Decomposição</label>
+        <label class="k-toggle"><input type="checkbox" data-k="showAR"> AR(p)</label>
+        <label class="k-toggle"><input type="checkbox" data-k="cone"> Cone de incerteza</label>
+        <label class="k-toggle"><input type="checkbox" data-k="inteira"> Série inteira</label>
+      </div>
+      <div class="k-ctl" style="margin-top:10px"><span class="k-lab">Cone do método</span>
+        <div class="k-seg" role="group" aria-label="Método do cone">
+          <button data-k="metodo" data-v="mm" aria-pressed="false">Média móvel</button>
+          <button data-k="metodo" data-v="dec" aria-pressed="false">Decomposição</button>
+          <button data-k="metodo" data-v="ar" aria-pressed="false">AR</button>
+        </div></div>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="gerador calendario cenarios">
+      <div class="k-ch"><h3 id="grafico-titulo">Saldo diário: treino, teste e previsões</h3><span>R$ mil · dias úteis</span></div>
+      <div class="k-chart d27-chart dash-skeleton" id="grafico" data-draw="grafico" role="img" aria-label="Saldo diário real, previsões dos três métodos no período de teste, cone de incerteza e saldo mínimo"></div>
+      <div class="k-legend">
+        <span><i class="d27-leg-real"></i>Real</span>
+        <span><i class="d27-leg-mm"></i>Média móvel sazonal</span>
+        <span><i class="d27-leg-dec"></i>Decomposição</span>
+        <span><i class="d27-leg-ar"></i>AR(p)</span>
+        <span><i class="d27-leg-cone"></i>Cone ± <span data-draw="v-z">—</span> σ √h</span>
+        <span><i class="d27-leg-min"></i>Saldo mínimo</span>
+      </div>
+
+      <div class="k-ch d27-placar" id="placar-titulo"><h3>Placar</h3><span>MAPE = erro médio absoluto em % do saldo</span></div>
+      <div class="k-tw">
+        <table class="k-table d27-placar" id="placar">
+          <thead><tr><th>Método</th><th>MAPE treino</th><th>MAPE teste</th><th>Teste ÷ treino</th><th>Posição no teste</th></tr></thead>
+          <tbody data-draw="placar"></tbody>
+        </table>
+      </div>
+      <div data-frases>
+        <p class="k-note" data-frase="inverte" hidden><b data-draw="v-trwin">—</b> venceu no treino, perdeu no teste para <b data-draw="v-tewin">—</b>.</p>
+        <span data-draw="nota-placar"></span>
+      </div>
+
+      <div class="k-cards d27-cards" id="armadilhas">
+        <div class="k-card k-dim" data-card="curta"><h4>Série curta</h4><p>Com pouco histórico, o simples costuma vencer o sofisticado.</p></div>
+        <div class="k-card k-dim" data-card="quebra"><h4>Quebra estrutural</h4><p>O modelo aprendeu um regime que não existe mais — mova o início do treino para depois da quebra.</p></div>
+        <div class="k-card k-dim" data-card="overfit"><h4>Overfitting</h4><p><b data-draw="v-overmet">—</b> decorou o ruído: o erro de teste passou de <b data-draw="v-limrazao">—</b> vezes o de treino.</p></div>
+        <div class="k-card k-dim" data-card="semBanda"><h4>Sem banda</h4><p>Previsão pontual é falsa precisão.</p></div>
+        <span data-draw="cartoes"></span>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="gerador calendario cenarios">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">Melhor MAPE no teste</span><span class="k-kn dash-skeleton" data-draw="k-mape">—</span></div>
+      <p class="k-note">Método: <b data-draw="v-tewin">—</b></p>
+      <div class="k-kpi"><span class="k-kl">Largura do cone em d+<span data-draw="v-H">—</span> <span class="k-u">R$ mil</span></span><span class="k-kn dash-skeleton" data-draw="k-larg">—</span></div>
+      <p class="k-note">Método do cone: <b data-draw="v-conemet">—</b> · σ dos resíduos <b data-draw="v-sigma">—</b></p>
+      <div class="k-kpi"><span class="k-kl">Primeiro dia de alerta</span><span class="k-kn dash-skeleton" data-draw="k-alerta">—</span></div>
+      <div data-frases>
+        <p class="k-note" data-frase="com" hidden>A borda inferior do cone fica abaixo do saldo mínimo de R$ <b data-draw="v-min">—</b> mil.</p>
+        <p class="k-note" data-frase="sem" hidden>Sem alerta no horizonte: o pior caso fica acima de R$ <b data-draw="v-min">—</b> mil.</p>
+        <span data-draw="nota-alerta"></span>
+      </div>
+      <div class="k-diag" id="diagnostico" data-frases>
+        <p data-frase="base" hidden>Métodos simples erram ≈ <b data-draw="v-mapesimples">—</b> fora da amostra; o AR(<b data-draw="v-p">—</b>) erra mais (<b data-draw="v-mapear">—</b>): sofisticação não garante previsão. O cone abre para ± <b data-draw="v-larg">—</b> em <b data-draw="v-H">—</b> dias.</p>
+        <p data-frase="empate" hidden>Os três métodos erram entre <b data-draw="v-mapemin">—</b> e <b data-draw="v-mapemax">—</b> fora da amostra: nenhum vence com folga. O cone abre para ± <b data-draw="v-larg">—</b> em <b data-draw="v-H">—</b> dias.</p>
+        <p data-frase="overfit" hidden>Grau <b data-draw="v-grau">—</b>: o erro de treino caiu para <b data-draw="v-dectr">—</b>, o de teste subiu para <b data-draw="v-decte">—</b>. O modelo memorizou a amostra.</p>
+        <p data-frase="quebra" hidden>Erro de <b data-draw="v-decte">—</b> na decomposição — o histórico anterior à quebra está envenenando a previsão. Encurte o treino.</p>
+        <p data-frase="retreino" hidden>Treinando só após a quebra, o erro da decomposição cai para <b data-draw="v-decte">—</b>. Menos dados, melhor modelo.</p>
+        <p data-frase="alerta" hidden>A banda inferior cruza o saldo mínimo em d+<b data-draw="v-alerta">—</b>: acione a linha antes, não no dia.</p>
+        <span data-draw="frase"></span>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="gerador calendario cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>No cenário base, o AR(<b data-draw="g1-p">—</b>) é o método mais "técnico" e o que mais erra. Por quê?
+          <details><summary>mostrar resposta</summary><p>Porque a série é dominada por calendário (dia da semana, dias de folha, encargos e tributos), que os métodos sazonais modelam explicitamente e o AR só captura indiretamente pelas defasagens; e a previsão recursiva acumula erro a cada passo. No base: média móvel <b data-draw="g1-mm">—</b>, decomposição <b data-draw="g1-dec">—</b>, AR <b data-draw="g1-ar">—</b>. Sofisticação ≠ qualidade preditiva.</p></details>
+        </li>
+        <li>Ligue a quebra. Por que a decomposição erra tanto e a média móvel sazonal quase não sente? Depois mova o início do treino para depois da quebra.
+          <details><summary>mostrar resposta</summary><p>A decomposição ajusta a tendência a todo o treino, que inclui o regime antigo (erro <b data-draw="g2-dec">—</b>); a média móvel usa só o nível dos últimos dias e já "esqueceu" o passado (<b data-draw="g2-mm">—</b>). Treinando a partir do dia <b data-draw="g2-ini">—</b>, a decomposição cai para <b data-draw="g2-dec2">—</b> — mas o cartão "série curta" acende (sobraram <b data-draw="g2-n">—</b> dias). Após uma quebra, descartar história é o remédio; aceitar menos dados é o preço.</p></details>
+        </li>
+        <li>Traduza o cone para o CFO em uma frase.
+          <details><summary>mostrar resposta</summary><p>Exemplo, com o estado atual: "Daqui a <b data-draw="v-H">—</b> dias úteis esperamos saldo de R$ <b data-draw="g3-y">—</b> mil, mas o intervalo razoável vai de <b data-draw="g3-lo">—</b> a <b data-draw="g3-hi">—</b>."</p>
+            <div data-frases>
+              <p data-frase="com" hidden>"O pior caso cruza o mínimo em d+<b data-draw="v-alerta">—</b>: a linha precisa estar aprovada antes disso."</p>
+              <p data-frase="sem" hidden>"Mesmo o pior caso fica acima do mínimo neste horizonte."</p>
+              <span data-draw="nota-alerta"></span>
+            </div>
+            <p>A banda cresce com a raiz do horizonte: apresentá-la não é fraqueza, é responsabilidade.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>(function () {
+
+/* ============================================================
+   D2.7 · Previsão de caixa — página (funções puras em model.js)
+   Testes de aderência (Spec §7), conferidos em test.js com M27.rodar():
+   Base: MAPE teste MM 3,45% · decomposição 2,97% · AR(5) 7,34% · razões < 1,5 · σ_res 124 · cone ± 1.887 em h = 60
+   Quebra (380, −1.200), treino desde 0: decomposição 29,8% · AR 26,4% · MM 6,2% · cartão "quebra"
+   Quebra + treino desde 385: decomposição 7,3% · cartão "série curta" (55 dias)
+   Grau 8: teste 21,1% (≥ 2 × 2,97%) · grau 12: treino 3,255% < 3,260% · teste 104% · cartão "overfitting"
+   Só ruído: 3,29 / 3,14 / 3,00% · Sazonalidade forte: MM 3,8% · dec 3,1% · AR 13,3%
+   ============================================================ */
+const D27 = window.D27 = { S: {}, memo: new Map() };
+const IDS = ['gerador', 'calendario', 'cenarios'];
+const COR = { mm: 'var(--k-navy)', dec: 'var(--k-amber)', ar: 'var(--k-pos)' };
+const SHOW = { mm: 'showMM', dec: 'showDec', ar: 'showAR' };
+const CAMPOS = ['ampSem', 'ampMes', 'beta', 'sigma', 'quebra', 'tQuebra', 'magQuebra', 'inicio', 'h', 'grau', 'p', 'W', 'saldoMin'];
+
+/* ---------- dados ---------- */
+const bool = (v) => v === true || v === 'true' || v === 1 || v === '1';
+function dados() {
+  if (K.status(IDS) !== 'ok') return null;
+  if (!D27.G) {
+    D27.G = K.obj(dash.data('gerador').data);
+    D27.CAL = K.num(dash.data('calendario').data);
+    D27.CEN = {};
+    K.num(dash.data('cenarios').data).forEach((c) => { c.quebra = bool(c.quebra); D27.CEN[c.id] = c; });
+  }
+  return D27;
+}
+const chave = (S) => CAMPOS.map((c) => S[c]).join('|') + '|' + S.metodo + '|' + S.cone;
+function rodar(S) {
+  const D = dados(); if (!D) return null;
+  const k = chave(S);
+  if (!D27.memo.has(k)) {
+    if (D27.memo.size > 40) D27.memo.clear();
+    D27.memo.set(k, M27.rodar(D.G, D.CAL, S));
+  }
+  return D27.memo.get(k);
+}
+const cenario = (id, extra) => { const D = dados(); return D && D.CEN[id] ? rodar({ ...D.CEN[id], metodo: 'mm', cone: true, ...(extra || {}) }) : null; };
+function estado() { return D27.S.h ? rodar(D27.S) : null; }
+
+/* ---------- controles ---------- */
+const nomes = () => Array.from(new Set(Array.from(document.querySelectorAll('[data-draw]')).map((e) => e.dataset.draw)));
+const redesenha = () => K.redraw(nomes());
+function sincroniza() {
+  K.sync(D27.S);
+  document.querySelectorAll('.d27-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === D27.S.cen)));
+  document.querySelectorAll('input[data-k="tQuebra"], input[data-k="magQuebra"]').forEach((i) => { i.disabled = !D27.S.quebra; });
+}
+function aplicar(id) {
+  const D = dados(); if (!D || !D.CEN[id]) return false;
+  const c = D.CEN[id];
+  CAMPOS.forEach((k) => { D27.S[k] = c[k]; });
+  Object.assign(D27.S, { metodo: 'mm', cone: true, showMM: true, showDec: true, showAR: true, inteira: D27.S.inteira || false, cen: id });
+  sincroniza();
+  return true;
+}
+K.bind(D27.S, () => { D27.S.cen = null; sincroniza(); redesenha(); });
+document.querySelectorAll('.d27-cen').forEach((b) => b.addEventListener('click', () => { if (aplicar(b.dataset.cen)) redesenha(); }));
+dash.onData(() => { if (!D27.S.h && dados()) aplicar('base'); });
+
+/* ---------- formatos ---------- */
+const pc = (v, d = 1) => (v > 999 ? '> 999%' : Number.isFinite(v) ? K.n(v, d) + '%' : '—');
+const rz = (v) => (v > 999 ? '> 999' : Number.isFinite(v) ? K.n(v, 2) : '—');
+const NOME = { mm: 'Média móvel sazonal', dec: 'Decomposição', ar: 'AR' };
+const nomeM = (k) => (k === 'ar' ? 'AR(' + D27.S.p + ')' : NOME[k]);
+
+/* ---------- gráfico principal ---------- */
+dash.draw('grafico', (el) => {
+  const R = estado();
+  if (!R) { K.fail(el, K.status(IDS) === 'loading' ? 'loading' : 'error'); return; }
+  el.classList.remove('dash-skeleton');
+  const S = D27.S, G = D27.G, fim = R.fim, H = R.H;
+  const H0 = 320, { svg, W } = K.svg(el, H0);
+  el.replaceChildren(svg.node());
+  const x0 = S.inteira ? 0 : Math.max(0, fim - G.janelaVista), x1 = fim + H - 1;
+  const tsAll = d3.range(x0, x1 + 1);
+  // eixo y: faixa da série real, estendida para cone e mínimo até um limite (previsões explosivas ficam cortadas)
+  const ys = tsAll.map((t) => R.y[t]);
+  let lo = d3.min(ys), hi = d3.max(ys);
+  const span = Math.max(200, hi - lo);
+  const extra = [S.saldoMin];
+  if (S.cone) { R.lo.forEach((v) => extra.push(v)); R.hi.forEach((v) => extra.push(v)); }
+  ['mm', 'dec', 'ar'].forEach((k) => { if (S[SHOW[k]]) R.res[k].prev.forEach((v) => extra.push(v)); });
+  extra.forEach((v) => { if (Number.isFinite(v)) { lo = Math.min(lo, Math.max(v, d3.min(ys) - span)); hi = Math.max(hi, Math.min(v, d3.max(ys) + span)); } });
+  const y = d3.scaleLinear([lo, hi], [H0 - 28, 14]).nice();
+  // margem esquerda pela maior etiqueta do eixo
+  const yt = y.ticks(6);
+  const meas = svg.append('g');
+  const wmax = d3.max(yt, (v) => meas.append('text').attr('class', 'k-svgm').text(K.n(v)).node().getComputedTextLength()) || 30;
+  meas.remove();
+  const mL = Math.ceil(wmax) + 10, mR = 12;
+  const x = d3.scaleLinear([x0, x1], [mL, W - mR]);
+  svg.append('defs').append('clipPath').attr('id', 'd27-clip').append('rect').attr('x', mL).attr('y', 0).attr('width', W - mL - mR).attr('height', H0 - 28);
+  // grade e eixos
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', mL).attr('x2', W - mR).attr('y1', (v) => y(v)).attr('y2', (v) => y(v)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL - 6).attr('y', (v) => y(v) + 4).text((v) => K.n(v));
+  const xt = x.ticks(Math.max(3, Math.floor((W - mL) / 90))).filter((t) => Number.isInteger(t));
+  svg.append('line').attr('x1', mL).attr('x2', W - mR).attr('y1', H0 - 28).attr('y2', H0 - 28).attr('stroke', 'var(--cds-chart-axis)');
+  const xl = svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H0 - 10).text((t) => K.n(t));
+  xl.filter((t) => x(t) > W - mR - 14 || x(t) < mL + 10).remove();
+  const plot = svg.append('g').attr('clip-path', 'url(#d27-clip)');
+  // fundo do teste
+  plot.append('rect').attr('x', x(fim - 0.5)).attr('y', 0).attr('width', Math.max(0, x(x1) - x(fim - 0.5))).attr('height', H0 - 28).attr('fill', 'var(--color-bg)').attr('opacity', 0.7);
+  // cone
+  const ts = d3.range(fim, fim + H);
+  if (S.cone) {
+    const area = d3.area().x((t) => x(t)).y0((t) => y(R.lo[t - fim])).y1((t) => y(R.hi[t - fim]));
+    plot.append('path').attr('d', area(ts)).attr('fill', COR[S.metodo] || COR.mm).attr('opacity', 0.16);
+  }
+  // saldo mínimo
+  plot.append('line').attr('x1', mL).attr('x2', W - mR).attr('y1', y(S.saldoMin)).attr('y2', y(S.saldoMin)).attr('stroke', 'var(--k-neg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '6 4');
+  // real
+  const line = d3.line().x((t) => x(t)).y((t) => y(R.y[t]));
+  plot.append('path').attr('d', line(tsAll)).attr('fill', 'none').attr('stroke', 'var(--color-fg-muted)').attr('stroke-width', 1.2).attr('stroke-linejoin', 'round').attr('opacity', 0.85);
+  // previsões
+  ['mm', 'dec', 'ar'].forEach((k) => {
+    if (!S[SHOW[k]]) return;
+    const pv = R.res[k].prev;
+    const lp = d3.line().x((t) => x(t)).y((t) => y(pv[t - fim]));
+    plot.append('path').attr('d', lp(ts)).attr('fill', 'none').attr('stroke', COR[k]).attr('stroke-width', k === S.metodo ? 2.4 : 1.8).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+  });
+  // marcos verticais
+  const marco = (t, txt, cor, anchor, dy) => {
+    if (t < x0 || t > x1) return;
+    svg.append('line').attr('x1', x(t)).attr('x2', x(t)).attr('y1', 4).attr('y2', H0 - 28).attr('stroke', cor).attr('stroke-width', 1.2).attr('stroke-dasharray', '3 3');
+    const tx = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', anchor).attr('y', dy).text(txt);
+    const w = tx.node().getComputedTextLength();
+    let px = anchor === 'end' ? x(t) - 4 : x(t) + 4;
+    if (anchor === 'end' && px - w < mL) { px = x(t) + 4; tx.attr('text-anchor', 'start'); }
+    if (tx.attr('text-anchor') === 'start' && px + w > W - mR) { px = x(t) - 4; tx.attr('text-anchor', 'end'); }
+    tx.attr('x', px);
+  };
+  marco(fim - 0.5, 'treino', 'var(--cds-chart-reference)', 'end', 12);
+  marco(fim - 0.5, 'teste', 'var(--cds-chart-reference)', 'start', 12);
+  if (S.inicio > x0) marco(S.inicio, 'início do treino', 'var(--cds-chart-reference)', 'start', 26);
+  if (S.quebra) marco(S.tQuebra, 'quebra', 'var(--k-neg)', 'end', 26);
+  if (S.cone && R.alerta) {
+    const ta = fim + R.alerta - 1;
+    svg.append('circle').attr('cx', x(ta)).attr('cy', y(Math.max(lo, R.lo[R.alerta - 1]))).attr('r', 5).attr('fill', 'var(--k-neg)');
+    marco(ta, 'alerta em d+' + K.n(R.alerta), 'var(--k-neg)', 'start', 40);
+  }
+  // tooltip
+  const tip = K.tip(el);
+  const dot = svg.append('g');
+  svg.append('rect').attr('x', mL).attr('y', 0).attr('width', W - mL - mR).attr('height', H0 - 28).attr('fill', 'transparent')
+    .on('pointermove', (ev) => {
+      const [mx, my] = d3.pointer(ev);
+      const t = Math.max(x0, Math.min(x1, Math.round(x.invert(mx))));
+      const lin = [['var(--color-fg-muted)', 'Real', K.n(R.y[t])]];
+      dot.selectAll('*').remove();
+      dot.append('circle').attr('cx', x(t)).attr('cy', y(R.y[t])).attr('r', 3.5).attr('fill', 'var(--color-fg-muted)');
+      if (t >= fim) {
+        ['mm', 'dec', 'ar'].forEach((k) => {
+          if (!S[SHOW[k]]) return;
+          const v = R.res[k].prev[t - fim];
+          lin.push([COR[k], nomeM(k), K.n(v)]);
+          if (v >= lo && v <= hi) dot.append('circle').attr('cx', x(t)).attr('cy', y(v)).attr('r', 3.5).attr('fill', COR[k]);
+        });
+        if (S.cone) lin.push([null, 'Cone', K.n(R.lo[t - fim]) + ' a ' + K.n(R.hi[t - fim])]);
+      }
+      tip.show(t >= fim ? 'dia ' + K.n(t) + ' · d+' + K.n(t - fim + 1) : 'dia ' + K.n(t), lin, mx, my);
+    })
+    .on('pointerleave', () => { tip.hide(); dot.selectAll('*').remove(); });
+});
+
+/* ---------- placar ---------- */
+dash.draw('placar', (tb) => {
+  const R = estado();
+  tb.replaceChildren();
+  if (!R) return;
+  ['mm', 'dec', 'ar'].forEach((k) => {
+    const r = R.res[k], tr = document.createElement('tr');
+    if (k === R.melhorTe) tr.className = 'd27-win';
+    const c0 = document.createElement('td'); const i = document.createElement('i'); i.style.background = COR[k]; c0.append(i, nomeM(k));
+    tr.append(c0);
+    [pc(r.mapeTr, 2), pc(r.mapeTe, 2), rz(r.razao), K.n(r.pos) + 'º'].forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.append(td); });
+    tb.append(tr);
+  });
+});
+dash.draw('nota-placar', (el) => { const R = estado(); K.frases(el, R && R.melhorTr !== R.melhorTe ? ['inverte'] : []); });
+
+/* ---------- cartões das armadilhas ---------- */
+dash.draw('cartoes', (el) => {
+  const R = estado();
+  (el.closest('#armadilhas') || el.parentElement).querySelectorAll('[data-card]').forEach((c) => {
+    const on = !!(R && R.cartoes[c.dataset.card]);
+    c.classList.toggle('k-warn', on); c.classList.toggle('k-dim', !on);
+  });
+});
+
+/* ---------- leitura ---------- */
+const pronto = () => !!estado();
+const R_ = () => estado();
+K.txt('k-mape', pronto, () => pc(R_().res[R_().melhorTe].mapeTe));
+K.txt('k-larg', pronto, () => '±' + K.n(R_().largura));
+K.txt('k-alerta', pronto, () => (R_().alerta ? 'd+' + K.n(R_().alerta) : null));
+dash.draw('nota-alerta', (el) => { const R = estado(); K.frases(el, !R ? [] : R.alerta ? ['com'] : ['sem']); });
+K.txt('v-tewin', pronto, () => nomeM(R_().melhorTe));
+K.txt('v-trwin', pronto, () => nomeM(R_().melhorTr));
+K.txt('v-conemet', pronto, () => nomeM(D27.S.metodo));
+K.txt('v-sigma', pronto, () => K.n(R_().sel.sigma));
+K.txt('v-H', pronto, () => K.n(R_().H));
+K.txt('v-min', pronto, () => K.n(D27.S.saldoMin));
+K.txt('v-larg', pronto, () => K.n(R_().largura));
+K.txt('v-p', pronto, () => K.n(D27.S.p));
+K.txt('v-z', () => !!dados(), () => K.n(D27.G.z, 2));
+K.txt('v-limrazao', () => !!dados(), () => K.n(D27.G.limRazao));
+K.txt('g1-p', () => !!dados() && !!D27.CEN.base, () => K.n(D27.CEN.base.p));
+K.txt('v-grau', pronto, () => K.n(D27.S.grau));
+K.txt('v-alerta', pronto, () => (R_().alerta ? K.n(R_().alerta) : null));
+K.txt('v-mapear', pronto, () => pc(R_().res.ar.mapeTe));
+K.txt('v-mapesimples', pronto, () => pc(Math.min(R_().res.mm.mapeTe, R_().res.dec.mapeTe)));
+K.txt('v-mapemin', pronto, () => pc(d3.min(['mm', 'dec', 'ar'], (k) => R_().res[k].mapeTe)));
+K.txt('v-mapemax', pronto, () => pc(d3.max(['mm', 'dec', 'ar'], (k) => R_().res[k].mapeTe)));
+K.txt('v-dectr', pronto, () => pc(R_().res.dec.mapeTr, 2));
+K.txt('v-decte', pronto, () => pc(R_().res.dec.mapeTe));
+K.txt('v-overmet', pronto, () => {
+  const R = R_(), G = D27.G;
+  const ks = ['mm', 'dec', 'ar'].filter((k) => R.res[k].razao > G.limRazao);
+  return ks.length ? ks.map(nomeM).join(', ') : null;
+});
+dash.draw('frase', (el) => {
+  const R = estado(), S = D27.S;
+  if (!R) { K.frases(el, []); return; }
+  let k;
+  if (S.grau >= 2 && R.res.dec.razao > D27.G.limRazao) k = 'overfit';
+  else if (S.quebra && S.inicio < S.tQuebra) k = 'quebra';
+  else if (S.quebra) k = 'retreino';
+  else k = R.res.ar.mapeTe > Math.min(R.res.mm.mapeTe, R.res.dec.mapeTe) + 1 ? 'base' : 'empate';
+  K.frases(el, R.alerta && S.cone ? [k, 'alerta'] : [k]);
+});
+
+/* ---------- números das perguntas-guia ---------- */
+const g1 = () => cenario('base');
+K.txt('g1-mm', () => !!g1(), () => pc(g1().res.mm.mapeTe));
+K.txt('g1-dec', () => !!g1(), () => pc(g1().res.dec.mapeTe));
+K.txt('g1-ar', () => !!g1(), () => pc(g1().res.ar.mapeTe));
+const g2 = () => cenario('quebra'), g2b = () => cenario('retreino');
+K.txt('g2-dec', () => !!g2(), () => pc(g2().res.dec.mapeTe));
+K.txt('g2-mm', () => !!g2(), () => pc(g2().res.mm.mapeTe));
+K.txt('g2-ini', () => !!g2b(), () => K.n(D27.CEN.retreino.inicio));
+K.txt('g2-dec2', () => !!g2b(), () => pc(g2b().res.dec.mapeTe));
+K.txt('g2-n', () => !!g2b(), () => K.n(g2b().nTreino));
+K.txt('g3-y', pronto, () => K.n(R_().sel.prev[R_().H - 1]));
+K.txt('g3-lo', pronto, () => K.n(R_().lo[R_().H - 1]));
+K.txt('g3-hi', pronto, () => K.n(R_().hi[R_().H - 1]));
+
+})();</script>
+
+</div>
+<script>window.__dashStart();</script>
+</body>
+</html>

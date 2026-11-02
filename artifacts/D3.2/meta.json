@@ -1,0 +1,10 @@
+{
+  "code": "D3.2",
+  "title": "D3.2 · Curva ABC × XYZ",
+  "slug": "0c568325-017e-4d41-a5a0-6048d22a13bd",
+  "datasets": {
+    "cenarios": { "file": "cenarios.json", "sha256": "adf6409721dafefab92e80b5be7963c42067a7ed4ec91c6f18e912489837affc" },
+    "parametros": { "file": "parametros.json", "sha256": "3aa18d5ed213292e4bf0b2056f834cf09a60318235aa1805fb6fa889465226d9" },
+    "skus": { "file": "skus.json", "sha256": "933a8ccbca7a4aaa51b8c437d0a06ed521456438e250584f9f8a46e806fe2881" }
+  }
+}
