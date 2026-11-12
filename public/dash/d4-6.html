@@ -6,7 +6,7 @@
 <title>D4.6 · KS, AUC e PSI</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"saudavel","nome":"Saudável","sep":100,"taxa":10,"deriva":0,"corte":650},{"id":"deriva","nome":"Deriva","sep":100,"taxa":10,"deriva":50,"corte":650},{"id":"fraco","nome":"Modelo fraco","sep":40,"taxa":10,"deriva":0,"corte":650},{"id":"frouxa","nome":"Régua frouxa","sep":100,"taxa":10,"deriva":0,"corte":550},{"id":"overfit","nome":"Overfitting aparente","sep":150,"taxa":10,"deriva":0,"corte":650}]},"faixas":{"format":"json","data":[{"metrica":"ks","faixa":"fraco","de":0,"ate":0.3},{"metrica":"ks","faixa":"regular","de":0.3,"ate":0.4},{"metrica":"ks","faixa":"bom","de":0.4,"ate":0.5},{"metrica":"ks","faixa":"excelente","de":0.5,"ate":1},{"metrica":"auc","faixa":"fraco","de":0.5,"ate":0.7},{"metrica":"auc","faixa":"regular","de":0.7,"ate":0.8},{"metrica":"auc","faixa":"bom","de":0.8,"ate":0.9},{"metrica":"auc","faixa":"atencao","de":0.9,"ate":1},{"metrica":"psi","faixa":"bom","de":0,"ate":0.1},{"metrica":"psi","faixa":"alerta","de":0.1,"ate":0.25},{"metrica":"psi","faixa":"retreinar","de":0.25,"ate":0.5}]},"gerador":{"format":"json","data":[{"chave":"semente","valor":70,"descricao":"Semente do LCG (s = 1664525·s + 1013904223 mod 2^32) usado no Box-Muller"},{"chave":"n","valor":10000,"descricao":"Contas na base de treino e na base de produção"},{"chave":"mediaBons","valor":700,"descricao":"Média do score dos bons pagadores (pontos)"},{"chave":"dp","valor":100,"descricao":"Desvio-padrão do score em cada classe (pontos)"},{"chave":"fatorD","valor":1.66,"descricao":"d' = (Separação/100) × fatorD"},{"chave":"fatorDeriva","valor":1.1,"descricao":"Deslocamento da produção = (Deriva/100) × fatorDeriva desvios-padrão da base de treino"},{"chave":"decis","valor":10,"descricao":"Faixas do PSI, definidas pelos decis da base de treino"}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"saudavel","nome":"Saudável","sep":100,"taxa":10,"deriva":0,"corte":650},{"id":"deriva","nome":"Deriva","sep":100,"taxa":10,"deriva":50,"corte":650},{"id":"frouxa","nome":"Régua frouxa","sep":100,"taxa":10,"deriva":0,"corte":550},{"id":"overfit","nome":"Overfitting aparente","sep":150,"taxa":10,"deriva":0,"corte":650}]},"faixas":{"format":"json","data":[{"metrica":"ks","faixa":"fraco","de":0,"ate":0.3},{"metrica":"ks","faixa":"regular","de":0.3,"ate":0.4},{"metrica":"ks","faixa":"bom","de":0.4,"ate":0.5},{"metrica":"ks","faixa":"excelente","de":0.5,"ate":1},{"metrica":"auc","faixa":"fraco","de":0.5,"ate":0.7},{"metrica":"auc","faixa":"regular","de":0.7,"ate":0.8},{"metrica":"auc","faixa":"bom","de":0.8,"ate":0.9},{"metrica":"auc","faixa":"atencao","de":0.9,"ate":1},{"metrica":"psi","faixa":"bom","de":0,"ate":0.1},{"metrica":"psi","faixa":"alerta","de":0.1,"ate":0.25},{"metrica":"psi","faixa":"retreinar","de":0.25,"ate":0.5}]},"gerador":{"format":"json","data":[{"chave":"semente","valor":70,"descricao":"Semente do LCG (s = 1664525·s + 1013904223 mod 2^32) usado no Box-Muller"},{"chave":"n","valor":10000,"descricao":"Contas na base de treino e na base de produção"},{"chave":"mediaBons","valor":700,"descricao":"Média do score dos bons pagadores (pontos)"},{"chave":"dp","valor":100,"descricao":"Desvio-padrão do score em cada classe (pontos)"},{"chave":"fatorD","valor":1.66,"descricao":"d' = (Separação/100) × fatorD"},{"chave":"fatorDeriva","valor":1.1,"descricao":"Deslocamento da produção = (Deriva/100) × fatorDeriva desvios-padrão da base de treino"},{"chave":"decis","valor":10,"descricao":"Faixas do PSI, definidas pelos decis da base de treino"}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -143,7 +143,6 @@
     <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
       <button class="k-btn d46-cen" data-cen="saudavel" aria-pressed="false">Saudável</button>
       <button class="k-btn d46-cen" data-cen="deriva" aria-pressed="false">Deriva</button>
-      <button class="k-btn d46-cen" data-cen="fraco" aria-pressed="false">Modelo fraco</button>
       <button class="k-btn d46-cen" data-cen="frouxa" aria-pressed="false">Régua frouxa</button>
       <button class="k-btn d46-cen" data-cen="overfit" aria-pressed="false">Overfitting aparente</button>
     </div>
@@ -537,7 +536,7 @@
    Testes de aderência (Spec §7 e §4.4), conferidos com M46.estado() em node (semente 70):
    Saudável: KS 0,59 · AUC 0,88 · PSI 0,00 · 12,3% dos maus no verde (123 de 1.000)
    Deriva 50: PSI 0,28 · KS e AUC idênticos · Deriva 30: PSI 0,10
-   Separação 40: KS 0,26 · AUC 0,68 · Separação 150: KS 0,79 · AUC 0,96
+   Separação 150: KS 0,79 · AUC 0,96
    Corte 550: 43,8% dos maus no verde · KS, AUC e PSI idênticos
    Taxa 2–30 e cutoff 300–900 não mudam KS/AUC/PSI exibidos (deriva 0); deriva não muda KS/AUC.
    ============================================================ */
