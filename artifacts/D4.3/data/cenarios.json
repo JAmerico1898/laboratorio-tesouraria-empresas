@@ -1,4 +1,3 @@
 [
-  {"id": "slide", "nome": "Slide V4.3", "pmrA": 30, "rA": 1200, "iA": 2.0, "pmrB": 60, "rB": 1380, "iB": 3.5, "m": 30, "cc": 18, "admin": 6},
-  {"id": "alfa", "nome": "Alfa 60 → 90", "pmrA": 60, "rA": 50000, "iA": 2.0, "pmrB": 90, "rB": 57500, "iB": 3.5, "m": 35, "cc": 18, "admin": 150}
+  {"id": "slide", "nome": "Slide V4.3", "pmrA": 30, "rA": 1200, "iA": 2.0, "pmrB": 60, "rB": 1380, "iB": 3.5, "m": 30, "cc": 18, "admin": 6}
 ]

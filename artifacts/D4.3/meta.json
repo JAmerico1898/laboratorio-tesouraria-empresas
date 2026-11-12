@@ -3,7 +3,7 @@
   "title": "D4.3 · Política A → Δ → B",
   "slug": "05c1d0dc-134d-49f5-853f-478c0d16bb2b",
   "datasets": {
-    "cenarios": { "file": "cenarios.json", "sha256": "72aabdac21d68ee4d8e3bcf9714fc0b3abb29165ca844dbb0b0babc3c1edf524" },
+    "cenarios": { "file": "cenarios.json", "sha256": "dfc6f9512fa82de038c67b3c4c1670ba6966d483776aabb9921b13ea24d8575c" },
     "sensibilidade": { "file": "sensibilidade.json", "sha256": "52b815ba5369cb1c08d793b4586928109ee1f7870bd3d55e7513c9373c4e83a4" }
   }
 }

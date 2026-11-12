@@ -6,7 +6,7 @@
 <title>D4.3 · Política A → Δ → B</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"slide","nome":"Slide V4.3","pmrA":30,"rA":1200,"iA":2,"pmrB":60,"rB":1380,"iB":3.5,"m":30,"cc":18,"admin":6},{"id":"alfa","nome":"Alfa 60 → 90","pmrA":60,"rA":50000,"iA":2,"pmrB":90,"rB":57500,"iB":3.5,"m":35,"cc":18,"admin":150}]},"sensibilidade":{"format":"json","data":[{"cenario":"otimista","nome":"Otimista","choqueR":0.05,"choqueInad":-0.005,"fatorAdmin":1},{"cenario":"base","nome":"Base","choqueR":0,"choqueInad":0,"fatorAdmin":1},{"cenario":"pessimista","nome":"Pessimista","choqueR":-0.05,"choqueInad":0.005,"fatorAdmin":1.6666666666666667}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"slide","nome":"Slide V4.3","pmrA":30,"rA":1200,"iA":2,"pmrB":60,"rB":1380,"iB":3.5,"m":30,"cc":18,"admin":6}]},"sensibilidade":{"format":"json","data":[{"cenario":"otimista","nome":"Otimista","choqueR":0.05,"choqueInad":-0.005,"fatorAdmin":1},{"cenario":"base","nome":"Base","choqueR":0,"choqueInad":0,"fatorAdmin":1},{"cenario":"pessimista","nome":"Pessimista","choqueR":-0.05,"choqueInad":0.005,"fatorAdmin":1.6666666666666667}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -155,7 +155,6 @@
     </div>
     <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios sensibilidade">
       <button class="k-btn d43-cen" data-cen="slide" aria-pressed="false">Slide V4.3</button>
-      <button class="k-btn d43-cen" data-cen="alfa" aria-pressed="false">Alfa 60 → 90</button>
       <button class="k-btn d43-sens" data-sens="otimista" aria-pressed="false">Otimista</button>
       <button class="k-btn d43-sens" data-sens="pessimista" aria-pressed="false">Pessimista</button>
     </div>
@@ -178,8 +177,6 @@
           <div class="k-in"><input type="range" id="c-pmrB" data-k="pmrB" min="0" max="180" step="5"><input type="number" data-k="pmrB" min="0" max="180" step="5" aria-label="PMR da política B, dias"></div></div>
         <div class="k-ctl"><label for="c-gB">Crescimento da receita sobre A <span class="k-u">%</span></label>
           <div class="k-in"><input type="range" id="c-gB" data-k="gB" min="-20" max="50" step="0.5"><input type="number" data-k="gB" min="-20" max="50" step="0.5" aria-label="Crescimento da receita, %"></div></div>
-        <div class="k-ctl"><label for="c-rB">Receita anual <span class="k-u">R$ mil</span></label>
-          <div class="k-in"><span></span><input type="number" id="c-rB" data-k="rB" min="0" max="750000" step="10"></div></div>
         <div class="k-ctl"><label for="c-iB">Inadimplência <span class="k-u">% da receita</span></label>
           <div class="k-in"><input type="range" id="c-iB" data-k="iB" min="0" max="10" step="0.1"><input type="number" data-k="iB" min="0" max="10" step="0.1" aria-label="Inadimplência da política B, %"></div></div>
       </div>
@@ -485,7 +482,6 @@
    Testes de aderência (Spec §7), conferidos com M43 em node (33 PASS / 0 FAIL):
    Slide: dR +54,0 · dInad −24,3 · crA 100 · crB 230 · dNCG×CC −23,4 · admin −6,0 · GL +0,3
    Armadilha: dInad −6,3 · GL +18,3 · Otimista +21,6 · Pessimista −24,4 → FRÁGIL
-   Alfa 60 → 90: +2.625 · −1.012,5 · −1.087,5 · −150 · GL +375 (0,65%)
    ============================================================ */
 const ST = window.D43 = { base: null, F: { armadilha: false, vpl: false, q1: false, q2: false, q3: false, q4: false }, cen: null, sens: 'base', mexido: false };
 const IDS = ['cenarios', 'sensibilidade'];
