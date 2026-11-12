@@ -91,26 +91,6 @@
 },
 {
 "ordem": 10,
-"id": "variaveis",
-"nome": "Despesas variáveis",
-"classe": "decisao",
-"dias": "15",
-"regra": "pctReceita",
-"ref": "pctVariaveis",
-"pct": ""
-},
-{
-"ordem": 11,
-"id": "discricionarias",
-"nome": "Discricionárias",
-"classe": "decisao",
-"dias": "15",
-"regra": "premissa",
-"ref": "discricionarias",
-"pct": ""
-},
-{
-"ordem": 12,
 "id": "jurosCP",
 "nome": "Juros empréstimos CP",
 "classe": "inegociavel",
@@ -120,7 +100,7 @@
 "pct": ""
 },
 {
-"ordem": 13,
+"ordem": 11,
 "id": "jurosELP",
 "nome": "Juros ELP",
 "classe": "inegociavel",
@@ -130,7 +110,7 @@
 "pct": ""
 },
 {
-"ordem": 14,
+"ordem": 12,
 "id": "amortizacao",
 "nome": "Amortização ELP",
 "classe": "inegociavel",
@@ -140,20 +120,10 @@
 "pct": ""
 },
 {
-"ordem": 15,
+"ordem": 13,
 "id": "capex",
 "nome": "CAPEX",
-"classe": "decisao",
-"dias": "",
-"regra": "evento",
-"ref": "",
-"pct": ""
-},
-{
-"ordem": 16,
-"id": "dividendos",
-"nome": "Dividendos",
-"classe": "decisao",
+"classe": "inegociavel",
 "dias": "",
 "regra": "evento",
 "ref": "",

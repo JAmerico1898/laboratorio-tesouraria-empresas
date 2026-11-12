@@ -47,12 +47,5 @@
 "mes": "set",
 "dia": 15,
 "valor": 400
-},
-{
-"id": "dividendosAbr",
-"categoria": "dividendos",
-"mes": "abr",
-"dia": 30,
-"valor": 1250
 }
 ]

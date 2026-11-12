@@ -8,24 +8,8 @@
 "valor": 0.66
 },
 {
-"chave": "pmrv",
-"valor": 60
-},
-{
 "chave": "pmpf",
 "valor": 45
-},
-{
-"chave": "pmrvAntigo",
-"valor": 60
-},
-{
-"chave": "pmpfAntigo",
-"valor": 45
-},
-{
-"chave": "inad",
-"valor": 2
 },
 {
 "chave": "salarios",
@@ -40,18 +24,6 @@
 "valor": 100
 },
 {
-"chave": "pctVariaveis",
-"valor": 0.02
-},
-{
-"chave": "discricionarias",
-"valor": 40
-},
-{
-"chave": "pctTributos",
-"valor": 0.06
-},
-{
 "chave": "irpj",
 "valor": 100
 },
@@ -62,21 +34,5 @@
 {
 "chave": "jurosELP",
 "valor": 100
-},
-{
-"chave": "saldoInicial",
-"valor": 2500
-},
-{
-"chave": "dividendos",
-"valor": 1250
-},
-{
-"chave": "mesDividendos",
-"valor": 3
-},
-{
-"chave": "diasEntradas",
-"valor": "5;12;19;26"
 }
 ]
