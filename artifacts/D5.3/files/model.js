@@ -4,13 +4,12 @@
   const M = {};
 
   /* ---------- aba 1 · cardápio ---------- */
-  // instrumentos visíveis, com CET = CDI + spread sobre o CDI (sp), ordenados do menor CET para o maior
-  // instr: [{id, cet, soExportador, ...}] (cet de referência a CDI = cdiRef); sp: {id: spread}; ACC/ACE só se exporta
-  M.ranking = function (instr, cdi, sp, exporta) {
+  // instrumentos visíveis, ordenados do menor CET para o maior
+  // instr: [{id, cet, soExportador, ...}] (CET ilustrativo do slide de síntese); ACC/ACE só se exporta
+  M.ranking = function (instr, exporta) {
     return instr
       .filter((r) => exporta || !Number(r.soExportador))
-      .map((r) => ({ ...r, cetAtual: cdi + sp[r.id] }))
-      .sort((a, b) => a.cetAtual - b.cetAtual);
+      .sort((a, b) => a.cet - b.cet);
   };
   // gatilhos {cresc, saz, pric, hedge} → instrumentos casados
   // cresc → CG linha · saz → CG rotativo · pric → qualquer bancário com CET abaixo do pricing embutido
@@ -21,7 +20,7 @@
     vis.forEach((r) => {
       if (g.cresc && r.gatilho === 'cresc') por.cresc.push(r.id);
       if (g.saz && r.gatilho === 'saz') por.saz.push(r.id);
-      if (g.pric && Number(r.bancario) && r.cetAtual < pricing) por.pric.push(r.id);
+      if (g.pric && Number(r.bancario) && r.cet < pricing) por.pric.push(r.id);
       if (g.hedge && exporta && r.gatilho === 'hedge') por.hedge.push(r.id);
     });
     Object.values(por).forEach((l) => l.forEach((id) => ids.add(id)));
@@ -32,13 +31,11 @@
   };
 
   /* ---------- aba 2 · conta garantida ---------- */
-  // custo de V (R$ mil) por `dias` à taxa anual (% a.a.): simples/365 (padrão, reproduz o slide) ou composto/360
-  M.custo = (V, taxa, dias, conv) => (conv === 'composto'
-    ? V * (Math.pow(1 + taxa / 100, dias / 360) - 1)
-    : V * (taxa / 100) * dias / 365);
-  M.comparativo = function (V, dias, cdi, spRot, spCG, conv, limite) {
-    const rot = M.custo(V, cdi + spRot, dias, conv);
-    const cg = M.custo(V, cdi + spCG, dias, conv);
+  // custo de V (R$ mil) por `dias` à taxa anual (% a.a.): simples pro rata, base 365 (reproduz o slide)
+  M.custo = (V, taxa, dias) => V * (taxa / 100) * dias / 365;
+  M.comparativo = function (V, dias, cdi, spRot, spCG, limite) {
+    const rot = M.custo(V, cdi + spRot, dias);
+    const cg = M.custo(V, cdi + spCG, dias);
     return { rot, cg, dif: cg - rot, difPct: rot > 0 ? cg / rot - 1 : NaN, alarme: dias > limite, taxaRot: cdi + spRot, taxaCG: cdi + spCG };
   };
 

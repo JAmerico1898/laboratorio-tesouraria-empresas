@@ -3,7 +3,7 @@
   "title": "D5.3 · Cardápio de instrumentos",
   "slug": "78158864-cba8-476b-b876-7f5583b1f521",
   "datasets": {
-    "cenarios": { "file": "cenarios.json", "sha256": "d2c01efad2b7da82c5e60ba09135c4119868e728c5103a4bdb4656ae28559511" },
+    "cenarios": { "file": "cenarios.json", "sha256": "3d84ff59bb5bf84c9e8b50099b27b557b799de50d899adf0b2256048570872d3" },
     "instrumentos": { "file": "instrumentos.json", "sha256": "ebd28efa1bb5da9cae597add0aefa2802b8d3cb9a3a4fc1b4f9dc6a0e4517556" },
     "parametros": { "file": "parametros.json", "sha256": "460bca58f755629072a59528e7791433cfc588053be61a9307db405d5bcbc463" },
     "vendor": { "file": "vendor.json", "sha256": "a1c13a3aaec2614c6cad24ec21a2c5e27488cfef641389fd4441a8d69b944943" }

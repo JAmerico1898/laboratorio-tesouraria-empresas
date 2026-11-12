@@ -6,7 +6,7 @@
 <title>D5.3 · Cardápio de instrumentos</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"horizonte","aba":"cardapio","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":300,"dias":45,"conv":"simples","spRot":5,"spCG":8,"tVendor":21,"desc":2},{"id":"export","aba":"cardapio","gCresc":0,"gSaz":0,"gPric":0,"gHedge":1,"exporta":1,"valor":300,"dias":45,"conv":"simples","spRot":5,"spCG":8,"tVendor":21,"desc":2},{"id":"slide","aba":"conta","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":500,"dias":60,"conv":"simples","spRot":5,"spCG":8,"tVendor":21,"desc":2},{"id":"semacordo","aba":"vendor","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":300,"dias":45,"conv":"simples","spRot":5,"spCG":8,"tVendor":26,"desc":1}]},"instrumentos":{"format":"json","data":[{"id":"fornecedor","nome":"Crédito comercial (fornecedor)","prazo":"30–90 d","custoNominal":"implícito","cet":15,"uso":"1ª escolha; régua","gatilho":"","bancario":0,"soExportador":0},{"id":"acc","nome":"ACC / ACE","prazo":"até 180 d","custoNominal":"CDI − x ou US$ + SOFR + spread","cet":17,"uso":"AC em moeda estrangeira","gatilho":"hedge","bancario":1,"soExportador":1},{"id":"cglinha","nome":"CG linha (parcelado)","prazo":"12–36 m","custoNominal":"CDI + 3–8%","cet":19,"uso":"ciclo financeiro inteiro, plurianual","gatilho":"cresc","bancario":1,"soExportador":0},{"id":"cgrot","nome":"CG rotativo","prazo":"90–180 d/saque","custoNominal":"CDI + 5–7%","cet":20,"uso":"recorrente, ponte entre vendas","gatilho":"saz","bancario":1,"soExportador":0},{"id":"vendor","nome":"Vendor finance","prazo":"prazo comercial","custoNominal":"CDI + spread do comprador","cet":21,"uso":"destravar prazo na cadeia","gatilho":"","bancario":1,"soExportador":0},{"id":"contagar","nome":"Conta garantida","prazo":"diário","custoNominal":"CDI + 5–10%","cet":28,"uso":"horas/dias; nunca > 30 d","gatilho":"","bancario":1,"soExportador":0}]},"parametros":{"format":"json","data":[{"chave":"cdi","valor":12,"descricao":"CDI de referência do cardápio (% a.a., base 252)"},{"chave":"pricing","valor":18,"descricao":"Pricing embutido no preço do fornecedor (% a.a.) — gatilho 'pricing alto'"},{"chave":"exportAlfa","valor":10,"descricao":"Exportação da Alfa (% da receita, em US$)"},{"chave":"refSlideValor","valor":500,"descricao":"Comparativo do slide V5.3·4: valor (R$ mil)"},{"chave":"refSlideDias","valor":60,"descricao":"Comparativo do slide V5.3·4: prazo (dias)"},{"chave":"refSlideRot","valor":14000,"descricao":"Custo do CG rotativo citado no slide (R$)"},{"chave":"refSlideCG","valor":16500,"descricao":"Custo da conta garantida citado no slide (R$)"},{"chave":"cgHorizonte","valor":300,"descricao":"Saldo da Horizonte em conta garantida (R$ mil, banco A)"},{"chave":"diasHorizonte","valor":45,"descricao":"Dias em uso da conta garantida da Horizonte"}]},"vendor":{"format":"json","data":[{"chave":"compras","valor":6000,"descricao":"Compras anuais da Horizonte à Alfa (R$ mil)"},{"chave":"prazo","valor":60,"descricao":"Prazo comercial (dias)"},{"chave":"fAlfa","valor":17,"descricao":"Custo de funding da Alfa para carregar o recebível (% a.a.)"},{"chave":"perda","valor":2,"descricao":"Perda esperada da Alfa sobre a Horizonte (% das vendas)"},{"chave":"tVendor","valor":21,"descricao":"Taxa do vendor, risco do comprador (% a.a.)"},{"chave":"desc","valor":2,"descricao":"Desconto à vista que a Alfa repassa à Horizonte (% do preço)"},{"chave":"alt","valor":20,"descricao":"Custo alternativo da Horizonte — CG rotativo (% a.a.)"}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"horizonte","aba":"cardapio","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":300,"dias":45,"spRot":5,"spCG":8,"tVendor":21,"desc":2},{"id":"export","aba":"cardapio","gCresc":0,"gSaz":0,"gPric":0,"gHedge":1,"exporta":1,"valor":300,"dias":45,"spRot":5,"spCG":8,"tVendor":21,"desc":2},{"id":"slide","aba":"conta","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":500,"dias":60,"spRot":5,"spCG":8,"tVendor":21,"desc":2},{"id":"semacordo","aba":"vendor","gCresc":0,"gSaz":1,"gPric":0,"gHedge":0,"exporta":0,"valor":300,"dias":45,"spRot":5,"spCG":8,"tVendor":26,"desc":1}]},"instrumentos":{"format":"json","data":[{"id":"fornecedor","nome":"Crédito comercial (fornecedor)","prazo":"30–90 d","custoNominal":"implícito","cet":15,"uso":"1ª escolha; régua","gatilho":"","bancario":0,"soExportador":0},{"id":"acc","nome":"ACC / ACE","prazo":"até 180 d","custoNominal":"CDI − x ou US$ + SOFR + spread","cet":17,"uso":"AC em moeda estrangeira","gatilho":"hedge","bancario":1,"soExportador":1},{"id":"cglinha","nome":"CG linha (parcelado)","prazo":"12–36 m","custoNominal":"CDI + 3–8%","cet":19,"uso":"ciclo financeiro inteiro, plurianual","gatilho":"cresc","bancario":1,"soExportador":0},{"id":"cgrot","nome":"CG rotativo","prazo":"90–180 d/saque","custoNominal":"CDI + 5–7%","cet":20,"uso":"recorrente, ponte entre vendas","gatilho":"saz","bancario":1,"soExportador":0},{"id":"vendor","nome":"Vendor finance","prazo":"prazo comercial","custoNominal":"CDI + spread do comprador","cet":21,"uso":"destravar prazo na cadeia","gatilho":"","bancario":1,"soExportador":0},{"id":"contagar","nome":"Conta garantida","prazo":"diário","custoNominal":"CDI + 5–10%","cet":28,"uso":"horas/dias; nunca > 30 d","gatilho":"","bancario":1,"soExportador":0}]},"parametros":{"format":"json","data":[{"chave":"cdi","valor":12,"descricao":"CDI de referência do cardápio (% a.a., base 252)"},{"chave":"pricing","valor":18,"descricao":"Pricing embutido no preço do fornecedor (% a.a.) — gatilho 'pricing alto'"},{"chave":"exportAlfa","valor":10,"descricao":"Exportação da Alfa (% da receita, em US$)"},{"chave":"refSlideValor","valor":500,"descricao":"Comparativo do slide V5.3·4: valor (R$ mil)"},{"chave":"refSlideDias","valor":60,"descricao":"Comparativo do slide V5.3·4: prazo (dias)"},{"chave":"refSlideRot","valor":14000,"descricao":"Custo do CG rotativo citado no slide (R$)"},{"chave":"refSlideCG","valor":16500,"descricao":"Custo da conta garantida citado no slide (R$)"},{"chave":"cgHorizonte","valor":300,"descricao":"Saldo da Horizonte em conta garantida (R$ mil, banco A)"},{"chave":"diasHorizonte","valor":45,"descricao":"Dias em uso da conta garantida da Horizonte"}]},"vendor":{"format":"json","data":[{"chave":"compras","valor":6000,"descricao":"Compras anuais da Horizonte à Alfa (R$ mil)"},{"chave":"prazo","valor":60,"descricao":"Prazo comercial (dias)"},{"chave":"fAlfa","valor":17,"descricao":"Custo de funding da Alfa para carregar o recebível (% a.a.)"},{"chave":"perda","valor":2,"descricao":"Perda esperada da Alfa sobre a Horizonte (% das vendas)"},{"chave":"tVendor","valor":21,"descricao":"Taxa do vendor, risco do comprador (% a.a.)"},{"chave":"desc","valor":2,"descricao":"Desconto à vista que a Alfa repassa à Horizonte (% do preço)"},{"chave":"alt","valor":20,"descricao":"Custo alternativo da Horizonte — CG rotativo (% a.a.)"}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -126,11 +126,7 @@
 .d53-rank { min-height: 340px; }
 .d53-ctg { min-height: 212px; }
 .d53-tri { min-height: 300px; }
-.d53-cets { display: grid; grid-template-columns: minmax(0, 1fr) 4.6rem; gap: 4px 8px; align-items: center; font-size: 13px; }
-.d53-cets input:disabled { opacity: .45; }
 .d53-gats { display: grid; gap: 2px; }
-.d53-pres { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-.d53-pres .k-btn { font-size: 13px; padding: 3px 10px; }
 .d53 .k-card.d53-ganha { border-left-color: var(--k-pos); }
 .d53 .k-card.d53-perde { border-left-color: var(--k-neg); }
 .d53 .k-card p { margin: 2px 0 0; font-variant-numeric: tabular-nums; }
@@ -176,27 +172,13 @@
         <label class="k-toggle"><input type="checkbox" data-k="exporta"> Empresa exporta</label>
         <p class="k-note">Caso da Alfa: <b data-draw="v" data-q="exportAlfa">—</b> da receita em US$. A Horizonte não exporta.</p>
         <h2 class="k-zt2">Mercado <span class="k-u">% a.a.</span></h2>
-        <div class="k-ctl"><label for="c-cdi">CDI <span class="k-info" tabindex="0">i<span class="k-tip">Os CETs do cardápio andam com o CDI: mover o CDI desloca todas as barras juntas; o campo de cada instrumento edita o CET no CDI atual.</span></span></label>
-          <div class="k-in"><input type="range" id="c-cdi" data-k="cdi" min="5" max="20" step="0.25"><input type="number" data-k="cdi" min="5" max="20" step="0.25" aria-label="CDI, % a.a."></div></div>
         <div class="k-ctl"><label for="c-pric">Pricing embutido no preço do fornecedor <span class="k-info" tabindex="0">i<span class="k-tip">Quanto o prazo do fornecedor custa de fato, embutido no preço. Com o gatilho "pricing alto" ligado, acende toda linha bancária com CET abaixo dele.</span></span></label>
           <div class="k-in"><input type="range" id="c-pric" data-k="pricing" min="10" max="40" step="0.5"><input type="number" data-k="pricing" min="10" max="40" step="0.5" aria-label="Pricing embutido, % a.a."></div></div>
-        <h2 class="k-zt2">CET por instrumento <span class="k-u">% a.a.</span></h2>
-        <div class="d53-cets">
-          <label for="c-cf">Crédito comercial (régua)</label><input class="k-num" id="c-cf" type="number" data-k="cet_fornecedor" min="0" max="60" step="0.5">
-          <label for="c-acc">ACC / ACE</label><input class="k-num" id="c-acc" type="number" data-k="cet_acc" min="0" max="60" step="0.5">
-          <label for="c-cgl">CG linha</label><input class="k-num" id="c-cgl" type="number" data-k="cet_cglinha" min="0" max="60" step="0.5">
-          <label for="c-cgr">CG rotativo</label><input class="k-num" id="c-cgr" type="number" data-k="cet_cgrot" min="0" max="60" step="0.5">
-          <label for="c-vf">Vendor finance</label><input class="k-num" id="c-vf" type="number" data-k="cet_vendor" min="0" max="60" step="0.5">
-          <label for="c-ctg">Conta garantida</label><input class="k-num" id="c-ctg" type="number" data-k="cet_contagar" min="0" max="60" step="0.5">
-        </div>
+        <p class="k-note">CETs ilustrativos do slide de síntese, com CDI de <b data-draw="v" data-q="cdi">—</b> a.a.</p>
       </section>
 
       <section data-group="v" data-pane="conta" hidden>
-        <h2 class="k-zt">Atalhos</h2>
-        <div class="d53-pres" role="group" aria-label="Atalhos da conta garantida">
-          <button class="k-btn d53-pre" data-pre="horizonte" aria-pressed="false">Horizonte: <span data-draw="v" data-q="preH">—</span></button>
-          <button class="k-btn d53-pre" data-pre="slide" aria-pressed="false">Slide: <span data-draw="v" data-q="preS">—</span></button>
-        </div>
+        <h2 class="k-zt">O saque</h2>
         <div class="k-ctl"><label for="c-val">Valor sacado <span class="k-u">R$ mil</span></label>
           <div class="k-in"><input type="range" id="c-val" data-k="valor" min="50" max="2000" step="10"><input type="number" data-k="valor" min="50" max="2000" step="10" aria-label="Valor sacado, R$ mil"></div></div>
         <div class="k-ctl"><label for="c-dias">Dias em uso</label>
@@ -205,26 +187,16 @@
           <div class="k-in"><input type="range" id="c-srot" data-k="spRot" min="0" max="15" step="0.5"><input type="number" data-k="spRot" min="0" max="15" step="0.5" aria-label="Spread do CG rotativo, % a.a."></div></div>
         <div class="k-ctl"><label for="c-scg">Spread conta garantida <span class="k-u">CDI + % a.a.</span></label>
           <div class="k-in"><input type="range" id="c-scg" data-k="spCG" min="0" max="15" step="0.5"><input type="number" data-k="spCG" min="0" max="15" step="0.5" aria-label="Spread da conta garantida, % a.a."></div></div>
-        <div class="k-ctl"><span class="k-lab">Convenção de juros <span class="k-info" tabindex="0">i<span class="k-tip">Simples pro rata, base 365 dias corridos, é a convenção que reproduz o slide V5.3 (≈ 14.000 e ≈ 16.500). Composto base 360 dá valores menores com a mesma razão entre as duas linhas.</span></span></span>
-          <div class="k-seg" role="group" aria-label="Convenção de juros"><button data-k="conv" data-v="simples">Simples / 365</button><button data-k="conv" data-v="composto">Composto / 360</button></div></div>
-        <p class="k-note">CDI: <b data-draw="v" data-q="cdi">—</b> a.a. (o mesmo da aba de cardápio).</p>
+        <p class="k-note">CDI: <b data-draw="v" data-q="cdi">—</b> a.a. Juros simples pro rata, base 365 dias corridos — a convenção que reproduz o slide.</p>
       </section>
 
       <section data-group="v" data-pane="vendor" hidden>
         <h2 class="k-zt">O acordo</h2>
-        <p class="k-note">Compras anuais da Horizonte à Alfa: <b data-draw="v" data-q="compras">—</b> (fixo).</p>
-        <div class="k-ctl"><label for="c-pz">Prazo comercial <span class="k-u">dias</span></label>
-          <div class="k-in"><input type="range" id="c-pz" data-k="prazo" min="0" max="120" step="1"><input type="number" data-k="prazo" min="0" max="120" step="1" aria-label="Prazo comercial, dias"></div></div>
-        <div class="k-ctl"><label for="c-fa">Funding da Alfa <span class="k-u">% a.a.</span></label>
-          <div class="k-in"><input type="range" id="c-fa" data-k="fAlfa" min="10" max="30" step="0.5"><input type="number" data-k="fAlfa" min="10" max="30" step="0.5" aria-label="Funding da Alfa, % a.a."></div></div>
-        <div class="k-ctl"><label for="c-pe">Perda esperada da Alfa <span class="k-u">% das vendas</span></label>
-          <div class="k-in"><input type="range" id="c-pe" data-k="perda" min="0" max="5" step="0.1"><input type="number" data-k="perda" min="0" max="5" step="0.1" aria-label="Perda esperada, % das vendas"></div></div>
+        <p class="k-note">Fixos: compras anuais da Horizonte à Alfa de <b data-draw="v" data-q="compras">—</b>, prazo comercial de <b data-draw="v" data-q="prazo">—</b> dias, funding da Alfa a <b data-draw="v" data-q="fAlfa">—</b>% a.a., perda esperada de <b data-draw="v" data-q="perda">—</b>% das vendas e CG rotativo da Horizonte a <b data-draw="v" data-q="alt">—</b>% a.a.</p>
         <div class="k-ctl"><label for="c-tv">Taxa do vendor <span class="k-u">% a.a. · risco do comprador</span></label>
           <div class="k-in"><input type="range" id="c-tv" data-k="tVendor" min="15" max="30" step="0.5"><input type="number" data-k="tVendor" min="15" max="30" step="0.5" aria-label="Taxa do vendor, % a.a."></div></div>
         <div class="k-ctl"><label for="c-de">Desconto à vista repassado <span class="k-u">% do preço</span></label>
           <div class="k-in"><input type="range" id="c-de" data-k="desc" min="0" max="5" step="0.1"><input type="number" data-k="desc" min="0" max="5" step="0.1" aria-label="Desconto à vista, % do preço"></div></div>
-        <div class="k-ctl"><label for="c-al">Custo alternativo da Horizonte <span class="k-u">CG rotativo, % a.a.</span></label>
-          <div class="k-in"><input type="range" id="c-al" data-k="alt" min="15" max="30" step="0.5"><input type="number" data-k="alt" min="15" max="30" step="0.5" aria-label="Custo alternativo da Horizonte, % a.a."></div></div>
       </section>
     </div>
 
@@ -293,8 +265,7 @@
         <h2 class="k-zt">Leitura · custo no período <span class="k-u">R$</span></h2>
         <div class="k-kpi"><span class="k-kl">CG rotativo <span class="k-u"><span data-draw="v" data-q="taxaRot">—</span> a.a.</span></span><span class="k-kn" data-draw="v" data-q="rot">—</span></div>
         <div class="k-kpi"><span class="k-kl">Conta garantida <span class="k-u"><span data-draw="v" data-q="taxaCG">—</span> a.a.</span></span><span class="k-kn" data-draw="v" data-q="cg">—</span></div>
-        <p class="k-note">Diferença: R$ <b data-draw="v" data-q="dif">—</b> (<b data-draw="v" data-q="difPct">—</b> a mais na conta garantida).
-          <span data-frases><span data-draw="frase" data-grp="conv"></span><span data-frase="simples" hidden>Em composto base 360 seriam <b data-draw="v" data-q="altRot">—</b> e <b data-draw="v" data-q="altCG">—</b>.</span><span data-frase="composto" hidden>Em simples base 365 (convenção do slide) seriam <b data-draw="v" data-q="altRot">—</b> e <b data-draw="v" data-q="altCG">—</b>.</span></span></p>
+        <p class="k-note">Diferença: R$ <b data-draw="v" data-q="dif">—</b> (<b data-draw="v" data-q="difPct">—</b> a mais na conta garantida).</p>
         <p class="k-note">Referência do slide V5.3 (R$ 500 mil por 60 dias): ≈ <b data-draw="v" data-q="refRot">—</b> e ≈ <b data-draw="v" data-q="refCG">—</b>.</p>
         <div class="k-diag" data-frases>
           <span data-draw="frase" data-grp="a2"></span>
@@ -471,13 +442,12 @@
   const M = {};
 
   /* ---------- aba 1 · cardápio ---------- */
-  // instrumentos visíveis, com CET = CDI + spread sobre o CDI (sp), ordenados do menor CET para o maior
-  // instr: [{id, cet, soExportador, ...}] (cet de referência a CDI = cdiRef); sp: {id: spread}; ACC/ACE só se exporta
-  M.ranking = function (instr, cdi, sp, exporta) {
+  // instrumentos visíveis, ordenados do menor CET para o maior
+  // instr: [{id, cet, soExportador, ...}] (CET ilustrativo do slide de síntese); ACC/ACE só se exporta
+  M.ranking = function (instr, exporta) {
     return instr
       .filter((r) => exporta || !Number(r.soExportador))
-      .map((r) => ({ ...r, cetAtual: cdi + sp[r.id] }))
-      .sort((a, b) => a.cetAtual - b.cetAtual);
+      .sort((a, b) => a.cet - b.cet);
   };
   // gatilhos {cresc, saz, pric, hedge} → instrumentos casados
   // cresc → CG linha · saz → CG rotativo · pric → qualquer bancário com CET abaixo do pricing embutido
@@ -488,7 +458,7 @@
     vis.forEach((r) => {
       if (g.cresc && r.gatilho === 'cresc') por.cresc.push(r.id);
       if (g.saz && r.gatilho === 'saz') por.saz.push(r.id);
-      if (g.pric && Number(r.bancario) && r.cetAtual < pricing) por.pric.push(r.id);
+      if (g.pric && Number(r.bancario) && r.cet < pricing) por.pric.push(r.id);
       if (g.hedge && exporta && r.gatilho === 'hedge') por.hedge.push(r.id);
     });
     Object.values(por).forEach((l) => l.forEach((id) => ids.add(id)));
@@ -499,13 +469,11 @@
   };
 
   /* ---------- aba 2 · conta garantida ---------- */
-  // custo de V (R$ mil) por `dias` à taxa anual (% a.a.): simples/365 (padrão, reproduz o slide) ou composto/360
-  M.custo = (V, taxa, dias, conv) => (conv === 'composto'
-    ? V * (Math.pow(1 + taxa / 100, dias / 360) - 1)
-    : V * (taxa / 100) * dias / 365);
-  M.comparativo = function (V, dias, cdi, spRot, spCG, conv, limite) {
-    const rot = M.custo(V, cdi + spRot, dias, conv);
-    const cg = M.custo(V, cdi + spCG, dias, conv);
+  // custo de V (R$ mil) por `dias` à taxa anual (% a.a.): simples pro rata, base 365 (reproduz o slide)
+  M.custo = (V, taxa, dias) => V * (taxa / 100) * dias / 365;
+  M.comparativo = function (V, dias, cdi, spRot, spCG, limite) {
+    const rot = M.custo(V, cdi + spRot, dias);
+    const cg = M.custo(V, cdi + spCG, dias);
     return { rot, cg, dif: cg - rot, difPct: rot > 0 ? cg / rot - 1 : NaN, alarme: dias > limite, taxaRot: cdi + spRot, taxaCG: cdi + spCG };
   };
 
@@ -546,8 +514,8 @@
 
 /* ============================================================
    D5.3 · Cardápio de instrumentos
-   Testes de aderência (Spec §7), conferidos com M53 em node (40 PASS / 0 FAIL):
-   Slide 500 · 60 d · simples/365: 13.973 × 16.438 (+17,6%) · composto/360: 13.256 × 15.427
+   Testes de aderência (Spec §7), conferidos com M53 em node:
+   Slide 500 · 60 d · simples/365: 13.973 × 16.438 (+17,6%)
    Horizonte hoje 300 · 45 d: 6,3 × 7,4 mil · alarme aceso
    Ranking: fornecedor 15 < CG linha 19 < CG rotativo 20 < vendor 21 < conta garantida 28 · exporta: ACC 17 após o fornecedor
    Vendor: Alfa +170 · Horizonte +110 · banco 210 · 9,0% efetivos · sem acordo (26%, 1%): Horizonte 200 = 200 · Alfa +230
@@ -573,27 +541,17 @@ const reais = (vMil) => K.n(Math.round(vMil * 1000));
 
 /* ---------- estado → modelo ---------- */
 const gat = (S) => ({ cresc: !!S.gCresc, saz: !!S.gSaz, pric: !!S.gPric, hedge: !!S.gHedge });
-const vis = () => M53.ranking(instr(), ST.S.cdi, ST.S.sp, !!ST.S.exporta);
+const vis = () => M53.ranking(instr(), !!ST.S.exporta);
 const cas = () => M53.casados(vis(), gat(ST.S), !!ST.S.exporta, ST.S.pricing);
-const regua = () => ST.S.cdi + ST.S.sp.fornecedor;
-const comp = (S = ST.S) => M53.comparativo(S.valor, S.dias, S.cdi, S.spRot, S.spCG, S.conv, LIMITE_DIAS);
+const regua = () => instr().find((r) => r.id === 'fornecedor').cet;
+const comp = (S = ST.S) => M53.comparativo(S.valor, S.dias, S.cdi, S.spRot, S.spCG, LIMITE_DIAS);
 const vpar = (S = ST.S) => ({ compras: vd().compras, prazo: S.prazo, fAlfa: S.fAlfa, perda: S.perda, tVendor: S.tVendor, desc: S.desc, alt: S.alt });
 const vend = () => M53.vendor(vpar());
 
 /* ---------- controles ---------- */
-function vista() {
-  const S = ST.S, o = { ...S };
-  Object.keys(S.sp).forEach((id) => { o['cet_' + id] = Math.round((S.cdi + S.sp[id]) * 100) / 100; });
-  return o;
-}
 function marca() {
   const ok = pronto();
   document.querySelectorAll('.d53-cen').forEach((b) => b.setAttribute('aria-pressed', String(ok && !ST.mexido && b.dataset.cen === ST.cen)));
-  document.querySelectorAll('.d53-pre').forEach((b) => {
-    const r = ok ? cenario(b.dataset.pre) : null;
-    b.setAttribute('aria-pressed', String(!!r && ST.S.valor === r.valor && ST.S.dias === r.dias));
-  });
-  document.querySelectorAll('input[data-k="cet_acc"]').forEach((i) => { i.disabled = ok && !ST.S.exporta; });
   const V = ok ? vend() : null;
   document.querySelectorAll('.d53-card').forEach((c) => {
     const g = !V ? null : c.dataset.parte === 'alfa' ? V.gAlfa : c.dataset.parte === 'hor' ? V.gHor : V.banco;
@@ -601,11 +559,10 @@ function marca() {
     c.classList.toggle('d53-perde', g != null && g <= 1e-9);
   });
 }
-function sincroniza() { K.sync(vista()); marca(); }
+function sincroniza() { K.sync(ST.S); marca(); }
 function base() {
-  const P = par(), I = instr(), Vd = vd();
-  const sp = {}; I.forEach((r) => { sp[r.id] = r.cet - P.cdi; });
-  return { cdi: P.cdi, pricing: P.pricing, sp, prazo: Vd.prazo, fAlfa: Vd.fAlfa, perda: Vd.perda, alt: Vd.alt };
+  const P = par(), Vd = vd();
+  return { cdi: P.cdi, pricing: P.pricing, prazo: Vd.prazo, fAlfa: Vd.fAlfa, perda: Vd.perda, alt: Vd.alt };
 }
 function aplicar(id, trocaAba) {
   const r = cenario(id);
@@ -613,7 +570,7 @@ function aplicar(id, trocaAba) {
   ST.S = {
     ...base(),
     gCresc: !!r.gCresc, gSaz: !!r.gSaz, gPric: !!r.gPric, gHedge: !!r.gHedge, exporta: !!r.exporta,
-    valor: r.valor, dias: r.dias, conv: r.conv, spRot: r.spRot, spCG: r.spCG, tVendor: r.tVendor, desc: r.desc,
+    valor: r.valor, dias: r.dias, spRot: r.spRot, spCG: r.spCG, tVendor: r.tVendor, desc: r.desc,
   };
   ST.cen = id; ST.mexido = false;
   sincroniza();
@@ -623,14 +580,7 @@ dash.onData(() => {
   if (K.status(IDS) !== 'ok') { marca(); return; }
   if (!ST.S) { aplicar('horizonte', false); K.redraw(NOMES); }
 });
-K.bind(new Proxy({}, {
-  set(_, k, v) {
-    if (!ST.S) return true;
-    if (k.startsWith('cet_')) ST.S.sp[k.slice(4)] = v - ST.S.cdi;
-    else ST.S[k] = v;
-    return true;
-  },
-}), () => {
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), () => {
   if (!ST.S) return;
   ST.mexido = true;
   sincroniza(); K.redraw(NOMES);
@@ -640,14 +590,6 @@ document.querySelectorAll('.d53-cen').forEach((b) => b.addEventListener('click',
   if (K.status(IDS) !== 'ok') return;
   aplicar(b.dataset.cen, true); K.redraw(NOMES);
   try { dash.setLink(cenario(b.dataset.cen).aba); } catch (e) { /* ok */ }
-}));
-document.querySelectorAll('.d53-pre').forEach((b) => b.addEventListener('click', () => {
-  if (!pronto()) return;
-  const r = cenario(b.dataset.pre);
-  if (!r) return;
-  Object.assign(ST.S, { valor: r.valor, dias: r.dias, conv: r.conv, spRot: r.spRot, spCG: r.spCG });
-  ST.mexido = true;
-  sincroniza(); K.redraw(NOMES);
 }));
 
 /* ---------- ranking por CET ---------- */
@@ -661,7 +603,7 @@ dash.draw('ranking', (el) => {
   el.replaceChildren(svg.node());
   const tip = K.tip(el);
   const r0 = regua();
-  const xMax = Math.max(d3.max(rows, (r) => r.cetAtual), S.gPric ? S.pricing : 0, r0, S.cdi) * 1.12;
+  const xMax = Math.max(d3.max(rows, (r) => r.cet), S.gPric ? S.pricing : 0, r0, S.cdi) * 1.12;
   const x = d3.scaleLinear([0, xMax], [6, W - 8]).nice();
   const yB = H - 24;
   // grade e eixo
@@ -696,14 +638,14 @@ dash.draw('ranking', (el) => {
     const wn = nm.node().getComputedTextLength();
     const us = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', W - 6).attr('y', y0 + 12).text(r.uso);
     if (W - 6 - us.node().getComputedTextLength() < x(0) + wn + 12) us.remove();
-    svg.append('rect').attr('x', x(0)).attr('y', y0 + 18).attr('width', Math.max(2, x(r.cetAtual) - x(0))).attr('height', bh).attr('rx', 3).attr('fill', cor);
-    const lab = pc(r.cetAtual) + (lit ? ' · casado' : forn ? ' · régua' : '');
-    const tv = svg.append('text').attr('class', 'k-svgb').style('fill', lit ? 'var(--k-navy)' : 'var(--color-fg)').attr('x', x(r.cetAtual) + 6).attr('y', y0 + 32).text(lab);
-    if (x(r.cetAtual) + 6 + tv.node().getComputedTextLength() > W - 2) tv.attr('text-anchor', 'end').attr('x', x(r.cetAtual) - 6).style('fill', forn ? '#1a1a1a' : '#fff');
+    svg.append('rect').attr('x', x(0)).attr('y', y0 + 18).attr('width', Math.max(2, x(r.cet) - x(0))).attr('height', bh).attr('rx', 3).attr('fill', cor);
+    const lab = pc(r.cet) + (lit ? ' · casado' : forn ? ' · régua' : '');
+    const tv = svg.append('text').attr('class', 'k-svgb').style('fill', lit ? 'var(--k-navy)' : 'var(--color-fg)').attr('x', x(r.cet) + 6).attr('y', y0 + 32).text(lab);
+    if (x(r.cet) + 6 + tv.node().getComputedTextLength() > W - 2) tv.attr('text-anchor', 'end').attr('x', x(r.cet) - 6).style('fill', forn ? '#1a1a1a' : '#fff');
     svg.append('rect').attr('x', 0).attr('y', y0).attr('width', W).attr('height', rh).attr('fill', 'transparent')
       .on('mousemove', (ev) => {
         const [px, py] = d3.pointer(ev, el);
-        tip.show(r.nome, [[null, 'CET', pc(r.cetAtual) + ' a.a.'], [null, 'Prazo', r.prazo], [null, 'Custo nominal', r.custoNominal], [null, 'Uso casado', r.uso]], px, py);
+        tip.show(r.nome, [[null, 'CET', pc(r.cet) + ' a.a.'], [null, 'Prazo', r.prazo], [null, 'Custo nominal', r.custoNominal], [null, 'Uso casado', r.uso]], px, py);
       })
       .on('mouseleave', () => tip.hide());
   });
@@ -806,12 +748,11 @@ dash.draw('tri', (el) => {
 /* ---------- números ---------- */
 const g1 = () => {
   const r = cenario('horizonte'), P = par();
-  return M53.comparativo(r.valor, r.dias, P.cdi, r.spRot, r.spCG, r.conv, LIMITE_DIAS);
+  return M53.comparativo(r.valor, r.dias, P.cdi, r.spRot, r.spCG, LIMITE_DIAS);
 };
 const g2 = () => M53.vendor({ ...vd() });
 const g3 = (id) => instr().find((r) => r.id === id).cet;
-const listaCas = (C) => vis().filter((r) => C.ids.has(r.id)).map((r) => r.nome + ' (~' + pc(r.cetAtual) + ')').join('; ');
-const altConv = (S) => M53.comparativo(S.valor, S.dias, S.cdi, S.spRot, S.spCG, S.conv === 'composto' ? 'simples' : 'composto', LIMITE_DIAS);
+const listaCas = (C) => vis().filter((r) => C.ids.has(r.id)).map((r) => r.nome + ' (~' + pc(r.cet) + ')').join('; ');
 const VAL = {
   // cardápio
   exportAlfa: () => pc(par().exportAlfa), cdi: () => pc(ST.S.cdi), pricing: () => tx(ST.S.pricing), regua: () => tx(regua()),
@@ -819,18 +760,15 @@ const VAL = {
   casados: () => listaCas(cas()) || null,
   casadoPrinc: () => { const p = cas().principal; return p ? p.nome : null; },
   casadoNome: () => { const p = cas().principal; return p ? p.nome : 'nenhum'; },
-  casadoCet: () => { const p = cas().principal; return p ? tx(p.cetAtual) : null; },
+  casadoCet: () => { const p = cas().principal; return p ? tx(p.cet) : null; },
   // conta garantida
-  preH: () => { const r = cenario('horizonte'); return K.n(r.valor) + ' por ' + K.n(r.dias) + ' d'; },
-  preS: () => { const r = cenario('slide'); return K.n(r.valor) + ' por ' + K.n(r.dias) + ' d'; },
   rot: () => reais(comp().rot), cg: () => reais(comp().cg),
   dif: () => { const R = comp(); return K.n(Math.round(R.cg * 1000) - Math.round(R.rot * 1000)); },
   difPct: () => K.p(comp().difPct, 1), dias: () => K.n(ST.S.dias),
   taxaRot: () => pc(comp().taxaRot), taxaCG: () => pc(comp().taxaCG),
-  altRot: () => reais(altConv(ST.S).rot), altCG: () => reais(altConv(ST.S).cg),
   refRot: () => K.n(par().refSlideRot), refCG: () => K.n(par().refSlideCG),
   // vendor
-  compras: () => K.n(vd().compras),
+  compras: () => K.n(vd().compras), prazo: () => K.n(ST.S.prazo), fAlfa: () => tx(ST.S.fAlfa), perda: () => tx(ST.S.perda),
   gA: () => K.s(vend().gAlfa), gH: () => K.s(vend().gHor), taxaEf: () => (Number.isFinite(vend().taxaEf) ? K.n(vend().taxaEf * 100, 1) : null),
   aSem: () => K.n(vend().alfaSem), aCom: () => K.n(vend().alfaCom), aG: () => K.s(vend().gAlfa),
   hSem: () => K.n(vend().horSem), hCom: () => K.n(vend().horCom), hG: () => K.s(vend().gHor),
@@ -862,8 +800,7 @@ dash.draw('frase', (el) => {
         if (ST.S.gHedge && !ST.S.exporta) keys.push('hedgeSem');
         if (ST.S.gPric && !C.por.pric.length) keys.push('pricSem');
       }
-    } else if (grp === 'conv') keys.push(ST.S.conv === 'composto' ? 'composto' : 'simples');
-    else if (grp === 'a2') keys.push(comp().alarme ? 'alarme' : 'ok');
+    } else if (grp === 'a2') keys.push(comp().alarme ? 'alarme' : 'ok');
     else if (grp === 'a3') M53.vendorFrases(vend()).forEach((k) => keys.push(k));
   }
   K.frases(el, keys);
