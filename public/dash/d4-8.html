@@ -6,7 +6,7 @@
 <title>D4.8 · Antecipação, FIDC e cartão</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"alfa":{"format":"json","data":[{"chave":"receita","valor":50000,"descricao":"Receita líquida anual da Alfa (R$ mil)"},{"chave":"vendasPrazoAno","valor":35000,"descricao":"Vendas a prazo por ano — duplicatas 30/60/90 (R$ mil)"},{"chave":"Vmes","valor":2917,"descricao":"Duplicatas faturadas por mês (R$ mil)"},{"chave":"cartaoAno","valor":5000,"descricao":"Vendas no cartão por ano — 10% da receita, construído (R$ mil)"},{"chave":"Vcmes","valor":417,"descricao":"Recebíveis de cartão por mês (R$ mil)"},{"chave":"prazoDup","valor":60,"descricao":"Prazo médio antecipável das duplicatas (dias)"},{"chave":"prazoCartao","valor":30,"descricao":"Prazo do recebível de cartão (dias, D+30)"}]},"cascata":{"format":"json","data":[{"carteira":10000,"pSub":12,"pMez":8,"inad":2}]},"cenarios":{"format":"json","data":[{"id":"alfa","tipo":"cenario","nome":"Alfa hoje","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"escala","tipo":"cenario","nome":"FIDC em escala","V":2917,"Vc":417,"rb":2,"rf":1,"sr":0,"F":600,"rc":2},{"id":"bancocaro","tipo":"cenario","nome":"Banco caro","V":2917,"Vc":417,"rb":2.5,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"semreg","tipo":"cenario","nome":"Sem regresso","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":1,"F":600,"rc":2},{"id":"falta","tipo":"cenario","nome":"Só o que falta","V":1000,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"cartao","tipo":"arvore","nome":"Antecipação de cartão","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"banc_pontual","tipo":"arvore","nome":"Antecipação bancária","V":1000,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"banc_estrut","tipo":"arvore","nome":"Antecipação bancária","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"banc_carteira","tipo":"arvore","nome":"Antecipação bancária","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"fidc","tipo":"arvore","nome":"FIDC","V":5500,"Vc":417,"rb":2,"rf":1.2,"sr":0,"F":600,"rc":2}]},"modalidades":{"format":"json","data":[{"id":"bancaria","nome":"Antecipação bancária","taxa":2,"taxaMin":1.5,"taxaMax":3,"fixo":0,"regresso":"sempre","prazoMeses":2,"premioSemRegresso":0,"aplica":"duplicatas"},{"id":"fidc","nome":"FIDC / securitização","taxa":1.5,"taxaMin":1,"taxaMax":2.5,"fixo":600,"regresso":"com ou sem","prazoMeses":2,"premioSemRegresso":0.5,"aplica":"duplicatas"},{"id":"cartao","nome":"Antecipação de cartão","taxa":2,"taxaMin":1.5,"taxaMax":3,"fixo":0,"regresso":"não (adquirente é o devedor)","prazoMeses":1,"premioSemRegresso":0,"aplica":"recebíveis de cartão"}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"alfa":{"format":"json","data":[{"chave":"receita","valor":50000,"descricao":"Receita líquida anual da Alfa (R$ mil)"},{"chave":"vendasPrazoAno","valor":35000,"descricao":"Vendas a prazo por ano — duplicatas 30/60/90 (R$ mil)"},{"chave":"Vmes","valor":2917,"descricao":"Duplicatas faturadas por mês (R$ mil)"},{"chave":"cartaoAno","valor":5000,"descricao":"Vendas no cartão por ano — 10% da receita, construído (R$ mil)"},{"chave":"Vcmes","valor":417,"descricao":"Recebíveis de cartão por mês (R$ mil)"},{"chave":"prazoDup","valor":60,"descricao":"Prazo médio antecipável das duplicatas (dias)"},{"chave":"prazoCartao","valor":30,"descricao":"Prazo do recebível de cartão (dias, D+30)"}]},"cascata":{"format":"json","data":[{"carteira":10000,"pSub":12,"inad":2}]},"cenarios":{"format":"json","data":[{"id":"alfa","tipo":"cenario","nome":"Alfa hoje","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"escala","tipo":"cenario","nome":"FIDC em escala","V":2917,"Vc":417,"rb":2,"rf":1,"sr":0,"F":600,"rc":2},{"id":"semreg","tipo":"cenario","nome":"Sem regresso","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":1,"F":600,"rc":2},{"id":"falta","tipo":"cenario","nome":"Só o que falta","V":1000,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"cartao","tipo":"arvore","nome":"Antecipação de cartão","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"banc_pontual","tipo":"arvore","nome":"Antecipação bancária","V":1000,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"banc_estrut","tipo":"arvore","nome":"Antecipação bancária","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"banc_carteira","tipo":"arvore","nome":"Antecipação bancária","V":2917,"Vc":417,"rb":2,"rf":1.5,"sr":0,"F":600,"rc":2},{"id":"fidc","tipo":"arvore","nome":"FIDC","V":5500,"Vc":417,"rb":2,"rf":1.2,"sr":0,"F":600,"rc":2}]},"modalidades":{"format":"json","data":[{"id":"bancaria","nome":"Antecipação bancária","taxa":2,"taxaMin":1.5,"taxaMax":3,"fixo":0,"regresso":"sempre","prazoMeses":2,"premioSemRegresso":0,"aplica":"duplicatas"},{"id":"fidc","nome":"FIDC / securitização","taxa":1.5,"taxaMin":1,"taxaMax":2.5,"fixo":600,"regresso":"com ou sem","prazoMeses":2,"premioSemRegresso":0.5,"aplica":"duplicatas"},{"id":"cartao","nome":"Antecipação de cartão","taxa":2,"taxaMin":1.5,"taxaMax":3,"fixo":0,"regresso":"não (adquirente é o devedor)","prazoMeses":1,"premioSemRegresso":0,"aplica":"recebíveis de cartão"}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -147,7 +147,6 @@
     <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
       <button class="k-btn d48-cen" data-cen="alfa" aria-pressed="false">Alfa hoje</button>
       <button class="k-btn d48-cen" data-cen="escala" aria-pressed="false">FIDC em escala</button>
-      <button class="k-btn d48-cen" data-cen="bancocaro" aria-pressed="false">Banco caro</button>
       <button class="k-btn d48-cen" data-cen="semreg" aria-pressed="false">Sem regresso</button>
       <button class="k-btn d48-cen" data-cen="falta" aria-pressed="false">Só o que falta</button>
     </div>
@@ -163,11 +162,9 @@
     <!-- ===================== CONTROLES ===================== -->
     <div class="k-zone" id="controles" data-source="alfa modalidades cenarios cascata">
       <section data-group="v" data-pane="custo">
-        <h2 class="k-zt">Volumes</h2>
+        <h2 class="k-zt">Volume</h2>
         <div class="k-ctl"><label for="c-V">Duplicatas antecipadas <span class="k-u">R$ mil/mês</span> <span class="k-info" tabindex="0">i<span class="k-tip">Default = tudo o que a Alfa fatura a prazo por mês (vendas a prazo ÷ 12). Prazo médio antecipável das duplicatas 30/60/90: <b data-draw="v" data-q="prazoDup">—</b> dias.</span></span></label>
           <div class="k-in"><input type="range" id="c-V" data-k="V" min="0" max="6000" step="1"><input type="number" data-k="V" min="0" max="6000" step="1" aria-label="Duplicatas antecipadas, R$ mil por mês"></div></div>
-        <div class="k-ctl"><label for="c-Vc">Cartão antecipado <span class="k-u">R$ mil/mês</span> <span class="k-info" tabindex="0">i<span class="k-tip">Recebíveis de cartão da Alfa, D+<b data-draw="v" data-q="prazoCartao">—</b>. O teto do slider é o que a Alfa vende no cartão por mês.</span></span></label>
-          <div class="k-in"><input type="range" id="c-Vc" data-k="Vc" min="0" max="417" step="1"><input type="number" data-k="Vc" min="0" max="417" step="1" aria-label="Cartão antecipado, R$ mil por mês"></div></div>
 
         <h2 class="k-zt2">Taxas <span class="k-u">% a.m.</span></h2>
         <div class="k-ctl"><label for="c-rb">Bancária <span class="k-u">regresso sempre</span></label>
@@ -188,13 +185,9 @@
 
       <section data-group="v" data-pane="cascata" hidden>
         <h2 class="k-zt">Estrutura do FIDC</h2>
-        <div class="k-ctl"><label for="c-cart">Carteira cedida <span class="k-u">R$ mil</span></label>
-          <div class="k-in"><input type="range" id="c-cart" data-k="cart" min="2000" max="20000" step="100"><input type="number" data-k="cart" min="2000" max="20000" step="100" aria-label="Carteira cedida, R$ mil"></div></div>
         <div class="k-ctl"><label for="c-sub">Cota subordinada <span class="k-u">% · retida pela Alfa</span></label>
           <div class="k-in"><input type="range" id="c-sub" data-k="pSub" min="5" max="25" step="1"><input type="number" data-k="pSub" min="5" max="25" step="1" aria-label="Cota subordinada, %"></div></div>
-        <div class="k-ctl"><label for="c-mez">Cota mezanino <span class="k-u">%</span></label>
-          <div class="k-in"><input type="range" id="c-mez" data-k="pMez" min="0" max="15" step="1"><input type="number" data-k="pMez" min="0" max="15" step="1" aria-label="Cota mezanino, %"></div></div>
-        <p class="k-note">Sênior = o restante: <b data-draw="v" data-q="pSen">—</b> da carteira.</p>
+        <p class="k-note">Carteira cedida de R$ <b data-draw="v" data-q="carteira">—</b> mil. Sênior = o restante: <b data-draw="v" data-q="pSen">—</b> da carteira.</p>
         <h2 class="k-zt2">Choque</h2>
         <div class="k-ctl"><label for="c-inad">Inadimplência da carteira <span class="k-u">%</span></label>
           <div class="k-in"><input type="range" id="c-inad" data-k="inad" min="0" max="30" step="0.5"><input type="number" data-k="inad" min="0" max="30" step="0.5" aria-label="Inadimplência da carteira, %"></div></div>
@@ -240,11 +233,10 @@
       </section>
 
       <section data-group="v" data-pane="cascata" id="cascata" hidden>
-        <div class="k-ch"><h3>Quem absorve a inadimplência</h3><span>R$ mil · a perda sobe da base: subordinada → mezanino → sênior</span></div>
-        <div class="k-chart d48-casc dash-skeleton" id="colunas" data-draw="cascata" role="img" aria-label="Três colunas de cotas com a perda em vermelho subindo da base"></div>
+        <div class="k-ch"><h3>Quem absorve a inadimplência</h3><span>R$ mil · a perda sobe da base: subordinada → sênior</span></div>
+        <div class="k-chart d48-casc dash-skeleton" id="colunas" data-draw="cascata" role="img" aria-label="Duas colunas de cotas com a perda em vermelho subindo da base"></div>
         <div class="k-legend">
           <span><i style="background: var(--k-amber)"></i>Subordinada (Alfa)</span>
-          <span><i style="background: var(--k-blue-l)"></i>Mezanino</span>
           <span><i style="background: var(--k-navy)"></i>Sênior (investidores)</span>
           <span><i style="background: var(--k-neg)"></i>Perda absorvida</span>
         </div>
@@ -276,7 +268,6 @@
           <p data-frase="nunca" hidden>Taxa do FIDC igual ou maior que a bancária: as curvas não se cruzam e o fixo de R$ <b data-draw="v" data-q="F">—</b> mil é custo a mais em qualquer volume.</p>
           <p data-frase="cartao" hidden>Cartão à parte: <b data-draw="v" data-q="cart">—</b>/ano para transformar D+<b data-draw="v" data-q="prazoCartao">—</b> em D+0, risco praticamente nulo — funding subestimado.</p>
         </div>
-        <p class="k-note">Custo efetivo do deságio <span class="k-info" tabindex="0">i<span class="k-tip">A empresa recebe (1 − taxa × prazo) hoje e o banco ou fundo recebe 1 no vencimento: (1 ÷ (1 − d·n))^(12/n) − 1. Não inclui o custo fixo do FIDC. Detalhe na D5.4.</span></span>: bancária <b data-draw="v" data-q="efBanc">—</b> · FIDC <b data-draw="v" data-q="efFidc">—</b> · cartão <b data-draw="v" data-q="efCart">—</b> a.a.</p>
       </section>
 
       <section data-group="v" data-pane="perguntas" hidden>
@@ -293,8 +284,7 @@
         <div class="k-diag" data-frases>
           <span data-draw="frase" data-grp="casc"></span>
           <p data-frase="sub" hidden>A perda de <b data-draw="v" data-q="inad">—</b> cabe na cota subordinada da Alfa: investidores sênior intactos — é isso que compra o deságio baixo.</p>
-          <p data-frase="mez" hidden>A subordinada acabou; o mezanino absorve <b data-draw="v" data-q="mezPerda">—</b>. Rating da sênior em observação.</p>
-          <p data-frase="sen" hidden>A sênior perde <b data-draw="v" data-q="senPerda">—</b>: a estrutura falhou — concentração ou originação ruim.</p>
+          <p data-frase="sen" hidden>A subordinada acabou e a sênior perde <b data-draw="v" data-q="senPerda">—</b>: a estrutura falhou — concentração ou originação ruim.</p>
         </div>
       </section>
     </div>
@@ -311,7 +301,7 @@
           <details><summary>mostrar resposta</summary><p>Sem regresso o fundo absorve a inadimplência e cobra por isso (+<b data-draw="v" data-q="g-prem">—</b> p.p.): a taxa vai a <b data-draw="v" data-q="g-rfSr">—</b>, igual à bancária (<b data-draw="v" data-q="g-rb">—</b>), e o custo fixo nunca se dilui. Transferir risco tem preço explícito.</p></details>
         </li>
         <li>Na cascata, suba a inadimplência de <span data-draw="v" data-q="g-inad0">—</span> para <span data-draw="v" data-q="g-inad3">—</span>. Quem perde primeiro e por que isso importa para a Alfa?
-          <details><summary>mostrar resposta</summary><p>A subordinada (<b data-draw="v" data-q="g-pSub">—</b>, retida pela Alfa) vai a zero e o mezanino perde <b data-draw="v" data-q="g-mezPerda">—</b>; a sênior fica intacta. A Alfa continua carregando o risco da sua originação — por isso a cota sênior sai barata e por isso "antecipar" não é se livrar do crédito mal concedido.</p></details>
+          <details><summary>mostrar resposta</summary><p>A subordinada (<b data-draw="v" data-q="g-pSub">—</b>, retida pela Alfa) absorve <b data-draw="v" data-q="g-subPerda">—</b> e a sênior fica intacta; só uma perda acima de <b data-draw="v" data-q="g-pSub">—</b> da carteira atinge o investidor sênior. A Alfa continua carregando o risco da sua originação — por isso a cota sênior sai barata e por isso "antecipar" não é se livrar do crédito mal concedido.</p></details>
         </li>
       </ol>
     </div>
@@ -465,32 +455,24 @@
   };
   // volume mensal em que FIDC = bancária; ∞ se a taxa do FIDC não for menor
   M.breakEven = (rb, rfE, F, mDup) => (rfE >= rb ? Infinity : F / (12 * mDup * (rb - rfE) / 100));
-  // custo efetivo anual do deságio: recebe (1 − d·n), devolve 1, n meses
-  M.efetivo = (taxa, n) => Math.pow(1 / (1 - (taxa / 100) * n), 12 / n) - 1;
   M.estado = function (C, P) {
     const c = M.custos(C, P);
     const Vstar = M.breakEven(C.rb, c.rfE, C.F, P.mDup);
-    return {
-      ...c, Vstar,
-      vence: c.fidc < c.banc ? 'fidc' : 'banc',
-      efBanc: M.efetivo(C.rb, P.mDup), efFidc: M.efetivo(c.rfE, P.mDup), efCart: M.efetivo(C.rc, P.mCart),
-    };
+    return { ...c, Vstar, vence: c.fidc < c.banc ? 'fidc' : 'banc' };
   };
-  // cascata de cotas: a perda consome subordinada → mezanino → sênior
-  M.cascata = function (carteira, pSub, pMez, inad) {
-    const sub = carteira * pSub / 100, mez = carteira * pMez / 100, sen = carteira - sub - mez;
+  // cascata de cotas: a perda consome a subordinada antes da sênior
+  M.cascata = function (carteira, pSub, inad) {
+    const sub = carteira * pSub / 100, sen = carteira - sub;
     const perda = carteira * inad / 100;
     const pSubP = Math.min(perda, sub);
-    const pMezP = Math.min(Math.max(perda - sub, 0), mez);
-    const pSenP = Math.min(Math.max(perda - sub - mez, 0), sen);
+    const pSenP = Math.min(Math.max(perda - sub, 0), sen);
     return {
       carteira, perda,
       cotas: [
         { id: 'sub', valor: sub, perda: pSubP, resta: sub - pSubP },
-        { id: 'mez', valor: mez, perda: pMezP, resta: mez - pMezP },
         { id: 'sen', valor: sen, perda: pSenP, resta: sen - pSenP },
       ],
-      faixa: perda <= sub + 1e-9 ? 'sub' : perda <= sub + mez + 1e-9 ? 'mez' : 'sen',
+      faixa: perda <= sub + 1e-9 ? 'sub' : 'sen',
     };
   };
   // árvore das quatro perguntas (slide 7 de V4.8) → recomendação
@@ -510,21 +492,20 @@
 
 /* ============================================================
    D4.8 · Antecipação, FIDC e cartão
-   Testes de aderência (Spec §7), conferidos com M48 em node (38 PASS / 0 FAIL):
+   Testes de aderência (Spec §7), conferidos com M48 em node:
    Reset: bancária 1.400 · FIDC 1.650 · cartão 100 · V* 5.000
-   r_f 1,0: FIDC 1.300 · V* 2.500 · r_b 2,5: bancária 1.750 · V* 2.500
+   r_f 1,0: FIDC 1.300 · V* 2.500
    Sem regresso: FIDC 2.000 · V* = ∞ · Só o que falta (V 1.000): 480 · 960 · 100
-   Custo efetivo do deságio: 27,8% · 20,1% · 27,4%
-   Cascata 15%: subordinada 1.200 → 0 · mezanino 800 → 500 · sênior 8.000
-   Cascata 25%: perda 2.500 · sênior 8.000 → 7.500
+   Cascata 10%: subordinada 1.200 → 200 · sênior 8.800 intacta
+   Cascata 25%: perda 2.500 · subordinada 1.200 → 0 · sênior 8.800 → 7.500
    ============================================================ */
 const ST = window.D48 = { S: null, cen: null, mexido: false };
 const IDS = ['alfa', 'modalidades', 'cenarios', 'cascata'];
 const NOMES = ['curva', 'cascata', 'tabcasc', 'v', 'frase'];
 const XMAX = 6000;            // eixo do volume (R$ mil/mês), = teto do slider
-const Q3_INAD = 15;           // inadimplência sugerida na pergunta-guia 3 (%)
+const Q3_INAD = 10;           // inadimplência sugerida na pergunta-guia 3 (%)
 const Q_DEFAULT = { vol: 'baixo', rec: 'continua', ap: 'nao', perfil: 'b2b' };
-const CASC_KEYS = ['cart', 'pSub', 'pMez', 'inad'];
+const CASC_KEYS = ['pSub', 'inad'];
 const Q_KEYS = ['vol', 'rec', 'ap', 'perfil'];
 
 /* ---------- dados ---------- */
@@ -537,7 +518,7 @@ const casc0 = () => K.num(dash.data('cascata').data)[0];
 const par = () => ({ mDup: mod('bancaria').prazoMeses, mCart: mod('cartao').prazoMeses, prem: mod('fidc').premioSemRegresso });
 const ctlDe = (r) => ({ V: r.V, Vc: r.Vc, rb: r.rb, rf: r.rf, sr: !!Number(r.sr), F: r.F, rc: r.rc });
 const atual = () => M48.estado(ST.S, par());
-const cascAtual = () => M48.cascata(ST.S.cart, ST.S.pSub, ST.S.pMez, ST.S.inad);
+const cascAtual = () => M48.cascata(casc0().carteira, ST.S.pSub, ST.S.inad);
 const recAtual = () => M48.recomenda(ST.S);
 const pct = (v, d = 1) => K.n(v, d) + '%';
 const tx = (v) => K.n(v, 2).replace(/0$/, '') + '%';
@@ -549,7 +530,6 @@ function marca() {
   const R = ok ? atual() : null;
   document.querySelectorAll('.d48-card').forEach((c) => {
     c.classList.toggle('k-on', !!R && c.dataset.mod === R.vence);
-    c.classList.toggle('k-dim', !!R && c.dataset.mod === 'cart' && ST.S.Vc <= 0);
   });
 }
 function sincroniza() { K.sync(ST.S); marca(); }
@@ -559,7 +539,7 @@ function aplicar(id) {
   const c0 = casc0();
   const base = id === 'alfa' || !ST.S;
   ST.S = { ...(ST.S || {}), ...ctlDe(r) };
-  if (base) Object.assign(ST.S, { cart: c0.carteira, pSub: c0.pSub, pMez: c0.pMez, inad: c0.inad }, Q_DEFAULT);
+  if (base) Object.assign(ST.S, { pSub: c0.pSub, inad: c0.inad }, Q_DEFAULT);
   ST.cen = id; ST.mexido = false;
   sincroniza();
 }
@@ -658,7 +638,7 @@ dash.draw('curva', (el) => {
 });
 
 /* ---------- cascata de cotas ---------- */
-const COTA = { sub: ['Subordinada', 'var(--k-amber)'], mez: ['Mezanino', 'var(--k-blue-l)'], sen: ['Sênior', 'var(--k-navy)'] };
+const COTA = { sub: ['Subordinada', 'var(--k-amber)'], sen: ['Sênior', 'var(--k-navy)'] };
 dash.draw('cascata', (el) => {
   if (!pronto()) { falha(el); return; }
   el.classList.remove('dash-skeleton');
@@ -678,7 +658,7 @@ dash.draw('cascata', (el) => {
     if (fr > 0) g.append('rect').attr('x', cx).attr('y', base - hc * fr).attr('width', cw).attr('height', hc * fr).attr('rx', 3).attr('fill', 'var(--k-neg)');
     g.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('text-anchor', 'middle').attr('x', cx + cw / 2).attr('y', top - 8).text(K.n(c.valor));
     const resto = svg.append('text').attr('class', 'k-svgb').attr('text-anchor', 'middle').attr('x', cx + cw / 2);
-    if (fr < 0.82) resto.style('fill', c.id === 'mez' || c.id === 'sub' ? '#1a1a1a' : '#fff').attr('y', top + 20).text(fr >= 1 ? '' : 'resta ' + K.n(c.resta));
+    if (fr < 0.82) resto.style('fill', c.id === 'sub' ? '#1a1a1a' : '#fff').attr('y', top + 20).text(fr >= 1 ? '' : 'resta ' + K.n(c.resta));
     else resto.style('fill', '#fff').attr('y', top + 20).text(fr >= 1 ? 'zerada' : 'resta ' + K.n(c.resta));
     if (fr > 0 && hc * fr > 18) svg.append('text').attr('class', 'k-svgb').style('fill', '#fff').attr('text-anchor', 'middle').attr('x', cx + cw / 2).attr('y', base - Math.min(hc * fr, hc) / 2 + 5).text('−' + K.n(c.perda));
     svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', cx + cw / 2).attr('y', base + 18).text(nome);
@@ -692,7 +672,7 @@ dash.draw('cascata', (el) => {
 dash.draw('tabcasc', (el) => {
   if (!pronto()) { el.replaceChildren(); return; }
   const R = cascAtual();
-  const quem = { sub: 'Alfa (skin in the game)', mez: 'Investidores mezanino', sen: 'Investidores sênior' };
+  const quem = { sub: 'Alfa (skin in the game)', sen: 'Investidores sênior' };
   const rows = R.cotas.map((c) => [COTA[c.id][0], K.n(c.valor), K.n(c.perda), K.n(c.resta), quem[c.id], c.perda > 0]);
   rows.push(['Carteira', K.n(R.carteira), K.n(R.perda), K.n(R.carteira - R.perda), '', false]);
   el.replaceChildren(...rows.map((r, i) => {
@@ -707,22 +687,21 @@ dash.draw('tabcasc', (el) => {
 const baseAlfa = () => M48.estado(ctlDe(cenario('alfa')), par());
 const VAL = {
   prazoDup: () => K.n(alfa().prazoDup), prazoCartao: () => K.n(alfa().prazoCartao), prem: () => K.n(mod('fidc').premioSemRegresso, 1),
-  pSen: () => pct(100 - ST.S.pSub - ST.S.pMez, 0),
+  carteira: () => K.n(casc0().carteira), pSen: () => pct(100 - ST.S.pSub, 0),
   banc: (R) => K.n(R.banc), fidc: (R) => K.n(R.fidc), cart: (R) => K.n(R.cart), V: () => K.n(ST.S.V), F: () => K.n(ST.S.F),
   rb: () => tx(ST.S.rb), rfE: (R) => tx(R.rfE), rc: () => tx(ST.S.rc),
   Vstar: (R) => (Number.isFinite(R.Vstar) ? K.n(R.Vstar) : '∞'),
-  efBanc: (R) => K.p(R.efBanc, 1), efFidc: (R) => K.p(R.efFidc, 1), efCart: (R) => K.p(R.efCart, 1),
   cfgV: () => { const r = cenario(recAtual()); return r ? K.n(r.V) : null; },
   cfgRb: () => { const r = cenario(recAtual()); return r ? tx(r.rb) : null; },
   cfgRf: () => { const r = cenario(recAtual()); return r ? tx(r.rf) : null; },
-  perda: () => K.n(cascAtual().perda), senResta: () => K.n(cascAtual().cotas[2].resta), inad: () => pct(ST.S.inad, 1),
-  mezPerda: () => K.n(cascAtual().cotas[1].perda), senPerda: () => K.n(cascAtual().cotas[2].perda),
+  perda: () => K.n(cascAtual().perda), senResta: () => K.n(cascAtual().cotas[1].resta), inad: () => pct(ST.S.inad, 1),
+  senPerda: () => K.n(cascAtual().cotas[1].perda),
   'g-V': () => K.n(cenario('alfa').V), 'g-F': () => K.n(cenario('alfa').F), 'g-Vstar': () => K.n(baseAlfa().Vstar),
   'g-dif': () => K.n(cenario('alfa').rb - cenario('alfa').rf, 1), 'g-rfEsc': () => tx(cenario('escala').rf),
   'g-VstarEsc': () => K.n(M48.estado(ctlDe(cenario('escala')), par()).Vstar),
   'g-prem': () => K.n(mod('fidc').premioSemRegresso, 1), 'g-rfSr': () => tx(M48.estado(ctlDe(cenario('semreg')), par()).rfE), 'g-rb': () => tx(cenario('semreg').rb),
   'g-inad0': () => pct(casc0().inad, 0), 'g-inad3': () => pct(Q3_INAD, 0), 'g-pSub': () => pct(casc0().pSub, 0),
-  'g-mezPerda': () => { const c = casc0(); return K.n(M48.cascata(c.carteira, c.pSub, c.pMez, Q3_INAD).cotas[1].perda); },
+  'g-subPerda': () => { const c = casc0(); return K.n(M48.cascata(c.carteira, c.pSub, Q3_INAD).cotas[0].perda); },
 };
 dash.draw('v', (el) => {
   const fn = VAL[el.dataset.q];
@@ -735,8 +714,7 @@ dash.draw('frase', (el) => {
   if (pronto()) {
     const R = atual(), grp = el.dataset.grp;
     if (grp === 'custo') {
-      keys.push(!Number.isFinite(R.Vstar) ? (ST.S.sr ? 'semreg' : 'nunca') : ST.S.V < R.Vstar ? 'pontual' : 'escala');
-      if (ST.S.Vc > 0) keys.push('cartao');
+      keys.push(!Number.isFinite(R.Vstar) ? (ST.S.sr ? 'semreg' : 'nunca') : ST.S.V < R.Vstar ? 'pontual' : 'escala', 'cartao');
     } else if (grp === 'star') keys.push(Number.isFinite(R.Vstar) ? 'fin' : 'inf');
     else if (grp === 'rec') keys.push(recAtual());
     else if (grp === 'recnome') { const r = recAtual(); keys.push(r === 'cartao' ? 'cartao' : r === 'fidc' ? 'fidc' : 'banc'); }

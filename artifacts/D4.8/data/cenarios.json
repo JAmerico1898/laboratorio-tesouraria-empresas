@@ -1,7 +1,6 @@
 [
   {"id": "alfa", "tipo": "cenario", "nome": "Alfa hoje", "V": 2917, "Vc": 417, "rb": 2.0, "rf": 1.5, "sr": 0, "F": 600, "rc": 2.0},
   {"id": "escala", "tipo": "cenario", "nome": "FIDC em escala", "V": 2917, "Vc": 417, "rb": 2.0, "rf": 1.0, "sr": 0, "F": 600, "rc": 2.0},
-  {"id": "bancocaro", "tipo": "cenario", "nome": "Banco caro", "V": 2917, "Vc": 417, "rb": 2.5, "rf": 1.5, "sr": 0, "F": 600, "rc": 2.0},
   {"id": "semreg", "tipo": "cenario", "nome": "Sem regresso", "V": 2917, "Vc": 417, "rb": 2.0, "rf": 1.5, "sr": 1, "F": 600, "rc": 2.0},
   {"id": "falta", "tipo": "cenario", "nome": "Só o que falta", "V": 1000, "Vc": 417, "rb": 2.0, "rf": 1.5, "sr": 0, "F": 600, "rc": 2.0},
   {"id": "cartao", "tipo": "arvore", "nome": "Antecipação de cartão", "V": 2917, "Vc": 417, "rb": 2.0, "rf": 1.5, "sr": 0, "F": 600, "rc": 2.0},
