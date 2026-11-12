@@ -10,11 +10,6 @@
 .d55-esc { min-height: 250px; }
 .d55-bars { min-height: 120px; }
 .d55-red { min-height: 64px; }
-.d55-pos { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
-.d55-pos th, .d55-pos td { padding: 2px 3px; border-bottom: 1px solid var(--color-border-line); }
-.d55-pos th { font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); text-align: center; }
-.d55-pos td:first-child { text-align: left; white-space: nowrap; padding-right: 6px; }
-.d55-pos input { font: inherit; font-size: 13px; width: 100%; min-width: 3.4rem; box-sizing: border-box; padding: 1px 3px; text-align: right; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
 .d55-mat { width: 100%; border-collapse: separate; border-spacing: 6px; font-size: 14px; font-variant-numeric: tabular-nums; margin-top: 6px; }
 .d55-mat th { font-size: 13px; color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); text-align: center; }
 .d55-mat th[scope=row] { text-align: left; }
@@ -55,42 +50,13 @@
     <!-- ===================== CONTROLES ===================== -->
     <div class="k-zone" id="controles" data-source="bancos horizonte historico hierarquia cenarios">
       <section data-group="v" data-pane="tudo">
-        <h2 class="k-zt">Posição por banco <span class="k-u">R$ mil</span></h2>
-        <div class="k-tw">
-          <table class="d55-pos" aria-label="Posição de curto prazo por banco">
-            <thead><tr><th></th><th>A</th><th>B</th><th>C</th></tr></thead>
-            <tbody>
-              <tr><td>Caixa em conta</td>
-                <td><input type="number" data-k="A_caixa" min="0" max="5000" step="10" aria-label="Caixa no banco A"></td>
-                <td><input type="number" data-k="B_caixa" min="0" max="5000" step="10" aria-label="Caixa no banco B"></td>
-                <td><input type="number" data-k="C_caixa" min="0" max="5000" step="10" aria-label="Caixa no banco C"></td></tr>
-              <tr><td>Aplicações CP</td>
-                <td><input type="number" data-k="A_aplic" min="0" max="5000" step="10" aria-label="Aplicações no banco A"></td>
-                <td><input type="number" data-k="B_aplic" min="0" max="5000" step="10" aria-label="Aplicações no banco B"></td>
-                <td><input type="number" data-k="C_aplic" min="0" max="5000" step="10" aria-label="Aplicações no banco C"></td></tr>
-              <tr><td>CG linha <span class="k-u">parcela CP</span></td>
-                <td><input type="number" data-k="A_linhaCP" min="0" max="5000" step="10" aria-label="CG linha, parcela CP, banco A"></td>
-                <td><input type="number" data-k="B_linhaCP" min="0" max="5000" step="10" aria-label="CG linha, parcela CP, banco B"></td>
-                <td><input type="number" data-k="C_linhaCP" min="0" max="5000" step="10" aria-label="CG linha, parcela CP, banco C"></td></tr>
-              <tr><td>Conta garantida</td>
-                <td><input type="number" data-k="A_contaGar" min="0" max="5000" step="10" aria-label="Conta garantida, banco A"></td>
-                <td><input type="number" data-k="B_contaGar" min="0" max="5000" step="10" aria-label="Conta garantida, banco B"></td>
-                <td><input type="number" data-k="C_contaGar" min="0" max="5000" step="10" aria-label="Conta garantida, banco C"></td></tr>
-              <tr><td>CG rotativo</td>
-                <td><input type="number" data-k="A_rotativo" min="0" max="5000" step="10" aria-label="CG rotativo, banco A"></td>
-                <td><input type="number" data-k="B_rotativo" min="0" max="5000" step="10" aria-label="CG rotativo, banco B"></td>
-                <td><input type="number" data-k="C_rotativo" min="0" max="5000" step="10" aria-label="CG rotativo, banco C"></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="k-note">A público · B e C privados. Dívida CP por banco: A <b data-draw="v" data-q="dcpA">—</b> · B <b data-draw="v" data-q="dcpB">—</b> · C <b data-draw="v" data-q="dcpC">—</b>.</p>
+        <h2 class="k-zt">Posição consolidada <span class="k-u">R$ mil</span></h2>
+        <p class="k-note">Três bancos: A público · B e C privados. Dívida CP por banco: A <b data-draw="v" data-q="dcpA">—</b> · B <b data-draw="v" data-q="dcpB">—</b> · C <b data-draw="v" data-q="dcpC">—</b>.</p>
         <div class="k-ctl" style="margin-top: 10px"><label for="c-forn">Fornecedores <span class="k-u">R$ mil · funding implícito</span></label>
           <div class="k-in"><input type="range" id="c-forn" data-k="forn" min="0" max="8000" step="50"><input type="number" data-k="forn" min="0" max="8000" step="50" aria-label="Fornecedores, R$ mil"></div></div>
         <h2 class="k-zt2">Pooling de caixa</h2>
         <div class="k-seg" role="group" aria-label="Pooling"><button data-k="pool" data-v="nenhum">Nenhum</button><button data-k="pool" data-v="notional">Notional</button><button data-k="pool" data-v="fisico">Físico</button></div>
-        <p class="k-note">Notional: o caixa abate a dívida rotativa no mesmo banco. Físico: varredura diária para a conta-mãe, que quita primeiro a dívida mais cara.</p>
-        <div class="k-ctl" style="margin-top: 8px"><label for="c-min">Caixa operacional mínimo <span class="k-u">R$ mil</span> <span class="k-info" tabindex="0">i<span class="k-tip">No pooling físico o mínimo fica aplicado no CDB diário (liquidez imediata), e o caixa parado a 0% é o primeiro a quitar dívida.</span></span></label>
-          <div class="k-in"><input type="range" id="c-min" data-k="caixaMin" min="0" max="600" step="10"><input type="number" data-k="caixaMin" min="0" max="600" step="10" aria-label="Caixa mínimo, R$ mil"></div></div>
+        <p class="k-note">Notional: o caixa abate a dívida rotativa no mesmo banco. Físico: varredura diária para a conta-mãe, que quita primeiro a dívida mais cara; o caixa operacional mínimo de R$ <b data-draw="v" data-q="caixaMin">—</b> mil fica aplicado no CDB diário.</p>
       </section>
 
       <section data-group="v" data-pane="hierarquia" hidden>
@@ -98,14 +64,13 @@
         <div class="k-seg" role="group" aria-label="Conta garantida"><button data-k="esticar" data-v="false">Manter a conta garantida</button><button data-k="esticar" data-v="true">Esticar fornecedor e quitar</button></div>
         <p class="k-note">Esticar o prazo do fornecedor (~<b data-draw="v" data-q="txForn">—</b>) para zerar a conta garantida (~<b data-draw="v" data-q="txCG">—</b>): o saldo muda de nível na escada, o PLCP não muda.</p>
         <h2 class="k-zt2">Casamento fontes × usos</h2>
-        <div class="k-ctl"><label for="c-refin">Refinanciar o CAPEX do CD em LP <span class="k-u">meses</span> <span class="k-info" tabindex="0">i<span class="k-tip">O CD foi construído com CG linha de <b data-draw="v" data-q="linhaMeses">—</b> meses. A partir de <b data-draw="v" data-q="prazoLP">—</b> meses (BNDES/Finame) a parcela de curto prazo migra para o exigível de longo prazo.</span></span></label>
-          <div class="k-in"><input type="range" id="c-refin" data-k="refin" min="24" max="120" step="12"><input type="number" data-k="refin" min="24" max="120" step="12" aria-label="Prazo do refinanciamento, meses"></div></div>
+        <div class="k-seg" role="group" aria-label="Financiamento do CD"><button data-k="refin" data-v="24">CG linha de 24 m</button><button data-k="refin" data-v="60">BNDES/Finame 60 m</button></div>
+        <p class="k-note">O CD foi construído com CG linha de <b data-draw="v" data-q="linhaMeses">—</b> meses. Refinanciado em <b data-draw="v" data-q="prazoLP">—</b> meses (BNDES/Finame), a parcela de curto prazo migra para o exigível de longo prazo.</p>
       </section>
 
       <section data-group="v" data-pane="bancos" hidden>
         <h2 class="k-zt">Dívida bancária</h2>
-        <div class="k-ctl"><label for="c-div">Dívida bruta <span class="k-u">R$ mil</span></label>
-          <div class="k-in"><input type="range" id="c-div" data-k="div" min="1000" max="20000" step="100"><input type="number" data-k="div" min="1000" max="20000" step="100" aria-label="Dívida bruta, R$ mil"></div></div>
+        <p class="k-note">Dívida bruta da Horizonte: R$ <b data-draw="v" data-q="div">—</b> mil (CP + LP nos três bancos). O HHI depende só das participações.</p>
         <label class="k-toggle"><input type="checkbox" data-k="incD"> Incluir novo banco D</label><br>
         <label class="k-toggle"><input type="checkbox" data-k="incE"> Incluir novo banco E</label>
         <h2 class="k-zt2">Participação <span class="k-u">% · o último é o residual</span></h2>
@@ -268,7 +233,6 @@
 const ST = window.D55 = { S: null, cen: null, mexido: false };
 const IDS = ['bancos', 'horizonte', 'historico', 'hierarquia', 'cenarios'];
 const NOMES = ['bal', 'cfoPlcp', 'cfoVenc', 'cfoLim', 'cfoHhi', 'escada', 'barras', 'hhiMed', 'redund', 'v', 'sem', 'frase'];
-const CAMPOS = ['caixa', 'aplic', 'linhaCP', 'contaGar', 'rotativo'];
 const LETRAS = ['A', 'B', 'C', 'D', 'E'];
 const ALERTA = 0.10;        // piora do PLCP que acende o alerta (4 semanas)
 const LIVRES_MIN = 0.30;    // limites livres mínimos
@@ -293,18 +257,16 @@ const ativos = () => LETRAS.slice(0, 3 + (ST.S.incD ? 1 : 0) + (ST.S.incE ? 1 : 
 function baseS() {
   const S = {};
   const L = linhasB(), H = Hz();
-  L.forEach((b) => CAMPOS.forEach((c) => { S[b.banco + '_' + c] = b[c]; }));
-  S.forn = H.fornecedores; S.caixaMin = H.caixaMin; S.pool = 'nenhum'; S.esticar = false; S.refin = H.linhaMeses;
+  S.forn = H.fornecedores; S.pool = 'nenhum'; S.esticar = false; S.refin = H.linhaMeses;
   const divs = L.map(M55.divBanco), parts = M55.partsDe(divs);
   S.div = divs.reduce((a, v) => a + v, 0);
   LETRAS.forEach((l, i) => { S['p' + l] = parts[i] || 0; });
   S.incD = false; S.incE = false;
   return S;
 }
-function bancosAtuais(S) { return linhasB().map((b) => { const o = { ...b }; CAMPOS.forEach((c) => { o[c] = Number(S[b.banco + '_' + c]) || 0; }); return o; }); }
 function calc(S) {
   const H = Hz();
-  const E = M55.efetivo(bancosAtuais(S), S.forn, !!S.esticar);
+  const E = M55.efetivo(linhasB(), S.forn, !!S.esticar);
   const t = M55.totais(E.bancos);
   const plcp = M55.plcp(t, E.forn);
   const serie = hist().slice(0, -1).concat([plcp]);
@@ -355,7 +317,7 @@ function aplicar(id) {
   const r = cenario(id);
   if (!r) return;
   ST.S = baseS();
-  ST.S.pool = r.pool; ST.S.esticar = !!Number(r.esticar); ST.S.refin = r.refin;
+  ST.S.pool = r.pooling; ST.S.esticar = !!Number(r.esticar); ST.S.refin = r.refin;
   if (r.nBancos >= 4) {
     ST.S.incD = true; ST.S.incE = r.nBancos >= 5;
     LETRAS.forEach((l) => { const v = r['p' + l]; ST.S['p' + l] = v === '' || v == null ? 0 : Number(v); });
@@ -637,6 +599,7 @@ const VAL = {
   lc: (R) => K.n(R.bal.LC, 2), PC: (R) => K.n(R.bal.PC), LP: (R) => K.n(R.bal.LP), AC: (R) => K.n(R.bal.AC), ANC: (R) => K.n(R.H.anc), ccl: (R) => K.n(R.bal.CCL),
   acCP: (R) => K.n(R.bal.cel.acCP), acLP: (R) => K.n(R.bal.cel.acLP), ancCP: (R) => K.n(R.bal.cel.ancCP), ancLP: (R) => K.n(R.bal.cel.ancLP),
   pcSem: (R) => K.n(R.bal.PC + R.bal.migrado), pcCom: (R) => K.n(R.bal.PC + R.bal.migrado - R.bal.capexCP),
+  caixaMin: (R) => K.n(R.H.caixaMin), div: () => K.n(ST.S.div),
   linhaMeses: (R) => K.n(R.H.linhaMeses), prazoLP: () => K.n(PRAZO_LP), refin: () => K.n(ST.S.refin), cov: () => K.n(COV_LC, 1),
   hhi3: (R) => K.n(R.hhi3), maior3: (R) => R.maior3.banco + ' · ' + pct(R.maior3.p, 1), maiorBanco: (R) => R.maior3.banco, maiorP: (R) => pct(R.maior3.p, 1),
   red3: (R) => pct(R.red3, 1), n3: (R) => K.n(R.act.length), lim: () => K.n(HHI_LIM), hhiAlto: () => K.n(HHI_ALTO),
