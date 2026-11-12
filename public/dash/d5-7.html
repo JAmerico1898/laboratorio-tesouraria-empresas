@@ -6,7 +6,7 @@
 <title>D5.7 · Fecho da cadeia</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"alfa":{"format":"json","data":[{"chave":"rec","valor":50000,"descricao":"Receita líquida anual (R$ mil)"},{"chave":"cmv","valor":32000,"descricao":"CMV anual (R$ mil)"},{"chave":"compras","valor":33000,"descricao":"Compras anuais (R$ mil)"},{"chave":"pmrv","valor":60,"descricao":"PMRV da carteira toda (dias)"},{"chave":"pmre","valor":60,"descricao":"PMRE (dias)"},{"chave":"pmpf","valor":45,"descricao":"PMPF (dias)"},{"chave":"ncg","valor":8900,"descricao":"NCG em T0 (R$ mil)"},{"chave":"ccl","valor":7900,"descricao":"CCL em T0 (R$ mil)"},{"chave":"st","valor":-1000,"descricao":"ST em T0 (R$ mil)"}]},"cadeia":{"format":"json","data":[{"chave":"fluxo","valor":6000,"descricao":"Vendas anuais Alfa → Horizonte (R$ mil)"},{"chave":"prazo0","valor":60,"descricao":"Prazo da duplicata em T0 (dias)"},{"chave":"fundAlfa","valor":17,"descricao":"Custo de carregar da Alfa (% a.a.)"},{"chave":"fundHor","valor":20,"descricao":"Funding alternativo da Horizonte, CG rotativo (% a.a.)"},{"chave":"perda","valor":2,"descricao":"Perda esperada da Alfa sobre a Horizonte (% das vendas)"},{"chave":"taxaVendor","valor":21,"descricao":"Taxa do vendor finance, CDI + 9% (% a.a.)"},{"chave":"cob","valor":100,"descricao":"Cobertura total de estoque dos produtos Alfa na cadeia (dias)"},{"chave":"estDias0","valor":100,"descricao":"Estoque dos produtos Alfa na Horizonte em T0 (dias de compras)"},{"chave":"custoPct","valor":64,"descricao":"Custo do produto na Alfa (% do preço; PA ao custo)"},{"chave":"ncgAlfa","valor":8900,"descricao":"NCG da Alfa em T0 (R$ mil)"},{"chave":"ncgHor","valor":5500,"descricao":"NCG da Horizonte em T0 (R$ mil)"},{"chave":"acoAlfa","valor":14000,"descricao":"ACO da Alfa em T0 (R$ mil)"},{"chave":"pcoAlfa","valor":5100,"descricao":"PCO da Alfa em T0 (R$ mil)"},{"chave":"acoHor","valor":9800,"descricao":"ACO da Horizonte em T0 (R$ mil)"},{"chave":"pcoHor","valor":4300,"descricao":"PCO da Horizonte em T0 (R$ mil)"},{"chave":"stHor","valor":-2500,"descricao":"ST da Horizonte em T0 (R$ mil)"}]},"cenarios":{"format":"json","data":[{"id":"t0","nome":"T0","prazo":60,"d":0,"modo":"auto","vendor":0,"h":100,"pmrv":60,"pmre":60,"pmpf":45},{"id":"d2","nome":"Alfa oferece 2%","prazo":60,"d":2,"modo":"auto","vendor":0,"h":100,"pmrv":60,"pmre":60,"pmpf":45},{"id":"d4","nome":"Alfa oferece 4%","prazo":60,"d":4,"modo":"auto","vendor":0,"h":100,"pmrv":60,"pmre":60,"pmpf":45},{"id":"vendor","nome":"Vendor finance","prazo":60,"d":2,"modo":"auto","vendor":1,"h":100,"pmrv":60,"pmre":60,"pmpf":45},{"id":"jit","nome":"JIT na Horizonte","prazo":60,"d":0,"modo":"auto","vendor":0,"h":40,"pmrv":60,"pmre":60,"pmpf":45},{"id":"st","nome":"Fechar o ST da Alfa","prazo":60,"d":0,"modo":"auto","vendor":0,"h":100,"pmrv":52,"pmre":60,"pmpf":50}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"cadeia":{"format":"json","data":[{"chave":"fluxo","valor":6000,"descricao":"Vendas anuais Alfa → Horizonte (R$ mil)"},{"chave":"prazo0","valor":60,"descricao":"Prazo da duplicata em T0 (dias)"},{"chave":"fundAlfa","valor":17,"descricao":"Custo de carregar da Alfa (% a.a.)"},{"chave":"fundHor","valor":20,"descricao":"Funding alternativo da Horizonte, CG rotativo (% a.a.)"},{"chave":"perda","valor":2,"descricao":"Perda esperada da Alfa sobre a Horizonte (% das vendas)"},{"chave":"taxaVendor","valor":21,"descricao":"Taxa do vendor finance, CDI + 9% (% a.a.)"},{"chave":"estDias0","valor":100,"descricao":"Estoque dos produtos Alfa na Horizonte em T0 (dias de compras)"},{"chave":"ncgAlfa","valor":8900,"descricao":"NCG da Alfa em T0 (R$ mil)"},{"chave":"ncgHor","valor":5500,"descricao":"NCG da Horizonte em T0 (R$ mil)"},{"chave":"acoAlfa","valor":14000,"descricao":"ACO da Alfa em T0 (R$ mil)"},{"chave":"pcoAlfa","valor":5100,"descricao":"PCO da Alfa em T0 (R$ mil)"},{"chave":"acoHor","valor":9800,"descricao":"ACO da Horizonte em T0 (R$ mil)"},{"chave":"pcoHor","valor":4300,"descricao":"PCO da Horizonte em T0 (R$ mil)"}]},"cenarios":{"format":"json","data":[{"id":"t0","nome":"T0","prazo":60,"d":0,"vendor":0},{"id":"d2","nome":"Alfa oferece 2%","prazo":60,"d":2,"vendor":0},{"id":"d4","nome":"Alfa oferece 4%","prazo":60,"d":4,"vendor":0},{"id":"vendor","nome":"Vendor finance","prazo":60,"d":2,"vendor":1}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -124,12 +124,8 @@
 </style>
 <style>
 .d57-bal { min-height: 320px; }
-.d57-est { min-height: 64px; }
-.d57-stbar { min-height: 100px; }
 .d57 .k-ch + .k-chart { margin-bottom: 8px; }
 .d57-h3b { margin-top: 14px; }
-.d57-stz { margin-top: var(--cds-gap-md); }
-.d57-stg { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); align-items: start; }
 .d57-dec { font-size: 14px; font-weight: var(--cds-font-weight-medium); margin: 2px 0 4px; }
 .d57-tab td.k-pos { color: var(--k-pos); }
 .d57-tab td.k-neg { color: var(--k-neg); }
@@ -146,8 +142,6 @@
       <button class="k-btn d57-cen" data-cen="d2" aria-pressed="false">Alfa oferece 2%</button>
       <button class="k-btn d57-cen" data-cen="d4" aria-pressed="false">Alfa oferece 4%</button>
       <button class="k-btn d57-cen" data-cen="vendor" aria-pressed="false">Vendor finance</button>
-      <button class="k-btn d57-cen" data-cen="jit" aria-pressed="false">JIT na Horizonte</button>
-      <button class="k-btn d57-cen" data-cen="st" aria-pressed="false">Fechar o ST da Alfa</button>
     </div>
   </header>
 
@@ -159,20 +153,12 @@
         <div class="k-in"><input type="range" id="c-prazo" data-k="prazo" min="0" max="120" step="1"><input type="number" data-k="prazo" min="0" max="120" step="1" aria-label="Prazo da duplicata, dias"></div></div>
       <div class="k-ctl"><label for="c-d">Desconto à vista da Alfa <span class="k-u">%</span></label>
         <div class="k-in"><input type="range" id="c-d" data-k="d" min="0" max="5" step="0.1"><input type="number" data-k="d" min="0" max="5" step="0.1" aria-label="Desconto à vista, %"></div></div>
-      <div class="k-ctl"><span class="k-lab">A Horizonte paga à vista?</span>
-        <div class="k-seg" role="group" aria-label="A Horizonte paga à vista?"><button data-k="modo" data-v="auto">Auto</button><button data-k="modo" data-v="sim">Sim</button><button data-k="modo" data-v="nao">Não</button></div>
-        <p class="k-note">Auto: paga à vista se recusar o desconto custar mais que o funding dela.</p></div>
       <label class="k-toggle"><input type="checkbox" data-k="vendor"> Vendor finance <span class="k-u">banco a <b data-draw="v" data-q="tv">—</b> a.a.</span></label>
 
-      <h2 class="k-zt2">Estoque dos produtos Alfa</h2>
-      <div class="k-ctl"><label for="c-h">Na Horizonte <span class="k-u">dias de compras</span> <span class="k-info" tabindex="0">i<span class="k-tip">A cadeia mantém <b data-draw="v" data-q="cob">—</b> dias de cobertura: o que a Horizonte não guarda, a Alfa guarda como produto acabado, ao custo (<b data-draw="v" data-q="custoPct">—</b> do preço).</span></span></label>
-        <div class="k-in"><input type="range" id="c-h" data-k="h" min="20" max="120" step="1"><input type="number" data-k="h" min="20" max="120" step="1" aria-label="Estoque na Horizonte, dias"></div></div>
-
-      <h2 class="k-zt2">Funding <span class="k-u">% a.a.</span></h2>
-      <div class="k-ctl"><label for="c-fA">Alfa <span class="k-u">carregar o recebível</span></label>
-        <div class="k-in"><input type="range" id="c-fA" data-k="fA" min="10" max="30" step="0.5"><input type="number" data-k="fA" min="10" max="30" step="0.5" aria-label="Funding da Alfa, % a.a."></div></div>
+      <h2 class="k-zt2">Funding da Horizonte <span class="k-u">% a.a.</span></h2>
       <div class="k-ctl"><label for="c-fH">Horizonte <span class="k-u">CG rotativo</span></label>
         <div class="k-in"><input type="range" id="c-fH" data-k="fH" min="10" max="30" step="0.5"><input type="number" data-k="fH" min="10" max="30" step="0.5" aria-label="Funding da Horizonte, % a.a."></div></div>
+      <p class="k-note">Fixos, como em D5.3: a Alfa carrega o recebível a <b data-draw="v" data-q="fA">—</b> a.a. com <b data-draw="v" data-q="perda">—</b> de perda esperada; o vendor finance custa <b data-draw="v" data-q="tv">—</b> a.a. Estoque na Horizonte: <b data-draw="v" data-q="estDias">—</b> dias de compras.</p>
     </div>
 
     <!-- ===================== VISUAL ===================== -->
@@ -182,14 +168,10 @@
       <div class="k-legend">
         <span><i style="background: var(--k-navy)"></i>Duplicata Alfa → Horizonte</span>
         <span><i style="background: var(--k-amber)"></i>Estoque de produtos Alfa na Horizonte</span>
-        <span><i style="background: var(--k-amber-d)"></i>Produto acabado reservado na Alfa</span>
         <span><i style="background: var(--k-neutro); opacity: .35"></i>Demais contas operacionais</span>
       </div>
 
-      <div class="k-ch d57-h3b"><h3 id="estoque">Produtos Alfa na cadeia</h3><span>dias de cobertura · R$ mil</span></div>
-      <div class="k-chart d57-est dash-skeleton" data-draw="estoque" role="img" aria-label="Cobertura de estoque dividida entre produto acabado na Alfa e estoque na Horizonte"></div>
-
-      <div class="k-ch d57-h3b"><h3 id="conta">A conta da cadeia <span class="k-info" tabindex="0">i<span class="k-tip">Custo financeiro anual do título e do estoque, pago por quem carrega: Alfa = (Clientes Horizonte + PA) × funding Alfa + perda esperada + desconto concedido; Horizonte = (estoque − fornecedores Alfa − dívida do vendor) × funding Horizonte + juros do vendor − desconto recebido. O desconto é transferência: sai de um elo e entra no outro.</span></span></h3><span>R$ mil</span></div>
+      <div class="k-ch d57-h3b"><h3 id="conta">A conta da cadeia <span class="k-info" tabindex="0">i<span class="k-tip">Custo financeiro anual do título e do estoque, pago por quem carrega: Alfa = Clientes Horizonte × funding Alfa + perda esperada + desconto concedido; Horizonte = (estoque − fornecedores Alfa − dívida do vendor) × funding Horizonte + juros do vendor − desconto recebido. O desconto é transferência: sai de um elo e entra no outro.</span></span></h3><span>R$ mil</span></div>
       <div class="k-tw">
         <table class="k-table d57-tab" aria-label="NCG e custo financeiro por elo e da cadeia">
           <thead><tr><th></th><th>Alfa</th><th>Horizonte</th><th>Cadeia</th></tr></thead>
@@ -204,7 +186,7 @@
       <div class="k-kpi"><span class="k-kl">Custo de recusar o desconto <span class="k-u">% a.a.</span> <span class="k-info" tabindex="0">i<span class="k-tip">(1 ÷ (1 − d))^(360 ÷ prazo) − 1: pagar hoje com desconto d contra pagar o valor cheio no fim do prazo. Base 360, como em D4.2 e D5.1.</span></span></span><span class="k-kn" data-draw="v" data-q="crK">—</span></div>
       <p class="d57-dec" data-frases><span data-draw="frase" data-grp="dec"></span><span data-frase="mantem" hidden>A Horizonte mantém o prazo</span><span data-frase="toma" hidden>A Horizonte paga à vista</span><span data-frase="vendor" hidden>Vendor finance: o banco paga a Alfa</span></p>
       <div class="k-kpi"><span class="k-kl">NCG da cadeia <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="ncgCad">—</span></div>
-      <p class="k-note">Variação desde T0: <b data-draw="v" data-q="dNcgK">—</b></p>
+      <p class="k-note">O título só muda de balanço: a NCG da cadeia não se altera.</p>
       <div class="k-kpi"><span class="k-kl">Custo da cadeia <span class="k-u">R$ mil/ano</span></span><span class="k-kn" data-draw="v" data-q="custoCad">—</span></div>
       <p class="k-note">Variação desde T0: <b data-draw="v" data-q="dCustoK">—</b></p>
 
@@ -213,45 +195,10 @@
           <span data-draw="frase" data-grp="tit"></span>
           <p data-frase="vendor" hidden>Com vendor finance a Alfa recebe à vista e a Horizonte paga <b data-draw="v" data-q="tv">—</b> ao banco menos o desconto: ganho Alfa <b data-draw="v" data-q="gA">—</b>, ganho Horizonte <b data-draw="v" data-q="gH">—</b> <span class="k-info" tabindex="0">i<span class="k-tip">Como em D5.3: a Alfa compara com carregar o título (<b data-draw="v" data-q="alfaSem">—</b>/ano); a Horizonte, com trocar o prazo por CG rotativo (<b data-draw="v" data-q="horSem">—</b>/ano). Contra o prazo "grátis" de T0 a Horizonte pagaria mais — o vendor só fecha quando a Alfa deixa de dar prazo.</span></span>. O título saiu dos dois balanços e foi para quem precifica melhor o risco.</p>
           <p data-frase="toma" hidden>Desconto de <b data-draw="v" data-q="d">—</b> em <b data-draw="v" data-q="prazo">—</b> dias = <b data-draw="v" data-q="cr">—</b> a.a. recusado, acima dos <b data-draw="v" data-q="fH">—</b> do CG: a Horizonte paga à vista. A NCG da Alfa cai <b data-draw="v" data-q="saldo">—</b>; a da Horizonte sobe o mesmo. A cadeia <span data-draw="v" data-q="verbo">—</span> <b data-draw="v" data-q="dCustoAbs">—</b>/ano porque a Alfa deixa de carregar a <b data-draw="v" data-q="fA">—</b> + risco.</p>
-          <p data-frase="tomaF" hidden>Forçado: a Horizonte paga à vista um desconto que vale só <b data-draw="v" data-q="cr">—</b> a.a., abaixo dos <b data-draw="v" data-q="fH">—</b> do CG. A NCG da Alfa cai <b data-draw="v" data-q="saldo">—</b> e a da Horizonte sobe o mesmo; a cadeia <span data-draw="v" data-q="verbo">—</span> <b data-draw="v" data-q="dCustoAbs">—</b>/ano.</p>
-          <p data-frase="mantemF" hidden>Forçado: a Horizonte recusa um desconto que vale <b data-draw="v" data-q="cr">—</b> a.a., acima dos <b data-draw="v" data-q="fH">—</b> do CG — usa o prazo da Alfa mais caro do que o banco cobraria.</p>
           <p data-frase="mantem" hidden>Desconto de <b data-draw="v" data-q="d">—</b> = <b data-draw="v" data-q="cr">—</b> a.a.: mais barato recusar e usar o prazo da Alfa (funding implícito) do que o CG a <b data-draw="v" data-q="fH">—</b>. A Alfa segue carregando <b data-draw="v" data-q="saldo">—</b> a <b data-draw="v" data-q="fA">—</b> + <b data-draw="v" data-q="perda">—</b> de perda esperada.</p>
           <p data-frase="semdesc" hidden>Sem desconto, a Horizonte usa o prazo da Alfa: <b data-draw="v" data-q="saldo">—</b> de funding implícito. A Alfa carrega esse saldo a <b data-draw="v" data-q="fA">—</b> + <b data-draw="v" data-q="perda">—</b> de perda esperada — <b data-draw="v" data-q="alfaTit">—</b>/ano.</p>
           <p data-frase="avista" hidden>Prazo zero: venda à vista, sem título. Os <b data-draw="v" data-q="saldo0">—</b> que a Alfa financiava em T0 passaram para a NCG da Horizonte.</p>
         </div>
-        <div data-frases>
-          <span data-draw="frase" data-grp="est"></span>
-          <p data-frase="menos" hidden>Horizonte com <b data-draw="v" data-q="h">—</b> dias: <b data-draw="v" data-q="dEst">—</b> de estoque saíram da Horizonte e <b data-draw="v" data-q="pa">—</b> entraram na Alfa como produto acabado. A NCG da cadeia caiu <b data-draw="v" data-q="dNcgAbs">—</b> porque a Alfa estoca ao custo (<b data-draw="v" data-q="custoPct">—</b>) e a Horizonte ao preço — mas a Alfa passa a correr o risco de demanda.</p>
-          <p data-frase="mais" hidden>Horizonte com <b data-draw="v" data-q="h">—</b> dias, acima da cobertura da cadeia: a NCG da cadeia subiu <b data-draw="v" data-q="dNcgAbs">—</b>.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===================== FECHAR O ST DA ALFA ===================== -->
-  <div class="k-zone d57-stz" id="st" data-source="alfa cadeia cenarios">
-    <h2 class="k-zt">Fechar o ST da Alfa · carteira toda (D1.2)</h2>
-    <div class="d57-stg">
-      <div>
-        <div class="k-ctl"><label for="c-pmrv">PMRV <span class="k-u">dias</span></label>
-          <div class="k-in"><input type="range" id="c-pmrv" data-k="pmrv" min="30" max="90" step="1"><input type="number" data-k="pmrv" min="30" max="90" step="1" aria-label="PMRV da Alfa, dias"></div></div>
-        <div class="k-ctl"><label for="c-pmre">PMRE <span class="k-u">dias</span></label>
-          <div class="k-in"><input type="range" id="c-pmre" data-k="pmre" min="30" max="90" step="1"><input type="number" data-k="pmre" min="30" max="90" step="1" aria-label="PMRE da Alfa, dias"></div></div>
-        <div class="k-ctl"><label for="c-pmpf">PMPF <span class="k-u">dias</span></label>
-          <div class="k-in"><input type="range" id="c-pmpf" data-k="pmpf" min="30" max="75" step="1"><input type="number" data-k="pmpf" min="30" max="75" step="1" aria-label="PMPF da Alfa, dias"></div></div>
-      </div>
-      <div>
-        <div class="k-chart d57-stbar dash-skeleton" data-draw="stbar" role="img" aria-label="CCL da Alfa contra a NCG, com o saldo de tesouraria como diferença"></div>
-        <p class="k-note">CCL <b data-draw="v" data-q="ccl">—</b> = NCG <b data-draw="v" data-q="ncgSt">—</b> + ST <b data-draw="v" data-q="st">—</b></p>
-      </div>
-      <div>
-        <div class="k-kpi"><span class="k-kl">ST da Alfa <span class="k-u">R$ mil</span> <span class="k-info" tabindex="0">i<span class="k-tip">Prazos da carteira inteira; o prazo com a Horizonte já está dentro do PMRV, por isso este painel não soma o slider da duplicata (sem dupla contagem).</span></span></span><span class="k-kn" data-draw="v" data-q="stK">—</span></div>
-        <div class="k-diag" data-frases>
-          <span data-draw="frase" data-grp="st"></span>
-          <p data-frase="pos" hidden>Tesoura fechada com <span data-draw="v" data-q="lista">—</span>.</p>
-          <p data-frase="neg" hidden>Faltam <b data-draw="v" data-q="stAbs">—</b>: cada dia de PMRV vale <b data-draw="v" data-q="dRv">—</b>, de PMPF <b data-draw="v" data-q="dPf">—</b>, de PMRE <b data-draw="v" data-q="dRe">—</b>.</p>
-        </div>
-        <p class="k-note">Espelho na Horizonte: PMRV <b data-draw="v" data-q="espDias">—</b> dias × <b data-draw="v" data-q="umDia">—</b>/dia = <b data-draw="v" data-q="esp">—</b> de NCG para ela.</p>
       </div>
     </div>
   </div>
@@ -404,9 +351,9 @@
 <script>(function () {
 
 /* D5.7 · Fecho da cadeia — funções puras (sem DOM).
-   C = controles {prazo, d (%), modo ('auto'|'sim'|'nao'), vendor (bool), h (dias), fA, fH (% a.a.)}
-   B = base do caso {fluxo, prazo0, perda (%), tv (% a.a.), cob, estDias0, custoPct (%), ncgAlfa, ncgHor}
-   P = prazos da carteira toda da Alfa {pmrv, pmre, pmpf}; A = Alfa T0 {rec, cmv, compras, pmrv, pmre, pmpf, st, ncg, ccl} */
+   C = controles {prazo, d (%), vendor (bool), fA, fH (% a.a.)}
+   B = base do caso {fluxo, prazo0, perda (%), tv (% a.a.), estDias0, ncgAlfa, ncgHor}
+   Estoque na Horizonte fixo em estDias0 dias de compras. */
 (function (root) {
   const M = {};
   // custo anualizado de recusar o desconto à vista (V4.2 / V5.1): paga (1 − d) hoje ou 1 em "prazo" dias
@@ -416,47 +363,38 @@
   M.estado = function (C, B) {
     const d = C.d / 100, fA = C.fA / 100, fH = C.fH / 100, tv = B.tv / 100, perda = B.perda / 100;
     const saldo0 = B.fluxo * B.prazo0 / 360;
-    const est0 = B.fluxo * B.estDias0 / 360;
     const saldo = B.fluxo * C.prazo / 360;
     const cr = M.custoRecusa(d, C.prazo);
     const vendor = !!C.vendor;
-    const toma = !vendor && (C.modo === 'sim' || (C.modo === 'auto' && cr > fH));
+    const toma = !vendor && cr > fH;
     const quit = toma || vendor;
     const clientesH = quit ? 0 : saldo;            // ativo da Alfa
     const fornAlfa = quit ? 0 : saldo;             // passivo da Horizonte
     const divVendor = vendor ? saldo : 0;          // Horizonte deve ao banco (financeiro, fora da NCG)
     const desc = quit ? d * B.fluxo : 0;           // desconto que a Alfa concede por ano
     const perdaRS = quit ? 0 : perda * B.fluxo;    // perda esperada da Alfa sobre a Horizonte
-    const estHor = B.fluxo * C.h / 360;            // estoque na Horizonte (a preço de compra)
-    const paAlfa = Math.max(0, B.fluxo * B.custoPct / 100 * (B.cob - C.h) / 360); // PA na Alfa (ao custo)
+    const estHor = B.fluxo * B.estDias0 / 360;     // estoque na Horizonte (a preço de compra)
     // NCG: fornecedores é passivo operacional → menos fornecedores, mais NCG na Horizonte
-    const ncgAlfa = B.ncgAlfa - (saldo0 - clientesH) + paAlfa;
-    const ncgHor = B.ncgHor + (saldo0 - fornAlfa) - (est0 - estHor);
+    const ncgAlfa = B.ncgAlfa - (saldo0 - clientesH);
+    const ncgHor = B.ncgHor + (saldo0 - fornAlfa);
     // custo financeiro anual do título + estoque em cada elo (funding de quem carrega)
-    const custoAlfa = (clientesH + paAlfa) * fA + perdaRS + desc;
+    const custoAlfa = clientesH * fA + perdaRS + desc;
     const custoHor = (estHor - fornAlfa - divVendor) * fH + divVendor * tv - desc;
     return {
-      saldo, saldo0, est0, cr, toma, vendor, quit, clientesH, fornAlfa, divVendor, desc, perdaRS, estHor, paAlfa,
+      saldo, saldo0, cr, toma, vendor, quit, clientesH, fornAlfa, divVendor, desc, perdaRS, estHor,
       ncgAlfa, ncgHor, ncgCadeia: ncgAlfa + ncgHor,
       custoAlfa, custoHor, custoCadeia: custoAlfa + custoHor,
       decisao: vendor ? 'vendor' : toma ? 'toma' : 'mantem',
     };
   };
   // T0 com o mesmo funding (para as variações)
-  M.t0 = (C, B) => M.estado({ prazo: B.prazo0, d: 0, modo: 'auto', vendor: false, h: B.estDias0, fA: C.fA, fH: C.fH }, B);
+  M.t0 = (C, B) => M.estado({ prazo: B.prazo0, d: 0, vendor: false, fA: C.fA, fH: C.fH }, B);
   // ganhos do vendor finance, como em D5.3: Alfa contra carregar o título; Horizonte contra trocar o prazo por CG
   M.vendorGanhos = function (C, B) {
     const saldo = B.fluxo * C.prazo / 360, d = C.d / 100;
     const alfaSem = saldo * C.fA / 100 + B.perda / 100 * B.fluxo, alfaCom = d * B.fluxo;
     const horSem = saldo * C.fH / 100, horCom = saldo * B.tv / 100 - d * B.fluxo;
     return { gA: alfaSem - alfaCom, gH: horSem - horCom, alfaSem, alfaCom, horSem, horCom, banco: saldo * B.tv / 100 };
-  };
-  // ST da Alfa pela carteira toda (D1.2): CCL fixo, NCG anda com os prazos
-  M.st = function (P, A, fluxo) {
-    const dRv = A.rec / 360, dRe = A.cmv / 360, dPf = A.compras / 360;
-    const ganho = (A.pmrv - P.pmrv) * dRv + (A.pmre - P.pmre) * dRe + (P.pmpf - A.pmpf) * dPf;
-    const st = A.st + ganho;
-    return { st, ncg: A.ncg - ganho, ccl: A.ccl, dRv, dRe, dPf, espelho: (A.pmrv - P.pmrv) * fluxo / 360 };
   };
   root.M57 = M;
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -467,29 +405,25 @@
 
 /* ============================================================
    D5.7 · Fecho da cadeia
-   Testes de aderência (Spec §7), conferidos com M57 em node (43 PASS / 0 FAIL):
-   Reset: saldo 1.000 · NCG 8.900 / 5.500 / 14.400 · custo Alfa 170 + 120 · ST −1.000
-   Desconto 2%: 12,9% → recusa · 3%: 20,05% → aceita · 4%: 27,8% → NCG 7.900 / 6.500 / 14.400
-   Prazo 45: 8.650 / 5.750 / 14.400 · JIT 40: estoque 667 (−1.000) · PA 640 · cadeia 14.040
-   Vendor (2%): Alfa +170 · Horizonte +110 · Fechar ST (52/60/50): ST +569 · espelho +133
+   Testes de aderência, conferidos com M57 em node:
+   Reset: saldo 1.000 · NCG 8.900 / 5.500 / 14.400 · custo Alfa 170 + 120 = 290 · Horizonte 133,3
+   Desconto 2%: 12,9% → recusa · 3%: 20,05% → aceita · 4%: 27,8% → NCG 7.900 / 6.500 / 14.400 · custo −90
+   Prazo 45: 8.650 / 5.750 / 14.400 · Vendor (2%): Alfa +170 · Horizonte +110 · custo da cadeia −80
    ============================================================ */
 const ST = window.D57 = { S: null, cen: null, mexido: false };
-const IDS = ['cadeia', 'alfa', 'cenarios'];
-const NOMES = ['balancos', 'estoque', 'conta', 'stbar', 'v', 'frase'];
+const IDS = ['cadeia', 'cenarios'];
+const NOMES = ['balancos', 'conta', 'v', 'frase'];
 const Q1_PRAZO = 45;          // prazo da pergunta-guia 1 (dias)
-const ST_KEYS = ['pmrv', 'pmre', 'pmpf'];
 
 /* ---------- dados ---------- */
 const pronto = () => ST.S != null && K.status(IDS) === 'ok';
 const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
 const cad = () => K.obj(dash.data('cadeia').data);
-const alfaT0 = () => K.obj(dash.data('alfa').data);
 const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
-const base = () => { const c = cad(); return { fluxo: c.fluxo, prazo0: c.prazo0, perda: c.perda, tv: c.taxaVendor, cob: c.cob, estDias0: c.estDias0, custoPct: c.custoPct, ncgAlfa: c.ncgAlfa, ncgHor: c.ncgHor }; };
+const base = () => { const c = cad(); return { fluxo: c.fluxo, prazo0: c.prazo0, perda: c.perda, tv: c.taxaVendor, estDias0: c.estDias0, ncgAlfa: c.ncgAlfa, ncgHor: c.ncgHor }; };
 const atual = () => M57.estado(ST.S, base());
 const t0de = (S) => M57.t0(S, base());
-const stAtual = () => M57.st(ST.S, alfaT0(), cad().fluxo);
-const padrao = () => { const c = cad(), B = base(); return { prazo: B.prazo0, d: 0, modo: 'auto', vendor: false, h: B.estDias0, fA: c.fundAlfa, fH: c.fundHor }; };
+const padrao = () => { const c = cad(), B = base(); return { prazo: B.prazo0, d: 0, vendor: false, fA: c.fundAlfa, fH: c.fundHor }; };
 
 /* ---------- formatos ---------- */
 const dec = (v) => (Math.abs(v) < 100 && Math.abs(v - Math.round(v)) > 0.05 ? 1 : 0);
@@ -508,7 +442,7 @@ function aplicar(id) {
   const r = cenario(id);
   if (!r) return;
   const c = cad();
-  ST.S = { prazo: r.prazo, d: r.d, modo: r.modo, vendor: !!Number(r.vendor), h: r.h, fA: c.fundAlfa, fH: c.fundHor, pmrv: r.pmrv, pmre: r.pmre, pmpf: r.pmpf };
+  ST.S = { prazo: r.prazo, d: r.d, vendor: !!Number(r.vendor), fA: c.fundAlfa, fH: c.fundHor };
   ST.cen = id; ST.mexido = false;
   sincroniza();
 }
@@ -532,9 +466,9 @@ dash.draw('balancos', (el) => {
   el.replaceChildren(svg.node());
   const tip = K.tip(el);
   const top = 74, bot = H - 58, m = 4, g = 6;
-  const demAco = c.acoAlfa - R.saldo0, demPcoH = c.pcoHor - R.saldo0, demAcoH = c.acoHor - R.est0;
-  const maxSaldo = B.fluxo * 120 / 360, maxPa = B.fluxo * B.custoPct / 100 * B.cob / 360;
-  const yMax = Math.max(demAco + maxSaldo + maxPa, c.pcoAlfa, demPcoH + maxSaldo, demAcoH + maxSaldo);
+  const demAco = c.acoAlfa - R.saldo0, demPcoH = c.pcoHor - R.saldo0, demAcoH = c.acoHor - R.estHor;
+  const maxSaldo = B.fluxo * 120 / 360;
+  const yMax = Math.max(demAco + maxSaldo, c.pcoAlfa, demPcoH + maxSaldo, demAcoH + R.estHor);
   const y = d3.scaleLinear([0, yMax], [bot, top]);
   const cw = Math.max(30, Math.min(64, W * 0.1));
   const xs = { aP: m, aA: m + cw + g, hP: W - m - 2 * cw - g, hA: W - m - cw };
@@ -554,7 +488,6 @@ dash.draw('balancos', (el) => {
   coluna(xs.aP, 'Indústria Alfa', 'PCO', [{ n: 'PCO', v: c.pcoAlfa, cor: NEU, op: 0.35 }]);
   const sA = coluna(xs.aA, 'Indústria Alfa', 'ACO', [
     { n: 'Demais ACO', v: demAco, cor: NEU, op: 0.35 },
-    { n: 'PA reservado para a Horizonte', v: R.paAlfa, cor: 'var(--k-amber-d)' },
     { n: 'Clientes — Horizonte', v: R.clientesH, cor: 'var(--k-navy)' },
   ]);
   const sH = coluna(xs.hP, 'Comercial Horizonte', 'PCO', [
@@ -575,7 +508,7 @@ dash.draw('balancos', (el) => {
   const pag = R.vendor ? '← banco paga à vista' : (R.toma || S.prazo <= 0) ? '← pagamento à vista' : '← pagamento em ' + K.n(S.prazo) + ' dias';
   cabe(svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', xm).attr('y', 58).text(pag));
   // o título atravessando os dois balanços
-  const ca = sA[2], fh = sH[1];
+  const ca = sA[1], fh = sH[1];
   if (R.clientesH > 0) {
     const d = `M${xa},${ca.y0} C${xm},${ca.y0} ${xm},${fh.y0} ${xb},${fh.y0} L${xb},${fh.y1} C${xm},${fh.y1} ${xm},${ca.y1} ${xa},${ca.y1} Z`;
     svg.append('path').attr('d', d).attr('fill', 'var(--k-navy)').attr('opacity', 0.3)
@@ -592,39 +525,13 @@ dash.draw('balancos', (el) => {
     cabe(svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', xm).attr('y', ym + 17).text(l2));
   }
   // NCG de cada elo
-  const acoA = demAco + R.paAlfa + R.clientesH, acoH = demAcoH + R.estHor, pcoH = demPcoH + R.fornAlfa;
+  const acoA = demAco + R.clientesH, acoH = demAcoH + R.estHor, pcoH = demPcoH + R.fornAlfa;
   svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--k-amber-d)').attr('x', m).attr('y', bot + 34).text('NCG ' + rs(R.ncgAlfa));
   svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--k-amber-d)').attr('text-anchor', 'end').attr('x', W - m).attr('y', bot + 34).text('NCG ' + rs(R.ncgHor));
   if (W >= 380) {
     svg.append('text').attr('class', 'k-svgm').attr('x', m).attr('y', bot + 51).text('ACO ' + rs(acoA) + ' − PCO ' + rs(c.pcoAlfa));
     svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', W - m).attr('y', bot + 51).text('ACO ' + rs(acoH) + ' − PCO ' + rs(pcoH));
   }
-});
-
-/* ---------- estoque na cadeia ---------- */
-dash.draw('estoque', (el) => {
-  if (!pronto()) { falha(el); return; }
-  el.classList.remove('dash-skeleton');
-  const R = atual(), B = base(), S = ST.S;
-  const { svg, W } = K.svg(el, 64);
-  el.replaceChildren(svg.node());
-  const tip = K.tip(el);
-  const m = 4, y0 = 8, hb = 30;
-  const dPA = Math.max(0, B.cob - S.h);
-  const x = d3.scaleLinear([0, Math.max(B.cob, S.h)], [m, W - m]);
-  const seg = (a, b, cor, quem, dias, valor, txt, fill) => {
-    if (b <= a) return;
-    svg.append('rect').attr('x', x(a)).attr('width', x(b) - x(a)).attr('y', y0).attr('height', hb).attr('rx', 3).attr('fill', cor)
-      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(quem, [[cor, K.n(dias) + ' dias', rs(valor)]], px, py); })
-      .on('mouseleave', () => tip.hide());
-    const t = svg.append('text').attr('class', 'k-svgt').style('fill', fill).attr('x', x(a) + 6).attr('y', y0 + hb / 2 + 5).text(txt);
-    if (t.node().getComputedTextLength() > x(b) - x(a) - 10) t.text(K.n(dias) + ' d');
-    if (t.node().getComputedTextLength() > x(b) - x(a) - 10) t.remove();
-  };
-  seg(0, dPA, 'var(--k-amber-d)', 'Produto acabado na Alfa (ao custo)', dPA, R.paAlfa, 'Alfa · ' + K.n(dPA) + ' d · ' + rs(R.paAlfa), '#fff');
-  seg(dPA, dPA + S.h, 'var(--k-amber)', 'Estoque na Horizonte (ao preço)', S.h, R.estHor, 'Horizonte · ' + K.n(S.h) + ' d · ' + rs(R.estHor), '#1a1a1a');
-  svg.append('text').attr('class', 'k-svgm').attr('x', m).attr('y', 58).text('0');
-  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', W - m).attr('y', 58).text(K.n(Math.max(B.cob, S.h)) + ' dias');
 });
 
 /* ---------- a conta da cadeia ---------- */
@@ -649,39 +556,7 @@ dash.draw('conta', (el) => {
   }));
 });
 
-/* ---------- ST da Alfa: CCL = NCG + ST ---------- */
-dash.draw('stbar', (el) => {
-  if (!pronto()) { falha(el); return; }
-  el.classList.remove('dash-skeleton');
-  const T = stAtual();
-  const { svg, W } = K.svg(el, 100);
-  el.replaceChildren(svg.node());
-  const m = 4;
-  const x = d3.scaleLinear([0, Math.max(T.ccl, T.ncg) * 1.04], [m, W - m]);
-  const barra = (y, v, cor, txt, fill) => {
-    svg.append('rect').attr('x', x(0)).attr('width', Math.max(0, x(v) - x(0))).attr('y', y).attr('height', 24).attr('rx', 3).attr('fill', cor);
-    const t = svg.append('text').attr('class', 'k-svgt').style('fill', fill).attr('x', x(0) + 6).attr('y', y + 17).text(txt);
-    if (t.node().getComputedTextLength() > x(v) - x(0) - 10) t.remove();
-  };
-  barra(4, T.ccl, 'var(--k-navy)', 'CCL ' + rs(T.ccl), '#fff');
-  barra(34, T.ncg, 'var(--k-amber)', 'NCG ' + rs(T.ncg), '#1a1a1a');
-  const a = Math.min(T.ccl, T.ncg), b = Math.max(T.ccl, T.ncg);
-  const cor = T.st < 0 ? 'var(--k-neg)' : 'var(--k-pos)';
-  svg.append('rect').attr('x', x(a)).attr('width', Math.max(2, x(b) - x(a))).attr('y', 64).attr('height', 8).attr('rx', 2).attr('fill', cor);
-  const t = svg.append('text').attr('class', 'k-svgb').style('fill', cor).attr('text-anchor', 'middle').attr('y', 92).text('ST ' + K.s(T.st, 0));
-  const w = t.node().getComputedTextLength();
-  t.attr('x', Math.max(m + w / 2, Math.min(W - m - w / 2, (x(a) + x(b)) / 2)));
-});
-
 /* ---------- números ---------- */
-const lista = (S, A) => {
-  const l = [];
-  if (S.pmrv < A.pmrv) l.push('PMRV ' + K.n(S.pmrv) + ' dias');
-  if (S.pmre < A.pmre) l.push('PMRE ' + K.n(S.pmre) + ' dias');
-  if (S.pmpf > A.pmpf) l.push('PMPF ' + K.n(S.pmpf) + ' dias');
-  if (!l.length) return 'os prazos atuais';
-  return l.length === 1 ? l[0] : l.slice(0, -1).join(', ') + ' e ' + l[l.length - 1];
-};
 const gab = () => {
   const P = padrao(), B = base();
   const T = M57.estado(P, B), Q1 = M57.estado({ ...P, prazo: Q1_PRAZO }, B);
@@ -692,29 +567,23 @@ const gab = () => {
   return { P, T, Q1, dStar, dR, G, V };
 };
 const VAL = {
-  umDia: () => rs(cad().fluxo / 360), fluxo: () => rs(cad().fluxo), tv: () => pp(base().tv), cob: () => K.n(base().cob), custoPct: () => pp(base().custoPct),
+  umDia: () => rs(cad().fluxo / 360), fluxo: () => rs(cad().fluxo), tv: () => pp(base().tv), estDias: () => K.n(base().estDias0),
   crK: (R) => crTxt(R), cr: (R) => crTxt(R), d: () => pp(ST.S.d), prazo: () => K.n(ST.S.prazo), fH: () => pp(ST.S.fH), fA: () => pp(ST.S.fA), perda: () => pp(base().perda),
   saldo: (R) => rs(R.saldo), saldo0: (R) => rs(R.saldo0),
-  ncgCad: (R) => rs(R.ncgCadeia), dNcgK: (R) => rss(R.ncgCadeia - t0de(ST.S).ncgCadeia),
+  ncgCad: (R) => rs(R.ncgCadeia),
   custoCad: (R) => rs(R.custoCadeia), dCustoK: (R) => rss(R.custoCadeia - t0de(ST.S).custoCadeia),
   verbo: (R) => (R.custoCadeia - t0de(ST.S).custoCadeia <= 0 ? 'economiza' : 'gasta a mais'),
   dCustoAbs: (R) => rs(Math.abs(R.custoCadeia - t0de(ST.S).custoCadeia)),
   gA: () => rss(M57.vendorGanhos(ST.S, base()).gA), gH: () => rss(M57.vendorGanhos(ST.S, base()).gH),
   alfaSem: () => rs(M57.vendorGanhos(ST.S, base()).alfaSem), horSem: () => rs(M57.vendorGanhos(ST.S, base()).horSem),
   alfaTit: (R) => rs(R.clientesH * ST.S.fA / 100 + R.perdaRS),
-  h: () => K.n(ST.S.h), dEst: (R) => rs(Math.abs(R.est0 - R.estHor)), pa: (R) => rs(R.paAlfa),
-  dNcgAbs: (R) => rs(Math.abs(R.ncgCadeia - t0de(ST.S).ncgCadeia)),
-  ccl: () => rs(stAtual().ccl), ncgSt: () => rs(stAtual().ncg), st: () => K.s(stAtual().st, 0), stK: () => K.s(stAtual().st, 0),
-  stAbs: () => rs(Math.abs(stAtual().st)), lista: () => lista(ST.S, alfaT0()),
-  dRv: () => K.n(Math.round(stAtual().dRv)), dPf: () => K.n(Math.round(stAtual().dPf)), dRe: () => K.n(Math.round(stAtual().dRe)),
-  espDias: () => K.n(alfaT0().pmrv) + ' → ' + K.n(ST.S.pmrv), esp: () => rss(stAtual().espelho),
   'g-p0': () => K.n(gab().P.prazo), 'g-p1': () => K.n(Q1_PRAZO), 'g-mov': () => rs(gab().T.saldo - gab().Q1.saldo), 'g-ncg': () => rs(gab().Q1.ncgCadeia),
   'g-fA': () => pp(gab().P.fA), 'g-fH': () => pp(gab().P.fH), 'g-dc': () => rs(gab().Q1.custoCadeia - gab().T.custoCadeia),
   'g-dstar': () => K.p(gab().dStar, 1), 'g-dr': () => pp(gab().dR), 'g-cr': () => K.p(M57.custoRecusa(gab().dR / 100, gab().P.prazo), 2),
   'g-perda': () => pp(base().perda), 'g-alfaSem': () => rs(gab().G.alfaSem), 'g-tv': () => pp(base().tv), 'g-desc': () => rs(gab().G.alfaCom),
   'g-gA': () => rs(gab().G.gA), 'g-gH': () => rs(gab().G.gH), 'g-econ': () => rs(gab().T.custoCadeia - gab().V.custoCadeia),
 };
-const TOM = { stK: () => stAtual().st, dCustoK: (R) => -(R.custoCadeia - t0de(ST.S).custoCadeia) };
+const TOM = { dCustoK: (R) => -(R.custoCadeia - t0de(ST.S).custoCadeia) };
 dash.draw('v', (el) => {
   const fn = VAL[el.dataset.q];
   const R = pronto() ? atual() : null;
@@ -728,16 +597,13 @@ dash.draw('v', (el) => {
 dash.draw('frase', (el) => {
   const keys = [];
   if (pronto()) {
-    const R = atual(), S = ST.S, grp = el.dataset.grp, fH = S.fH / 100;
+    const R = atual(), S = ST.S, grp = el.dataset.grp;
     if (grp === 'tit') {
       if (R.vendor) keys.push('vendor');
       else if (S.prazo <= 0) keys.push('avista');
-      else if (R.toma) keys.push(R.cr > fH ? 'toma' : 'tomaF');
-      else if (S.modo === 'nao' && R.cr > fH) keys.push('mantemF');
+      else if (R.toma) keys.push('toma');
       else keys.push(S.d > 0 ? 'mantem' : 'semdesc');
     } else if (grp === 'dec') keys.push(R.decisao);
-    else if (grp === 'est') { const cob = base().cob; if (S.h < cob) keys.push('menos'); else if (S.h > cob) keys.push('mais'); }
-    else if (grp === 'st') keys.push(stAtual().st >= 0 ? 'pos' : 'neg');
   }
   K.frases(el, keys);
   marca();

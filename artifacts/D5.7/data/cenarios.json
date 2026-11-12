@@ -1,8 +1,6 @@
 [
-  {"id": "t0", "nome": "T0", "prazo": 60, "d": 0, "modo": "auto", "vendor": 0, "h": 100, "pmrv": 60, "pmre": 60, "pmpf": 45},
-  {"id": "d2", "nome": "Alfa oferece 2%", "prazo": 60, "d": 2, "modo": "auto", "vendor": 0, "h": 100, "pmrv": 60, "pmre": 60, "pmpf": 45},
-  {"id": "d4", "nome": "Alfa oferece 4%", "prazo": 60, "d": 4, "modo": "auto", "vendor": 0, "h": 100, "pmrv": 60, "pmre": 60, "pmpf": 45},
-  {"id": "vendor", "nome": "Vendor finance", "prazo": 60, "d": 2, "modo": "auto", "vendor": 1, "h": 100, "pmrv": 60, "pmre": 60, "pmpf": 45},
-  {"id": "jit", "nome": "JIT na Horizonte", "prazo": 60, "d": 0, "modo": "auto", "vendor": 0, "h": 40, "pmrv": 60, "pmre": 60, "pmpf": 45},
-  {"id": "st", "nome": "Fechar o ST da Alfa", "prazo": 60, "d": 0, "modo": "auto", "vendor": 0, "h": 100, "pmrv": 52, "pmre": 60, "pmpf": 50}
+  {"id": "t0", "nome": "T0", "prazo": 60, "d": 0, "vendor": 0},
+  {"id": "d2", "nome": "Alfa oferece 2%", "prazo": 60, "d": 2, "vendor": 0},
+  {"id": "d4", "nome": "Alfa oferece 4%", "prazo": 60, "d": 4, "vendor": 0},
+  {"id": "vendor", "nome": "Vendor finance", "prazo": 60, "d": 2, "vendor": 1}
 ]
