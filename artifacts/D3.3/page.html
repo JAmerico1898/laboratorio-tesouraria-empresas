@@ -19,10 +19,8 @@
     </div>
     <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
       <button class="k-btn d33-cen" data-cen="slide" aria-pressed="false">Slide (didático)</button>
-      <button class="k-btn d33-cen" data-cen="hreal" aria-pressed="false">H realista</button>
-      <button class="k-btn d33-cen" data-cen="desconto" aria-pressed="false">Desconto da Alfa</button>
-      <button class="k-btn d33-cen" data-cen="epq" aria-pressed="false">Alfa produz (EPQ)</button>
-      <button class="k-btn d33-cen" data-cen="caro" aria-pressed="false">Pedido caro</button>
+      <button class="k-btn d33-cen" data-cen="desconto" aria-pressed="false">Desconto por volume</button>
+      <button class="k-btn d33-cen" data-cen="epq" aria-pressed="false">Produção contínua (EPQ)</button>
     </div>
   </header>
 
@@ -35,21 +33,7 @@
         <div class="k-in"><input type="range" id="c-s" data-k="S" min="10" max="300" step="5"><input type="number" data-k="S" min="10" max="300" step="5" aria-label="Custo por pedido, R$"></div></div>
       <div class="k-ctl"><label for="c-h">H <span class="k-u">R$ por rolo·ano</span></label>
         <div class="k-in"><input type="range" id="c-h" data-k="H" min="0.5" max="40" step="0.5"><input type="number" data-k="H" min="0.5" max="40" step="0.5" aria-label="Custo de carregamento, R$ por rolo·ano"></div></div>
-
-      <label class="k-toggle"><input type="checkbox" data-k="hReal"> H realista decomposto <span class="k-info" tabindex="0">i<span class="k-tip">H = P × (CDI + armazenagem + seguro + obsolescência). O H = 2 do slide é didático; o carregamento de verdade é proporcional ao preço, porque capital parado em cabo custa CDI.</span></span></label>
-      <div class="d33-sub d33-hr" hidden>
-        <div class="k-ctl"><label for="c-cdi">CDI <span class="k-u">% a.a.</span></label>
-          <div class="k-in"><input type="range" id="c-cdi" data-k="cdi" min="5" max="20" step="0.5"><input type="number" data-k="cdi" min="5" max="20" step="0.5" aria-label="CDI, % a.a."></div></div>
-        <div class="k-ctl"><label for="c-ar">Armazenagem <span class="k-u">%</span></label>
-          <div class="k-in"><input type="range" id="c-ar" data-k="armaz" min="1" max="5" step="0.5"><input type="number" data-k="armaz" min="1" max="5" step="0.5" aria-label="Armazenagem, %"></div></div>
-        <div class="k-ctl"><label for="c-se">Seguro <span class="k-u">%</span></label>
-          <div class="k-in"><input type="range" id="c-se" data-k="seguro" min="0" max="3" step="0.5"><input type="number" data-k="seguro" min="0" max="3" step="0.5" aria-label="Seguro, %"></div></div>
-        <div class="k-ctl"><label for="c-ob">Obsolescência <span class="k-u">%</span></label>
-          <div class="k-in"><input type="range" id="c-ob" data-k="obsol" min="0" max="10" step="0.5"><input type="number" data-k="obsol" min="0" max="10" step="0.5" aria-label="Obsolescência, %"></div></div>
-        <p class="k-note">H = <b data-draw="v" data-q="P">—</b> × <b data-draw="v" data-q="hPct">—</b> = R$ <b data-draw="v" data-q="H">—</b></p>
-      </div>
-      <div class="k-ctl d33-preco" hidden><label for="c-p">Preço P <span class="k-u">R$ por rolo</span></label>
-        <div class="k-in"><input type="range" id="c-p" data-k="P" min="80" max="200" step="1"><input type="number" data-k="P" min="80" max="200" step="1" aria-label="Preço, R$ por rolo"></div></div>
+      <p class="k-note d33-e1" hidden>Com desconto, H acompanha o preço: <b data-draw="v" data-q="hPct">—</b> a.a. (financeiro, armazenagem, seguro e obsolescência) × <b data-draw="v" data-q="P">—</b> = R$ <b data-draw="v" data-q="H">—</b> por rolo·ano.</p>
 
       <h2 class="k-zt2">Relaxar premissas</h2>
       <label class="k-toggle"><input type="checkbox" data-k="ext1"> Extensão 1 · desconto por volume</label>
@@ -113,7 +97,6 @@
       <div class="k-diag" data-frases>
         <span data-draw="frase"></span>
         <p data-frase="base" hidden>Lote de <b data-draw="v" data-q="Q">—</b> rolos, <b data-draw="v" data-q="pedidos">—</b> pedidos por ano. No ótimo, pedido e carregamento custam o mesmo: R$ <b data-draw="v" data-q="cPedido">—</b> cada.</p>
-        <p data-frase="hreal" hidden>Com capital a <b data-draw="v" data-q="cdi">—</b> e carregamento total de <b data-draw="v" data-q="hPct">—</b>, o lote cai de <b data-draw="v" data-q="eoqDid">—</b> para <b data-draw="v" data-q="Q">—</b>: estoque é dinheiro — e dinheiro tem preço.</p>
         <p data-frase="ext1" hidden>Comprar <b data-draw="v" data-q="Qbest">—</b> rolos custa R$ <b data-draw="v" data-q="ctBest">—</b> por ano; comprar o EOQ custaria R$ <b data-draw="v" data-q="ct1">—</b>. O desconto de <b data-draw="v" data-q="descBest">—</b> vale R$ <b data-draw="v" data-q="ganhoPreco">—</b> — mais que o carregamento extra de R$ <b data-draw="v" data-q="carregExtra">—</b>.</p>
         <p data-frase="ext1sem" hidden>Com estes parâmetros o desconto não compensa: o EOQ da faixa sem desconto (<b data-draw="v" data-q="Qbest">—</b> rolos) é o menor custo anual.</p>
         <p data-frase="ext2" hidden>Produzir a <b data-draw="v" data-q="p">—</b>/dia com consumo de <b data-draw="v" data-q="d">—</b>/dia: o estoque nunca atinge Q de uma vez; o lote ótimo sobe para <b data-draw="v" data-q="Q">—</b>.</p>
@@ -130,10 +113,10 @@
         <li>Dobre a demanda D. O EOQ dobra?
           <details><summary>mostrar resposta</summary><p>Não — sobe √2 ≈ <b data-draw="v" data-q="g-raiz">—</b> (<b data-draw="v" data-q="g-eoq">—</b> → <b data-draw="v" data-q="g-eoq2">—</b>). O lote cresce com a raiz da demanda: pedidos por ano também sobem <b data-draw="v" data-q="g-raiz">—</b>. Isso é a economia de escala embutida na fórmula.</p></details>
         </li>
-        <li>Ligue o H realista. Por que o lote cai para <span data-draw="v" data-q="g-eoqR">—</span> se nada mudou na demanda nem no fornecedor?
-          <details><summary>mostrar resposta</summary><p>Porque o custo de carregamento verdadeiro inclui o custo financeiro do capital (CDI) e vale <b data-draw="v" data-q="g-hPct">—</b> do preço — R$ <b data-draw="v" data-q="g-hR">—</b>/rolo·ano, dez vezes o H didático. Estoque caro pede lotes pequenos e pedidos frequentes.</p></details>
+        <li>No cenário do slide, ligue o múltiplo prático. Quanto custa arredondar <span data-draw="v" data-q="g-eoq">—</span> para <span data-draw="v" data-q="g-qm">—</span> rolos?
+          <details><summary>mostrar resposta</summary><p>Quase nada: o custo total vai de R$ <b data-draw="v" data-q="g-ct">—</b> para R$ <b data-draw="v" data-q="g-ctm">—</b> por ano (+R$ <b data-draw="v" data-q="g-dct">—</b>). O fundo da curva U é achatado — por isso a fórmula é guia, não dogma, e o lote real segue a embalagem ou o lote padrão do fornecedor.</p></details>
         </li>
-        <li>Com a tabela de desconto da Alfa, vale comprar <span data-draw="v" data-q="g-q3">—</span> rolos (quase 5× o EOQ)?
+        <li>Com a tabela de desconto, vale comprar <span data-draw="v" data-q="g-q3">—</span> rolos (quase 5× o EOQ da faixa sem desconto)?
           <details><summary>mostrar resposta</summary><p>Sim: a economia de <b data-draw="v" data-q="g-desc">—</b> no preço (R$ <b data-draw="v" data-q="g-ganho">—</b>/ano) supera o carregamento adicional (R$ <b data-draw="v" data-q="g-c3">—</b> − <b data-draw="v" data-q="g-c1">—</b> ≈ R$ <b data-draw="v" data-q="g-cx">—</b>). A fórmula é guia, não dogma — mas a decisão só está certa se a demanda for estável e o cabo não obsolescer.</p></details>
         </li>
       </ol>
@@ -148,9 +131,8 @@
    D3.3 · Lote econômico
    Testes de aderência (Spec §7), conferidos com M33.estado() em node:
    Default: EOQ 707 · 14,1 pedidos · estoque médio 354 · CT 1.414 · pedido = carregamento = 707
-   S 200: 1.414 · 7,1 pedidos · D 20.000: 1.000 · Múltiplo prático: 700
-   H realista: H 21,60 · EOQ 215 · 46,5 pedidos · CT 4.648
-   Extensão 1: 1.204.648 / 1.176.265 / 1.150.760 · melhor faixa 3 (1.000) · economia 53.888
+   S 200: 1.414 · 7,1 pedidos · D 20.000: 1.000 · Múltiplo prático: 700 (CT 1.414,29)
+   Extensão 1 (H = 18% × preço da faixa): 1.204.648 / 1.176.265 / 1.150.760 · melhor faixa 3 (1.000) · economia 53.888
    EPQ p 80: 1.000 · fator 1,414 · p 200: 791
    ============================================================ */
 const ST = window.D33 = { S: null, P: null, F: null, cen: null, mexido: false };
@@ -165,7 +147,7 @@ const bool = (v) => v === true || v === 'true';
 const cenario = (id) => (dash.data('cenarios').data || []).find((r) => r.id === id);
 function ctlDe(r) {
   const P = ST.P;
-  return { D: Number(r.D), S: Number(r.S), H: Number(r.H), P: Number(r.P), hReal: bool(r.hReal), ext1: bool(r.ext1), ext2: bool(r.ext2), p: Number(r.p), multiplo: bool(r.multiplo),
+  return { D: Number(r.D), S: Number(r.S), H: Number(r.H), P: Number(r.P), ext1: bool(r.ext1), ext2: bool(r.ext2), p: Number(r.p), multiplo: bool(r.multiplo),
     cdi: P.cdi, armaz: P.armaz, seguro: P.seguro, obsol: P.obsol };
 }
 const calc = (C) => M33.estado(ST.P, ST.F, C);
@@ -175,10 +157,7 @@ const atual = () => calc(ST.S);
 function sincroniza() {
   const S = ST.S;
   K.sync(S);
-  document.querySelectorAll('input[data-k="H"]').forEach((i) => { i.disabled = S.hReal || S.ext1; });
-  document.querySelectorAll('input[data-k="hReal"]').forEach((i) => { i.checked = S.hReal || S.ext1; i.disabled = S.ext1; });
-  document.querySelectorAll('.d33-hr').forEach((x) => { x.hidden = !(S.hReal || S.ext1); });
-  document.querySelectorAll('.d33-preco').forEach((x) => { x.hidden = !(S.hReal || S.ext1); });
+  document.querySelectorAll('input[data-k="H"]').forEach((i) => { i.disabled = S.ext1; });
   document.querySelectorAll('.d33-e1').forEach((x) => { x.hidden = !S.ext1; });
   document.querySelectorAll('.d33-e2').forEach((x) => { x.hidden = !S.ext2; });
   document.querySelectorAll('.d33-leg-sem, .d33-t-sem, .d33-k-ct').forEach((x) => { x.hidden = S.ext1; });
@@ -326,23 +305,22 @@ dash.draw('serra', (el) => {
 
 /* ---------- números ---------- */
 const did = () => calc({ ...ctlDe(cenario('slide')) });
-const real = () => calc({ ...ctlDe(cenario('hreal')) });
+const mult = () => calc({ ...ctlDe(cenario('slide')), multiplo: true });
 const desc = () => calc({ ...ctlDe(cenario('desconto')) });
 const VAL = {
   P: () => 'R$ ' + K.n(ST.S.P, 2), hPct: () => K.p(M33.hPct(ST.S), 0), H: (R) => K.n(R.H, 2), mult: () => K.n(ST.P.multiplo), diasUteis: () => K.n(ST.P.diasUteis),
   d: (R) => K.n(R.d, 0), p: () => K.n(ST.S.p), fator: (R) => (R.fator ? K.n(R.fator, 3) : null),
-  Dn: () => K.n(ST.S.D), Sn: () => K.n(ST.S.S), eoq: (R) => K.n(R.eoq), cdi: () => K.p(ST.S.cdi / 100, 0),
+  Dn: () => K.n(ST.S.D), Sn: () => K.n(ST.S.S), eoq: (R) => K.n(R.eoq),
   Q: (R) => (ST.S.ext1 ? K.n(R.ext1.best.Q) : R.Q ? K.n(R.Q) : null),
   pedidos: (R) => (ST.S.ext1 ? K.n(ST.S.D / R.ext1.best.Q, 1) : R.pedidos ? K.n(R.pedidos, 1) : null),
   estMedio: (R) => (ST.S.ext1 ? K.n(R.ext1.best.Q / 2) : R.estMedio ? K.n(R.estMedio) : null),
   ct: (R) => (R.ct ? K.n(R.ct) : null), cPedido: (R) => (R.cPedido ? K.n(R.cPedido) : null),
-  eoqDid: () => K.n(M33.eoq(ST.S.D, ST.S.S, ST.S.H)),
   Qbest: (R) => (R.ext1 ? K.n(R.ext1.best.Q) : null), ctBest: (R) => (R.ext1 ? K.n(R.ext1.best.ct) : null), ct1: (R) => (R.ext1 ? K.n(R.ext1.fx[0].ct) : null),
   economia: (R) => (R.ext1 ? K.n(R.ext1.economia) : null), descBest: (R) => (R.ext1 ? K.p(R.ext1.best.desconto, 1) : null),
   ganhoPreco: (R) => (R.ext1 ? K.n(R.ext1.fx[0].compra - R.ext1.best.compra) : null),
   carregExtra: (R) => (R.ext1 ? K.n(R.ext1.best.carreg - R.ext1.fx[0].carreg) : null),
   'g-eoq': () => K.n(did().eoq), 'g-eoq2': () => K.n(calc({ ...ctlDe(cenario('slide')), D: 2 * ST.P.D }).eoq), 'g-raiz': () => K.p(Math.SQRT2 - 1, 0),
-  'g-eoqR': () => K.n(real().eoq), 'g-hPct': () => K.p(M33.hPct(ctlDe(cenario('hreal'))), 0), 'g-hR': () => K.n(real().H, 2),
+  'g-qm': () => K.n(mult().Q), 'g-ct': () => K.n(did().ct, 2), 'g-ctm': () => K.n(mult().ct, 2), 'g-dct': () => K.n(mult().ct - did().ct, 2),
   'g-q3': () => K.n(desc().ext1.best.Q), 'g-desc': () => K.p(desc().ext1.best.desconto, 0), 'g-ganho': () => K.n(desc().ext1.fx[0].compra - desc().ext1.best.compra),
   'g-c3': () => K.n(desc().ext1.best.carreg), 'g-c1': () => K.n(desc().ext1.fx[0].carreg), 'g-cx': () => K.n(desc().ext1.best.carreg - desc().ext1.fx[0].carreg),
 };
@@ -358,8 +336,8 @@ dash.draw('frase', (el) => {
     const C = ST.S, R = atual();
     if (C.ext1) keys.push(R.ext1.best === R.ext1.fx[0] ? 'ext1sem' : 'ext1');
     else if (C.ext2) keys.push(R.fator ? 'ext2' : 'semprod');
-    else keys.push(C.hReal ? 'hreal' : 'base');
-    if (C.S >= S_ALTO || (!C.hReal && !C.ext1 && C.H <= H_BAIXO)) keys.push('extremo');
+    else keys.push('base');
+    if (C.S >= S_ALTO || (!C.ext1 && C.H <= H_BAIXO)) keys.push('extremo');
   }
   K.frases(el, keys);
 });

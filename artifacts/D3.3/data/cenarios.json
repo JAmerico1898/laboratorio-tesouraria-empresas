@@ -1,7 +1,5 @@
 [
- {"id":"slide","nome":"Slide (didático)","D":10000,"S":50,"H":2,"P":120,"hReal":false,"ext1":false,"ext2":false,"p":80,"multiplo":false},
- {"id":"hreal","nome":"H realista","D":10000,"S":50,"H":2,"P":120,"hReal":true,"ext1":false,"ext2":false,"p":80,"multiplo":false},
- {"id":"desconto","nome":"Desconto da Alfa","D":10000,"S":50,"H":2,"P":120,"hReal":true,"ext1":true,"ext2":false,"p":80,"multiplo":false},
- {"id":"epq","nome":"Alfa produz (EPQ)","D":10000,"S":50,"H":2,"P":120,"hReal":false,"ext1":false,"ext2":true,"p":80,"multiplo":false},
- {"id":"caro","nome":"Pedido caro","D":10000,"S":200,"H":2,"P":120,"hReal":false,"ext1":false,"ext2":false,"p":80,"multiplo":false}
+ {"id":"slide","nome":"Slide (didático)","D":10000,"S":50,"H":2,"P":120,"ext1":false,"ext2":false,"p":80,"multiplo":false},
+ {"id":"desconto","nome":"Desconto por volume","D":10000,"S":50,"H":2,"P":120,"ext1":true,"ext2":false,"p":80,"multiplo":false},
+ {"id":"epq","nome":"Produção contínua (EPQ)","D":10000,"S":50,"H":2,"P":120,"ext1":false,"ext2":true,"p":80,"multiplo":false}
 ]
