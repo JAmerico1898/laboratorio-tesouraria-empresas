@@ -36,15 +36,13 @@
     const cc = bruto - liquido - iof - ir;
     return { dias: d, tipo: 'fundo', aliq, iofPct, bruto, iof, ir, cc, ccPago, liquido, liqAnual: M.anual(liquido, d, T), eventos: ev };
   };
-  // A renovado até o prazo de B: n = arredondamento de dB/dA (mínimo 1)
-  M.reinvest = (rA, dB) => { const n = Math.max(1, Math.round(dB / rA.dias)); return { n, dias: n * rA.dias, periodo: Math.pow(1 + rA.liquido, n) - 1 }; };
   // motivo da vitória: 'iof' | 'comecotas' | 'aliquota' | 'taxa'
   M.motivo = (v, p) => (p.iof > v.iof + 1e-12 ? 'iof' : p.tipo === 'fundo' && v.tipo !== 'fundo' ? 'comecotas' : v.aliq < p.aliq - 1e-12 ? 'aliquota' : 'taxa');
   M.comparar = (A, B, T) => {
     const a = M.aplic(A, T), b = M.aplic(B, T);
     const venc = b.liqAnual > a.liqAnual ? 'B' : 'A';
     const v = venc === 'A' ? a : b, p = venc === 'A' ? b : a;
-    return { a, b, venc, dif: Math.abs(a.liqAnual - b.liqAnual), motivo: M.motivo(v, p), reinv: a.dias < b.dias ? M.reinvest(a, b.dias) : null };
+    return { a, b, venc, dif: Math.abs(a.liqAnual - b.liqAnual), motivo: M.motivo(v, p) };
   };
   // degrau de IR: se d é o último dia de uma faixa, devolve {de, para}
   M.degrau = (d, T) => { const f = T.ir.findIndex((x) => x.ate === d); return f >= 0 && f < T.ir.length - 1 ? { de: T.ir[f].aliquota, para: T.ir[f + 1].aliquota } : null; };
@@ -55,27 +53,15 @@
     idx.forEach((j) => { out[j] = o > 0 ? out[j] / o * rest : rest / 2; });
     return out;
   };
-  // horizonte até o resgate: do mês da aplicação ao 1º mês com saldo negativo depois dela
-  M.horizonte = (saldos, mesAplic, diasMes) => {
-    let neg = -1; for (let m = mesAplic + 1; m < saldos.length; m++) if (saldos[m] < 0) { neg = m; break; }
-    let fim = neg; if (neg >= 0) for (let m = neg; m < saldos.length && saldos[m] < 0; m++) fim = m;
-    return { mesNeg: neg, mesFimNeg: fim, meses: neg < 0 ? null : neg - mesAplic, dias: neg < 0 ? null : (neg - mesAplic) * diasMes };
-  };
-  // carteira por tiers. tiers: [{pct, inst:{taxa, prazo, tipo, diaria}}]
-  M.carteira = (excedente, tiers, T, hz) => {
+  // carteira por tiers. tiers: [{pct, min, max, inst:{taxa, prazo, tipo}}]; faixa da política em % do excedente
+  M.carteira = (excedente, tiers, T) => {
     const soma = tiers.reduce((s, t) => s + t.pct, 0) || 1;
     const linhas = tiers.map((t, j) => {
-      const valor = excedente * t.pct / soma;
       const r = M.aplic({ taxa: t.inst.taxa, dias: t.inst.prazo, tipo: t.inst.tipo }, T);
-      const rh = hz.dias ? M.aplic({ taxa: t.inst.taxa, dias: hz.dias, tipo: t.inst.tipo }, T) : null;
-      const preso = !t.inst.diaria && hz.dias != null && t.inst.prazo > hz.dias && valor > 0;
-      return { tier: j + 1, peso: t.pct / soma, valor, r, ganhoHz: rh ? valor * rh.liquido : null, preso };
+      return { tier: j + 1, peso: t.pct / soma, valor: excedente * t.pct / soma, r, fora: t.pct < t.min || t.pct > t.max };
     });
-    return { linhas, liqAnual: linhas.reduce((s, l) => s + l.peso * l.r.liqAnual, 0),
-      ganhoHz: hz.dias ? linhas.reduce((s, l) => s + l.ganhoHz, 0) : null, presos: linhas.filter((l) => l.preso).map((l) => l.tier) };
+    return { linhas, liqAnual: linhas.reduce((s, l) => s + l.peso * l.r.liqAnual, 0), fora: linhas.filter((l) => l.fora).map((l) => l.tier) };
   };
-  // vértices do tripé: parcela do excedente em tiers que priorizam cada vértice
-  M.tripe = (tiers) => { const soma = tiers.reduce((s, t) => s + t.pct, 0) || 1, o = {}; tiers.forEach((t) => { o[t.prioridade] = (o[t.prioridade] || 0) + t.pct / soma; }); return o; };
   // contraparte. em: [{emissor, pct, rating}], escala: {rating: ordem}, R: {minEmissores, maxEmissores, tetoEmissor, ratingMinimo}
   M.contraparte = (em, total, escala, R) => {
     const soma = em.reduce((s, e) => s + Math.max(0, e.pct), 0);

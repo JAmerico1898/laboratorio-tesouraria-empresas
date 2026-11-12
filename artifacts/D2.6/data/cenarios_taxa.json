@@ -1,5 +1,4 @@
 [{"id":"slide","aTaxa":13.0,"aPrazo":90,"aTipo":"cdb","bTaxa":12.5,"bPrazo":361,"bTipo":"cdb"},
 {"id":"degrau","aTaxa":13.0,"aPrazo":180,"aTipo":"cdb","bTaxa":13.0,"bPrazo":181,"bTipo":"cdb"},
 {"id":"precoce","aTaxa":12.0,"aPrazo":10,"aTipo":"cdb","bTaxa":12.5,"bPrazo":361,"bTipo":"cdb"},
-{"id":"comecotas","aTaxa":12.0,"aPrazo":730,"aTipo":"fundo","bTaxa":12.0,"bPrazo":730,"bTipo":"cdb"},
-{"id":"longo","aTaxa":12.0,"aPrazo":720,"aTipo":"cdb","bTaxa":12.0,"bPrazo":721,"bTipo":"cdb"}]
+{"id":"comecotas","aTaxa":12.0,"aPrazo":730,"aTipo":"fundo","bTaxa":12.0,"bPrazo":730,"bTipo":"cdb"}]
