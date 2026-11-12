@@ -49,12 +49,5 @@
       custoES: ES * H, custoRup: perdAno * P.margem * (C.mult || 1), custo: ES * H + perdAno * P.margem * (C.mult || 1),
     };
   };
-  // extensão: quem carrega o estoque (pooling)
-  M.pooling = function (P, C) {
-    const esL = M.es({ ...C, LT: P.ltAlfa, incluiLT: false });
-    const esH = M.es({ ...C, incluiLT: false });
-    const H = M.H(P, C);
-    return { esH, esL, economia: (esH - esL) * H, agregado: Math.round(C.z * C.sigma * Math.sqrt(P.nDistrib) * Math.sqrt(C.LT)), separado: P.nDistrib * esH };
-  };
   root.M34 = M;
 })(typeof window !== 'undefined' ? window : globalThis);

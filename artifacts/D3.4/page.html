@@ -2,17 +2,9 @@
 <link rel="stylesheet" href="kit.css">
 <style>
 .d34-chart { min-height: 300px; }
-.d34-mini { min-height: 150px; }
-.d34-pair { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
-@container (min-width: 40rem) { .d34-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
-.d34-play { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
-.d34-play .k-select { width: auto; }
 .d34-formula { padding: 8px 10px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); font-size: 15px; line-height: 1.6; font-variant-numeric: tabular-nums; margin-bottom: 10px; }
 .d34-formula p { margin: 0; }
 .d34-banner { margin-top: 8px; }
-.d34-ext { margin-top: 14px; border-top: 1px solid var(--color-border-line); padding-top: 10px; }
-.d34-ext h4 { margin: 0; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
-.d34-conta { font-size: 14px; line-height: 1.6; font-variant-numeric: tabular-nums; margin: 8px 0 0; }
 .d34-choque[aria-pressed="true"] { background: var(--k-neg); border-color: var(--k-neg); color: #fff; }
 </style>
 
@@ -24,12 +16,9 @@
     </div>
     <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
       <button class="k-btn d34-cen" data-cen="slide" aria-pressed="false">Slide 95%</button>
-      <button class="k-btn d34-cen" data-cen="a99" aria-pressed="false">Classe A — 99%</button>
-      <button class="k-btn d34-cen" data-cen="c90" aria-pressed="false">Classe C — 90%</button>
       <button class="k-btn d34-cen" data-cen="lt4" aria-pressed="false">LT × 4</button>
       <button class="k-btn d34-cen" data-cen="jit" aria-pressed="false">JIT (Toyota)</button>
       <button class="k-btn d34-cen" data-cen="pandemia" aria-pressed="false">Pandemia</button>
-      <button class="k-btn d34-cen" data-cen="instavel" aria-pressed="false">Fornecedor instável</button>
     </div>
   </header>
 
@@ -38,36 +27,19 @@
       <h2 class="k-zt">Cabo flexível 1,5 mm² · d = <span data-draw="v" data-q="d">—</span> rolos/dia</h2>
       <div class="k-ctl"><span class="k-lab">Nível de serviço</span>
         <div class="k-seg" role="group" aria-label="Nível de serviço">
-          <button data-k="nivel" data-v="90" aria-pressed="false">90%</button>
-          <button data-k="nivel" data-v="95" aria-pressed="true">95%</button>
-          <button data-k="nivel" data-v="99" aria-pressed="false">99%</button>
+          <button data-k="nivel" data-v="90" aria-pressed="false">90% · C</button>
+          <button data-k="nivel" data-v="95" aria-pressed="true">95% · B</button>
+          <button data-k="nivel" data-v="99" aria-pressed="false">99% · A</button>
           <button data-k="nivel" data-v="JIT" aria-pressed="false">JIT · z = 0</button>
         </div></div>
       <div class="k-ctl"><label for="c-sig">σ <span class="k-u">desvio-padrão diário da demanda</span></label>
         <div class="k-in"><input type="range" id="c-sig" data-k="sigma" min="0" max="120" step="5"><input type="number" data-k="sigma" min="0" max="120" step="5" aria-label="Desvio-padrão diário, rolos"></div></div>
       <div class="k-ctl"><label for="c-lt">LT <span class="k-u">lead time da Alfa, dias</span></label>
         <div class="k-in"><input type="range" id="c-lt" data-k="LT" min="1" max="64" step="1"><input type="number" data-k="LT" min="1" max="64" step="1" aria-label="Lead time, dias"></div></div>
-      <div class="k-ctl"><label for="c-slt">σ<sub>LT</sub> <span class="k-u">desvio do lead time, dias</span></label>
-        <div class="k-in"><input type="range" id="c-slt" data-k="sigmaLT" min="0" max="6" step="0.5"><input type="number" data-k="sigmaLT" min="0" max="6" step="0.5" aria-label="Desvio do lead time, dias"></div></div>
-      <label class="k-toggle d34-inclui" hidden><input type="checkbox" data-k="incluiLT"> Incluir σ<sub>LT</sub> no ES</label>
-      <div class="k-ctl"><label for="c-q">Q <span class="k-u">lote de compra, rolos</span></label>
-        <div class="k-in"><input type="range" id="c-q" data-k="Q" min="500" max="6500" step="100"><input type="number" data-k="Q" min="500" max="6500" step="100" aria-label="Lote de compra, rolos"></div></div>
 
       <h2 class="k-zt2">Cadeia</h2>
       <button class="k-btn d34-choque" type="button" aria-pressed="false">Choque de cadeia: LT real dobra</button>
       <p class="k-note">O ROP não é recalculado: continua supondo o lead time do controle acima.</p>
-
-      <h2 class="k-zt2">Animação</h2>
-      <div class="d34-play">
-        <button class="k-btn d34-btn-play" type="button" aria-pressed="false">Reproduzir</button>
-        <button class="k-btn d34-btn-pause" type="button" hidden>Pausar</button>
-        <select class="k-select d34-vel" aria-label="Velocidade">
-          <option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option>
-        </select>
-      </div>
-
-      <h2 class="k-zt2">Extensão</h2>
-      <label class="k-toggle"><input type="checkbox" data-k="ext"> Quem carrega o estoque na cadeia</label>
     </div>
 
     <div class="k-zone" id="visual" data-source="item niveis cenarios">
@@ -83,23 +55,12 @@
       </div>
       <div class="k-alert d34-banner" hidden>Lead time dobrou; o ROP ainda assume <b data-draw="v" data-q="LT">—</b> dias. Fill rate <b data-draw="v" data-q="fill">—</b>.</div>
 
-      <div class="d34-ext" id="extensao" hidden>
-        <div class="k-ch"><h3>Quem carrega o estoque</h3><span>a Alfa mantém produto acabado e entrega em <b data-draw="v" data-q="ltAlfa">—</b> dias</span></div>
-        <div class="d34-pair">
-          <div><h4>Horizonte com LT <span data-draw="v" data-q="LT">—</span> · ES <span data-draw="v" data-q="esH">—</span></h4><div class="k-chart d34-mini dash-skeleton" data-draw="mini" data-lt="base" role="img" aria-label="Estoque da Horizonte com o lead time atual"></div></div>
-          <div><h4>Horizonte com LT <span data-draw="v" data-q="ltAlfa">—</span> · ES <span data-draw="v" data-q="esL">—</span></h4><div class="k-chart d34-mini dash-skeleton" data-draw="mini" data-lt="alfa" role="img" aria-label="Estoque da Horizonte com lead time curto"></div></div>
-        </div>
-        <p class="d34-conta">A Horizonte economiza (<b data-draw="v" data-q="esH">—</b> − <b data-draw="v" data-q="esL">—</b>) × <b data-draw="v" data-q="H">—</b> = R$ <b data-draw="v" data-q="economia">—</b>/ano em carregamento de ES.<br>
-          A Alfa, atendendo <b data-draw="v" data-q="nDistrib">—</b> distribuidores iguais, precisa de ES agregado de <b data-draw="v" data-q="z">—</b> × <b data-draw="v" data-q="sigma">—</b> × √<b data-draw="v" data-q="nDistrib">—</b> × √<b data-draw="v" data-q="LT">—</b> = <b data-draw="v" data-q="agregado">—</b> rolos — contra <b data-draw="v" data-q="nDistrib">—</b> × <b data-draw="v" data-q="esH">—</b> = <b data-draw="v" data-q="separado">—</b> se cada distribuidor se protegesse sozinho.</p>
-        <p class="k-note">Centralizar o buffer no fornecedor reduz o estoque total da cadeia (pooling: √n), mas transfere o carregamento para quem tem mais escala — e poder de negociação (M5).</p>
-      </div>
     </div>
 
     <div class="k-zone" id="leitura" data-source="item niveis cenarios">
       <h2 class="k-zt">A fórmula</h2>
       <div class="d34-formula">
-        <p class="d34-f-simples">ES = z · σ · √LT = <b data-draw="v" data-q="z">—</b> × <b data-draw="v" data-q="sigma">—</b> × <b data-draw="v" data-q="raizLT">—</b> = <b data-draw="v" data-q="ES">—</b></p>
-        <p class="d34-f-lt" hidden>ES = z · √(LT·σ² + d²·σ<sub>LT</sub>²) = <b data-draw="v" data-q="z">—</b> × √(<b data-draw="v" data-q="LT">—</b> × <b data-draw="v" data-q="sigma">—</b>² + <b data-draw="v" data-q="d">—</b>² × <b data-draw="v" data-q="sigmaLT">—</b>²) = <b data-draw="v" data-q="ES">—</b></p>
+        <p>ES = z · σ · √LT = <b data-draw="v" data-q="z">—</b> × <b data-draw="v" data-q="sigma">—</b> × <b data-draw="v" data-q="raizLT">—</b> = <b data-draw="v" data-q="ES">—</b></p>
         <p>ROP = d · LT + ES = <b data-draw="v" data-q="d">—</b> × <b data-draw="v" data-q="LT">—</b> + <b data-draw="v" data-q="ES">—</b> = <b data-draw="v" data-q="ROP">—</b></p>
       </div>
       <h2 class="k-zt">Leitura</h2>
@@ -114,7 +75,6 @@
         <p data-frase="n99" hidden>Subir de 95% para 99% custa <b data-draw="v" data-q="dES">—</b> rolos a mais de buffer (R$ <b data-draw="v" data-q="dCusto">—</b>/ano) para evitar 4 rupturas em 100 ciclos. Vale para classe A; não para C.</p>
         <p data-frase="jit" hidden>ES zero: carregamento zero, <b data-draw="v" data-q="rupt">—</b> dos ciclos com ruptura, <b data-draw="v" data-q="perdAno">—</b> rolos/ano não vendidos (R$ <b data-draw="v" data-q="custoRup">—</b>). Ganho pequeno e contínuo; risco grande e pontual.</p>
         <p data-frase="choque" hidden>A cadeia falhou: com LT de <b data-draw="v" data-q="LT2">—</b> dias e ROP de <b data-draw="v" data-q="LT">—</b>, o estoque zera em <b data-draw="v" data-q="rupt">—</b> dos ciclos. Nenhum buffer calibrado para o mundo antigo resiste a um lead time que dobra.</p>
-        <p data-frase="sltoff" hidden>Lead time variável e ES que o ignora: <b data-draw="v" data-q="rupt">—</b> de rupturas, contra a promessa de <b data-draw="v" data-q="promessa">—</b>. A variabilidade do fornecedor é tão perigosa quanto a da demanda.</p>
         <p data-frase="raiz" hidden>LT × <b data-draw="v" data-q="ltMult">—</b>, o ES só × <b data-draw="v" data-q="esMult">—</b> (<b data-draw="v" data-q="ES">—</b>): o buffer escala pela raiz do lead time.</p>
       </div>
     </div>
@@ -130,8 +90,8 @@
         <li>Ative o JIT e depois o choque de cadeia. Compare o custo anual nas duas situações com o cenário 95%.
           <details><summary>mostrar resposta</summary><p>95%: R$ <b data-draw="v" data-q="g-c95">—</b> de ES e quase nenhuma venda perdida. JIT em cadeia calma: zero de ES, <b data-draw="v" data-q="g-pjit">—</b> rolos/ano perdidos (R$ <b data-draw="v" data-q="g-cjit">—</b>) — já pior. JIT com LT dobrado: <b data-draw="v" data-q="g-rpan">—</b> dos ciclos rompem e o fill rate cai para <b data-draw="v" data-q="g-fpan">—</b> — perda catastrófica. É o perfil assimétrico do slide 2 de V3.5.</p></details>
         </li>
-        <li>O fornecedor passa a entregar com σ<sub>LT</sub> = <span data-draw="v" data-q="g-slt">—</span> dias. O que acontece se a Horizonte não recalcular o ES?
-          <details><summary>mostrar resposta</summary><p>As rupturas sobem de <b data-draw="v" data-q="g-r95">—</b> para <b data-draw="v" data-q="g-roff">—</b> dos ciclos com o mesmo ES de <b data-draw="v" data-q="g-es">—</b>. Incluindo o lead time variável na fórmula, o ES sobe para <b data-draw="v" data-q="g-eson">—</b> e as rupturas voltam a <b data-draw="v" data-q="g-ron">—</b>. Variabilidade do fornecedor é variabilidade da demanda no lead time.</p></details>
+        <li>Um item classe A pede 99% de serviço. Quanto custa sair de 95% para 99%?
+          <details><summary>mostrar resposta</summary><p>O ES vai de <b data-draw="v" data-q="g-es">—</b> para <b data-draw="v" data-q="g-es99">—</b> rolos e o carregamento, de R$ <b data-draw="v" data-q="g-c95">—</b> para R$ <b data-draw="v" data-q="g-c99">—</b> por ano. Em troca, as rupturas caem de <b data-draw="v" data-q="g-r95">—</b> para <b data-draw="v" data-q="g-r99">—</b> dos ciclos. Cada degrau de serviço cobra mais buffer: a escolha é estratégica, não técnica — vale para A, não para C.</p></details>
         </li>
       </ol>
     </div>
@@ -146,14 +106,11 @@
    Testes de aderência (Spec §7), conferidos com M34.simula() em node (semente 26, 2.000 dias):
    Default: ES 330 · ROP 1.930 · rupturas 4,1% · custo ES 5.346 · 90%: ES 256 · ROP 1.856 · 6,1%
    99%: ES 466 · ROP 2.066 · 1,0% · custo ES 7.549 · LT 64 (Q 6.400): ES 660 · ROP 7.060
-   σLT 3: 15,5% (fill 98,6%) → ligado: ES 595 · ROP 2.195 · 2,0%
    JIT: ES 0 · ROP 1.600 · 38,5% · fill 97,1% · 730 rolos/ano · Choque: 100% · fill 62,4% · Pandemia: 100% · fill 57,0%
-   Extensão LT 3: ES 143 · economia 3.029 · agregado 1.044 × 3.300
    ============================================================ */
-const ST = window.D34 = { S: null, P: null, Z: null, cen: null, mexido: false, prog: 1, play: false, raf: null, memo: new Map() };
+const ST = window.D34 = { S: null, P: null, Z: null, cen: null, mexido: false, memo: new Map() };
 const IDS = ['item', 'niveis', 'cenarios'];
-const NOMES = ['serra', 'mini', 'v', 'frase'];
-const ANIM_MS = 6000;      // duração da animação a 1× (Spec §4.2)
+const NOMES = ['serra', 'v', 'frase'];
 const LT_RAIZ = 2;         // a frase da raiz aparece quando o LT passa deste múltiplo do LT do slide
 
 const pronto = () => ST.S != null && K.status(IDS) === 'ok';
@@ -161,11 +118,10 @@ const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(I
 const bool = (v) => v === true || v === 'true';
 const cenario = (id) => (dash.data('cenarios').data || []).find((r) => r.id === id);
 function ctlDe(r) {
-  return { nivel: String(r.nivel), sigma: Number(r.sigma), LT: Number(r.LT), sigmaLT: Number(r.sigmaLT), incluiLT: bool(r.incluiLT), Q: Number(r.Q), choque: bool(r.choque),
-    ext: ST.S ? ST.S.ext : false };
+  return { nivel: String(r.nivel), sigma: Number(r.sigma), LT: Number(r.LT), Q: Number(r.Q), choque: bool(r.choque) };
 }
-// controles → entrada do modelo
-const entrada = (S) => ({ d: ST.P.d, sigma: S.sigma, LT: S.LT, sigmaLT: S.sigmaLT, incluiLT: S.incluiLT, z: ST.Z[S.nivel], Q: S.Q, choque: S.choque, cdi: ST.P.cdi, mult: 1 });
+// controles → entrada do modelo (lead time sem variabilidade: σLT = 0)
+const entrada = (S) => ({ d: ST.P.d, sigma: S.sigma, LT: S.LT, sigmaLT: 0, incluiLT: false, z: ST.Z[S.nivel], Q: S.Q, choque: S.choque, cdi: ST.P.cdi, mult: 1 });
 function sim(S, extra) {
   const C = { ...entrada(S), ...(extra || {}) };
   const key = JSON.stringify(C);
@@ -178,22 +134,14 @@ const atual = () => sim(ST.S);
 function sincroniza() {
   const S = ST.S;
   K.sync(S);
-  document.querySelectorAll('.d34-inclui').forEach((x) => { x.hidden = !(S.sigmaLT > 0); });
-  document.querySelectorAll('.d34-f-simples').forEach((x) => { x.hidden = S.incluiLT && S.sigmaLT > 0; });
-  document.querySelectorAll('.d34-f-lt').forEach((x) => { x.hidden = !(S.incluiLT && S.sigmaLT > 0); });
   document.querySelectorAll('.d34-choque').forEach((b) => b.setAttribute('aria-pressed', String(S.choque)));
   document.querySelectorAll('.d34-banner').forEach((x) => { x.hidden = !S.choque; });
-  document.querySelectorAll('#extensao').forEach((x) => { x.hidden = !S.ext; });
-  document.querySelectorAll('.d34-btn-play').forEach((b) => { b.hidden = ST.play; });
-  document.querySelectorAll('.d34-btn-pause').forEach((b) => { b.hidden = !ST.play; });
   document.querySelectorAll('.d34-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
 }
-function para() { ST.play = false; if (ST.raf) cancelAnimationFrame(ST.raf); ST.raf = null; }
 function aplicar(id) {
   const r = cenario(id);
   if (!r) return;
   ST.S = ctlDe(r); ST.cen = id; ST.mexido = false;
-  para(); ST.prog = 1;
   sincroniza();
 }
 dash.onData(() => {
@@ -203,23 +151,15 @@ dash.onData(() => {
   aplicar('slide');
   K.redraw(NOMES);
 });
-K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = k === 'nivel' ? String(v) : v; return true; } }), (k) => {
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = k === 'nivel' ? String(v) : v; return true; } }), () => {
   if (!ST.S) return;
-  if (k !== 'ext') { ST.mexido = true; para(); ST.prog = 1; }
-  sincroniza(); K.redraw(NOMES);
+  ST.mexido = true; sincroniza(); K.redraw(NOMES);
 });
 document.querySelectorAll('.d34-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
 document.querySelectorAll('.d34-choque').forEach((b) => b.addEventListener('click', () => {
   if (!ST.S) return;
-  ST.S.choque = !ST.S.choque; ST.mexido = true; para(); ST.prog = 1; sincroniza(); K.redraw(NOMES);
+  ST.S.choque = !ST.S.choque; ST.mexido = true; sincroniza(); K.redraw(NOMES);
 }));
-document.querySelectorAll('.d34-btn-play').forEach((b) => b.addEventListener('click', () => {
-  if (!ST.S) return;
-  if (ST.prog >= 1) ST.prog = 0;
-  ST.play = true; sincroniza(); dash.draw('serra');
-}));
-document.querySelectorAll('.d34-btn-pause').forEach((b) => b.addEventListener('click', () => { para(); if (ST.S) sincroniza(); }));
-const velocidade = () => { const s = document.querySelector('.d34-vel'); return s ? Number(s.value) || 1 : 1; };
 
 /* ---------- dente de serra ---------- */
 function serra(el, R, H, opts) {
@@ -280,53 +220,29 @@ function serra(el, R, H, opts) {
   return { clip, x, dias };
 }
 dash.draw('serra', (el) => {
-  if (ST.raf) { cancelAnimationFrame(ST.raf); ST.raf = null; }
   if (!pronto()) { falha(el); return; }
   el.classList.remove('dash-skeleton');
-  const R = atual();
-  const semMov = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (ST.play && semMov) { ST.play = false; ST.prog = 1; sincroniza(); }
-  const d = serra(el, R, 300, { tip: true, prog: ST.prog, id: 'main' });
-  if (!ST.play) return;
-  const largura = d.x(d.dias - 1) - d.x(0);
-  let t0 = null; const p0 = ST.prog;
-  const passo = (ts) => {
-    if (t0 == null) t0 = ts;
-    ST.prog = Math.min(1, p0 + (ts - t0) * velocidade() / ANIM_MS);
-    d.clip.attr('width', d.x(0) + largura * ST.prog + 4);
-    if (ST.prog < 1 && ST.play) ST.raf = requestAnimationFrame(passo);
-    else { ST.raf = null; if (ST.prog >= 1) { ST.play = false; sincroniza(); } }
-  };
-  ST.raf = requestAnimationFrame(passo);
-});
-dash.draw('mini', (el) => {
-  if (!pronto() || !ST.S.ext) { if (!pronto()) falha(el); return; }
-  el.classList.remove('dash-skeleton');
-  const R = el.dataset.lt === 'alfa' ? sim(ST.S, { LT: ST.P.ltAlfa, incluiLT: false, sigmaLT: 0, choque: false }) : sim(ST.S, { incluiLT: false, sigmaLT: 0, choque: false });
-  serra(el, R, 150, { mini: true, id: el.dataset.lt });
+  serra(el, atual(), 300, { tip: true, id: 'main' });
 });
 
 /* ---------- números ---------- */
 const S0 = () => ctlDe(cenario('slide'));
 const sc = (id) => sim(ctlDe(cenario(id)));
-const pool = () => M34.pooling(ST.P, entrada(ST.S));
+const s99 = () => sim({ ...S0(), nivel: '99' });
 const VAL = {
-  d: () => K.n(ST.P.d), diasTela: () => K.n(ST.P.diasTela), diasSim: () => K.n(ST.P.diasSim), ltAlfa: () => K.n(ST.P.ltAlfa), nDistrib: () => K.n(ST.P.nDistrib),
-  z: () => K.n(ST.Z[ST.S.nivel], 2), sigma: () => K.n(ST.S.sigma), LT: () => K.n(ST.S.LT), LT2: () => K.n(2 * ST.S.LT), sigmaLT: () => K.n(ST.S.sigmaLT, 1),
+  d: () => K.n(ST.P.d), diasTela: () => K.n(ST.P.diasTela), diasSim: () => K.n(ST.P.diasSim),
+  z: () => K.n(ST.Z[ST.S.nivel], 2), sigma: () => K.n(ST.S.sigma), LT: () => K.n(ST.S.LT), LT2: () => K.n(2 * ST.S.LT),
   raizLT: () => { const r = Math.sqrt(ST.S.LT); return Math.abs(r - Math.round(r)) < 1e-9 ? K.n(r) : K.n(r, 2); },
   ES: (R) => K.n(R.ES), ROP: (R) => K.n(R.ROP), H: (R) => K.n(R.H, 2), margem: () => K.n(ST.P.margem),
   rupt: (R) => K.p(R.rupt, 1), ruptN: (R) => K.n(R.ciclosRup) + ' de ' + K.n(R.ciclos), fill: (R) => K.p(R.fill, 1),
   custo: (R) => K.n(R.custo), custoES: (R) => K.n(R.custoES), custoRup: (R) => K.n(R.custoRup), perdAno: (R) => K.n(R.perdAno),
   nivel: () => (ST.S.nivel === 'JIT' ? null : ST.S.nivel + '%'), umEm: () => (ST.S.nivel === 'JIT' ? null : K.n(100 / (100 - Number(ST.S.nivel)))),
   dES: (R) => K.n(R.ES - sim({ ...ST.S, nivel: '95' }).ES), dCusto: (R) => K.n(R.custoES - sim({ ...ST.S, nivel: '95' }).custoES),
-  promessa: () => (ST.S.nivel === 'JIT' ? null : K.n(100 - Number(ST.S.nivel)) + '%'),
   ltMult: () => K.n(ST.S.LT / S0().LT, 1), esMult: () => K.n(Math.sqrt(ST.S.LT / S0().LT), 1),
-  esH: () => K.n(pool().esH), esL: () => K.n(pool().esL), economia: () => K.n(pool().economia), agregado: () => K.n(pool().agregado), separado: () => K.n(pool().separado),
   'g-lt': () => K.n(S0().LT), 'g-lt4': () => K.n(ctlDe(cenario('lt4')).LT), 'g-es': () => K.n(sc('slide').ES), 'g-es4': () => K.n(sc('lt4').ES),
   'g-rop': () => K.n(sc('slide').ROP), 'g-rop4': () => K.n(sc('lt4').ROP), 'g-c95': () => K.n(sc('slide').custoES),
   'g-pjit': () => K.n(sc('jit').perdAno), 'g-cjit': () => K.n(sc('jit').custoRup), 'g-rpan': () => K.p(sc('pandemia').rupt, 0), 'g-fpan': () => K.p(sc('pandemia').fill, 0),
-  'g-slt': () => K.n(ctlDe(cenario('instavel')).sigmaLT, 0), 'g-r95': () => K.p(sc('slide').rupt, 0), 'g-roff': () => K.p(sc('instavel').rupt, 0),
-  'g-eson': () => K.n(sim({ ...ctlDe(cenario('instavel')), incluiLT: true }).ES), 'g-ron': () => K.p(sim({ ...ctlDe(cenario('instavel')), incluiLT: true }).rupt, 0),
+  'g-es99': () => K.n(s99().ES), 'g-c99': () => K.n(s99().custoES), 'g-r95': () => K.p(sc('slide').rupt, 1), 'g-r99': () => K.p(s99().rupt, 1),
 };
 dash.draw('v', (el) => {
   const fn = VAL[el.dataset.q];
@@ -340,7 +256,6 @@ dash.draw('frase', (el) => {
     const S = ST.S;
     if (S.choque) keys.push('choque');
     else if (S.nivel === 'JIT') keys.push('jit');
-    else if (S.sigmaLT > 0 && !S.incluiLT) keys.push('sltoff');
     else if (S.nivel === '99') keys.push('n99');
     else keys.push('base');
     if (S.LT >= LT_RAIZ * S0().LT && S.nivel !== 'JIT') keys.push('raiz');
