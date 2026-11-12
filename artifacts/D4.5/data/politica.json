@@ -1,6 +1,5 @@
 [
  {"id":"padrao","cVerde":3,"cVermelho":8,"spread":300,"limite":60,"garantia":"sim","sacado":1},
  {"id":"afrouxar","cVerde":6,"cVermelho":15,"spread":"","limite":"","garantia":"","sacado":""},
- {"id":"apertar","cVerde":1.5,"cVermelho":5,"spread":"","limite":"","garantia":"","sacado":""},
- {"id":"horizonte","cVerde":"","cVermelho":"","spread":"","limite":"","garantia":"","sacado":1}
+ {"id":"apertar","cVerde":1.5,"cVermelho":5,"spread":"","limite":"","garantia":"","sacado":""}
 ]

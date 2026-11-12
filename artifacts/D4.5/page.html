@@ -19,13 +19,6 @@
 .d45-jumps .k-btn { font-size: 12.5px; padding: 3px 8px; }
 .d45-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .d45-two .k-kn { font-size: 1.5rem; }
-.d45-mx { display: grid; grid-template-columns: auto 1fr 1fr; gap: 4px; font-size: 14px; margin-top: 10px; max-width: 26rem; }
-.d45-mx > span { padding: 6px 8px; }
-.d45-mx .h { color: var(--color-fg-muted); font-size: 13px; text-align: center; }
-.d45-mx .r { color: var(--color-fg-muted); font-size: 13px; align-self: center; }
-.d45-mx .c { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); text-align: center; font-variant-numeric: tabular-nums; }
-.d45-mx .c b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.5rem; display: block; }
-.d45-mx .c.ok { border-left: 4px solid var(--k-pos); } .d45-mx .c.err { border-left: 4px solid var(--k-neg); }
 .k-table tr.d45-on td { background: var(--color-bg); font-weight: 600; }
 .k-table tr.d45-on td:first-child { box-shadow: inset 4px 0 0 var(--k-navy); }
 </style>
@@ -40,17 +33,11 @@
       <button class="k-btn d45-cen" data-cen="padrao" aria-pressed="false">Padrão</button>
       <button class="k-btn d45-cen" data-cen="afrouxar" aria-pressed="false">Afrouxar</button>
       <button class="k-btn d45-cen" data-cen="apertar" aria-pressed="false">Apertar</button>
-      <button class="k-btn d45-cen" data-cen="horizonte" aria-pressed="false">Horizonte em destaque</button>
     </div>
   </header>
 
-  <div class="k-tabs" role="tablist">
-    <button class="k-tab" id="tab-pipeline" data-group="t" data-tab="pipeline" role="tab" aria-selected="true">Pipeline</button>
-    <button class="k-tab" id="tab-paradoxo" data-group="t" data-tab="paradoxo" role="tab" aria-selected="false">Paradoxo da acurácia</button>
-  </div>
-
   <!-- ===================== PIPELINE ===================== -->
-  <section data-group="t" data-pane="pipeline" id="pipeline">
+  <section id="pipeline">
     <div class="d45-stages" id="estagios" data-source="variaveis geradores politica pricing">
       <div class="d45-st" id="st-variaveis">
         <h3><span>1</span>Variáveis</h3>
@@ -63,7 +50,7 @@
       </div>
       <div class="d45-st" id="st-score">
         <h3><span>3</span>Score</h3>
-        <div class="k-u">PD do sacado</div>
+        <div class="k-u">PD em 12 meses do sacado</div>
         <div class="d45-pd" data-draw="v" data-q="pd">—</div>
         <p class="k-note" data-frases><span data-draw="fsac"></span><span data-frase="h" hidden>Comercial Horizonte</span><span data-frase="n" hidden>Sacado nº <b data-draw="v" data-q="sacado">—</b></span></p>
       </div>
@@ -97,9 +84,9 @@
 
         <h2 class="k-zt2">Pricing do warm</h2>
         <div class="k-ctl"><label for="c-sp">Spread adicional <span class="k-u">bps</span></label>
-          <div class="k-in"><input type="range" id="c-sp" data-k="spread" min="0" max="800" step="25"><input type="number" data-k="spread" min="0" max="800" step="25" aria-label="Spread adicional no warm, bps"></div></div>
+          <div class="k-in"><input type="range" id="c-sp" data-k="spread" min="200" max="500" step="25"><input type="number" data-k="spread" min="200" max="500" step="25" aria-label="Spread adicional no warm, bps"></div></div>
         <div class="k-ctl"><label for="c-lim">Limite <span class="k-u">% do máximo</span></label>
-          <div class="k-in"><input type="range" id="c-lim" data-k="limite" min="30" max="100" step="5"><input type="number" data-k="limite" min="30" max="100" step="5" aria-label="Limite no warm, % do máximo"></div></div>
+          <div class="k-in"><input type="range" id="c-lim" data-k="limite" min="50" max="70" step="5"><input type="number" data-k="limite" min="50" max="70" step="5" aria-label="Limite no warm, % do máximo"></div></div>
         <label class="k-toggle"><input type="checkbox" data-k="garantia"> Exigir garantia no warm</label>
 
         <h2 class="k-zt2">Sacado em destaque</h2>
@@ -122,7 +109,6 @@
           <span><i style="background: var(--k-amber); opacity: .35"></i>Zona warm</span>
           <span><i style="background: var(--k-neg); opacity: .25"></i>Zona vermelha</span>
         </div>
-        <label class="k-toggle"><input type="checkbox" data-k="zoom"> Ampliar o eixo (corta as barras acima de <b data-draw="v" data-q="zoomCap">—</b> sacados)</label>
         <p class="k-note" data-frases><span data-draw="fzoom"></span><span data-frase="corte" hidden>Barras cortadas: o bin mais cheio tem <b data-draw="v" data-q="binMax">—</b> sacados.</span></p>
 
         <div class="k-ch" style="margin-top: 12px"><h3>Funil</h3><span>sacados por faixa · taxa de maus na faixa</span></div>
@@ -152,39 +138,6 @@
     </div>
   </section>
 
-  <!-- ===================== PARADOXO ===================== -->
-  <section data-group="t" data-pane="paradoxo" id="paradoxo" hidden>
-    <div class="k-zones">
-      <div class="k-zone" id="p-controles" data-source="geradores cortes">
-        <h2 class="k-zt">Cutoff único</h2>
-        <div class="k-ctl"><label for="c-cp">Prever mau se PD ≥ <span class="k-u">%</span></label>
-          <div class="k-in"><input type="range" id="c-cp" data-k="cP" min="10" max="90" step="5"><input type="number" data-k="cP" min="10" max="90" step="5" aria-label="Cutoff, %"></div></div>
-        <p class="k-note">Carteira desbalanceada: taxa de maus <b data-draw="v" data-q="p-taxa">—</b> e modelo fraco (AUC <b data-draw="v" data-q="p-auc">—</b>).</p>
-      </div>
-
-      <div class="k-zone" id="p-visual" data-source="variaveis geradores cortes">
-        <div class="k-ch"><h3>Cutoffs × métricas</h3><span>previsto mau se PD ≥ cutoff</span></div>
-        <div class="k-tw">
-          <table class="k-table" id="tab-cortes"><thead><tr><th>Cutoff</th><th>Acurácia</th><th>Recall dos maus</th><th>Aprovação</th></tr></thead><tbody data-draw="cortes"></tbody></table>
-        </div>
-        <div class="k-ch" style="margin-top: 14px"><h3>Matriz de confusão</h3><span>cutoff <b data-draw="v" data-q="p-c">—</b></span></div>
-        <div class="d45-mx" role="table" aria-label="Matriz de confusão">
-          <span></span><span class="h">Previsto bom (aprova)</span><span class="h">Previsto mau (recusa)</span>
-          <span class="r">Pagou</span><span class="c ok"><b data-draw="v" data-q="m-vn">—</b>acerto</span><span class="c err"><b data-draw="v" data-q="m-fp">—</b>bom recusado</span>
-          <span class="r">Inadimpliu</span><span class="c err"><b data-draw="v" data-q="m-fn">—</b>mau aprovado</span><span class="c ok"><b data-draw="v" data-q="m-vp">—</b>mau pego</span>
-        </div>
-      </div>
-
-      <div class="k-zone" id="p-leitura" data-source="variaveis geradores">
-        <h2 class="k-zt">Leitura</h2>
-        <div class="k-kpi"><span class="k-kl">Acurácia</span><span class="k-kn" data-draw="v" data-q="p-acc">—</span></div>
-        <div class="k-kpi"><span class="k-kl">AUC</span><span class="k-kn" data-draw="v" data-q="p-auc">—</span></div>
-        <div class="k-kpi"><span class="k-kl">Recall dos maus</span><span class="k-kn k-neg" data-draw="v" data-q="p-rec">—</span></div>
-        <div class="k-diag"><p>Aprovar quase todos acerta ~80% porque ~80% pagam. Acurácia isolada engana em base desbalanceada; recall dos maus é o que importa (V4.6.2).</p></div>
-      </div>
-    </div>
-  </section>
-
   <details class="k-help" id="perguntas" data-source="variaveis geradores politica">
     <summary>? Perguntas-guia</summary>
     <div class="k-help-body">
@@ -195,8 +148,8 @@
         <li>Qual variável mais pesa no modelo e qual família ela representa?
           <details><summary>mostrar resposta</summary><p>Score bureau (β = <b data-draw="v" data-q="g-b4">—</b>; razão de chances <b data-draw="v" data-q="g-or4">—</b> — cada desvio-padrão a mais reduz a chance de default em <b data-draw="v" data-q="g-red4">—</b>), da família bureau externo. Entre as comportamentais, atraso médio (<b data-draw="v" data-q="g-or2">—</b>) é a mais forte — o sinal mais precoce.</p></details>
         </li>
-        <li>Na aba Paradoxo, por que a acurácia quase não muda entre cutoff 50% e 70%?
-          <details><summary>mostrar resposta</summary><p>Em ambos o modelo aprova quase todos e acerta nos que pagam (acurácia <b data-draw="v" data-q="g-a50">—</b> e <b data-draw="v" data-q="g-a70">—</b>); o recall dos maus cai de <b data-draw="v" data-q="g-r50">—</b> para <b data-draw="v" data-q="g-r70">—</b>. O número que importa sumiu sem que a acurácia avisasse.</p></details>
+        <li>KS e AUC do modelo estão bons pela régua do monitoramento?
+          <details><summary>mostrar resposta</summary><p>Sim. KS <b data-draw="v" data-q="ks">—</b>: acima de 0,40 (bom) e perto de 0,50 (excelente). AUC <b data-draw="v" data-q="auc">—</b>: dentro de 0,80–0,90 (bom), sem o alerta de overfitting acima de 0,90. As duas medem se o modelo separa bons de maus — nenhuma muda com o cutoff. A terceira métrica, PSI, compara a base de treino com a de produção ao longo do tempo.</p></details>
         </li>
       </ol>
     </div>
@@ -212,13 +165,12 @@
    Carteira base: N 2.000 · maus 5,45% · KS 0,49 · AUC 0,81
    Faixas 3/8: verde 61,8% · warm 24,2% · vermelho 14,0% · maus no verde 19 · taxa de maus no vermelho 21,1%
    Horizonte: x̃ (0,84 · −0,25 · 0,70 · 0,75 · −0,28) · logit −4,90 · PD 0,74% · verde
-   Paradoxo: maus 21,9% · AUC 0,68 · cutoff 50%: acurácia 0,79 · recall 0,06 · aprovação 0,98 · cutoff 70%: recall 0,01
    ============================================================ */
 const ST = window.D45 = { S: null, cen: null, mexido: false };
-const IDS = ['variaveis', 'geradores', 'politica', 'pricing', 'cortes'];
-const NOMES = ['vars', 'modelo', 'regua', 'hist', 'funil', 'pricing', 'cortes', 'v', 'frase', 'fsac', 'ffaixa', 'fprec', 'freal', 'fzoom'];
+const IDS = ['variaveis', 'geradores', 'politica', 'pricing'];
+const NOMES = ['vars', 'modelo', 'regua', 'hist', 'funil', 'pricing', 'v', 'frase', 'fsac', 'ffaixa', 'fprec', 'freal', 'fzoom'];
 const NB = 40, WB = 0.01;        // 40 bins de 1 p.p. de PD (0–40%) + bin final "> 40%"
-const ZOOM = 60;                 // teto do eixo com "Ampliar"
+const ZOOM = 60;                 // teto do eixo do histograma
 const FROUXA = 6, APERTADA = 1.5; // cutoff verde (%) das frases da Spec §4.4
 const PASSO = 0.5;               // distância mínima entre os cutoffs (p.p.)
 
@@ -227,11 +179,9 @@ const VV = () => K.num(dash.data('variaveis').data).sort((a, b) => a.ordem - b.o
 const GG = (id) => K.num(dash.data('geradores').data).find((r) => r.id === id);
 const cenario = (id) => K.num(dash.data('politica').data).find((r) => r.id === id);
 const pricing = () => K.num(dash.data('pricing').data);
-const cortes = () => K.num(dash.data('cortes').data).sort((a, b) => a.corte - b.corte);
 const pronto = () => ST.S != null && K.status(IDS) === 'ok';
 const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
 const base = () => M45.carteiraMemo(VV(), GG('base'));
-const para = () => M45.carteiraMemo(VV(), GG('paradoxo'));
 const fun = (cv, cr) => M45.funil(base().C, cv / 100, cr / 100);
 const sac = () => base().C[Math.max(0, Math.min(base().C.length - 1, Math.round(ST.S.sacado) - 1))];
 const faixaSac = () => M45.faixa(sac().pd, ST.S.cV / 100, ST.S.cR / 100);
@@ -244,7 +194,7 @@ function sincroniza() {
 }
 function aplicar(id) {
   const r = cenario(id); if (!r) return;
-  const S = ST.S || { zoom: true, cP: (cortes().find((c) => c.padrao === 1) || cortes()[0]).corte };
+  const S = ST.S || {};
   ['cVerde', 'cVermelho', 'spread', 'limite', 'sacado', 'garantia'].forEach((c) => {
     const v = r[c]; if (v === '' || v == null) return;
     const k = { cVerde: 'cV', cVermelho: 'cR' }[c] || c;
@@ -276,7 +226,6 @@ document.querySelectorAll('.d45-jump').forEach((b) => b.addEventListener('click'
   else s = C.find((c) => !c.mau && c.pd >= cr);
   if (s) { ST.S.sacado = s.id; sincroniza(); K.redraw(NOMES); }
 }));
-K.tabs('t', () => K.redraw(NOMES));
 
 /* ---------- tabelas dos estágios ---------- */
 const td = (tr, txt) => { const c = document.createElement('td'); c.textContent = txt; tr.append(c); return c; };
@@ -346,7 +295,7 @@ dash.draw('hist', (el) => {
   el.replaceChildren(svg.node());
   const tip = K.tip(el);
   const maxTot = d3.max(bins, (b) => b.bons + b.maus);
-  const yMax = S.zoom ? Math.min(ZOOM, maxTot) : maxTot;
+  const yMax = Math.min(ZOOM, maxTot);
   const y = d3.scaleLinear([0, yMax], [H - 26, 14]).nice();
   const ticks = y.ticks(5);
   const meas = svg.append('text').attr('class', 'k-svgm');
@@ -416,23 +365,8 @@ dash.draw('funil', (el) => {
   });
 });
 
-/* ---------- paradoxo: tabela de cortes ---------- */
-dash.draw('cortes', (tb) => {
-  tb.replaceChildren();
-  if (!pronto()) return;
-  const C = para().C, lista = cortes().map((c) => c.corte);
-  if (!lista.includes(ST.S.cP)) lista.push(ST.S.cP);
-  lista.sort((a, b) => a - b).forEach((c) => {
-    const r = M45.confusao(C, c / 100), tr = document.createElement('tr');
-    td(tr, K.n(c) + '%'); td(tr, K.n(r.acc, 2)); td(tr, K.p(r.recall, 1)); td(tr, K.p(r.aprov, 1));
-    if (c === ST.S.cP) tr.className = 'd45-on';
-    tb.append(tr);
-  });
-});
-
 /* ---------- números ---------- */
 const g0 = () => fun(pPad().cVerde, pPad().cVermelho), g6 = () => fun(cenario('afrouxar').cVerde, cenario('afrouxar').cVermelho);
-const cz = (c) => M45.confusao(para().C, c / 100);
 const vb = (o) => VV().find((v) => v.ordem === o);
 const VAL = {
   b0: () => K.n(GG('base').intercepto, 2),
@@ -443,7 +377,6 @@ const VAL = {
   'lim-sac': () => { const k = faixaSac(); return k === 'warm' ? K.n(ST.S.limite) : K.n(pricing().find((p) => p.faixa === k).limite); },
   'gar-sac': () => { const k = faixaSac(); return k === 'warm' ? (ST.S.garantia ? 'sim' : 'não') : String(pricing().find((p) => p.faixa === k).garantia).toLowerCase(); },
   N: () => K.n(base().C.length),
-  zoomCap: () => K.n(ZOOM),
   binMax: () => K.n(d3.max(M45.hist(base().C, NB, WB), (b) => b.bons + b.maus)),
   apr: () => K.p(fun(ST.S.cV, ST.S.cR).verde.pct, 1),
   pw: () => K.p(fun(ST.S.cV, ST.S.cR).warm.pct, 1),
@@ -454,13 +387,9 @@ const VAL = {
   bw: () => K.n(fun(ST.S.cV, ST.S.cR).warm.bons),
   bwv: () => { const f = fun(ST.S.cV, ST.S.cR); return K.n(f.vermelho.bons + f.warm.bons); },
   ks: () => K.n(base().ks, 2), auc: () => K.n(base().auc, 2), taxa: () => K.p(base().taxa, 1),
-  'p-taxa': () => K.p(para().taxa, 1), 'p-auc': () => K.n(para().auc, 2), 'p-c': () => K.n(ST.S.cP) + '%',
-  'p-acc': () => K.n(cz(ST.S.cP).acc, 2), 'p-rec': () => K.p(cz(ST.S.cP).recall, 1),
-  'm-vn': () => K.n(cz(ST.S.cP).vn), 'm-fp': () => K.n(cz(ST.S.cP).fp), 'm-fn': () => K.n(cz(ST.S.cP).fn), 'm-vp': () => K.n(cz(ST.S.cP).vp),
   'g-cv0': () => K.n(pPad().cVerde, 0), 'g-cv6': () => K.n(cenario('afrouxar').cVerde, 0),
   'g-ap0': () => K.p(g0().verde.pct, 0), 'g-ap6': () => K.p(g6().verde.pct, 0), 'g-mv0': () => K.n(g0().verde.maus), 'g-mv6': () => K.n(g6().verde.maus),
   'g-b4': () => K.n(vb(4).beta, 2), 'g-or4': () => K.n(Math.exp(vb(4).beta), 2), 'g-red4': () => K.p(1 - Math.exp(vb(4).beta), 0), 'g-or2': () => K.n(Math.exp(vb(2).beta), 2),
-  'g-a50': () => K.n(cz(50).acc, 2), 'g-a70': () => K.n(cz(70).acc, 2), 'g-r50': () => K.p(cz(50).recall, 0), 'g-r70': () => K.p(cz(70).recall, 0),
 };
 dash.draw('v', (el) => {
   const fn = VAL[el.dataset.q];
@@ -479,5 +408,5 @@ dash.draw('fsac', (el) => K.frases(el, pronto() ? [Math.round(ST.S.sacado) === 1
 dash.draw('ffaixa', (el) => K.frases(el, pronto() ? [faixaSac()] : []));
 dash.draw('fprec', (el) => K.frases(el, pronto() ? [faixaSac() === 'vermelho' ? 'rec' : 'ok'] : []));
 dash.draw('freal', (el) => K.frases(el, pronto() ? [sac().mau ? 'mau' : 'pagou'] : []));
-dash.draw('fzoom', (el) => K.frases(el, pronto() && ST.S.zoom && d3.max(M45.hist(base().C, NB, WB), (b) => b.bons + b.maus) > ZOOM ? ['corte'] : []));
+dash.draw('fzoom', (el) => K.frases(el, pronto() && d3.max(M45.hist(base().C, NB, WB), (b) => b.bons + b.maus) > ZOOM ? ['corte'] : []));
 </script>

@@ -1,5 +1,5 @@
 [
- {"faixa":"verde","rotulo":"Verde","acao":"Aprovação automática","spread":0,"limite":100,"garantia":"Não"},
+ {"faixa":"verde","rotulo":"Verde","acao":"Aprovação automática","spread":0,"limite":100,"garantia":"Mínima"},
  {"faixa":"warm","rotulo":"Warm","acao":"Análise manual (5 Cs)","spread":"","limite":"","garantia":""},
  {"faixa":"vermelho","rotulo":"Vermelho","acao":"Recusa","spread":"","limite":0,"garantia":"—"}
 ]

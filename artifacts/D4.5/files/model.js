@@ -1,5 +1,5 @@
 /* D4.5 · Score, cutoff e decisão — funções puras (sem DOM).
-   V = linhas do dataset de variáveis (rho, beta, betaFraco, media, escala, transf, min, max, horizonte)
+   V = linhas do dataset de variáveis (rho, beta, media, escala, transf, min, max, horizonte)
    G = linha do dataset de geradores (N, semente, alfa, gama, intercepto, escalaBeta, colBeta). PD em fração (0–1). */
 (function (root) {
   const M = {};
@@ -81,13 +81,6 @@
     const b = Array.from({ length: nb + 1 }, (_, i) => ({ i, lo: i * w, hi: i < nb ? (i + 1) * w : null, bons: 0, maus: 0 }));
     C.forEach((s) => { const k = Math.min(nb, Math.floor(s.pd / w)); if (s.mau) b[k].maus++; else b[k].bons++; });
     return b;
-  };
-  // paradoxo: previsto mau se PD ≥ c
-  M.confusao = function (C, c) {
-    let vp = 0, fn = 0, fp = 0, vn = 0;
-    C.forEach((s) => { const pm = s.pd >= c; if (s.mau) { if (pm) vp++; else fn++; } else if (pm) fp++; else vn++; });
-    const N = C.length;
-    return { vp, fn, fp, vn, acc: (vp + vn) / N, recall: vp + fn ? vp / (vp + fn) : 0, aprov: (fn + vn) / N };
   };
   // memo simples por chave
   const memo = {};
