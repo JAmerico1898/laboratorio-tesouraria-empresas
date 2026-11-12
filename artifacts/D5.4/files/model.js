@@ -1,39 +1,33 @@
 /* D5.4 · Calculadora de CET — funções puras (sem DOM). Motor compartilhado com D2.7.
    Taxas em decimal (0,17 = 17%); valores em R$; prazo em meses.
-   C = {P, n, cdi, spread, amort: 'price'|'bullet', iofOn, iofFixo, iofDia, iofTeto, tarifa, tributos, garantia, recip, base: 252|360|365} */
+   C = {P, n, cdi, spread, iofOn, iofFixo, iofDia, iofTeto, tarifa, tributos, garantia, recip, base: 252|360|365} */
 (function (root) {
   const M = {};
-  // períodos por ano: mês = 21 du (252) ou 30 dias corridos (360/365)
-  M.porAno = (base, unidade) => {
-    if (unidade === 'dia') return Number(base);
-    return Number(base) === 365 ? 365 / 30 : 12;
-  };
+  // meses por ano: mês = 21 du (252) ou 30 dias corridos (360/365)
+  M.porAno = (base) => (Number(base) === 365 ? 365 / 30 : 12);
   M.diasAno = (base) => (Number(base) === 365 ? 365 : 360);   // anualização de um período em dias corridos
   M.taxaMensal = (nomAA) => Math.pow(1 + nomAA, 1 / 12) - 1;
 
-  // parcelas: Price (PMT constante) ou Bullet (juros mensais, principal no fim)
-  M.parcelas = function (P, im, n, modo) {
+  // parcelas Price (PMT constante)
+  M.parcelas = function (P, im, n) {
     const out = [];
     let saldo = P;
     const pmt = im === 0 ? P / n : P * im / (1 - Math.pow(1 + im, -n));
     for (let k = 1; k <= n; k++) {
       const juros = saldo * im;
-      const amort = modo === 'bullet' ? (k === n ? P : 0) : pmt - juros;
+      const amort = pmt - juros;
       out.push({ k, juros, amort, saida: juros + amort });
       saldo -= amort;
     }
     return out;
   };
 
-  // dias corridos até a amortização: Price conta 30 d por parcela (fecha 11.987, §3.1);
-  // bullet conta o prazo da operação em dias corridos, n × 365/12 (12 meses = 365 d cheios → 18.765, §4.4)
-  M.diasIOF = (k, n, modo) => (modo === 'bullet' ? Math.round(n * 365 / 12) : 30 * k);
-  // IOF crédito PJ: fixo sobre o principal + diário sobre cada amortização pelo seu prazo (teto em dias)
+  // IOF crédito PJ: fixo sobre o principal + diário sobre cada amortização pelo seu prazo,
+  // 30 dias corridos por parcela (fecha 11.987, §3.1), com teto em dias
   M.iof = function (P, parc, o) {
     if (!o.iofOn) return { fixo: 0, diario: 0, total: 0 };
     const fixo = o.iofFixo * P;
-    const n = parc.length;
-    const diario = parc.reduce((s, p) => s + p.amort * o.iofDia * Math.min(M.diasIOF(p.k, n, o.amort), o.iofTeto), 0);
+    const diario = parc.reduce((s, p) => s + p.amort * o.iofDia * Math.min(30 * p.k, o.iofTeto), 0);
     return { fixo, diario, total: fixo + diario };
   };
 
@@ -55,7 +49,7 @@
   M.operacao = function (C, ate = 5) {
     const nom = C.cdi + C.spread;
     const im = M.taxaMensal(nom);
-    const parc = M.parcelas(C.P, im, C.n, C.amort);
+    const parc = M.parcelas(C.P, im, C.n);
     const iofV = M.iof(C.P, parc, C);
     const tarifa = C.tarifa * C.P;
     const trib = C.tributos * tarifa;
@@ -70,7 +64,7 @@
     const liquido = C.P - ret.iof - ret.tarifa - ret.trib - ret.garantia;
     const fl = [{ t: 0, v: liquido - ret.recip }].concat(parc.map((p) => ({ t: p.k, v: -p.saida + (p.k === C.n ? ret.recip : 0) })));
     const tirM = M.tir(fl);
-    const pa = M.porAno(C.base, 'mes');
+    const pa = M.porAno(C.base);
     const saidas = parc.reduce((s, p) => s + p.saida, 0);
     return {
       nom, im, parc, iof: iofV, tarifaV: tarifa, tribV: trib, garantia: C.garantia, recipV: recip, ret, liquido, fl, tirM,
@@ -99,13 +93,6 @@
       ant: { recebe: face * (1 - d), paga: face, tir: tAnt, cet: Math.pow(1 + tAnt, per) - 1 },
       post: { recebe: face, paga: face * (1 + d), tir: tPost, cet: Math.pow(1 + tPost, per) - 1 },
     };
-  };
-
-  // fluxos livres: linhas [{t, v}] (t em meses ou dias) → TIR por período e CET na base
-  M.livre = function (linhas, unidade, base) {
-    const fl = linhas.filter((r) => Number.isFinite(r.t) && Number.isFinite(r.v) && r.v !== 0 && r.t >= 0);
-    const tir = M.tir(fl, -0.9, unidade === 'dia' ? 0.2 : 1);
-    return { fl, tir, cet: M.cet(tir, M.porAno(base, unidade)), soma: fl.reduce((s, f) => s + f.v, 0) };
   };
 
   root.M54 = M;

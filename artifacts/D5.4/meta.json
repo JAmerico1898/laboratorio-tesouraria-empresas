@@ -3,7 +3,7 @@
   "title": "D5.4 · Calculadora de CET",
   "slug": "b77f6614-d2ac-4421-99a5-a1db94a6e32d",
   "datasets": {
-    "cenarios": { "file": "cenarios.json", "sha256": "7b89c7af8b0498e5910bff6b90322423528cda74eaeecb998d3534667a2f403a" },
+    "cenarios": { "file": "cenarios.json", "sha256": "11038ea7b8f3b9e7d58f8f54b58496e8c1c942d40a967dd53816e18f1ac80295" },
     "parametros": { "file": "parametros.json", "sha256": "f015dc4a48c9a4348df591fa78de28974592bac64e0b3132446987c85ec5a784" },
     "slide": { "file": "slide.json", "sha256": "0529917d23fd519451c1ba51d801491db2b7d5ac36fbcc466e4619c38fc2a116" }
   }

@@ -6,7 +6,7 @@
 <title>D5.4 · Calculadora de CET</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"ancora","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"bullet","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"bullet","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"nominal","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":0,"tarifa":0,"tributos":14.25,"garantia":0,"recip":0,"base":252},{"id":"curta","principal":1000000,"prazo":2,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"base","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":365},{"id":"cuid1","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":365},{"id":"cuid2","principal":1000000,"prazo":2,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"cuid3","principal":1000000,"prazo":36,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"cuid4","principal":1000000,"prazo":12,"cdi":12,"spread":5,"amort":"price","iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":10,"base":252}]},"parametros":{"format":"json","data":[{"chave":"principal","valor":1000000},{"chave":"prazo","valor":12},{"chave":"cdi","valor":12},{"chave":"spread","valor":5},{"chave":"iofFixo","valor":0.38},{"chave":"iofDia","valor":0.0041},{"chave":"iofTeto","valor":365},{"chave":"tarifa","valor":0.44},{"chave":"tributos","valor":14.25},{"chave":"garantia","valor":2000},{"chave":"recip","valor":0},{"chave":"base","valor":252}]},"slide":{"format":"json","data":[{"chave":"entradaSlide","valor":976200},{"chave":"parcelaSlide","valor":91679},{"chave":"nSlide","valor":12},{"chave":"tirSlide","valor":1.46},{"chave":"cetSlide","valor":19},{"chave":"taxaParcelaSlide","valor":1.5},{"chave":"face","valor":100000},{"chave":"dNom","valor":5},{"chave":"prazoDias","valor":60}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"ancora","principal":1000000,"prazo":12,"cdi":12,"spread":5,"iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"nominal","principal":1000000,"prazo":12,"cdi":12,"spread":5,"iofOn":0,"tarifa":0,"tributos":14.25,"garantia":0,"recip":0,"base":252},{"id":"curta","principal":1000000,"prazo":2,"cdi":12,"spread":5,"iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"base","principal":1000000,"prazo":12,"cdi":12,"spread":5,"iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":365},{"id":"cuid1","principal":1000000,"prazo":12,"cdi":12,"spread":5,"iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":365},{"id":"cuid2","principal":1000000,"prazo":2,"cdi":12,"spread":5,"iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"cuid3","principal":1000000,"prazo":36,"cdi":12,"spread":5,"iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":0,"base":252},{"id":"cuid4","principal":1000000,"prazo":12,"cdi":12,"spread":5,"iofOn":1,"tarifa":0.44,"tributos":14.25,"garantia":2000,"recip":10,"base":252}]},"parametros":{"format":"json","data":[{"chave":"principal","valor":1000000},{"chave":"prazo","valor":12},{"chave":"cdi","valor":12},{"chave":"spread","valor":5},{"chave":"iofFixo","valor":0.38},{"chave":"iofDia","valor":0.0041},{"chave":"iofTeto","valor":365},{"chave":"tarifa","valor":0.44},{"chave":"tributos","valor":14.25},{"chave":"garantia","valor":2000},{"chave":"recip","valor":0},{"chave":"base","valor":252}]},"slide":{"format":"json","data":[{"chave":"entradaSlide","valor":976200},{"chave":"parcelaSlide","valor":91679},{"chave":"nSlide","valor":12},{"chave":"tirSlide","valor":1.46},{"chave":"cetSlide","valor":19},{"chave":"taxaParcelaSlide","valor":1.5},{"chave":"face","valor":100000},{"chave":"dNom","valor":5},{"chave":"prazoDias","valor":60}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -125,7 +125,6 @@
 <style>
 .d54-wf { min-height: 280px; }
 .d54-tl { min-height: 170px; }
-.d54-lv { min-height: 220px; }
 .d54-mn { min-height: 130px; }
 .d54-mncols { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
 .d54-mncol { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); padding: var(--cds-pad-sm) var(--cds-pad-md); }
@@ -138,14 +137,6 @@
 .d54-cuid > summary { cursor: pointer; padding: 6px 10px; font-size: 14px; }
 .d54-cuid ol { margin: 0; padding: 0 10px 8px 1.6rem; display: grid; gap: 6px; font-size: 13px; line-height: 1.4; }
 .d54-cuid .k-btn { font-size: 12px; padding: 1px 8px; margin-left: 4px; }
-.d54-ft { max-height: 22rem; overflow: auto; margin-top: 8px; }
-.d54-ft table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.d54-ft th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); text-align: left; padding: 2px 4px; }
-.d54-ft td { padding: 1px 3px; }
-.d54-ft td:first-child { color: var(--color-fg-muted); width: 1.8rem; text-align: right; }
-.d54-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.d54-iof { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; }
-.d54-iof label { font-size: 12px; color: var(--color-fg-muted); display: block; }
 </style>
 
 <div class="k d54" id="d54">
@@ -155,8 +146,7 @@
       <p class="k-sub">Nominal é a fachada. Quanto a Horizonte paga de fato?</p>
     </div>
     <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
-      <button class="k-btn d54-cen" data-cen="ancora" aria-pressed="false">CG 12 m Price</button>
-      <button class="k-btn d54-cen" data-cen="bullet" aria-pressed="false">CG 12 m Bullet</button>
+      <button class="k-btn d54-cen" data-cen="ancora" aria-pressed="false">CG 12 meses</button>
       <button class="k-btn d54-cen" data-cen="nominal" aria-pressed="false">Só nominal</button>
       <button class="k-btn d54-cen" data-cen="curta" aria-pressed="false">Operação curta</button>
       <button class="k-btn d54-cen" data-cen="base" aria-pressed="false">Sem base comum</button>
@@ -165,7 +155,6 @@
 
   <div class="k-tabs" role="tablist">
     <button class="k-tab" id="tab-waterfall" data-group="v" data-tab="waterfall" role="tab" aria-selected="true">Waterfall</button>
-    <button class="k-tab" id="tab-livres" data-group="v" data-tab="livres" role="tab" aria-selected="false">Fluxos livres</button>
     <button class="k-tab" id="tab-nominal" data-group="v" data-tab="nominal" role="tab" aria-selected="false">Mesma nominal</button>
   </div>
 
@@ -174,23 +163,17 @@
     <div class="k-zone" id="controles" data-source="parametros cenarios slide">
       <section data-group="v" data-pane="waterfall">
         <h2 class="k-zt">Operação</h2>
-        <div class="k-ctl"><label for="c-P">Principal <span class="k-u">R$</span></label>
-          <input class="k-num" type="number" id="c-P" data-k="P" min="10000" max="50000000" step="1000" aria-label="Principal, R$"></div>
+        <p class="k-note">Capital de giro de R$ <b data-draw="v" data-q="P">—</b> em parcelas iguais (Price), como no exemplo do slide 4.</p>
         <div class="k-ctl"><label for="c-n">Prazo <span class="k-u">meses</span></label>
           <div class="k-in"><input type="range" id="c-n" data-k="n" min="1" max="36" step="1"><input type="number" data-k="n" min="1" max="36" step="1" aria-label="Prazo, meses"></div></div>
         <div class="k-ctl"><label for="c-cdi">CDI <span class="k-u">% a.a.</span></label>
           <div class="k-in"><input type="range" id="c-cdi" data-k="cdi" min="5" max="20" step="0.25"><input type="number" data-k="cdi" min="5" max="20" step="0.25" aria-label="CDI, % a.a."></div></div>
         <div class="k-ctl"><label for="c-sp">Spread <span class="k-u">% a.a.</span></label>
           <div class="k-in"><input type="range" id="c-sp" data-k="spread" min="0" max="15" step="0.25"><input type="number" data-k="spread" min="0" max="15" step="0.25" aria-label="Spread, % a.a."></div></div>
-        <div class="k-ctl"><span class="k-lab">Amortização</span>
-          <div class="k-seg" role="group" aria-label="Amortização"><button data-k="amort" data-v="price">Price · parcelas iguais</button><button data-k="amort" data-v="bullet">Bullet · principal no fim</button></div></div>
 
         <h2 class="k-zt2">Retenções na origem</h2>
-        <div class="k-ctl"><label class="k-toggle"><input type="checkbox" data-k="iofOn"> IOF <span class="k-info" tabindex="0">i<span class="k-tip">Crédito PJ: alíquota fixa sobre o principal + alíquota diária sobre cada amortização pelo seu prazo, com teto de <b data-draw="v" data-q="iofTeto">—</b> dias. Price conta 30 dias por parcela; bullet conta o prazo da operação em dias corridos (12 meses = 365 dias).</span></span></label>
-          <div class="d54-iof">
-            <div><label for="c-iofF">Fixa <span class="k-u">% do principal</span></label><input class="k-num" type="number" id="c-iofF" data-k="iofFixo" min="0" max="3" step="0.01" aria-label="IOF fixo, %"></div>
-            <div><label for="c-iofD">Diária <span class="k-u">% a.d.</span></label><input class="k-num" type="number" id="c-iofD" data-k="iofDia" min="0" max="0.02" step="0.0001" aria-label="IOF diário, % ao dia"></div>
-          </div></div>
+        <div class="k-ctl"><label class="k-toggle"><input type="checkbox" data-k="iofOn"> IOF <span class="k-info" tabindex="0">i<span class="k-tip">Crédito PJ: alíquota fixa sobre o principal + alíquota diária sobre cada amortização pelo seu prazo, com teto de <b data-draw="v" data-q="iofTeto">—</b> dias, contando 30 dias por parcela.</span></span></label>
+          <p class="k-note">Alíquotas fixas: <b data-draw="v" data-q="iofF">—</b> sobre o principal + <b data-draw="v" data-q="iofD">—</b> ao dia.</p></div>
         <div class="k-ctl"><label for="c-tar">Tarifas <span class="k-u">% do principal · cadastro / TAC</span></label>
           <div class="k-in"><input type="range" id="c-tar" data-k="tarifa" min="0" max="3" step="0.01"><input type="number" data-k="tarifa" min="0" max="3" step="0.01" aria-label="Tarifas, % do principal"></div></div>
         <div class="k-ctl"><label for="c-trib">Tributos sobre tarifas <span class="k-u">% · PIS/COFINS/ISS</span></label>
@@ -204,72 +187,13 @@
         <div class="k-seg" role="group" aria-label="Base de anualização"><button data-k="base" data-v="252">252 du</button><button data-k="base" data-v="360">360</button><button data-k="base" data-v="365">365</button></div>
       </section>
 
-      <section data-group="v" data-pane="livres" hidden>
-        <h2 class="k-zt">Fluxos do tomador</h2>
-        <p class="k-note">Entrada líquida com sinal +, pagamentos com sinal −. Linhas em branco são ignoradas.</p>
-        <div class="k-ctl"><span class="k-lab">Datas em</span>
-          <div class="k-seg" role="group" aria-label="Unidade das datas"><button data-k="unid" data-v="mes">meses</button><button data-k="unid" data-v="dia">dias</button></div></div>
-        <div class="k-ctl"><span class="k-lab">Base de anualização</span>
-          <div class="k-seg" role="group" aria-label="Base de anualização"><button data-k="base" data-v="252">252 du</button><button data-k="base" data-v="360">360</button><button data-k="base" data-v="365">365</button></div></div>
-        <div class="d54-btns">
-          <button class="k-btn d54-pre" type="button" data-pre="slide" aria-pressed="false">Proposta do slide 4</button>
-          <button class="k-btn d54-pre" type="button" data-pre="copia" aria-pressed="false">Copiar da aba Waterfall</button>
-          <button class="k-btn d54-pre" type="button" data-pre="limpa" aria-pressed="false">Limpar</button>
-        </div>
-        <div class="d54-ft">
-          <table aria-label="Fluxos livres">
-            <thead><tr><th>#</th><th>Data <span data-draw="v" data-q="lv-un">—</span></th><th>Valor <span class="k-u">R$</span></th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="0" aria-label="Data do fluxo 1"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="0" aria-label="Valor do fluxo 1"></td></tr>
-              <tr><td>2</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="1" aria-label="Data do fluxo 2"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="1" aria-label="Valor do fluxo 2"></td></tr>
-              <tr><td>3</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="2" aria-label="Data do fluxo 3"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="2" aria-label="Valor do fluxo 3"></td></tr>
-              <tr><td>4</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="3" aria-label="Data do fluxo 4"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="3" aria-label="Valor do fluxo 4"></td></tr>
-              <tr><td>5</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="4" aria-label="Data do fluxo 5"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="4" aria-label="Valor do fluxo 5"></td></tr>
-              <tr><td>6</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="5" aria-label="Data do fluxo 6"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="5" aria-label="Valor do fluxo 6"></td></tr>
-              <tr><td>7</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="6" aria-label="Data do fluxo 7"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="6" aria-label="Valor do fluxo 7"></td></tr>
-              <tr><td>8</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="7" aria-label="Data do fluxo 8"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="7" aria-label="Valor do fluxo 8"></td></tr>
-              <tr><td>9</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="8" aria-label="Data do fluxo 9"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="8" aria-label="Valor do fluxo 9"></td></tr>
-              <tr><td>10</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="9" aria-label="Data do fluxo 10"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="9" aria-label="Valor do fluxo 10"></td></tr>
-              <tr><td>11</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="10" aria-label="Data do fluxo 11"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="10" aria-label="Valor do fluxo 11"></td></tr>
-              <tr><td>12</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="11" aria-label="Data do fluxo 12"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="11" aria-label="Valor do fluxo 12"></td></tr>
-              <tr><td>13</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="12" aria-label="Data do fluxo 13"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="12" aria-label="Valor do fluxo 13"></td></tr>
-              <tr><td>14</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="13" aria-label="Data do fluxo 14"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="13" aria-label="Valor do fluxo 14"></td></tr>
-              <tr><td>15</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="14" aria-label="Data do fluxo 15"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="14" aria-label="Valor do fluxo 15"></td></tr>
-              <tr><td>16</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="15" aria-label="Data do fluxo 16"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="15" aria-label="Valor do fluxo 16"></td></tr>
-              <tr><td>17</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="16" aria-label="Data do fluxo 17"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="16" aria-label="Valor do fluxo 17"></td></tr>
-              <tr><td>18</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="17" aria-label="Data do fluxo 18"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="17" aria-label="Valor do fluxo 18"></td></tr>
-              <tr><td>19</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="18" aria-label="Data do fluxo 19"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="18" aria-label="Valor do fluxo 19"></td></tr>
-              <tr><td>20</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="19" aria-label="Data do fluxo 20"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="19" aria-label="Valor do fluxo 20"></td></tr>
-              <tr><td>21</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="20" aria-label="Data do fluxo 21"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="20" aria-label="Valor do fluxo 21"></td></tr>
-              <tr><td>22</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="21" aria-label="Data do fluxo 22"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="21" aria-label="Valor do fluxo 22"></td></tr>
-              <tr><td>23</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="22" aria-label="Data do fluxo 23"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="22" aria-label="Valor do fluxo 23"></td></tr>
-              <tr><td>24</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="23" aria-label="Data do fluxo 24"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="23" aria-label="Valor do fluxo 24"></td></tr>
-              <tr><td>25</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="24" aria-label="Data do fluxo 25"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="24" aria-label="Valor do fluxo 25"></td></tr>
-              <tr><td>26</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="25" aria-label="Data do fluxo 26"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="25" aria-label="Valor do fluxo 26"></td></tr>
-              <tr><td>27</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="26" aria-label="Data do fluxo 27"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="26" aria-label="Valor do fluxo 27"></td></tr>
-              <tr><td>28</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="27" aria-label="Data do fluxo 28"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="27" aria-label="Valor do fluxo 28"></td></tr>
-              <tr><td>29</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="28" aria-label="Data do fluxo 29"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="28" aria-label="Valor do fluxo 29"></td></tr>
-              <tr><td>30</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="29" aria-label="Data do fluxo 30"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="29" aria-label="Valor do fluxo 30"></td></tr>
-              <tr><td>31</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="30" aria-label="Data do fluxo 31"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="30" aria-label="Valor do fluxo 31"></td></tr>
-              <tr><td>32</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="31" aria-label="Data do fluxo 32"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="31" aria-label="Valor do fluxo 32"></td></tr>
-              <tr><td>33</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="32" aria-label="Data do fluxo 33"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="32" aria-label="Valor do fluxo 33"></td></tr>
-              <tr><td>34</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="33" aria-label="Data do fluxo 34"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="33" aria-label="Valor do fluxo 34"></td></tr>
-              <tr><td>35</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="34" aria-label="Data do fluxo 35"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="34" aria-label="Valor do fluxo 35"></td></tr>
-              <tr><td>36</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="35" aria-label="Data do fluxo 36"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="35" aria-label="Valor do fluxo 36"></td></tr>
-              <tr><td>37</td><td><input class="k-num d54-lt" type="number" step="any" min="0" data-i="36" aria-label="Data do fluxo 37"></td><td><input class="k-num d54-lv" type="number" step="any" data-i="36" aria-label="Valor do fluxo 37"></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
       <section data-group="v" data-pane="nominal" hidden>
         <h2 class="k-zt">Mesma taxa, duas estruturas</h2>
         <div class="k-ctl"><label for="c-mnd">Taxa nominal no período <span class="k-u">%</span></label>
           <div class="k-in"><input type="range" id="c-mnd" data-k="mnD" min="0.5" max="15" step="0.1"><input type="number" data-k="mnD" min="0.5" max="15" step="0.1" aria-label="Taxa nominal no período, %"></div></div>
         <div class="k-ctl"><label for="c-mnp">Prazo <span class="k-u">dias corridos</span></label>
           <div class="k-in"><input type="range" id="c-mnp" data-k="mnPrazo" min="15" max="360" step="1"><input type="number" data-k="mnPrazo" min="15" max="360" step="1" aria-label="Prazo, dias"></div></div>
-        <div class="k-ctl"><label for="c-mnf">Valor de face / principal <span class="k-u">R$</span></label>
-          <input class="k-num" type="number" id="c-mnf" data-k="mnFace" min="1000" max="10000000" step="1000" aria-label="Valor de face, R$"></div>
+        <p class="k-note">Valor de face / principal de R$ <b data-draw="v" data-q="mn-face">—</b>, como no slide 5.</p>
         <h2 class="k-zt2">Base de anualização</h2>
         <div class="k-seg" role="group" aria-label="Base de anualização"><button data-k="base" data-v="252">252 du</button><button data-k="base" data-v="360">360</button><button data-k="base" data-v="365">365</button></div>
       </section>
@@ -278,7 +202,7 @@
     <!-- ===================== VISUAL ===================== -->
     <div class="k-zone" id="visual" data-source="parametros cenarios slide">
       <section data-group="v" data-pane="waterfall" id="waterfall">
-        <div class="k-ch"><h3>Da taxa nominal ao CET <span class="k-info" tabindex="0">i<span class="k-tip">O slide 4 de V5.4 mostra entrada <b data-draw="v" data-q="sl-ent">—</b>, <b data-draw="v" data-q="sl-n">—</b> × <b data-draw="v" data-q="sl-parc">—</b>, TIR <b data-draw="v" data-q="sl-tir">—</b> e CET ≈ <b data-draw="v" data-q="sl-cet">—</b>. Esses fluxos dão TIR <b data-draw="v" data-q="sl-tirR">—</b> → CET <b data-draw="v" data-q="sl-cetR">—</b> (aba Fluxos livres), e <b data-draw="v" data-q="sl-parc">—</b> é a parcela a <b data-draw="v" data-q="sl-tx">—</b> a.m., não a <b data-draw="v" data-q="sl-nom">—</b>. Recalculado aqui: Price <b data-draw="v" data-q="sl-price">—</b> · Bullet <b data-draw="v" data-q="sl-bullet">—</b>.</span></span></h3><span>CET a.a. acumulando cada retenção · degraus em p.p.</span></div>
+        <div class="k-ch"><h3>Da taxa nominal ao CET <span class="k-info" tabindex="0">i<span class="k-tip">O slide 4 de V5.4 mostra entrada <b data-draw="v" data-q="sl-ent">—</b>, <b data-draw="v" data-q="sl-n">—</b> × <b data-draw="v" data-q="sl-parc">—</b>, TIR <b data-draw="v" data-q="sl-tir">—</b> e CET ≈ <b data-draw="v" data-q="sl-cet">—</b>. Esses fluxos dão TIR <b data-draw="v" data-q="sl-tirR">—</b> → CET <b data-draw="v" data-q="sl-cetR">—</b>, e <b data-draw="v" data-q="sl-parc">—</b> é a parcela a <b data-draw="v" data-q="sl-tx">—</b> a.m., não a <b data-draw="v" data-q="sl-nom">—</b>. Recalculado aqui: CET <b data-draw="v" data-q="sl-price">—</b>.</span></span></h3><span>CET a.a. acumulando cada retenção · degraus em p.p.</span></div>
         <div class="k-chart d54-wf dash-skeleton" id="cascata-cet" data-draw="wf" role="img" aria-label="Waterfall da taxa nominal ao CET com o acréscimo de cada retenção"></div>
         <div class="k-ch"><h3>Fluxos do tomador</h3><span>R$ · entrada líquida em t = 0, saídas mensais</span></div>
         <div class="k-chart d54-tl dash-skeleton" id="linha-fluxos" data-draw="tl" role="img" aria-label="Linha do tempo dos fluxos de caixa do tomador"></div>
@@ -288,11 +212,6 @@
           <span><i style="background: var(--k-neg)"></i>CET</span>
           <span><i style="background: var(--k-pos)"></i>Entra no caixa</span>
         </div>
-      </section>
-
-      <section data-group="v" data-pane="livres" id="livres" hidden>
-        <div class="k-ch"><h3>Fluxos informados</h3><span>R$ · + entra, − sai</span></div>
-        <div class="k-chart d54-lv dash-skeleton" id="grafico-livres" data-draw="lv" role="img" aria-label="Fluxos de caixa informados na tabela"></div>
       </section>
 
       <section data-group="v" data-pane="nominal" id="mesma" hidden>
@@ -326,7 +245,7 @@
         <div class="k-kpi"><span class="k-kl">TIR <span class="k-u">a.m.</span></span><span class="k-kn" data-draw="v" data-q="tir">—</span></div>
         <div class="k-kpi"><span class="k-kl">Gap nominal → CET <span class="k-u">p.p.</span></span><span class="k-kn" data-draw="v" data-q="gap">—</span></div>
         <div class="d54-linha"><span>Entrada líquida em t = 0</span><b data-draw="v" data-q="liq">—</b></div>
-        <div class="d54-linha" data-frases><span><span data-draw="frase" data-grp="parc"></span><span data-frase="price" hidden>Parcela mensal</span><span data-frase="bullet" hidden>Juros mensais · principal no fim</span></span><b data-draw="v" data-q="pmt">—</b></div>
+        <div class="d54-linha"><span>Parcela mensal</span><b data-draw="v" data-q="pmt">—</b></div>
         <div class="d54-linha"><span>IOF</span><b><span data-draw="v" data-q="iof">—</span> · <span data-draw="v" data-q="iofP">—</span></b></div>
         <div class="d54-linha"><span>Custo total em R$</span><b data-draw="v" data-q="custo">—</b></div>
         <p class="k-note">Mesma TIR em outras bases: 252 du <b data-draw="v" data-q="b252">—</b> · 360 <b data-draw="v" data-q="b360">—</b> · 365 <b data-draw="v" data-q="b365">—</b></p>
@@ -349,20 +268,6 @@
         </details>
       </section>
 
-      <section data-group="v" data-pane="livres" hidden>
-        <h2 class="k-zt">Leitura</h2>
-        <div class="k-kpi"><span class="k-kl">CET <span class="k-u">a.a.</span></span><span class="k-kn" data-draw="v" data-q="lv-cet">—</span></div>
-        <div class="k-kpi"><span class="k-kl">TIR <span class="k-u">por <span data-draw="v" data-q="lv-per">—</span></span></span><span class="k-kn" data-draw="v" data-q="lv-tir">—</span></div>
-        <div class="d54-linha"><span>Soma dos fluxos</span><b data-draw="v" data-q="lv-soma">—</b></div>
-        <div class="k-diag" data-frases>
-          <span data-draw="frase" data-grp="lv"></span>
-          <p data-frase="ok" hidden>TIR de <b data-draw="v" data-q="lv-tir">—</b> por <span data-draw="v" data-q="lv-per">—</span> → CET de <b data-draw="v" data-q="lv-cet">—</b> a.a. na base <span data-draw="v" data-q="lv-base">—</span>.</p>
-          <p data-frase="slide" hidden>É a proposta do slide 4: entrada <b data-draw="v" data-q="sl-ent">—</b> e <b data-draw="v" data-q="sl-n">—</b> × <b data-draw="v" data-q="sl-parc">—</b> dão CET de <b data-draw="v" data-q="sl-cetR">—</b>, não <b data-draw="v" data-q="sl-cet">—</b>. A <b data-draw="v" data-q="sl-nom">—</b> a.a. com os encargos descritos, o CET é <b data-draw="v" data-q="sl-price">—</b> (Price) — o slide precisa de correção.</p>
-          <p data-frase="sem" hidden>Informe ao menos uma entrada (+) e uma saída (−): sem troca de sinal não existe TIR.</p>
-          <p data-frase="nao" hidden>Estes fluxos não têm TIR entre −90% e +100% por período: confira sinais e datas.</p>
-        </div>
-      </section>
-
       <section data-group="v" data-pane="nominal" hidden>
         <h2 class="k-zt">Leitura</h2>
         <div class="k-kpi"><span class="k-kl">CET antecipação</span><span class="k-kn" data-draw="v" data-q="mn-antCet">—</span></div>
@@ -380,7 +285,7 @@
     <div class="k-help-body">
       <ol>
         <li>Por que o IOF adiciona <b data-draw="v" data-q="g-iofD">—</b> p.p. ao CET se ele é só <b data-draw="v" data-q="g-iofP">—</b> do principal?
-          <details><summary>mostrar resposta</summary><p>É retido na origem sobre um empréstimo amortizado em <b data-draw="v" data-q="g-n12">—</b> parcelas: o principal fica em média <b data-draw="v" data-q="g-durM">—</b> meses com a empresa — <b data-draw="v" data-q="g-iofP">—</b> pagos em ~<b data-draw="v" data-q="g-durA">—</b> ano viram <b data-draw="v" data-q="g-iofD">—</b> p.p. ao ano. Em bullet o IOF sobe para <b data-draw="v" data-q="g-iofB">—</b> (365 dias cheios), mas soma só <b data-draw="v" data-q="g-iofBD">—</b> p.p.: o principal fica o ano inteiro com a empresa.</p></details>
+          <details><summary>mostrar resposta</summary><p>É retido na origem sobre um empréstimo amortizado em <b data-draw="v" data-q="g-n12">—</b> parcelas: o principal fica em média <b data-draw="v" data-q="g-durM">—</b> meses com a empresa — <b data-draw="v" data-q="g-iofP">—</b> pagos em ~<b data-draw="v" data-q="g-durA">—</b> ano viram <b data-draw="v" data-q="g-iofD">—</b> p.p. ao ano.</p></details>
         </li>
         <li>No painel "mesma nominal", a antecipação custa <b data-draw="v" data-q="g-dif">—</b> p.p. a mais. De onde vem a diferença se os <b data-draw="v" data-q="g-d">—</b> são iguais?
           <details><summary>mostrar resposta</summary><p>O deságio é cobrado sobre <b data-draw="v" data-q="g-face">—</b>, mas entram só <b data-draw="v" data-q="g-rec">—</b>: a TIR é <b data-draw="v" data-q="g-tirAnt">—</b> no período. No postecipado os <b data-draw="v" data-q="g-d">—</b> incidem sobre o que de fato entrou. CET <b data-draw="v" data-q="g-cetAnt">—</b> contra <b data-draw="v" data-q="g-cetPost">—</b>.</p></details>
@@ -524,40 +429,34 @@
 
 /* D5.4 · Calculadora de CET — funções puras (sem DOM). Motor compartilhado com D2.7.
    Taxas em decimal (0,17 = 17%); valores em R$; prazo em meses.
-   C = {P, n, cdi, spread, amort: 'price'|'bullet', iofOn, iofFixo, iofDia, iofTeto, tarifa, tributos, garantia, recip, base: 252|360|365} */
+   C = {P, n, cdi, spread, iofOn, iofFixo, iofDia, iofTeto, tarifa, tributos, garantia, recip, base: 252|360|365} */
 (function (root) {
   const M = {};
-  // períodos por ano: mês = 21 du (252) ou 30 dias corridos (360/365)
-  M.porAno = (base, unidade) => {
-    if (unidade === 'dia') return Number(base);
-    return Number(base) === 365 ? 365 / 30 : 12;
-  };
+  // meses por ano: mês = 21 du (252) ou 30 dias corridos (360/365)
+  M.porAno = (base) => (Number(base) === 365 ? 365 / 30 : 12);
   M.diasAno = (base) => (Number(base) === 365 ? 365 : 360);   // anualização de um período em dias corridos
   M.taxaMensal = (nomAA) => Math.pow(1 + nomAA, 1 / 12) - 1;
 
-  // parcelas: Price (PMT constante) ou Bullet (juros mensais, principal no fim)
-  M.parcelas = function (P, im, n, modo) {
+  // parcelas Price (PMT constante)
+  M.parcelas = function (P, im, n) {
     const out = [];
     let saldo = P;
     const pmt = im === 0 ? P / n : P * im / (1 - Math.pow(1 + im, -n));
     for (let k = 1; k <= n; k++) {
       const juros = saldo * im;
-      const amort = modo === 'bullet' ? (k === n ? P : 0) : pmt - juros;
+      const amort = pmt - juros;
       out.push({ k, juros, amort, saida: juros + amort });
       saldo -= amort;
     }
     return out;
   };
 
-  // dias corridos até a amortização: Price conta 30 d por parcela (fecha 11.987, §3.1);
-  // bullet conta o prazo da operação em dias corridos, n × 365/12 (12 meses = 365 d cheios → 18.765, §4.4)
-  M.diasIOF = (k, n, modo) => (modo === 'bullet' ? Math.round(n * 365 / 12) : 30 * k);
-  // IOF crédito PJ: fixo sobre o principal + diário sobre cada amortização pelo seu prazo (teto em dias)
+  // IOF crédito PJ: fixo sobre o principal + diário sobre cada amortização pelo seu prazo,
+  // 30 dias corridos por parcela (fecha 11.987, §3.1), com teto em dias
   M.iof = function (P, parc, o) {
     if (!o.iofOn) return { fixo: 0, diario: 0, total: 0 };
     const fixo = o.iofFixo * P;
-    const n = parc.length;
-    const diario = parc.reduce((s, p) => s + p.amort * o.iofDia * Math.min(M.diasIOF(p.k, n, o.amort), o.iofTeto), 0);
+    const diario = parc.reduce((s, p) => s + p.amort * o.iofDia * Math.min(30 * p.k, o.iofTeto), 0);
     return { fixo, diario, total: fixo + diario };
   };
 
@@ -579,7 +478,7 @@
   M.operacao = function (C, ate = 5) {
     const nom = C.cdi + C.spread;
     const im = M.taxaMensal(nom);
-    const parc = M.parcelas(C.P, im, C.n, C.amort);
+    const parc = M.parcelas(C.P, im, C.n);
     const iofV = M.iof(C.P, parc, C);
     const tarifa = C.tarifa * C.P;
     const trib = C.tributos * tarifa;
@@ -594,7 +493,7 @@
     const liquido = C.P - ret.iof - ret.tarifa - ret.trib - ret.garantia;
     const fl = [{ t: 0, v: liquido - ret.recip }].concat(parc.map((p) => ({ t: p.k, v: -p.saida + (p.k === C.n ? ret.recip : 0) })));
     const tirM = M.tir(fl);
-    const pa = M.porAno(C.base, 'mes');
+    const pa = M.porAno(C.base);
     const saidas = parc.reduce((s, p) => s + p.saida, 0);
     return {
       nom, im, parc, iof: iofV, tarifaV: tarifa, tribV: trib, garantia: C.garantia, recipV: recip, ret, liquido, fl, tirM,
@@ -625,13 +524,6 @@
     };
   };
 
-  // fluxos livres: linhas [{t, v}] (t em meses ou dias) → TIR por período e CET na base
-  M.livre = function (linhas, unidade, base) {
-    const fl = linhas.filter((r) => Number.isFinite(r.t) && Number.isFinite(r.v) && r.v !== 0 && r.t >= 0);
-    const tir = M.tir(fl, -0.9, unidade === 'dia' ? 0.2 : 1);
-    return { fl, tir, cet: M.cet(tir, M.porAno(base, unidade)), soma: fl.reduce((s, f) => s + f.v, 0) };
-  };
-
   root.M54 = M;
 })(typeof window !== 'undefined' ? window : globalThis);
 
@@ -641,18 +533,17 @@
 
 /* ============================================================
    D5.4 · Calculadora de CET
-   Testes de aderência (Spec §7), conferidos com M54 em node (43 PASS / 0 FAIL):
+   Testes de aderência (Spec §7), conferidos com M54 em node:
    Âncora Price: PMT 90.638 · IOF 11.987 · líquido 980.986 (spec 980.983 com tributos 630) · TIR 1,625% · CET 21,34%
    Waterfall: 17,00 → 19,70 → 20,72 → 20,87 → 21,34 (+2,70 / +1,02 / +0,15 / +0,47)
-   Bullet: IOF 18.765 · líquido 974.208 · juros 13.170 · CET 20,33% · Só nominal: 17,00%
-   Mesma nominal 5% / 60 d: 5,263% → 36,04% · 5,000% → 34,01% · Livre (slide): 1,889% → 25,17%
+   Só nominal: 17,00% · Fluxos do slide 4: 1,889% → 25,17%
+   Mesma nominal 5% / 60 d: 5,263% → 36,04% · 5,000% → 34,01%
    Operação curta (2 m): 17,0 → 22,4 → 26,9 (tarifa +4,4 p.p.)
    ============================================================ */
-const ST = window.D54 = { S: null, cen: null, mexido: false, L: null, livreSlide: false, pre: null };
+const ST = window.D54 = { S: null, cen: null, mexido: false };
 const IDS = ['parametros', 'cenarios', 'slide'];
-const NOMES = ['wf', 'tl', 'lv', 'mn', 'v', 'frase'];
-const NLIN = 37;                      // t = 0 + até 36 parcelas
-const WF_KEYS = ['P', 'n', 'cdi', 'spread', 'amort', 'iofOn', 'iofFixo', 'iofDia', 'tarifa', 'tributos', 'garantia', 'recip', 'base'];
+const NOMES = ['wf', 'tl', 'mn', 'v', 'frase'];
+const WF_KEYS = ['n', 'cdi', 'spread', 'iofOn', 'tarifa', 'tributos', 'garantia', 'recip', 'base'];
 
 /* ---------- dados ---------- */
 const pronto = () => ST.S != null && K.status(IDS) === 'ok';
@@ -664,63 +555,38 @@ const pct = (v, d = 2) => (v == null || !Number.isFinite(v) ? '—' : K.n(v * 10
 const pp = (v, d = 2) => (v == null || !Number.isFinite(v) ? '—' : K.s(v * 100, d));
 const rs = (v) => K.n(v, 0);
 function toC(S) {
+  const p = par();
   return {
-    P: S.P, n: S.n, cdi: S.cdi / 100, spread: S.spread / 100, amort: S.amort, iofOn: !!S.iofOn,
-    iofFixo: S.iofFixo / 100, iofDia: S.iofDia / 100, iofTeto: par().iofTeto,
+    P: S.P, n: S.n, cdi: S.cdi / 100, spread: S.spread / 100, iofOn: !!S.iofOn,
+    iofFixo: p.iofFixo / 100, iofDia: p.iofDia / 100, iofTeto: p.iofTeto,
     tarifa: S.tarifa / 100, tributos: S.tributos / 100, garantia: S.garantia, recip: S.recip / 100, base: S.base,
   };
 }
-const linhaC = (r) => ({ P: r.principal, n: r.prazo, cdi: r.cdi, spread: r.spread, amort: r.amort, iofOn: !!Number(r.iofOn), tarifa: r.tarifa, tributos: r.tributos, garantia: r.garantia, recip: r.recip, base: r.base });
-const CdoCen = (id) => { const p = par(); return toC({ ...linhaC(cenario(id)), iofFixo: p.iofFixo, iofDia: p.iofDia }); };
+const linhaC = (r) => ({ P: r.principal, n: r.prazo, cdi: r.cdi, spread: r.spread, iofOn: !!Number(r.iofOn), tarifa: r.tarifa, tributos: r.tributos, garantia: r.garantia, recip: r.recip, base: r.base });
+const CdoCen = (id) => toC(linhaC(cenario(id)));
 const atual = () => M54.operacao(toC(ST.S));
 const wfAtual = () => M54.waterfall(toC(ST.S));
-const livreAtual = () => M54.livre(ST.L.map((r) => ({ t: r.t === '' ? NaN : Number(r.t), v: r.v === '' ? NaN : Number(r.v) })), ST.S.unid, ST.S.base);
-const mnAtual = () => M54.mesmaNominal(ST.S.mnFace, ST.S.mnD / 100, ST.S.mnPrazo, ST.S.base);
+const mnAtual = () => M54.mesmaNominal(sl().face, ST.S.mnD / 100, ST.S.mnPrazo, ST.S.base);
 
 /* ---------- controles ---------- */
 function marca() {
   const ok = pronto();
   document.querySelectorAll('.d54-cen, .d54-ver').forEach((b) => b.setAttribute('aria-pressed', String(ok && !ST.mexido && b.dataset.cen === ST.cen)));
-  document.querySelectorAll('.d54-pre').forEach((b) => b.setAttribute('aria-pressed', String(ok && b.dataset.pre === ST.pre)));
-}
-function preencheTabela() {
-  document.querySelectorAll('.d54-lt, .d54-lv').forEach((inp) => {
-    const r = ST.L[Number(inp.dataset.i)];
-    if (!r) return;
-    inp.value = inp.classList.contains('d54-lt') ? r.t : r.v;
-  });
 }
 function sincroniza() { K.sync(ST.S); marca(); }
 function aplicar(id) {
   const r = cenario(id);
   if (!r) return;
-  const p = par();
-  ST.S = { ...ST.S, ...linhaC(r), iofFixo: p.iofFixo, iofDia: p.iofDia };
+  ST.S = { ...ST.S, ...linhaC(r) };
   ST.cen = id; ST.mexido = false;
   sincroniza();
-}
-function presetLivre(tipo) {
-  const vazio = () => Array.from({ length: NLIN }, () => ({ t: '', v: '' }));
-  const L = vazio();
-  if (tipo === 'slide') {
-    const s = sl();
-    L[0] = { t: 0, v: s.entradaSlide };
-    for (let k = 1; k <= s.nSlide && k < NLIN; k++) L[k] = { t: k, v: -s.parcelaSlide };
-    ST.S.unid = 'mes';
-  } else if (tipo === 'copia') {
-    atual().fl.slice(0, NLIN).forEach((f, i) => { L[i] = { t: f.t, v: Math.round(f.v * 100) / 100 }; });
-    ST.S.unid = 'mes';
-  }
-  ST.L = L; ST.livreSlide = tipo === 'slide'; ST.pre = tipo;
-  preencheTabela(); sincroniza();
 }
 dash.onData(() => {
   if (K.status(IDS) !== 'ok') { marca(); return; }
   if (!ST.S) {
     const s = sl();
-    ST.S = { unid: 'mes', mnD: s.dNom, mnPrazo: s.prazoDias, mnFace: s.face };
+    ST.S = { mnD: s.dNom, mnPrazo: s.prazoDias };
     aplicar('ancora');
-    presetLivre('slide');
     K.redraw(NOMES);
   }
 });
@@ -736,21 +602,7 @@ document.querySelectorAll('.d54-cen, .d54-ver').forEach((b) => b.addEventListene
   mostra('waterfall');
   K.redraw(NOMES);
 }));
-document.querySelectorAll('.d54-pre').forEach((b) => b.addEventListener('click', () => {
-  if (!pronto()) return;
-  presetLivre(b.dataset.pre); K.redraw(NOMES);
-}));
-document.querySelectorAll('.d54-lt, .d54-lv').forEach((inp) => inp.addEventListener('change', () => {
-  if (!pronto()) return;
-  const r = ST.L[Number(inp.dataset.i)];
-  if (!r) return;
-  const v = inp.value.trim();
-  if (inp.classList.contains('d54-lt')) r.t = v === '' || !Number.isFinite(Number(v)) ? '' : Math.max(0, Number(v));
-  else r.v = v === '' || !Number.isFinite(Number(v)) ? '' : Number(v);
-  ST.livreSlide = false; ST.pre = null;
-  preencheTabela(); marca(); K.redraw(NOMES);
-}));
-(() => { const h = location.hash.slice(1); if (['waterfall', 'livres', 'nominal'].includes(h)) mostra(h); })();
+(() => { const h = location.hash.slice(1); if (['waterfall', 'nominal'].includes(h)) mostra(h); })();
 
 /* ---------- waterfall ---------- */
 const ROT = { nominal: ['Nominal', 'Nom.'], iof: ['+IOF', '+IOF'], tarifa: ['+Tarifas', '+Tar.'], trib: ['+Tributos', '+Trib.'], garantia: ['+Garantia', '+Gar.'], recip: ['+Saldo médio', '+Saldo'], cet: ['CET', 'CET'] };
@@ -858,10 +710,7 @@ dash.draw('tl', (el) => {
   el.classList.remove('dash-skeleton');
   const o = atual(), C = toC(ST.S);
   const fl = o.fl;
-  const ult = o.parc[o.parc.length - 1];
-  const rotSaida = C.amort === 'bullet'
-    ? (C.n > 1 ? (C.n - 1) + ' × ' + rs(o.pmt) + ' + ' + rs(ult.saida) + ' no fim' : rs(ult.saida) + ' no fim')
-    : C.n + ' × ' + rs(o.pmt);
+  const rotSaida = C.n + ' × ' + rs(o.pmt);
   pirulitos(el, fl, {
     H: 170,
     rotulos: [
@@ -887,18 +736,6 @@ dash.draw('tl', (el) => {
     },
   });
 });
-dash.draw('lv', (el) => {
-  if (!pronto()) { falha(el); return; }
-  el.classList.remove('dash-skeleton');
-  const R = livreAtual();
-  const fl = R.fl.slice().sort((a, b) => a.t - b.t);
-  const un = ST.S.unid === 'dia' ? 'Dia ' : 'Mês ';
-  pirulitos(el, fl, {
-    H: 220,
-    cab: (f) => un + K.n(f.t, 2).replace(/,00$/, ''),
-    linhas: (f) => [[f.v >= 0 ? 'var(--k-pos)' : 'var(--k-neg)', f.v >= 0 ? 'Entra' : 'Sai', rs(Math.abs(f.v))]],
-  });
-});
 
 /* ---------- mesma nominal ---------- */
 dash.draw('mn', (el) => {
@@ -918,39 +755,31 @@ dash.draw('mn', (el) => {
 });
 
 /* ---------- números ---------- */
-const BASE_NOME = { 252: '252 du', 360: '360', 365: '365' };
-const cetBase = (o, b) => M54.cet(o.tirM, M54.porAno(b, 'mes'));
+const cetBase = (o, b) => M54.cet(o.tirM, M54.porAno(b));
 const VAL = {
-  iofTeto: () => K.n(par().iofTeto),
+  P: () => rs(ST.S.P), iofTeto: () => K.n(par().iofTeto),
+  iofF: () => K.n(par().iofFixo, 2) + '%', iofD: () => K.n(par().iofDia, 4) + '%',
   cet: (o) => pct(o.cet), tir: (o) => pct(o.tirM, 3), gap: (o) => pp(o.cet - o.nom), gapAbs: (o) => K.n((o.cet - o.nom) * 100, 2),
   liq: (o) => rs(o.fl[0].v), pmt: (o) => rs(o.pmt), iof: (o) => rs(o.iof.total), iofP: (o) => pct(o.iof.total / ST.S.P),
   custo: (o) => rs(o.custoTotal),
   b252: (o) => pct(cetBase(o, 252)), b360: (o) => pct(cetBase(o, 360)), b365: (o) => pct(cetBase(o, 365)),
-  nom365: (o) => pct(M54.cet(o.im, M54.porAno(365, 'mes'))),
+  nom365: (o) => pct(M54.cet(o.im, M54.porAno(365))),
   recipV: () => K.n(ST.S.recip, 0) + '%',
   recipD: () => { const w = wfAtual(); const r = w.find((s) => s.id === 'recip'); return r ? K.n(r.delta * 100, 2) : null; },
-  // fluxos livres
-  'lv-un': () => (ST.S.unid === 'dia' ? (ST.S.base === 252 ? '(dias úteis)' : '(dias corridos)') : '(meses)'),
-  'lv-per': () => (ST.S.unid === 'dia' ? (ST.S.base === 252 ? 'dia útil' : 'dia') : 'mês'),
-  'lv-tir': () => { const R = livreAtual(); return R.tir == null ? null : pct(R.tir, 3); },
-  'lv-cet': () => { const R = livreAtual(); return R.cet == null ? null : pct(R.cet); },
-  'lv-soma': () => rs(livreAtual().soma),
-  'lv-base': () => BASE_NOME[ST.S.base],
   // slide 4
   'sl-ent': () => rs(sl().entradaSlide), 'sl-parc': () => rs(sl().parcelaSlide), 'sl-tir': () => K.n(sl().tirSlide, 2) + '%',
   'sl-cet': () => K.n(sl().cetSlide, 1) + '%', 'sl-tx': () => K.n(sl().taxaParcelaSlide, 1) + '%',
-  'sl-tirR': () => { const s = sl(); return pct(M54.livre(fluxoSlide(s), 'mes', 252).tir, 3); },
-  'sl-cetR': () => { const s = sl(); return pct(M54.livre(fluxoSlide(s), 'mes', 252).cet); },
-  'sl-price': () => pct(M54.operacao(CdoCen('ancora')).cet), 'sl-bullet': () => pct(M54.operacao(CdoCen('bullet')).cet),
+  'sl-tirR': () => pct(M54.tir(fluxoSlide(sl())), 3),
+  'sl-cetR': () => pct(M54.cet(M54.tir(fluxoSlide(sl())), M54.porAno(252))),
+  'sl-price': () => pct(M54.operacao(CdoCen('ancora')).cet),
   // mesma nominal
+  'mn-face': () => rs(sl().face),
   'mn-antRec': () => rs(mnAtual().ant.recebe), 'mn-antPag': () => rs(mnAtual().ant.paga), 'mn-antTir': () => pct(mnAtual().ant.tir, 3), 'mn-antCet': () => pct(mnAtual().ant.cet),
   'mn-postRec': () => rs(mnAtual().post.recebe), 'mn-postPag': () => rs(mnAtual().post.paga), 'mn-postTir': () => pct(mnAtual().post.tir, 3), 'mn-postCet': () => pct(mnAtual().post.cet),
   'mn-dif': () => { const m = mnAtual(); return pp(m.ant.cet - m.post.cet); }, 'mn-d': () => K.n(ST.S.mnD, 1) + '%',
   // perguntas-guia (sempre sobre a âncora e o slide)
   'g-iofP': () => { const o = M54.operacao(CdoCen('ancora')); return pct(o.iof.total / o.parc.reduce((s, p) => s + p.amort, 0), 1); },
   'g-iofD': () => K.n(M54.waterfall(CdoCen('ancora'))[1].delta * 100, 1),
-  'g-iofB': () => { const o = M54.operacao(CdoCen('bullet')); return pct(o.iof.total / o.parc.reduce((s, p) => s + p.amort, 0)); },
-  'g-iofBD': () => K.n(M54.waterfall(CdoCen('bullet'))[1].delta * 100, 1),
   'g-d': () => K.n(sl().dNom, 0) + '%', 'g-face': () => rs(sl().face), 'g-rec': () => rs(gMn().ant.recebe),
   'g-tirAnt': () => pct(gMn().ant.tir, 3), 'g-cetAnt': () => pct(gMn().ant.cet), 'g-cetPost': () => pct(gMn().post.cet),
   'g-dif': () => K.n((gMn().ant.cet - gMn().post.cet) * 100, 0),
@@ -978,12 +807,6 @@ dash.draw('frase', (el) => {
       keys.push(g < 1 ? 'leve' : g < 3 ? 'tipica' : 'pesada');
       if (ST.S.base === 365) keys.push('b365');
       if (ST.S.recip > 0) keys.push('recip');
-    } else if (grp === 'parc') keys.push(ST.S.amort === 'bullet' ? 'bullet' : 'price');
-    else if (grp === 'lv') {
-      const R = livreAtual();
-      if (!R.fl.some((f) => f.v > 0) || !R.fl.some((f) => f.v < 0)) keys.push('sem');
-      else if (R.tir == null) keys.push('nao');
-      else keys.push(ST.livreSlide && ST.S.unid === 'mes' ? 'slide' : 'ok');
     }
   }
   K.frases(el, keys);
