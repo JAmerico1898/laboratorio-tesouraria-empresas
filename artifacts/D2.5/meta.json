@@ -3,9 +3,9 @@
   "title": "D2.5 · Lucro × caixa",
   "slug": "84e94f34-38a3-45c2-ae6b-cdde93125b1c",
   "datasets": {
-    "balanco": { "file": "balanco.json", "sha256": "c0c383806689f52be7592c255042fb0bdfda57b7d83bc181e0027c69fa492cb7" },
+    "balanco": { "file": "balanco.json", "sha256": "2073c5d54e60c13369c5a452cbd73d9f4925ffac4bf1f97579d5d376148c1a6f" },
+    "cenarios": { "file": "cenarios.json", "sha256": "c61a49f09eeeb150a991daa403e3450f795ab68692a511320e2bfb41226d4634" },
     "dre": { "file": "dre.json", "sha256": "f834cfd911ab7e7b0bd411312f1834faa4b0981b812c54ef0c8b0fcb4f76302a" },
-    "experimentos": { "file": "experimentos.json", "sha256": "b9d606ee1dd28122c481681ee5e0c107360529099f27d67f627bde1ffca193c9" },
     "premissas": { "file": "premissas.json", "sha256": "e51b01f1d1cfee961130315f2d46c28b4a03969edb2c27fc6775d171f6df1d9d" }
   }
 }

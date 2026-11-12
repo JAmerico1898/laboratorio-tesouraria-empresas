@@ -1,0 +1,4 @@
+[{"id":"alfa","nome":"Alfa T0","pmrv":60,"pmpf":45,"pmre":60},
+{"id":"recebimento","nome":"Piore o recebimento","pmrv":75,"pmpf":45,"pmre":60},
+{"id":"fornecedores","nome":"Alongue fornecedores","pmrv":60,"pmpf":60,"pmre":60},
+{"id":"estoque","nome":"Aumente o estoque","pmrv":60,"pmpf":45,"pmre":75}]
