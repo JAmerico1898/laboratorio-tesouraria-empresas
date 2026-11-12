@@ -18,13 +18,12 @@
     const pme = C.pme;
     const est = M.estoque(E, pme), aco = est + E.clientes + E.outrosACO, ncg = aco - E.pco;
     const H = M.H(C), carreg = H * est, rup = M.ruptura(E, C, pme);
-    const venda = E.temEstoque ? E.receita * M.f(E, C, pme) * E.mc : 0;
     const ot = E.temEstoque ? M.otimo(E, C) : { pme: null, total: 0 };
     return {
-      pme, est, aco, ncg, part: aco ? est / aco : 0, H, carreg, rup, venda, perdaCliente: rup - venda, total: carreg + rup,
+      pme, est, aco, ncg, part: aco ? est / aco : 0, H, carreg, rup, total: carreg + rup,
       pctEbitda: carreg / E.ebitda, ot,
-      familias: [['fin', C.cdi / 100 * est], ['armaz', C.armaz / 100 * est], ['seguro', C.seguro / 100 * est], ['obsol', C.obsol / 100 * est]],
-      dezDias: E.cmv * 10 / 360, stNovo: E.st + E.estoque0 - est,
+      familias: [['fin', C.cdi / 100 * est], ['armaz', (C.armaz + C.seguro) / 100 * est], ['obsol', C.obsol / 100 * est]],
+      dezDias: E.cmv * 10 / 360,
     };
   };
   M.curva = function (E, C, lo = 20, hi = 150, passo = 1) {

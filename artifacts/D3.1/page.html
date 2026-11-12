@@ -17,9 +17,6 @@
 .d31-prow .d31-fill { height: 100%; background: var(--k-amber); }
 .d31-prow .d31-pct { text-align: right; font-variant-numeric: tabular-nums; }
 .d31-fixa { font-size: 13px; color: var(--color-fg-muted); margin: 10px 0 0; font-variant-numeric: tabular-nums; }
-.d31 .k-card .d31-val { font-family: var(--font-anthropic-serif); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
-.d31-adv { margin-top: 4px; font-size: 14px; }
-.d31-adv > summary { cursor: pointer; color: var(--color-fg-muted); font-size: 13px; margin-bottom: 6px; }
 </style>
 
 <div class="k d31" id="d31">
@@ -45,22 +42,9 @@
       <h2 class="k-zt2">Custo de carregamento H <span class="k-u">% a.a. do valor estocado</span></h2>
       <div class="k-ctl"><label for="c-cdi">Financeiro (CDI)</label>
         <div class="k-in"><input type="range" id="c-cdi" data-k="cdi" min="5" max="20" step="0.5"><input type="number" data-k="cdi" min="5" max="20" step="0.5" aria-label="CDI, % a.a."></div></div>
-      <div class="k-ctl"><label for="c-armaz">Armazenagem</label>
-        <div class="k-in"><input type="range" id="c-armaz" data-k="armaz" min="1" max="5" step="0.5"><input type="number" data-k="armaz" min="1" max="5" step="0.5" aria-label="Armazenagem, % a.a."></div></div>
-      <div class="k-ctl"><label for="c-seg">Seguros e perdas</label>
-        <div class="k-in"><input type="range" id="c-seg" data-k="seguro" min="0" max="3" step="0.5"><input type="number" data-k="seguro" min="0" max="3" step="0.5" aria-label="Seguros e perdas, % a.a."></div></div>
       <div class="k-ctl"><label for="c-obs">Obsolescência</label>
         <div class="k-in"><input type="range" id="c-obs" data-k="obsol" min="0" max="10" step="0.5"><input type="number" data-k="obsol" min="0" max="10" step="0.5" aria-label="Obsolescência, % a.a."></div></div>
-      <p class="k-note">H total = <b data-draw="v" data-q="H">—</b></p>
-
-      <h2 class="k-zt2">Ruptura</h2>
-      <div class="k-ctl"><label for="c-mult">Multiplicador de perda de cliente <span class="k-info" tabindex="0">i<span class="k-tip">1,0 = só a margem da venda perdida. Acima de 1, a falta também afasta o cliente das compras seguintes.</span></span></label>
-        <div class="k-in"><input type="range" id="c-mult" data-k="mult" min="1" max="3" step="0.1"><input type="number" data-k="mult" min="1" max="3" step="0.1" aria-label="Multiplicador de perda de cliente"></div></div>
-      <details class="d31-adv">
-        <summary>Avançado</summary>
-        <div class="k-ctl"><label for="c-tau">Sensibilidade à ruptura τ <span class="k-u">dias</span> <span class="k-info" tabindex="0">i<span class="k-tip">Fração da receita perdida por falta = f₀ · e^(−PME/τ), com f₀ = 25%. Construção didática: τ maior = ruptura mais sensível a pouco estoque.</span></span></label>
-          <div class="k-in"><input type="range" id="c-tau" data-k="tau" min="20" max="80" step="1"><input type="number" data-k="tau" min="20" max="80" step="1" aria-label="τ, dias"></div></div>
-      </details>
+      <p class="k-note">+ armazenagem e seguro <b data-draw="v" data-q="armSeg">—</b> (fixo) · H total = <b data-draw="v" data-q="H">—</b></p>
     </div>
 
     <div class="k-zone" id="visual" data-source="perfis cenarios">
@@ -83,11 +67,10 @@
           </div>
           <div>
             <div class="k-ch"><h3>Custo de carregamento por ano</h3><span>R$ mil</span></div>
-            <div class="k-chart d31-box dash-skeleton" id="anel" data-draw="anel" role="img" aria-label="Anel do custo de carregamento nas quatro famílias"></div>
+            <div class="k-chart d31-box dash-skeleton" id="anel" data-draw="anel" role="img" aria-label="Anel do custo de carregamento nas três parcelas"></div>
             <div class="d31-leg">
               <span><i style="background: var(--k-navy)"></i>Financeiro (CDI) · <b data-draw="v" data-q="fam-fin">—</b> <span class="k-u">não aparece na nota fiscal</span></span>
-              <span><i style="background: var(--k-blue)"></i>Armazenagem · <b data-draw="v" data-q="fam-armaz">—</b></span>
-              <span><i style="background: var(--k-blue-l)"></i>Seguros e perdas · <b data-draw="v" data-q="fam-seguro">—</b></span>
+              <span><i style="background: var(--k-blue)"></i>Armazenagem e seguro · <b data-draw="v" data-q="fam-armaz">—</b></span>
               <span><i style="background: var(--k-neutro)"></i>Obsolescência · <b data-draw="v" data-q="fam-obsol">—</b></span>
             </div>
           </div>
@@ -103,14 +86,7 @@
           <span><i style="background: var(--k-blue)"></i>Ruptura esperada</span>
           <span><i style="background: var(--k-navy); height: 4px; vertical-align: 3px"></i>Total</span>
         </div>
-        <div class="k-cards">
-          <div class="k-card" id="card-venda"><h4>Venda perdida</h4><span class="d31-val" data-draw="v" data-q="venda">—</span> <span class="k-u">R$ mil/ano</span><p class="k-note">Conta a margem de contribuição (<b data-draw="v" data-q="mc">—</b>), não o preço.</p></div>
-          <div class="k-card" id="card-cliente"><h4>Perda de cliente</h4><span class="d31-val" data-draw="v" data-q="perdaCli">—</span> <span class="k-u">R$ mil/ano</span><p class="k-note">Multiplicador <b data-draw="v" data-q="mult">—</b>: a falta de hoje custa compras futuras.</p></div>
-          <div class="k-card d31-parada" id="card-parada"><h4>Parada de linha</h4>
-            <p class="k-note d31-par-off">Não se aplica a distribuidor: falta de mercadoria não para fábrica.</p>
-            <p class="k-note d31-par-on" hidden>Capacidade ociosa: a fábrica para por falta de insumo e o custo fixo corre. Não entra no total desta curva.</p>
-          </div>
-        </div>
+        <p class="k-note">Ruptura = venda perdida a margem de contribuição (<b data-draw="v" data-q="mc">—</b>), não a preço.</p>
       </section>
 
       <div class="d31-perfis" id="perfis" data-source="perfis">
@@ -130,7 +106,6 @@
         <p data-frase="acima" hidden><b data-draw="v" data-q="pme">—</b> dias de prateleira custam R$ <b data-draw="v" data-q="carreg">—</b> mil por ano — <b data-draw="v" data-q="pct">—</b> do EBITDA. Cada 10 dias a menos de PME liberam R$ <b data-draw="v" data-q="dez">—</b> mil de NCG.</p>
         <p data-frase="equilibrio" hidden>Perto do equilíbrio entre carregamento e ruptura (ótimo em <b data-draw="v" data-q="ot">—</b> dias). A partir daqui, reduzir estoque só vale com cadeia mais confiável (D3.4).</p>
         <p data-frase="abaixo" hidden>Estoque baixo barateia o carregamento, mas a ruptura já custa R$ <b data-draw="v" data-q="rup">—</b> mil em margem perdida. O barato sai caro.</p>
-        <p data-frase="st" hidden>Com PME de <b data-draw="v" data-q="pme">—</b> dias, o ST da Horizonte sairia de <b data-draw="v" data-q="st0">—</b> para <b data-draw="v" data-q="stNovo">—</b>: <b data-draw="v" data-q="menosDias">—</b> dias de estoque a menos pagariam toda a dívida de curto prazo.</p>
         <p data-frase="nuvem" hidden>Sem estoque, não há o que carregar: a NCG de <b data-draw="v" data-q="ncg">—</b> mora no prazo de recebimento e nos contratos — tema do M4.</p>
       </div>
       <p class="d31-fixa">Cada 10 dias de PME = R$ <b data-draw="v" data-q="dez">—</b> mil de estoque = R$ <b data-draw="v" data-q="dezCarreg">—</b> mil/ano de carregamento (a <b data-draw="v" data-q="H">—</b>).</p>
@@ -162,7 +137,7 @@
    D3.1 · Estoque é dinheiro parado
    Testes de aderência (Spec §7), conferidos com M31.estado() em node:
    Horizonte T0: estoque 7.500 · ACO 9.800 · 76,5% · NCG 5.500 · H 18% · carregamento 1.350 · 56% do EBITDA · ruptura 148 · total 1.498
-   PME 60: estoque 4.500 · NCG 2.500 · carregamento 810 · ruptura 402 · total 1.212 · ST novo 500
+   PME 60: estoque 4.500 · NCG 2.500 · carregamento 810 · ruptura 402 · total 1.212
    Ótimo: 48 dias · total 1.190 · CDI 18%: 1.800 · Obsolescência 10%: H 26% · 1.950
    Alfa: estoque 5.300 (PME 59,6) · ACO 14.000 · 37,9% · NCG 8.900 · Nuvem: 0% · PME desabilitado
    ============================================================ */
@@ -170,7 +145,6 @@ const ST = window.D31 = { S: null, perfil: 'horizonte', cen: null, mexido: false
 const IDS = ['perfis', 'cenarios'];
 const NOMES = ['barras', 'anel', 'curva', 'perfis', 'v', 'frase'];
 const FAIXA_OTIMO = 15;   // ± dias em torno do ótimo para a frase "equilíbrio" (Spec §4.3)
-const NCG_ST = 2500;      // NCG a partir da qual a frase do ST aparece (Spec §4.3)
 const Q2_PME = 60;        // PME sugerido na pergunta-guia 2
 
 /* ---------- dados ---------- */
@@ -193,9 +167,6 @@ function sincroniza() {
   document.querySelectorAll('input[data-k="pme"]').forEach((i) => { i.disabled = !!e && !e.temEstoque; });
   document.querySelectorAll('.d31-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
   document.querySelectorAll('.d31-semest').forEach((x) => { x.hidden = !e || !!e.temEstoque; });
-  document.querySelectorAll('.d31-par-off').forEach((x) => { x.hidden = !!e && !!e.paradaLinha; });
-  document.querySelectorAll('.d31-par-on').forEach((x) => { x.hidden = !e || !e.paradaLinha; });
-  document.querySelectorAll('.d31-parada').forEach((x) => { x.classList.toggle('k-dim', !e || !e.paradaLinha); });
 }
 function aplicar(id) {
   const r = cenario(id);
@@ -270,8 +241,8 @@ dash.draw('anel', (el) => {
   el.replaceChildren(svg.node());
   const tip = K.tip(el);
   const cx = W / 2, cy = H / 2, r = Math.min(W, H) / 2 - 10;
-  const cores = { fin: 'var(--k-navy)', armaz: 'var(--k-blue)', seguro: 'var(--k-blue-l)', obsol: 'var(--k-neutro)' };
-  const nomes = { fin: 'Financeiro (CDI)', armaz: 'Armazenagem', seguro: 'Seguros e perdas', obsol: 'Obsolescência' };
+  const cores = { fin: 'var(--k-navy)', armaz: 'var(--k-blue)', obsol: 'var(--k-neutro)' };
+  const nomes = { fin: 'Financeiro (CDI)', armaz: 'Armazenagem e seguro', obsol: 'Obsolescência' };
   const g = svg.append('g').attr('transform', `translate(${cx},${cy})`);
   const dados = R.familias.filter(([, v]) => v > 0);
   if (!dados.length) {
@@ -372,10 +343,10 @@ dash.draw('perfis', (el) => {
 const VAL = {
   empresa: () => E().empresa, H: (R) => K.p(R.H, 0), pme: (R) => K.n(R.pme), est: (R) => K.n(R.est), ncg: (R) => K.n(R.ncg),
   carreg: (R) => K.n(R.carreg), pct: (R) => K.p(R.pctEbitda, 0), rup: (R) => K.n(R.rup), total: (R) => K.n(R.total),
-  venda: (R) => K.n(R.venda), perdaCli: (R) => K.n(R.perdaCliente), mc: () => K.p(E().mc, 0), mult: () => K.n(ST.S.mult, 1),
+  mc: () => K.p(E().mc, 0), armSeg: () => K.p((ST.S.armaz + ST.S.seguro) / 100, 0),
   ot: (R) => (R.ot.pme == null ? null : K.n(R.ot.pme)), dez: (R) => K.n(R.dezDias), dezCarreg: (R) => K.n(R.dezDias * R.H),
-  stNovo: (R) => K.n(R.stNovo), st0: () => K.n(E().st), menosDias: (R) => K.n(pme0(E()) - R.pme),
-  'fam-fin': (R) => K.n(R.familias[0][1]), 'fam-armaz': (R) => K.n(R.familias[1][1]), 'fam-seguro': (R) => K.n(R.familias[2][1]), 'fam-obsol': (R) => K.n(R.familias[3][1]),
+  st0: () => K.n(E().st),
+  'fam-fin': (R) => K.n(R.familias[0][1]), 'fam-armaz': (R) => K.n(R.familias[1][1]), 'fam-obsol': (R) => K.n(R.familias[2][1]),
   'g-est': () => K.n(base().est), 'g-carreg': () => K.n(base().carreg), 'g-H': () => K.p(base().H, 0), 'g-fin': () => K.n(base().familias[0][1]),
   'g-outros': () => { const b = base(); return K.n(b.carreg - b.familias[0][1]); }, 'g-pme2': () => K.n(Q2_PME), 'g-est2': () => K.n(base({ pme: Q2_PME }).est),
   'g-ncg': () => K.n(base().ncg), 'g-ncg2': () => K.n(base({ pme: Q2_PME }).ncg), 'g-lib': () => K.n(base().est - base({ pme: Q2_PME }).est),
@@ -394,7 +365,6 @@ dash.draw('frase', (el) => {
     if (!e.temEstoque) keys.push('nuvem');
     else {
       keys.push(R.pme > R.ot.pme + FAIXA_OTIMO ? 'acima' : R.pme < R.ot.pme - FAIXA_OTIMO ? 'abaixo' : 'equilibrio');
-      if (ST.perfil === 'horizonte' && R.ncg <= NCG_ST) keys.push('st');
     }
   }
   K.frases(el, keys);
