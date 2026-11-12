@@ -1,5 +1,5 @@
 /* D5.6 · Covenants com buffer — funções puras (sem DOM).
-   S = estado {ebitda, cp, lp, caixa, capex, buffer, sigma, tend (% a.a.), conversa (trimestres de antecedência; 0 = após o fechamento)}
+   S = estado {ebitda, cp, lp, caixa, capex, buffer, sigma, conversa (trimestres de antecedência; 0 = após o fechamento)}
    H = dados da Horizonte (objeto chave → valor) · C = covenants por id {limite, tipo} · F = taxas de waiver [{antecedencia, feePct}] */
 (function (root) {
   const M = {};
@@ -42,10 +42,9 @@
   };
   // projeção de 8 trimestres; choque pessimista acumulado = 2σ√(t/4)
   M.projecao = function (S, H, C, n = 8) {
-    const taxa = M.taxaJuros(H), bruta0 = S.cp + S.lp, tend = S.tend / 100;
+    const taxa = M.taxaJuros(H), bruta0 = S.cp + S.lp, eb = S.ebitda;
     const pts = [];
     for (let t = 0; t <= n; t++) {
-      const eb = S.ebitda * Math.pow(1 + tend, t / 4);
       const ep = eb * (1 - 2 * S.sigma * Math.sqrt(t / 4));
       const div = t === 0 ? bruta0 : Math.max(Math.min(H.pisoDivida, bruta0), bruta0 - H.amortTri * t);
       const df = div * taxa, liq = div - S.caixa;

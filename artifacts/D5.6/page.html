@@ -65,9 +65,7 @@
       <section data-group="v" data-pane="projecao" hidden>
         <h2 class="k-zt2">Volatilidade do EBITDA <span class="k-u">σ por trimestre</span></h2>
         <div class="k-seg" role="group" aria-label="Volatilidade do EBITDA"><button data-k="sigma" data-v="0.08">Estável · 8%</button><button data-k="sigma" data-v="0.2">Cíclico · 20%</button></div>
-        <div class="k-ctl" style="margin-top: 10px"><label for="c-tend">Tendência do EBITDA <span class="k-u">% a.a.</span></label>
-          <div class="k-in"><input type="range" id="c-tend" data-k="tend" min="-40" max="20" step="1"><input type="number" data-k="tend" min="-40" max="20" step="1" aria-label="Tendência do EBITDA, % ao ano"></div></div>
-        <p class="k-note">A dívida amortiza <b data-draw="v" data-q="amortTri">—</b> por trimestre até o piso de <b data-draw="v" data-q="pisoDivida">—</b> (rotativo + conta garantida); caixa constante.</p>
+        <p class="k-note">A dívida amortiza <b data-draw="v" data-q="amortTri">—</b> por trimestre até o piso de <b data-draw="v" data-q="pisoDivida">—</b> (rotativo + conta garantida); EBITDA do caso base e caixa constantes.</p>
       </section>
 
       <section data-group="v" data-pane="caminhos" hidden>
@@ -222,7 +220,7 @@ const H = () => K.obj(dash.data('horizonte').data);
 const C = () => { const o = {}; K.num(dash.data('covenants').data).forEach((r) => { o[r.id] = r; }); return o; };
 const F = () => K.num(dash.data('caminhos').data);
 const cenario = (id) => K.num(dash.data('cenarios').data).find((r) => r.id === id);
-const ctlDe = (r) => ({ ebitda: r.ebitda, cp: r.cp, lp: r.lp, caixa: r.caixa, capex: r.capex, buffer: r.buffer, sigma: r.sigma, tend: r.tend, conversa: r.conversa });
+const ctlDe = (r) => ({ ebitda: r.ebitda, cp: r.cp, lp: r.lp, caixa: r.caixa, capex: r.capex, buffer: r.buffer, sigma: r.sigma, conversa: r.conversa });
 const est = (S) => M56.estado(S || ST.S, H(), C());
 const proj = (S) => M56.projecao(S || ST.S, H(), C());
 const cam = (S) => M56.caminhos(S || ST.S, H(), F());

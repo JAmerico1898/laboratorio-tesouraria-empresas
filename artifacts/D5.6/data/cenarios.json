@@ -1,8 +1,8 @@
 [
- {"id":"hoje","nome":"Horizonte hoje","ebitda":2400,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},
- {"id":"recessao","nome":"Recessão","ebitda":1680,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},
- {"id":"rotativo","nome":"Rolar o rotativo em CP","ebitda":2400,"cp":4000,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},
- {"id":"caixa","nome":"Queimar caixa","ebitda":2400,"cp":3500,"lp":2000,"caixa":300,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},
- {"id":"refin","nome":"Refinanciar o CD","ebitda":2400,"cp":1500,"lp":4000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"tend":0,"conversa":2},
- {"id":"estavel","nome":"Setor estável","ebitda":2400,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.08,"tend":0,"conversa":2}
+ {"id":"hoje","nome":"Horizonte hoje","ebitda":2400,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"conversa":2},
+ {"id":"recessao","nome":"Recessão","ebitda":1680,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"conversa":2},
+ {"id":"rotativo","nome":"Rolar o rotativo em CP","ebitda":2400,"cp":4000,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"conversa":2},
+ {"id":"caixa","nome":"Queimar caixa","ebitda":2400,"cp":3500,"lp":2000,"caixa":300,"capex":600,"buffer":0.9,"sigma":0.2,"conversa":2},
+ {"id":"refin","nome":"Refinanciar o CD","ebitda":2400,"cp":1500,"lp":4000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.2,"conversa":2},
+ {"id":"estavel","nome":"Setor estável","ebitda":2400,"cp":3500,"lp":2000,"caixa":1000,"capex":600,"buffer":0.9,"sigma":0.08,"conversa":2}
 ]
