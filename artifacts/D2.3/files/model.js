@@ -1,158 +1,102 @@
-/* D2.3 · Calendário de saídas — funções puras (sem DOM). Tudo em R$ mil.
-   Motor de orçamento (fracPMPF, orcamento) copiado de D2.1 (validado contra D2.1 §7);
-   aqui ele só fornece receita, entradas e pagamento a fornecedores com o PMPF escolhido.
-   Testes de aderência (Spec D2.3 §7) em test.js:
-   set: total 5.290 · negociável 3.712 (70%) · inegociável 1.030 (19%) · decisão 548 (10%)
-   set dia 20 = 1.220 · set dia 5 = 1.228 · dez dia 20 = 1.114 · dez dia 30 = 850 · abr dia 30 = 1.350
-   ano: 50.934 · inegociável 14.004 · negociável 33.000 · decisão 3.930 · UF MG → ICMS no dia 10 */
+/* Motor M22 (cópia do D2.2 · Da receita ao caixa; o D2.3 usa só o modo aging direto) — funções puras (sem DOM). Tudo em R$ mil.
+   P = parâmetros (dataset parametros), saz = 12 pesos, inst = instrumentos (dataset), C = controles. */
 (function (root) {
   const M = {};
-  M.fracPMPF = function (pmpf) {
-    const lo = Math.floor(pmpf / 30), r = (pmpf - lo * 30) / 30;
-    return r === 0 ? [[lo, 1]] : [[lo, 1 - r], [lo + 1, r]];
+  const KMAX = 6; // maior defasagem possível (parcelado 6x)
+  // fração de uma venda que entra em cada defasagem k (0..6), por instrumento, antes da inadimplência
+  M.vetor = function (row, C) {
+    const v = new Array(KMAX + 1).fill(0);
+    if (row.id === 'boleto') {
+      const dias = String(C.boletoPrazo).split('/').map(Number);
+      dias.forEach((d) => { v[Math.round(d / 30)] += 1 / dias.length; });
+    } else if (row.id === 'parcelado') {
+      const n = Number(C.parcelas);
+      for (let i = 1; i <= n; i++) v[i] += 1 / n;
+    } else v[Math.round(Number(row.dias) / 30)] += 1;
+    return v;
   };
-  M.orcamento = function (P, C) {
-    const base = P.receitaAnual / 12;
-    const pesos = C.achatar ? P.pesos.map(() => 1) : C.pesos;
-    const g = C.crescimento / 100;
-    // receita do mês s, s = -4..13 (anos vizinhos sem crescimento, mesmos pesos)
-    const rec = (s) => {
-      const m = ((s % 12) + 12) % 12;
-      const fat = s >= 0 ? Math.pow(1 + g, s / 12) : 1; // anos seguintes seguem crescendo (fecha dez = 143 em "Crescer 20%")
-      return base * pesos[m] * fat;
-    };
-    const ent = new Array(12).fill(0), forn = new Array(12).fill(0);
-    const lagRV0 = P.pmrvAntigo / 30, fr0 = M.fracPMPF(P.pmpfAntigo), fr1 = M.fracPMPF(C.pmpf);
-    for (let s = -6; s <= 11; s++) {
-      const lag = s < 0 ? lagRV0 : C.pmrv / 30;
-      const t = s + lag;
-      if (t >= 0 && t <= 11) ent[t] += rec(s) * (1 - C.inad / 100);
-      const compras = P.pctCompras * rec(s + 2);
-      (s < 0 ? fr0 : fr1).forEach(([a, f]) => { const u = s + a; if (u >= 0 && u <= 11) forn[u] += f * compras; });
+  // linhas por instrumento: share do mix (renormalizado) × vetor; no modo direto, uma linha com o aging digitado
+  M.linhas = function (inst, C) {
+    if (C.direto) {
+      const ks = [C.k0, C.k1, C.k2, C.k3].map((x) => Math.max(0, Number(x) || 0));
+      const s = ks.reduce((a, b) => a + b, 0) || 1;
+      const v = new Array(KMAX + 1).fill(0); ks.forEach((x, i) => { v[i] = x / s; });
+      return { soma: s, rows: [{ id: 'direto', share: 1, vec: v }] };
     }
-    const meses = [];
-    let saldo = P.saldoInicial;
-    for (let m = 0; m < 12; m++) {
-      const folha = P.salarios + P.encargos + P.decimo[m] + P.plr[m];
-      const varr = P.pctVariaveis * rec(m);
-      const disc = P.discricionarias * C.disc / 100;
-      const trib = P.pctTributos * rec(m - 1) + P.irpj;
-      const saidasOp = forn[m] + folha + P.fixas + varr + disc + trib;
-      const fluxoOp = ent[m] - saidasOp;
-      const capex = m === 5 ? C.capexJun : m === 8 ? C.capexSet : 0;
-      const div = m === P.mesDividendos ? C.dividendos : 0;
-      const juros = P.jurosCP + P.jurosELP;
-      const financ = -(juros + P.amortELP[m] + div);
-      const fluxoLiq = fluxoOp - capex + financ;
-      saldo += fluxoLiq;
-      meses.push({ m, receita: rec(m), entradas: ent[m], forn: forn[m], folha, fixas: P.fixas, variaveis: varr, disc, trib,
-        saidasOp, fluxoOp, invest: -capex, financ, juros, amort: P.amortELP[m], div, fluxoLiq, saldo });
-    }
-    const fl = meses.map((x) => x.fluxoLiq), media = fl.reduce((a, b) => a + b, 0) / 12;
-    const sigma = Math.sqrt(fl.reduce((a, b) => a + (b - media) ** 2, 0) / 12);
-    const minimo = C.k * sigma;
-    const soma = (k) => meses.reduce((a, x) => a + x[k], 0);
-    let pior = meses[0], exc = meses[0];
-    meses.forEach((x) => { if (x.saldo < pior.saldo) pior = x; if (x.saldo > exc.saldo) exc = x; });
-    return { meses, sigma, minimo, pior, falta: Math.max(0, minimo - pior.saldo), excMes: exc, excedente: exc.saldo - minimo,
-      abaixo: meses.filter((x) => x.saldo < minimo).map((x) => x.m), negativos: meses.filter((x) => x.saldo < 0).map((x) => x.m),
-      totais: { receita: soma('receita'), entradas: soma('entradas'), saidasOp: soma('saidasOp'), fluxoOp: soma('fluxoOp'), invest: soma('invest'), financ: soma('financ'), fluxoLiq: soma('fluxoLiq') },
-      saldoFinal: meses[11].saldo };
+    const pcts = inst.map((r) => Math.max(0, Number(C[r.id]) || 0));
+    const s = pcts.reduce((a, b) => a + b, 0);
+    return { soma: s, rows: inst.map((r, i) => {
+      const share = s > 0 ? pcts[i] / s : 0;
+      return { id: r.id, nome: r.nome, share, vec: M.vetor(r, C).map((x) => x * share) };
+    }) };
   };
-
-  M.CLASSES = ['negociavel', 'inegociavel', 'decisao'];
-  // arredondamento de exibição: meio para o par (3.712,5 → 3.712; 1.029,5 → 1.030), como nas tabelas da spec
-  M.r = (v) => { const f = Math.floor(v), d = v - f; if (Math.abs(d - 0.5) < 1e-7) return f % 2 === 0 ? f : f + 1; return Math.round(v); };
-  // dias do mês num ano não bissexto (calendário, não dado do caso)
-  M.diasNoMes = (m) => new Date(2027, m + 1, 0).getDate();
-  // "último dia útil" = dia 30 (28 em fev): assim dez dia 30 = IRPJ + amortização (Spec §7)
-  M.ultimoDia = (m) => Math.min(30, M.diasNoMes(m));
-  M.lista = (s) => String(s).split(';').map(Number).filter((x) => x > 0);
-
-  // D = {P, pesos, cats, eventos, ufDia}; C = {pmpf, uf, capexJunMes, capexSetMes, dividendos, disc}
-  M.calendario = function (D, C) {
-    const P = D.P, base = P.receitaAnual / 12;
-    const rec = (s) => base * D.pesos[((s % 12) + 12) % 12];
-    const zeros = new Array(12).fill(0);
-    const PP = Object.assign({}, P, { pesos: D.pesos, decimo: zeros, plr: zeros, amortELP: zeros });
-    const CC = { crescimento: 0, pesos: D.pesos, achatar: false, pmrv: P.pmrv, pmpf: C.pmpf, inad: P.inad, disc: 100, dividendos: 0, capexJun: 0, capexSet: 0, k: 1 };
-    const orc = M.orcamento(PP, CC);
-    const orc45 = M.orcamento(PP, Object.assign({}, CC, { pmpf: P.pmpfAntigo }));
-    const cel = [];
-    for (let m = 0; m < 12; m++) { cel.push([]); for (let d = 0; d <= M.diasNoMes(m); d++) cel[m].push([]); }
-    const put = (m, d, cat, v) => { if (v > 1e-9) cel[m][Math.min(d, M.diasNoMes(m))].push({ id: cat.id, nome: cat.nome, classe: cat.classe, valor: v }); };
-    const mesIdx = (x) => (typeof x === 'number' ? x : D.MES.indexOf(x));
-    const cats = D.cats.slice().sort((a, b) => a.ordem - b.ordem);
-    cats.forEach((cat) => {
-      for (let m = 0; m < 12; m++) {
-        let v = 0;
-        if (cat.regra === 'fornecedores') v = orc.meses[m].forn;
-        else if (cat.regra === 'premissa') v = P[cat.ref] * (cat.ref === 'discricionarias' ? C.disc / 100 : 1);
-        else if (cat.regra === 'pctReceitaAnterior') v = cat.pct * rec(m - 1);
-        else if (cat.regra === 'pctReceita') v = P[cat.ref] * rec(m);
-        else continue;
-        let dias;
-        if (cat.dias === 'uf') dias = [D.ufDia[C.uf]];
-        else if (cat.dias === 'ultimo') dias = [M.ultimoDia(m)];
-        else dias = M.lista(cat.dias);
-        dias.forEach((d) => put(m, d, cat, v / dias.length));
+  M.aging = (L) => { const a = new Array(KMAX + 1).fill(0); L.rows.forEach((r) => r.vec.forEach((x, k) => { a[k] += x; })); return a; };
+  M.dso = (a) => a.reduce((s, x, k) => s + 30 * k * x, 0);
+  M.fator = (P, C) => (C.safra ? 1 + P.cSelic * (C.selic - P.selicRef) + P.cDesemp * (C.desemp - P.desempRef) : 1);
+  M.perda = (P, C) => Math.max(0, (C.inad / 100) * M.fator(P, C));
+  // perda por defasagem: zero à vista; a perda da coorte recai só sobre as parcelas a prazo
+  M.perdaK = (a, perda) => a.map((x, k) => (k === 0 ? 0 : a[0] < 1 ? Math.min(1, perda / (1 - a[0])) : 0));
+  // série sintética determinística: t = 1..n (t = 1 é janeiro do ano 1)
+  M.serie = function (P, saz) {
+    let s = P.semente >>> 0;
+    const u = () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; };
+    const nrm = () => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+    const r = [NaN];
+    for (let t = 1; t <= P.nMeses; t++) r.push((P.receitaAnual / 12) * Math.pow(1 + P.cresc, t) * saz[(t - 1) % 12] * (1 + P.ruido * nrm()));
+    return r;
+  };
+  M.corr = function (x, y) {
+    const n = x.length, mx = x.reduce((a, b) => a + b, 0) / n, my = y.reduce((a, b) => a + b, 0) / n;
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < n; i++) { sxy += (x[i] - mx) * (y[i] - my); sxx += (x[i] - mx) ** 2; syy += (y[i] - my) ** 2; }
+    return sxx > 0 && syy > 0 ? sxy / Math.sqrt(sxx * syy) : NaN;
+  };
+  M.calc = function (P, saz, inst, C) {
+    const L = M.linhas(inst, C), a = M.aging(L), dso = M.dso(a);
+    const fator = M.fator(P, C), perda = M.perda(P, C), pk = M.perdaK(a, perda);
+    // uma venda de referência V em janeiro
+    const V = C.venda;
+    const venda = { rows: L.rows.map((r) => ({ id: r.id, nome: r.nome, share: r.share, liq: r.vec.map((x, k) => V * x * (1 - pk[k])) })) };
+    venda.bruto = a.map((x) => V * x);
+    venda.liq = a.map((x, k) => V * x * (1 - pk[k]));
+    venda.perda = a.map((x, k) => V * x * pk[k]);
+    venda.total = venda.liq.reduce((s, x) => s + x, 0);
+    venda.ultimo = a.reduce((m, x, k) => (x > 1e-12 ? k : m), 0);
+    // série
+    const rec = M.serie(P, saz), n = P.nMeses;
+    const entOp = [NaN], orig = [null], bruta = [NaN], perdaT = [NaN];
+    for (let t = 1; t <= n; t++) {
+      let e = 0, b = 0; const o = [0, 0, 0, 0];
+      for (let k = 0; k <= KMAX; k++) {
+        if (t - k < 1) continue;
+        const g = rec[t - k] * a[k];
+        b += g; e += g * (1 - pk[k]); o[Math.min(k, 3)] += g;
       }
-    });
-    D.eventos.forEach((e) => {
-      const cat = cats.find((c) => c.id === e.categoria); if (!cat) return;
-      let m = mesIdx(e.mes), v = e.valor;
-      if (e.id === 'capexJun' && C.capexJunMes != null) m = mesIdx(C.capexJunMes);
-      if (e.id === 'capexSet' && C.capexSetMes != null) m = mesIdx(C.capexSetMes);
-      if (e.categoria === 'dividendos' && C.dividendos != null) v = C.dividendos;
-      put(m, e.dia, cat, v);
-    });
-    // saldo: abertura de cada mês = inicial + Σ (entradas − saídas) dos meses anteriores
-    const diasEnt = M.lista(P.diasEntradas);
-    const meses = [];
-    let saldo = P.saldoInicial;
-    for (let m = 0; m < 12; m++) {
-      const porClasse = { negociavel: 0, inegociavel: 0, decisao: 0 }, porCat = {};
-      cel[m].forEach((it) => it.forEach((x) => { porClasse[x.classe] += x.valor; porCat[x.id] = (porCat[x.id] || 0) + x.valor; }));
-      const total = porClasse.negociavel + porClasse.inegociavel + porClasse.decisao;
-      const abertura = saldo;
-      saldo += orc.meses[m].entradas - total;
-      meses.push({ m, porClasse, porCat, total, entradas: orc.meses[m].entradas, receita: rec(m), forn: orc.meses[m].forn, forn45: orc45.meses[m].forn, abertura, fechamento: saldo });
+      entOp.push(e); bruta.push(b); perdaT.push(b - e); orig.push(o);
     }
-    const ano = { negociavel: 0, inegociavel: 0, decisao: 0, total: 0 };
-    meses.forEach((x) => { M.CLASSES.forEach((c) => { ano[c] += x.porClasse[c]; }); ano.total += x.total; });
-    return { cel, meses, ano, diasEnt };
-  };
-
-  // total por dia do mês m, só das classes ligadas em F = {negociavel: bool, …}
-  M.diaTotal = (cal, m, d, F) => cal.cel[m][d].reduce((a, x) => a + (!F || F[x.classe] ? x.valor : 0), 0);
-  M.resumoMes = function (cal, m, F) {
-    const n = M.diasNoMes(m), dias = [];
-    const porClasse = { negociavel: 0, inegociavel: 0, decisao: 0 };
-    let maxD = 1, maxV = -1;
-    for (let d = 1; d <= n; d++) {
-      const v = M.diaTotal(cal, m, d, F); dias.push(v);
-      if (v > maxV + 1e-9) { maxV = v; maxD = d; }
-      cal.cel[m][d].forEach((x) => { if (!F || F[x.classe]) porClasse[x.classe] += x.valor; });
+    // correlação por defasagem, t = tIni..n
+    const ks = [];
+    for (let k = 0; k <= P.kLag; k++) {
+      const x = [], y = [];
+      for (let t = P.tIni; t <= n; t++) { x.push(rec[t - k]); y.push(entOp[t]); }
+      ks.push({ k, corr: M.corr(x, y) });
     }
-    const total = porClasse.negociavel + porClasse.inegociavel + porClasse.decisao;
-    return { dias, porClasse, total, pctIneg: total > 0 ? porClasse.inegociavel / total : 0, diaMax: maxD, valorMax: maxV };
+    const best = ks.reduce((m, r) => (r.corr > m.corr || !Number.isFinite(m.corr) ? r : m), ks[0]);
+    const kStar = best.k;
+    const pts = [];
+    for (let t = P.tIni; t <= n; t++) pts.push({ t, x: rec[t - kStar], y: entOp[t] });
+    const mx = d3mean(pts.map((p) => p.x)), my = d3mean(pts.map((p) => p.y));
+    let sxy = 0, sxx = 0; pts.forEach((p) => { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) ** 2; });
+    const b1 = sxx > 0 ? sxy / sxx : 0, b0 = my - b1 * mx;
+    // waterfall do mês escolhido (eventos únicos caem nesse mês)
+    const tw = Math.min(n, Math.max(P.tIni, Math.round(C.mesW)));
+    const finRec = P.taxaAplic * C.saldoAplic;
+    const outras = finRec + C.perdcomp + C.ativos;
+    const wf = { t: tw, receitaMes: rec[tw], bruta: bruta[tw], orig: orig[tw], perda: perdaT[tw], finRec, perdcomp: C.perdcomp, ativos: C.ativos,
+      outras, captacao: C.captacao, entradas: entOp[tw] + outras + C.captacao, entOp: entOp[tw] };
+    return { L, aging: a, dso, fator, perda, pk, venda, rec, entOp, ks, kStar, corrMax: best.corr, r2: best.corr * best.corr, reg: { b0, b1 }, pts, wf,
+      checkPerda: 1 - a.reduce((s, x, k) => s + x * (1 - pk[k]), 0) };
   };
-  // saldo dentro do mês m (todas as classes): [{d, saldo}] começando na abertura
-  M.saldoDiario = function (cal, m) {
-    const x = cal.meses[m], n = M.diasNoMes(m), q = x.entradas / cal.diasEnt.length, out = [];
-    let s = x.abertura;
-    for (let d = 1; d <= n; d++) {
-      if (cal.diasEnt.indexOf(d) >= 0) s += q;
-      s -= M.diaTotal(cal, m, d, null);
-      out.push({ d, saldo: s });
-    }
-    return out;
-  };
-  // classe dominante de uma célula
-  M.dominante = (itens) => {
-    const t = { negociavel: 0, inegociavel: 0, decisao: 0 }; itens.forEach((x) => { t[x.classe] += x.valor; });
-    let best = null, bv = 0; M.CLASSES.forEach((c) => { if (t[c] > bv) { bv = t[c]; best = c; } });
-    return best;
-  };
-  root.M23 = M;
+  function d3mean(v) { return v.reduce((a, b) => a + b, 0) / v.length; }
+  root.M22 = M;
 })(typeof window !== 'undefined' ? window : globalThis);

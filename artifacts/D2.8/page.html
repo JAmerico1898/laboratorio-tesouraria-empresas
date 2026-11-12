@@ -1,0 +1,421 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="kit.css">
+<script src="kit.js"></script>
+<script src="model.js"></script>
+<style>
+.d27-chart { min-height: 320px; }
+.d27-leg-real { background: var(--color-fg-muted); }
+.d27-leg-mm { background: var(--k-navy); }
+.d27-leg-dec { background: var(--k-amber); }
+.d27-leg-ar { background: var(--k-pos); }
+.d27-leg-cone { background: var(--k-navy); opacity: .2; }
+.d27-leg-min { background: var(--k-neg); height: .2rem !important; vertical-align: 3px !important; }
+.d27-chips { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.d27-chips .k-toggle { margin-top: 0; }
+.d27-placar { margin-top: 14px; }
+.k .d27-placar tr.d27-win td { font-weight: 600; }
+.d27-placar tr.d27-win td:first-child { box-shadow: inset 4px 0 0 var(--k-navy); }
+.d27-placar td i { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.d27-cards { grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); }
+.d27-cards .k-card p { margin: 0; font-size: 13px; line-height: 1.35; }
+.d27-cards .k-card.k-warn h4::before { content: "!"; display: inline-flex; align-items: center; justify-content: center; width: 1rem; height: 1rem; margin-right: 6px; border-radius: 50%; background: var(--k-neg); color: #fff; font-size: 11px; font-weight: 700; vertical-align: 1px; }
+.d27-sub { margin-left: 1.6rem; }
+</style>
+
+<div class="k" id="d27">
+  <header class="k-head">
+    <div>
+      <h1 class="k-title">D2.8 · Previsão de caixa</h1>
+      <p class="k-sub">Três métodos, um placar honesto: quem acerta o caixa de amanhã — e com que margem de erro?</p>
+    </div>
+    <div class="k-cens" id="cenarios" data-source="cenarios" role="group" aria-label="Cenários">
+      <button class="k-btn d27-cen" data-cen="base" aria-pressed="false">Base</button>
+      <button class="k-btn d27-cen" data-cen="ruido" aria-pressed="false">Só ruído</button>
+      <button class="k-btn d27-cen" data-cen="sazforte" aria-pressed="false">Sazonalidade forte</button>
+      <button class="k-btn d27-cen" data-cen="quebra" aria-pressed="false">Quebra</button>
+      <button class="k-btn d27-cen" data-cen="retreino" aria-pressed="false">Quebra + retreino</button>
+      <button class="k-btn d27-cen" data-cen="over8" aria-pressed="false">Overfitting · grau 8</button>
+      <button class="k-btn d27-cen" data-cen="over12" aria-pressed="false">Overfitting · grau 12</button>
+    </div>
+  </header>
+
+  <div class="k-zones">
+    <div class="k-zone k-scroll" id="controles" data-source="cenarios gerador">
+      <h2 class="k-zt">A série <span class="k-info" tabindex="0">i<span class="k-tip">Saldo diário sintético da Alfa em dias úteis: nível + dia da semana + dias de pagamento de folha, encargos e tributos + tendência + ruído. Gerador com semente fixa: os mesmos controles dão sempre a mesma série.</span></span></h2>
+      <div class="k-ctl"><label for="c-ampSem">Sazonalidade semanal <span class="k-u">R$ mil</span></label>
+        <div class="k-in"><input type="range" id="c-ampSem" data-k="ampSem" min="0" max="800" step="10"><input type="number" data-k="ampSem" min="0" max="800" step="10" aria-label="Sazonalidade semanal"></div></div>
+      <div class="k-ctl"><label for="c-ampMes">Sazonalidade mensal <span class="k-u">R$ mil</span></label>
+        <div class="k-in"><input type="range" id="c-ampMes" data-k="ampMes" min="0" max="1500" step="10"><input type="number" data-k="ampMes" min="0" max="1500" step="10" aria-label="Sazonalidade mensal"></div></div>
+      <div class="k-ctl"><label for="c-beta">Tendência <span class="k-u">R$ mil por dia</span></label>
+        <div class="k-in"><input type="range" id="c-beta" data-k="beta" min="-3" max="3" step="0.1"><input type="number" data-k="beta" min="-3" max="3" step="0.1" aria-label="Tendência"></div></div>
+      <div class="k-ctl"><label for="c-sigma">Ruído (σ) <span class="k-u">R$ mil</span></label>
+        <div class="k-in"><input type="range" id="c-sigma" data-k="sigma" min="0" max="500" step="5"><input type="number" data-k="sigma" min="0" max="500" step="5" aria-label="Ruído"></div></div>
+      <label class="k-toggle"><input type="checkbox" data-k="quebra"> Quebra estrutural</label>
+      <div class="d27-sub">
+        <div class="k-ctl"><label for="c-tQuebra">Dia da quebra</label>
+          <div class="k-in"><input type="range" id="c-tQuebra" data-k="tQuebra" min="200" max="450" step="5"><input type="number" data-k="tQuebra" min="200" max="450" step="5" aria-label="Dia da quebra"></div></div>
+        <div class="k-ctl"><label for="c-magQuebra">Magnitude <span class="k-u">R$ mil</span></label>
+          <div class="k-in"><input type="range" id="c-magQuebra" data-k="magQuebra" min="-2000" max="2000" step="50"><input type="number" data-k="magQuebra" min="-2000" max="2000" step="50" aria-label="Magnitude da quebra"></div></div>
+      </div>
+
+      <h2 class="k-zt2">Treino e teste</h2>
+      <div class="k-ctl"><label for="c-inicio">Início do treino <span class="k-u">dia</span></label>
+        <div class="k-in"><input type="range" id="c-inicio" data-k="inicio" min="0" max="420" step="5"><input type="number" data-k="inicio" min="0" max="420" step="5" aria-label="Início do treino"></div></div>
+      <div class="k-ctl"><label for="c-h">Horizonte de teste <span class="k-u">dias úteis</span></label>
+        <div class="k-in"><input type="range" id="c-h" data-k="h" min="10" max="100" step="5"><input type="number" data-k="h" min="10" max="100" step="5" aria-label="Horizonte de teste"></div></div>
+
+      <h2 class="k-zt2">Métodos</h2>
+      <div class="k-ctl"><label for="c-W">Janela da média móvel <span class="k-u">dias</span></label>
+        <div class="k-in"><input type="range" id="c-W" data-k="W" min="5" max="60" step="1"><input type="number" data-k="W" min="5" max="60" step="1" aria-label="Janela da média móvel"></div></div>
+      <div class="k-ctl"><label for="c-grau">Grau do polinômio de tendência <span class="k-u">decomposição</span></label>
+        <div class="k-in"><input type="range" id="c-grau" data-k="grau" min="1" max="12" step="1"><input type="number" data-k="grau" min="1" max="12" step="1" aria-label="Grau do polinômio"></div></div>
+      <div class="k-ctl"><label for="c-p">Ordem p do AR</label>
+        <div class="k-in"><input type="range" id="c-p" data-k="p" min="1" max="7" step="1"><input type="number" data-k="p" min="1" max="7" step="1" aria-label="Ordem do AR"></div></div>
+      <div class="k-ctl"><label for="c-saldoMin">Saldo mínimo <span class="k-u">R$ mil</span></label>
+        <input class="k-num" type="number" id="c-saldoMin" data-k="saldoMin" min="0" max="10000" step="50"></div>
+
+      <h2 class="k-zt2">No gráfico</h2>
+      <div class="d27-chips">
+        <label class="k-toggle"><input type="checkbox" data-k="showMM"> Média móvel sazonal</label>
+        <label class="k-toggle"><input type="checkbox" data-k="showDec"> Decomposição</label>
+        <label class="k-toggle"><input type="checkbox" data-k="showAR"> AR(p)</label>
+        <label class="k-toggle"><input type="checkbox" data-k="cone"> Cone de incerteza</label>
+        <label class="k-toggle"><input type="checkbox" data-k="inteira"> Série inteira</label>
+      </div>
+      <div class="k-ctl" style="margin-top:10px"><span class="k-lab">Cone do método</span>
+        <div class="k-seg" role="group" aria-label="Método do cone">
+          <button data-k="metodo" data-v="mm" aria-pressed="false">Média móvel</button>
+          <button data-k="metodo" data-v="dec" aria-pressed="false">Decomposição</button>
+          <button data-k="metodo" data-v="ar" aria-pressed="false">AR</button>
+        </div></div>
+    </div>
+
+    <div class="k-zone" id="visual" data-source="gerador calendario cenarios">
+      <div class="k-ch"><h3 id="grafico-titulo">Saldo diário: treino, teste e previsões</h3><span>R$ mil · dias úteis</span></div>
+      <div class="k-chart d27-chart dash-skeleton" id="grafico" data-draw="grafico" role="img" aria-label="Saldo diário real, previsões dos três métodos no período de teste, cone de incerteza e saldo mínimo"></div>
+      <div class="k-legend">
+        <span><i class="d27-leg-real"></i>Real</span>
+        <span><i class="d27-leg-mm"></i>Média móvel sazonal</span>
+        <span><i class="d27-leg-dec"></i>Decomposição</span>
+        <span><i class="d27-leg-ar"></i>AR(p)</span>
+        <span><i class="d27-leg-cone"></i>Cone ± <span data-draw="v-z">—</span> σ √h</span>
+        <span><i class="d27-leg-min"></i>Saldo mínimo</span>
+      </div>
+
+      <div class="k-ch d27-placar" id="placar-titulo"><h3>Placar</h3><span>MAPE = erro médio absoluto em % do saldo</span></div>
+      <div class="k-tw">
+        <table class="k-table d27-placar" id="placar">
+          <thead><tr><th>Método</th><th>MAPE treino</th><th>MAPE teste</th><th>Teste ÷ treino</th><th>Posição no teste</th></tr></thead>
+          <tbody data-draw="placar"></tbody>
+        </table>
+      </div>
+      <div data-frases>
+        <p class="k-note" data-frase="inverte" hidden><b data-draw="v-trwin">—</b> venceu no treino, perdeu no teste para <b data-draw="v-tewin">—</b>.</p>
+        <span data-draw="nota-placar"></span>
+      </div>
+
+      <div class="k-cards d27-cards" id="armadilhas">
+        <div class="k-card k-dim" data-card="curta"><h4>Série curta</h4><p>Com pouco histórico, o simples costuma vencer o sofisticado.</p></div>
+        <div class="k-card k-dim" data-card="quebra"><h4>Quebra estrutural</h4><p>O modelo aprendeu um regime que não existe mais — mova o início do treino para depois da quebra.</p></div>
+        <div class="k-card k-dim" data-card="overfit"><h4>Overfitting</h4><p><b data-draw="v-overmet">—</b> decorou o ruído: o erro de teste passou de <b data-draw="v-limrazao">—</b> vezes o de treino.</p></div>
+        <div class="k-card k-dim" data-card="semBanda"><h4>Sem banda</h4><p>Previsão pontual é falsa precisão.</p></div>
+        <span data-draw="cartoes"></span>
+      </div>
+    </div>
+
+    <div class="k-zone" id="leitura" data-source="gerador calendario cenarios">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">Melhor MAPE no teste</span><span class="k-kn dash-skeleton" data-draw="k-mape">—</span></div>
+      <p class="k-note">Método: <b data-draw="v-tewin">—</b></p>
+      <div class="k-kpi"><span class="k-kl">Largura do cone em d+<span data-draw="v-H">—</span> <span class="k-u">R$ mil</span></span><span class="k-kn dash-skeleton" data-draw="k-larg">—</span></div>
+      <p class="k-note">Método do cone: <b data-draw="v-conemet">—</b> · σ dos resíduos <b data-draw="v-sigma">—</b></p>
+      <div class="k-kpi"><span class="k-kl">Primeiro dia de alerta</span><span class="k-kn dash-skeleton" data-draw="k-alerta">—</span></div>
+      <div data-frases>
+        <p class="k-note" data-frase="com" hidden>A borda inferior do cone fica abaixo do saldo mínimo de R$ <b data-draw="v-min">—</b> mil.</p>
+        <p class="k-note" data-frase="sem" hidden>Sem alerta no horizonte: o pior caso fica acima de R$ <b data-draw="v-min">—</b> mil.</p>
+        <span data-draw="nota-alerta"></span>
+      </div>
+      <div class="k-diag" id="diagnostico" data-frases>
+        <p data-frase="base" hidden>Métodos simples erram ≈ <b data-draw="v-mapesimples">—</b> fora da amostra; o AR(<b data-draw="v-p">—</b>) erra mais (<b data-draw="v-mapear">—</b>): sofisticação não garante previsão. O cone abre para ± <b data-draw="v-larg">—</b> em <b data-draw="v-H">—</b> dias.</p>
+        <p data-frase="empate" hidden>Os três métodos erram entre <b data-draw="v-mapemin">—</b> e <b data-draw="v-mapemax">—</b> fora da amostra: nenhum vence com folga. O cone abre para ± <b data-draw="v-larg">—</b> em <b data-draw="v-H">—</b> dias.</p>
+        <p data-frase="overfit" hidden>Grau <b data-draw="v-grau">—</b>: o erro de treino caiu para <b data-draw="v-dectr">—</b>, o de teste subiu para <b data-draw="v-decte">—</b>. O modelo memorizou a amostra.</p>
+        <p data-frase="quebra" hidden>Erro de <b data-draw="v-decte">—</b> na decomposição — o histórico anterior à quebra está envenenando a previsão. Encurte o treino.</p>
+        <p data-frase="retreino" hidden>Treinando só após a quebra, o erro da decomposição cai para <b data-draw="v-decte">—</b>. Menos dados, melhor modelo.</p>
+        <p data-frase="alerta" hidden>A banda inferior cruza o saldo mínimo em d+<b data-draw="v-alerta">—</b>: acione a linha antes, não no dia.</p>
+        <span data-draw="frase"></span>
+      </div>
+    </div>
+  </div>
+
+  <details class="k-help" id="perguntas" data-source="gerador calendario cenarios">
+    <summary>? Perguntas-guia</summary>
+    <div class="k-help-body">
+      <ol>
+        <li>No cenário base, o AR(<b data-draw="g1-p">—</b>) é o método mais "técnico" e o que mais erra. Por quê?
+          <details><summary>mostrar resposta</summary><p>Porque a série é dominada por calendário (dia da semana, dias de folha, encargos e tributos), que os métodos sazonais modelam explicitamente e o AR só captura indiretamente pelas defasagens; e a previsão recursiva acumula erro a cada passo. No base: média móvel <b data-draw="g1-mm">—</b>, decomposição <b data-draw="g1-dec">—</b>, AR <b data-draw="g1-ar">—</b>. Sofisticação ≠ qualidade preditiva.</p></details>
+        </li>
+        <li>Ligue a quebra. Por que a decomposição erra tanto e a média móvel sazonal quase não sente? Depois mova o início do treino para depois da quebra.
+          <details><summary>mostrar resposta</summary><p>A decomposição ajusta a tendência a todo o treino, que inclui o regime antigo (erro <b data-draw="g2-dec">—</b>); a média móvel usa só o nível dos últimos dias e já "esqueceu" o passado (<b data-draw="g2-mm">—</b>). Treinando a partir do dia <b data-draw="g2-ini">—</b>, a decomposição cai para <b data-draw="g2-dec2">—</b> — mas o cartão "série curta" acende (sobraram <b data-draw="g2-n">—</b> dias). Após uma quebra, descartar história é o remédio; aceitar menos dados é o preço.</p></details>
+        </li>
+        <li>Traduza o cone para o CFO em uma frase.
+          <details><summary>mostrar resposta</summary><p>Exemplo, com o estado atual: "Daqui a <b data-draw="v-H">—</b> dias úteis esperamos saldo de R$ <b data-draw="g3-y">—</b> mil, mas o intervalo razoável vai de <b data-draw="g3-lo">—</b> a <b data-draw="g3-hi">—</b>."</p>
+            <div data-frases>
+              <p data-frase="com" hidden>"O pior caso cruza o mínimo em d+<b data-draw="v-alerta">—</b>: a linha precisa estar aprovada antes disso."</p>
+              <p data-frase="sem" hidden>"Mesmo o pior caso fica acima do mínimo neste horizonte."</p>
+              <span data-draw="nota-alerta"></span>
+            </div>
+            <p>A banda cresce com a raiz do horizonte: apresentá-la não é fraqueza, é responsabilidade.</p></details>
+        </li>
+      </ol>
+    </div>
+  </details>
+</div>
+
+<script>
+/* ============================================================
+   D2.8 · Previsão de caixa — página (funções puras em model.js)
+   Testes de aderência (Spec §7), conferidos em test.js com M27.rodar():
+   Base: MAPE teste MM 3,45% · decomposição 2,97% · AR(5) 7,34% · razões < 1,5 · σ_res 124 · cone ± 1.887 em h = 60
+   Quebra (380, −1.200), treino desde 0: decomposição 29,8% · AR 26,4% · MM 6,2% · cartão "quebra"
+   Quebra + treino desde 385: decomposição 7,3% · cartão "série curta" (55 dias)
+   Grau 8: teste 21,1% (≥ 2 × 2,97%) · grau 12: treino 3,255% < 3,260% · teste 104% · cartão "overfitting"
+   Só ruído: 3,29 / 3,14 / 3,00% · Sazonalidade forte: MM 3,8% · dec 3,1% · AR 13,3%
+   ============================================================ */
+const D27 = window.D27 = { S: {}, memo: new Map() };
+const IDS = ['gerador', 'calendario', 'cenarios'];
+const COR = { mm: 'var(--k-navy)', dec: 'var(--k-amber)', ar: 'var(--k-pos)' };
+const SHOW = { mm: 'showMM', dec: 'showDec', ar: 'showAR' };
+const CAMPOS = ['ampSem', 'ampMes', 'beta', 'sigma', 'quebra', 'tQuebra', 'magQuebra', 'inicio', 'h', 'grau', 'p', 'W', 'saldoMin'];
+
+/* ---------- dados ---------- */
+const bool = (v) => v === true || v === 'true' || v === 1 || v === '1';
+function dados() {
+  if (K.status(IDS) !== 'ok') return null;
+  if (!D27.G) {
+    D27.G = K.obj(dash.data('gerador').data);
+    D27.CAL = K.num(dash.data('calendario').data);
+    D27.CEN = {};
+    K.num(dash.data('cenarios').data).forEach((c) => { c.quebra = bool(c.quebra); D27.CEN[c.id] = c; });
+  }
+  return D27;
+}
+const chave = (S) => CAMPOS.map((c) => S[c]).join('|') + '|' + S.metodo + '|' + S.cone;
+function rodar(S) {
+  const D = dados(); if (!D) return null;
+  const k = chave(S);
+  if (!D27.memo.has(k)) {
+    if (D27.memo.size > 40) D27.memo.clear();
+    D27.memo.set(k, M27.rodar(D.G, D.CAL, S));
+  }
+  return D27.memo.get(k);
+}
+const cenario = (id, extra) => { const D = dados(); return D && D.CEN[id] ? rodar({ ...D.CEN[id], metodo: 'mm', cone: true, ...(extra || {}) }) : null; };
+function estado() { return D27.S.h ? rodar(D27.S) : null; }
+
+/* ---------- controles ---------- */
+const nomes = () => Array.from(new Set(Array.from(document.querySelectorAll('[data-draw]')).map((e) => e.dataset.draw)));
+const redesenha = () => K.redraw(nomes());
+function sincroniza() {
+  K.sync(D27.S);
+  document.querySelectorAll('.d27-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === D27.S.cen)));
+  document.querySelectorAll('input[data-k="tQuebra"], input[data-k="magQuebra"]').forEach((i) => { i.disabled = !D27.S.quebra; });
+}
+function aplicar(id) {
+  const D = dados(); if (!D || !D.CEN[id]) return false;
+  const c = D.CEN[id];
+  CAMPOS.forEach((k) => { D27.S[k] = c[k]; });
+  Object.assign(D27.S, { metodo: 'mm', cone: true, showMM: true, showDec: true, showAR: true, inteira: D27.S.inteira || false, cen: id });
+  sincroniza();
+  return true;
+}
+K.bind(D27.S, () => { D27.S.cen = null; sincroniza(); redesenha(); });
+document.querySelectorAll('.d27-cen').forEach((b) => b.addEventListener('click', () => { if (aplicar(b.dataset.cen)) redesenha(); }));
+dash.onData(() => { if (!D27.S.h && dados()) aplicar('base'); });
+
+/* ---------- formatos ---------- */
+const pc = (v, d = 1) => (v > 999 ? '> 999%' : Number.isFinite(v) ? K.n(v, d) + '%' : '—');
+const rz = (v) => (v > 999 ? '> 999' : Number.isFinite(v) ? K.n(v, 2) : '—');
+const NOME = { mm: 'Média móvel sazonal', dec: 'Decomposição', ar: 'AR' };
+const nomeM = (k) => (k === 'ar' ? 'AR(' + D27.S.p + ')' : NOME[k]);
+
+/* ---------- gráfico principal ---------- */
+dash.draw('grafico', (el) => {
+  const R = estado();
+  if (!R) { K.fail(el, K.status(IDS) === 'loading' ? 'loading' : 'error'); return; }
+  el.classList.remove('dash-skeleton');
+  const S = D27.S, G = D27.G, fim = R.fim, H = R.H;
+  const H0 = 320, { svg, W } = K.svg(el, H0);
+  el.replaceChildren(svg.node());
+  const x0 = S.inteira ? 0 : Math.max(0, fim - G.janelaVista), x1 = fim + H - 1;
+  const tsAll = d3.range(x0, x1 + 1);
+  // eixo y: faixa da série real, estendida para cone e mínimo até um limite (previsões explosivas ficam cortadas)
+  const ys = tsAll.map((t) => R.y[t]);
+  let lo = d3.min(ys), hi = d3.max(ys);
+  const span = Math.max(200, hi - lo);
+  const extra = [S.saldoMin];
+  if (S.cone) { R.lo.forEach((v) => extra.push(v)); R.hi.forEach((v) => extra.push(v)); }
+  ['mm', 'dec', 'ar'].forEach((k) => { if (S[SHOW[k]]) R.res[k].prev.forEach((v) => extra.push(v)); });
+  extra.forEach((v) => { if (Number.isFinite(v)) { lo = Math.min(lo, Math.max(v, d3.min(ys) - span)); hi = Math.max(hi, Math.min(v, d3.max(ys) + span)); } });
+  const y = d3.scaleLinear([lo, hi], [H0 - 28, 14]).nice();
+  // margem esquerda pela maior etiqueta do eixo
+  const yt = y.ticks(6);
+  const meas = svg.append('g');
+  const wmax = d3.max(yt, (v) => meas.append('text').attr('class', 'k-svgm').text(K.n(v)).node().getComputedTextLength()) || 30;
+  meas.remove();
+  const mL = Math.ceil(wmax) + 10, mR = 12;
+  const x = d3.scaleLinear([x0, x1], [mL, W - mR]);
+  svg.append('defs').append('clipPath').attr('id', 'd27-clip').append('rect').attr('x', mL).attr('y', 0).attr('width', W - mL - mR).attr('height', H0 - 28);
+  // grade e eixos
+  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', mL).attr('x2', W - mR).attr('y1', (v) => y(v)).attr('y2', (v) => y(v)).attr('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', mL - 6).attr('y', (v) => y(v) + 4).text((v) => K.n(v));
+  const xt = x.ticks(Math.max(3, Math.floor((W - mL) / 90))).filter((t) => Number.isInteger(t));
+  svg.append('line').attr('x1', mL).attr('x2', W - mR).attr('y1', H0 - 28).attr('y2', H0 - 28).attr('stroke', 'var(--cds-chart-axis)');
+  const xl = svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H0 - 10).text((t) => K.n(t));
+  xl.filter((t) => x(t) > W - mR - 14 || x(t) < mL + 10).remove();
+  const plot = svg.append('g').attr('clip-path', 'url(#d27-clip)');
+  // fundo do teste
+  plot.append('rect').attr('x', x(fim - 0.5)).attr('y', 0).attr('width', Math.max(0, x(x1) - x(fim - 0.5))).attr('height', H0 - 28).attr('fill', 'var(--color-bg)').attr('opacity', 0.7);
+  // cone
+  const ts = d3.range(fim, fim + H);
+  if (S.cone) {
+    const area = d3.area().x((t) => x(t)).y0((t) => y(R.lo[t - fim])).y1((t) => y(R.hi[t - fim]));
+    plot.append('path').attr('d', area(ts)).attr('fill', COR[S.metodo] || COR.mm).attr('opacity', 0.16);
+  }
+  // saldo mínimo
+  plot.append('line').attr('x1', mL).attr('x2', W - mR).attr('y1', y(S.saldoMin)).attr('y2', y(S.saldoMin)).attr('stroke', 'var(--k-neg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '6 4');
+  // real
+  const line = d3.line().x((t) => x(t)).y((t) => y(R.y[t]));
+  plot.append('path').attr('d', line(tsAll)).attr('fill', 'none').attr('stroke', 'var(--color-fg-muted)').attr('stroke-width', 1.2).attr('stroke-linejoin', 'round').attr('opacity', 0.85);
+  // previsões
+  ['mm', 'dec', 'ar'].forEach((k) => {
+    if (!S[SHOW[k]]) return;
+    const pv = R.res[k].prev;
+    const lp = d3.line().x((t) => x(t)).y((t) => y(pv[t - fim]));
+    plot.append('path').attr('d', lp(ts)).attr('fill', 'none').attr('stroke', COR[k]).attr('stroke-width', k === S.metodo ? 2.4 : 1.8).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+  });
+  // marcos verticais
+  const marco = (t, txt, cor, anchor, dy) => {
+    if (t < x0 || t > x1) return;
+    svg.append('line').attr('x1', x(t)).attr('x2', x(t)).attr('y1', 4).attr('y2', H0 - 28).attr('stroke', cor).attr('stroke-width', 1.2).attr('stroke-dasharray', '3 3');
+    const tx = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', anchor).attr('y', dy).text(txt);
+    const w = tx.node().getComputedTextLength();
+    let px = anchor === 'end' ? x(t) - 4 : x(t) + 4;
+    if (anchor === 'end' && px - w < mL) { px = x(t) + 4; tx.attr('text-anchor', 'start'); }
+    if (tx.attr('text-anchor') === 'start' && px + w > W - mR) { px = x(t) - 4; tx.attr('text-anchor', 'end'); }
+    tx.attr('x', px);
+  };
+  marco(fim - 0.5, 'treino', 'var(--cds-chart-reference)', 'end', 12);
+  marco(fim - 0.5, 'teste', 'var(--cds-chart-reference)', 'start', 12);
+  if (S.inicio > x0) marco(S.inicio, 'início do treino', 'var(--cds-chart-reference)', 'start', 26);
+  if (S.quebra) marco(S.tQuebra, 'quebra', 'var(--k-neg)', 'end', 26);
+  if (S.cone && R.alerta) {
+    const ta = fim + R.alerta - 1;
+    svg.append('circle').attr('cx', x(ta)).attr('cy', y(Math.max(lo, R.lo[R.alerta - 1]))).attr('r', 5).attr('fill', 'var(--k-neg)');
+    marco(ta, 'alerta em d+' + K.n(R.alerta), 'var(--k-neg)', 'start', 40);
+  }
+  // tooltip
+  const tip = K.tip(el);
+  const dot = svg.append('g');
+  svg.append('rect').attr('x', mL).attr('y', 0).attr('width', W - mL - mR).attr('height', H0 - 28).attr('fill', 'transparent')
+    .on('pointermove', (ev) => {
+      const [mx, my] = d3.pointer(ev);
+      const t = Math.max(x0, Math.min(x1, Math.round(x.invert(mx))));
+      const lin = [['var(--color-fg-muted)', 'Real', K.n(R.y[t])]];
+      dot.selectAll('*').remove();
+      dot.append('circle').attr('cx', x(t)).attr('cy', y(R.y[t])).attr('r', 3.5).attr('fill', 'var(--color-fg-muted)');
+      if (t >= fim) {
+        ['mm', 'dec', 'ar'].forEach((k) => {
+          if (!S[SHOW[k]]) return;
+          const v = R.res[k].prev[t - fim];
+          lin.push([COR[k], nomeM(k), K.n(v)]);
+          if (v >= lo && v <= hi) dot.append('circle').attr('cx', x(t)).attr('cy', y(v)).attr('r', 3.5).attr('fill', COR[k]);
+        });
+        if (S.cone) lin.push([null, 'Cone', K.n(R.lo[t - fim]) + ' a ' + K.n(R.hi[t - fim])]);
+      }
+      tip.show(t >= fim ? 'dia ' + K.n(t) + ' · d+' + K.n(t - fim + 1) : 'dia ' + K.n(t), lin, mx, my);
+    })
+    .on('pointerleave', () => { tip.hide(); dot.selectAll('*').remove(); });
+});
+
+/* ---------- placar ---------- */
+dash.draw('placar', (tb) => {
+  const R = estado();
+  tb.replaceChildren();
+  if (!R) return;
+  ['mm', 'dec', 'ar'].forEach((k) => {
+    const r = R.res[k], tr = document.createElement('tr');
+    if (k === R.melhorTe) tr.className = 'd27-win';
+    const c0 = document.createElement('td'); const i = document.createElement('i'); i.style.background = COR[k]; c0.append(i, nomeM(k));
+    tr.append(c0);
+    [pc(r.mapeTr, 2), pc(r.mapeTe, 2), rz(r.razao), K.n(r.pos) + 'º'].forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.append(td); });
+    tb.append(tr);
+  });
+});
+dash.draw('nota-placar', (el) => { const R = estado(); K.frases(el, R && R.melhorTr !== R.melhorTe ? ['inverte'] : []); });
+
+/* ---------- cartões das armadilhas ---------- */
+dash.draw('cartoes', (el) => {
+  const R = estado();
+  (el.closest('#armadilhas') || el.parentElement).querySelectorAll('[data-card]').forEach((c) => {
+    const on = !!(R && R.cartoes[c.dataset.card]);
+    c.classList.toggle('k-warn', on); c.classList.toggle('k-dim', !on);
+  });
+});
+
+/* ---------- leitura ---------- */
+const pronto = () => !!estado();
+const R_ = () => estado();
+K.txt('k-mape', pronto, () => pc(R_().res[R_().melhorTe].mapeTe));
+K.txt('k-larg', pronto, () => '±' + K.n(R_().largura));
+K.txt('k-alerta', pronto, () => (R_().alerta ? 'd+' + K.n(R_().alerta) : null));
+dash.draw('nota-alerta', (el) => { const R = estado(); K.frases(el, !R ? [] : R.alerta ? ['com'] : ['sem']); });
+K.txt('v-tewin', pronto, () => nomeM(R_().melhorTe));
+K.txt('v-trwin', pronto, () => nomeM(R_().melhorTr));
+K.txt('v-conemet', pronto, () => nomeM(D27.S.metodo));
+K.txt('v-sigma', pronto, () => K.n(R_().sel.sigma));
+K.txt('v-H', pronto, () => K.n(R_().H));
+K.txt('v-min', pronto, () => K.n(D27.S.saldoMin));
+K.txt('v-larg', pronto, () => K.n(R_().largura));
+K.txt('v-p', pronto, () => K.n(D27.S.p));
+K.txt('v-z', () => !!dados(), () => K.n(D27.G.z, 2));
+K.txt('v-limrazao', () => !!dados(), () => K.n(D27.G.limRazao));
+K.txt('g1-p', () => !!dados() && !!D27.CEN.base, () => K.n(D27.CEN.base.p));
+K.txt('v-grau', pronto, () => K.n(D27.S.grau));
+K.txt('v-alerta', pronto, () => (R_().alerta ? K.n(R_().alerta) : null));
+K.txt('v-mapear', pronto, () => pc(R_().res.ar.mapeTe));
+K.txt('v-mapesimples', pronto, () => pc(Math.min(R_().res.mm.mapeTe, R_().res.dec.mapeTe)));
+K.txt('v-mapemin', pronto, () => pc(d3.min(['mm', 'dec', 'ar'], (k) => R_().res[k].mapeTe)));
+K.txt('v-mapemax', pronto, () => pc(d3.max(['mm', 'dec', 'ar'], (k) => R_().res[k].mapeTe)));
+K.txt('v-dectr', pronto, () => pc(R_().res.dec.mapeTr, 2));
+K.txt('v-decte', pronto, () => pc(R_().res.dec.mapeTe));
+K.txt('v-overmet', pronto, () => {
+  const R = R_(), G = D27.G;
+  const ks = ['mm', 'dec', 'ar'].filter((k) => R.res[k].razao > G.limRazao);
+  return ks.length ? ks.map(nomeM).join(', ') : null;
+});
+dash.draw('frase', (el) => {
+  const R = estado(), S = D27.S;
+  if (!R) { K.frases(el, []); return; }
+  let k;
+  if (S.grau >= 2 && R.res.dec.razao > D27.G.limRazao) k = 'overfit';
+  else if (S.quebra && S.inicio < S.tQuebra) k = 'quebra';
+  else if (S.quebra) k = 'retreino';
+  else k = R.res.ar.mapeTe > Math.min(R.res.mm.mapeTe, R.res.dec.mapeTe) + 1 ? 'base' : 'empate';
+  K.frases(el, R.alerta && S.cone ? [k, 'alerta'] : [k]);
+});
+
+/* ---------- números das perguntas-guia ---------- */
+const g1 = () => cenario('base');
+K.txt('g1-mm', () => !!g1(), () => pc(g1().res.mm.mapeTe));
+K.txt('g1-dec', () => !!g1(), () => pc(g1().res.dec.mapeTe));
+K.txt('g1-ar', () => !!g1(), () => pc(g1().res.ar.mapeTe));
+const g2 = () => cenario('quebra'), g2b = () => cenario('retreino');
+K.txt('g2-dec', () => !!g2(), () => pc(g2().res.dec.mapeTe));
+K.txt('g2-mm', () => !!g2(), () => pc(g2().res.mm.mapeTe));
+K.txt('g2-ini', () => !!g2b(), () => K.n(D27.CEN.retreino.inicio));
+K.txt('g2-dec2', () => !!g2b(), () => pc(g2b().res.dec.mapeTe));
+K.txt('g2-n', () => !!g2b(), () => K.n(g2b().nTreino));
+K.txt('g3-y', pronto, () => K.n(R_().sel.prev[R_().H - 1]));
+K.txt('g3-lo', pronto, () => K.n(R_().lo[R_().H - 1]));
+K.txt('g3-hi', pronto, () => K.n(R_().hi[R_().H - 1]));
+</script>

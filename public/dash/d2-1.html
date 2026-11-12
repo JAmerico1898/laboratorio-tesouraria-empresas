@@ -121,13 +121,12 @@
 
 </style>
 <style>
-.d21-saz { margin-top: 4px; }
-.d21-saz .k-mini { margin-top: 4px; }
 .d21-chart { min-height: 330px; }
+.d21-det { margin-top: 10px; }
+.d21-det > summary { cursor: pointer; font-size: 13px; color: var(--k-blue-d); margin-bottom: 6px; }
 .d21-tab td.d21-bad { background: color-mix(in srgb, var(--k-neg) 16%, transparent); }
 .d21-tab td.d21-good { background: color-mix(in srgb, var(--k-blue) 12%, transparent); }
 .d21-tab th[data-col], .d21-tab td[data-col] { cursor: pointer; }
-.d21-sem[hidden] { display: none; }
 </style>
 
 <div class="k d21" id="d21">
@@ -148,66 +147,21 @@
 
   <div class="k-zones">
     <div class="k-zone k-scroll" id="controles" data-source="premissas meses cenarios">
-      <h2 class="k-zt">Receita e sazonalidade</h2>
-      <div class="k-ctl"><label for="c-g">Crescimento da receita <span class="k-u">% a.a.</span></label>
-        <div class="k-in"><input type="range" id="c-g" data-k="crescimento" min="-20" max="40" step="1"><input type="number" data-k="crescimento" min="-20" max="40" step="1" aria-label="Crescimento, % a.a."></div></div>
-      <div class="k-ctl d21-saz">
-        <span class="k-lab">Pesos sazonais <span class="k-u">jan → dez, renormalizados para média 1</span></span>
-        <div class="k-mini">
-          <div><label for="p0">jan</label><input id="p0" type="number" data-peso="0" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p1">fev</label><input id="p1" type="number" data-peso="1" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p2">mar</label><input id="p2" type="number" data-peso="2" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p3">abr</label><input id="p3" type="number" data-peso="3" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p4">mai</label><input id="p4" type="number" data-peso="4" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p5">jun</label><input id="p5" type="number" data-peso="5" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p6">jul</label><input id="p6" type="number" data-peso="6" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p7">ago</label><input id="p7" type="number" data-peso="7" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p8">set</label><input id="p8" type="number" data-peso="8" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p9">out</label><input id="p9" type="number" data-peso="9" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p10">nov</label><input id="p10" type="number" data-peso="10" min="0.5" max="1.6" step="0.05"></div>
-          <div><label for="p11">dez</label><input id="p11" type="number" data-peso="11" min="0.5" max="1.6" step="0.05"></div>
-        </div>
-        <label class="k-toggle"><input type="checkbox" data-k="achatar"> Achatar (mesmo peso em todos os meses)</label>
-      </div>
-
-      <h2 class="k-zt2">Prazos e perdas <span class="k-info" tabindex="0">i<span class="k-tip">Os prazos novos valem para vendas e compras a partir de janeiro; as de novembro e dezembro do ano anterior seguem a política antiga. Por isso uma mudança de prazo libera (ou consome) caixa de uma vez no mês da transição.</span></span></h2>
+      <h2 class="k-zt">Prazos <span class="k-info" tabindex="0">i<span class="k-tip">Os prazos novos valem para vendas e compras a partir de janeiro; as de novembro e dezembro do ano anterior seguem a política antiga. Por isso uma mudança de prazo libera (ou consome) caixa de uma vez no mês da transição.</span></span></h2>
       <div class="k-ctl"><label for="c-pmrv">PMRV <span class="k-u">dias</span></label>
         <div class="k-in"><input type="range" id="c-pmrv" data-k="pmrv" min="0" max="120" step="30"><input type="number" data-k="pmrv" min="0" max="120" step="30" aria-label="PMRV, dias"></div></div>
       <div class="k-ctl"><label for="c-pmpf">PMPF <span class="k-u">dias</span></label>
         <div class="k-in"><input type="range" id="c-pmpf" data-k="pmpf" min="0" max="90" step="15"><input type="number" data-k="pmpf" min="0" max="90" step="15" aria-label="PMPF, dias"></div></div>
-      <div class="k-ctl"><label for="c-inad">Inadimplência <span class="k-u">% da receita</span></label>
-        <div class="k-in"><input type="range" id="c-inad" data-k="inad" min="0" max="10" step="0.5"><input type="number" data-k="inad" min="0" max="10" step="0.5" aria-label="Inadimplência, %"></div></div>
-
-      <h2 class="k-zt2">Política de gastos</h2>
-      <div class="k-ctl"><label for="c-disc">Despesas discricionárias <span class="k-u">% do orçado</span></label>
-        <div class="k-in"><input type="range" id="c-disc" data-k="disc" min="0" max="150" step="5"><input type="number" data-k="disc" min="0" max="150" step="5" aria-label="Discricionárias, % do orçado"></div></div>
-      <div class="k-ctl"><label for="c-div">Dividendos em abril <span class="k-u">R$ mil</span></label>
-        <div class="k-in"><input type="range" id="c-div" data-k="dividendos" min="0" max="2500" step="50"><input type="number" data-k="dividendos" min="0" max="2500" step="50" aria-label="Dividendos, R$ mil"></div></div>
-      <div class="k-ctl"><label for="c-cj">CAPEX junho <span class="k-u">R$ mil</span></label>
-        <div class="k-in"><input type="range" id="c-cj" data-k="capexJun" min="0" max="2000" step="50"><input type="number" data-k="capexJun" min="0" max="2000" step="50" aria-label="CAPEX junho, R$ mil"></div></div>
-      <div class="k-ctl"><label for="c-cs">CAPEX setembro <span class="k-u">R$ mil</span></label>
-        <div class="k-in"><input type="range" id="c-cs" data-k="capexSet" min="0" max="2000" step="50"><input type="number" data-k="capexSet" min="0" max="2000" step="50" aria-label="CAPEX setembro, R$ mil"></div></div>
 
       <h2 class="k-zt2">Colchão de caixa <span class="k-info" tabindex="0">i<span class="k-tip">Saldo mínimo = k × desvio-padrão (populacional) dos fluxos líquidos mensais. É política: muda a leitura, não o fluxo.</span></span></h2>
       <div class="k-ctl"><label for="c-k">k do saldo mínimo</label>
         <div class="k-in"><input type="range" id="c-k" data-k="k" min="0" max="2.5" step="0.1"><input type="number" data-k="k" min="0" max="2.5" step="0.1" aria-label="k do saldo mínimo"></div></div>
+      <p class="k-note">Sazonalidade, crescimento e dividendos mudam pelos botões de cenário. Inadimplência, discricionárias e CAPEX ficam nas premissas.</p>
     </div>
 
     <div class="k-zone" id="visual" data-source="premissas meses">
       <div class="k-ch">
         <h3>Cascata mês a mês</h3>
-        <div class="k-seg" role="group" aria-label="Horizonte">
-          <button data-k="horizonte" data-v="mes" aria-pressed="true">12 meses</button>
-          <button data-k="horizonte" data-v="sem" aria-pressed="false">13 semanas</button>
-        </div>
-      </div>
-      <div class="k-ctl d21-sem" id="sem-ini" hidden>
-        <label for="c-mi">Mês inicial das 13 semanas</label>
-        <select class="k-select" id="c-mi" data-k="mesIni">
-          <option value="0">janeiro</option><option value="1">fevereiro</option><option value="2">março</option>
-          <option value="3">abril</option><option value="4">maio</option><option value="5">junho</option>
-          <option value="6">julho</option><option value="7">agosto</option><option value="8">setembro</option>
-        </select>
       </div>
       <div class="k-chart d21-chart dash-skeleton" id="grafico" data-draw="grafico" role="img" aria-label="Entradas e saídas por período, saldo acumulado e faixa do saldo mínimo"></div>
       <div class="k-legend">
@@ -218,14 +172,16 @@
         <span><i style="background: var(--color-fg); height: 3px; vertical-align: 3px"></i>Saldo acumulado (eixo direito)</span>
         <span><i style="background: color-mix(in srgb, var(--k-neg) 22%, transparent)"></i>Abaixo do mínimo</span>
       </div>
-      <p class="k-note d21-sem" id="nota-sem" hidden>Entradas e saídas recorrentes em quatro partes iguais por mês; folha na semana <b data-draw="v" data-q="semFolha">—</b>, encargos e ICMS na <b data-draw="v" data-q="semICMS">—</b>, PIS/COFINS, IRPJ, 13º, dividendos, amortização e CAPEX na <b data-draw="v" data-q="semEventos">—</b>. Primeira semana abaixo do mínimo: <b data-draw="v" data-q="semCruza">—</b>.</p>
-      <div class="k-tw">
-        <table class="k-table d21-tab" id="tabela" aria-label="Cascata do orçamento">
-          <thead data-draw="thead"></thead>
-          <tbody data-draw="tbody"></tbody>
-        </table>
-      </div>
-      <p class="k-note">Clique num mês (no gráfico ou na tabela) para destacá-lo. R$ mil.</p>
+      <details class="d21-det">
+        <summary>Ver a tabela mês a mês</summary>
+        <div class="k-tw">
+          <table class="k-table d21-tab" id="tabela" aria-label="Cascata do orçamento">
+            <thead data-draw="thead"></thead>
+            <tbody data-draw="tbody"></tbody>
+          </table>
+        </div>
+      </details>
+      <p class="k-note">Clique num mês do gráfico para destacá-lo. R$ mil.</p>
     </div>
 
     <div class="k-zone" id="leitura" data-source="premissas meses">
@@ -236,10 +192,9 @@
       <p class="k-note">Saldo mínimo = <span data-draw="v" data-q="k">—</span> × σ(fluxo líquido) = <span data-draw="v" data-q="k">—</span> × <span data-draw="v" data-q="sigma">—</span> = <b data-draw="v" data-q="minimo">—</b></p>
       <div class="k-diag" data-frases>
         <span data-draw="frase"></span>
-        <p data-frase="neg" hidden>Caixa negativo de <b data-draw="v" data-q="negIni">—</b> a <b data-draw="v" data-q="negFim">—</b>: o pico de vendas é pago antes de ser recebido. Buraco de <b data-draw="v" data-q="negN">—</b> meses, falta máxima de <b data-draw="v" data-q="falta">—</b> para o mínimo — D2.6 escolhe o instrumento.</p>
+        <p data-frase="neg" hidden>Caixa negativo de <b data-draw="v" data-q="negIni">—</b> a <b data-draw="v" data-q="negFim">—</b>: o pico de vendas é pago antes de ser recebido. Buraco de <b data-draw="v" data-q="negN">—</b> meses, falta máxima de <b data-draw="v" data-q="falta">—</b> para o mínimo — D2.7 escolhe o instrumento.</p>
         <p data-frase="abaixo" hidden>Saldo abaixo do colchão em <b data-draw="v" data-q="abaixoN">—</b> meses — captar ou diferir pagamentos.</p>
-        <p data-frase="ok" hidden>Caixa suficiente o ano inteiro; excedente de <b data-draw="v" data-q="exc">—</b> em <b data-draw="v" data-q="excMesL">—</b> — D2.5 decide onde aplicar.</p>
-        <p data-frase="consome" hidden>A Alfa termina o ano com <b data-draw="v" data-q="final">—</b> contra <b data-draw="v" data-q="inicial">—</b>: dividendos, amortizações e CAPEX superam a geração operacional.</p>
+        <p data-frase="ok" hidden>Caixa suficiente o ano inteiro; excedente de <b data-draw="v" data-q="exc">—</b> em <b data-draw="v" data-q="excMesL">—</b> — D2.6 decide onde aplicar.</p>
       </div>
       <p class="k-note">Meses abaixo do mínimo: <b data-draw="v" data-q="abaixoLista">—</b></p>
     </div>
@@ -513,15 +468,12 @@ const atual = () => roda(ST.S);
 /* ---------- controles ---------- */
 function sincroniza() {
   K.sync(ST.S);
-  document.querySelectorAll('input[data-peso]').forEach((i) => { const v = ST.S.pesosRaw[Number(i.dataset.peso)]; if (v != null && i !== document.activeElement) i.value = String(v); i.disabled = ST.S.achatar; });
   document.querySelectorAll('.d21-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
-  document.querySelectorAll('.d21-sem').forEach((x) => { x.hidden = ST.S.horizonte !== 'sem'; });
 }
 function aplicar(id) {
   const row = cenario(id);
   if (!row) return;
-  const hz = ST.S ? ST.S.horizonte : 'mes', mi = ST.S ? ST.S.mesIni : 6;
-  ST.S = { ...ctlDe(row, ST.P), horizonte: hz, mesIni: mi };
+  ST.S = ctlDe(row, ST.P);
   ST.cen = id; ST.mexido = false;
   sincroniza();
 }
@@ -531,23 +483,16 @@ dash.onData(() => {
   aplicar('t0');
   K.redraw(NOMES);
 });
-const VISUAIS = ['horizonte', 'mesIni'];
-K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
+K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), () => {
   if (!ST.S) return;
-  if (!VISUAIS.includes(k)) ST.mexido = true;
+  ST.mexido = true;
   sincroniza(); K.redraw(NOMES);
 });
-document.querySelectorAll('input[data-peso]').forEach((inp) => inp.addEventListener('change', () => {
-  if (!ST.S) return;
-  const v = Number(inp.value);
-  if (inp.value !== '' && Number.isFinite(v)) ST.S.pesosRaw[Number(inp.dataset.peso)] = Math.min(1.6, Math.max(0.5, v));
-  ST.mexido = true; sincroniza(); K.redraw(NOMES);
-}));
 document.querySelectorAll('.d21-cen').forEach((b) => b.addEventListener('click', () => { if (!ST.P) return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
 function seleciona(m) { ST.sel = ST.sel === m ? null : m; K.redraw(['grafico', 'thead', 'tbody']); }
 document.querySelectorAll('#tabela').forEach((t) => t.addEventListener('click', (e) => {
   const c = e.target.closest('[data-col]');
-  if (c && ST.S && ST.S.horizonte === 'mes') seleciona(Number(c.dataset.col));
+  if (c && ST.S) seleciona(Number(c.dataset.col));
 }));
 
 /* ---------- gráfico ---------- */
@@ -561,9 +506,8 @@ function zeroAlinhado(a, b) {
 dash.draw('grafico', (el) => {
   if (!pronto()) { K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS)); return; }
   el.classList.remove('dash-skeleton');
-  const R = atual(), S = ST.S, sem = S.horizonte === 'sem';
-  const rows = sem ? M21.semanas(ST.P, R, S.mesIni) : R.meses;
-  const lab = (x) => (sem ? K.MES[x.m] + ' s' + x.w : K.MES[x.m]);
+  const R = atual(), rows = R.meses;
+  const lab = (x) => K.MES[x.m];
   const { svg, W, H } = K.svg(el, 330);
   el.replaceChildren(svg.node());
   const tip = K.tip(el);
@@ -611,59 +555,52 @@ dash.draw('grafico', (el) => {
   svg.append('g').selectAll('text').data(rows).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle')
     .attr('x', (_, i) => cx(i)).attr('y', H - 8).text((d, i) => (i % passo === 0 ? lab(d) : ''));
   // seleção
-  if (!sem && ST.sel != null) svg.append('rect').attr('x', x(ST.sel) - 3).attr('width', bw + 6).attr('y', 10).attr('height', H - 34).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2).attr('rx', 3);
+  if (ST.sel != null) svg.append('rect').attr('x', x(ST.sel) - 3).attr('width', bw + 6).attr('y', 10).attr('height', H - 34).attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2).attr('rx', 3);
   // interação
   svg.append('g').selectAll('rect').data(rows).join('rect')
-    .attr('x', (_, i) => x(i) - x.step() * x.paddingInner() / 2).attr('width', x.step()).attr('y', 10).attr('height', H - 34).attr('fill', 'transparent').style('cursor', sem ? 'default' : 'pointer')
+    .attr('x', (_, i) => x(i) - x.step() * x.paddingInner() / 2).attr('width', x.step()).attr('y', 10).attr('height', H - 34).attr('fill', 'transparent').style('cursor', 'pointer')
     .on('mousemove', (ev, d) => {
       const [px, py] = d3.pointer(ev, el);
-      tip.show(sem ? K.MESL[d.m] + ', semana ' + d.w : K.MESL[d.m], [
+      tip.show(K.MESL[d.m], [
         ['var(--k-blue)', 'Entradas', K.n(d.entradas)], ['var(--k-amber)', 'Saídas op.', K.n(-d.saidasOp)],
         ['var(--k-neutro)', 'Investimento', K.n(d.invest)], ['var(--k-blue-d)', 'Financiamento', K.n(d.financ)],
         [null, 'Fluxo líquido', K.n(d.fluxoLiq)], [null, 'Saldo', K.n(d.saldo)]], px, py);
     })
     .on('mouseleave', () => tip.hide())
-    .on('click', (_, d) => { if (!sem) seleciona(d.m); });
+    .on('click', (_, d) => seleciona(d.m));
 });
 
 /* ---------- tabela ---------- */
 const LINHAS = [
-  ['receita', 'Receita', false], ['entradas', 'Entradas operacionais', false], ['saidasOp', '(−) Saídas operacionais', false],
-  ['fluxoOp', '= Fluxo operacional', true], ['invest', '± Investimento', false], ['financ', '± Financiamento', false],
+  ['entradas', 'Entradas operacionais', false], ['saidasOp', '(−) Saídas operacionais', false],
   ['fluxoLiq', '= Fluxo líquido', true], ['saldo', 'Saldo acumulado', true],
 ];
 dash.draw('thead', (el) => {
   el.replaceChildren();
   if (!pronto()) return;
-  const sem = ST.S.horizonte === 'sem';
-  const rows = sem ? M21.semanas(ST.P, atual(), ST.S.mesIni) : atual().meses;
   const tr = document.createElement('tr');
   const th0 = document.createElement('th'); th0.textContent = 'R$ mil'; tr.append(th0);
-  rows.forEach((d, i) => { const th = document.createElement('th'); th.textContent = sem ? K.MES[d.m] + ' s' + d.w : K.MES[d.m]; if (!sem) { th.dataset.col = String(i); if (ST.sel === i) th.className = 'k-sel'; } tr.append(th); });
-  if (!sem) { const th = document.createElement('th'); th.textContent = 'Ano'; tr.append(th); }
+  atual().meses.forEach((d, i) => { const th = document.createElement('th'); th.textContent = K.MES[d.m]; th.dataset.col = String(i); if (ST.sel === i) th.className = 'k-sel'; tr.append(th); });
+  const th = document.createElement('th'); th.textContent = 'Ano'; tr.append(th);
   el.append(tr);
 });
 dash.draw('tbody', (el) => {
   el.replaceChildren();
   if (!pronto()) return;
-  const R = atual(), sem = ST.S.horizonte === 'sem';
-  const rows = sem ? M21.semanas(ST.P, R, ST.S.mesIni) : R.meses;
-  LINHAS.forEach(([k, nome, forte, negativo]) => {
-    if (sem && k === 'receita') return;
+  const R = atual();
+  LINHAS.forEach(([k, nome, forte]) => {
     const tr = document.createElement('tr'); if (forte) tr.className = 'k-strong';
     const td0 = document.createElement('td'); td0.textContent = nome; tr.append(td0);
-    rows.forEach((d, i) => {
+    R.meses.forEach((d, i) => {
       const td = document.createElement('td');
-      td.textContent = K.n(negativo ? -d[k] : d[k]);
-      if (!sem) { td.dataset.col = String(i); if (ST.sel === i) td.classList.add('k-sel'); }
+      td.textContent = K.n(d[k]);
+      td.dataset.col = String(i); if (ST.sel === i) td.classList.add('k-sel');
       if (k === 'saldo') td.classList.add(d.saldo < R.minimo ? 'd21-bad' : 'd21-good');
       tr.append(td);
     });
-    if (!sem) {
-      const td = document.createElement('td');
-      td.textContent = k === 'saldo' ? K.n(R.saldoFinal) : K.n(negativo ? -R.totais[k] : R.totais[k]);
-      tr.append(td);
-    }
+    const td = document.createElement('td');
+    td.textContent = k === 'saldo' ? K.n(R.saldoFinal) : K.n(R.totais[k]);
+    tr.append(td);
     el.append(tr);
   });
 });
@@ -682,12 +619,6 @@ const VAL = {
   k: () => K.n(ST.S.k, 1), sigma: (R) => K.n(R.sigma), minimo: (R) => K.n(R.minimo),
   negIni: (R) => (R.negativos.length ? K.MESL[R.negativos[0]] : null), negFim: (R) => (R.negativos.length ? K.MESL[R.negativos[R.negativos.length - 1]] : null),
   negN: (R) => K.n(R.negativos.length), abaixoN: (R) => K.n(R.abaixo.length), abaixoLista: (R) => lista(R.abaixo),
-  final: (R) => K.n(R.saldoFinal), inicial: () => K.n(ST.P.saldoInicial),
-  semCruza: (R) => {
-    if (ST.S.horizonte !== 'sem') return null;
-    const w = M21.semanas(ST.P, R, ST.S.mesIni).find((x) => x.saldo < R.minimo);
-    return w ? K.MESL[w.m] + ', semana ' + w.w : 'nenhuma no período';
-  },
   'g-piorMes': () => K.MES[base().pior.m], 'g-negN': () => K.n(base().negativos.length),
   'g-flatPior': () => { const r = cenario('flat'); return r ? K.n(roda(ctlDe(r, ST.P)).pior.saldo) : null; },
   'g-flatPiorMes': () => { const r = cenario('flat'); return r ? K.MES[roda(ctlDe(r, ST.P)).pior.m] : null; },
@@ -699,7 +630,6 @@ const VAL = {
     return novos.length ? novos.map((m) => K.MES[m] + ' (' + K.n(b.meses[m].saldo) + ')').join(', ') : 'nenhum mês';
   },
   'g-sigma': () => K.n(base().sigma),
-  semFolha: () => K.n(ST.P.semFolha), semICMS: () => K.n(ST.P.semICMS), semEventos: () => K.n(ST.P.semEventos),
 };
 dash.draw('v', (el) => {
   const fn = VAL[el.dataset.q];
@@ -717,7 +647,6 @@ dash.draw('frase', (el) => {
   if (pronto()) {
     const R = atual();
     keys.push(R.negativos.length ? 'neg' : R.abaixo.length ? 'abaixo' : 'ok');
-    if (R.saldoFinal < ST.P.saldoInicial) keys.push('consome');
   }
   K.frases(el, keys);
 });

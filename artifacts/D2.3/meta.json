@@ -1,13 +1,9 @@
 {
   "code": "D2.3",
-  "title": "D2.3 · Calendário de saídas",
-  "slug": "811a152a-2b3d-4646-a1e5-f15127851a3b",
+  "title": "D2.3 · A receita prevê o caixa",
   "datasets": {
-    "categorias": { "file": "categorias.json", "sha256": "2c610c95ef2f65fa08b2322b91261c7f429bd7fd0a51650b3c4dab0037cc5e9e" },
-    "cenarios": { "file": "cenarios.json", "sha256": "bb3d56cbf764544c5baa401f845f01d453ad69983ed68233ae0e220e333b3a1a" },
-    "eventos": { "file": "eventos.json", "sha256": "47ae37146b683e15916a20d2a63aa16ce62ad9746f1571004050da9058b5be31" },
-    "icms_uf": { "file": "icms_uf.json", "sha256": "90ce541699624563414e9e29e0e59bcd9e5d59ce211942f69d0f484869056807" },
-    "premissas": { "file": "premissas.json", "sha256": "0d882f3b59f564ae05a30b288189190046b9a4eb86ac90c7ca59232e9b7df4f1" },
-    "sazonalidade": { "file": "sazonalidade.json", "sha256": "a61864dd1b4b088f53fa399dc5022ffa494dcf578a8bba51e13fa72d017a21bd" }
+    "cenarios": { "file": "cenarios.json" },
+    "parametros": { "file": "parametros.json" },
+    "sazonalidade": { "file": "sazonalidade.json" }
   }
 }

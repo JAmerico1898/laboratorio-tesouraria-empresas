@@ -354,16 +354,10 @@
 })();</script>
 <style>
 .d22-mix .k-ctl { margin-bottom: 6px; }
-.d22-k4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.d22-k4 label { font-size: 12px; color: var(--color-fg-muted); display: block; text-align: center; }
-.d22-k4 input { text-align: center; }
 .d22-out { display: grid; grid-template-columns: 1fr 5.2rem; gap: 4px 8px; align-items: center; font-size: 14px; }
 .d22-chart { min-height: 260px; }
-.d22-scatter { min-height: 240px; }
 .d22-rod { margin: 8px 0 0; font-size: 14px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
 .d22-rod p { margin: 0; }
-.d22-seg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 8px; font-size: 14px; }
-.d22-lagref { font-size: 14px; margin: 6px 0 0; }
 .d22-gap { height: 6px; }
 </style>
 
@@ -374,8 +368,7 @@
       <p class="k-sub">Receita não é caixa: quando o dinheiro de uma venda de janeiro entra de fato?</p>
     </div>
     <div class="k-cens" id="cenarios" data-source="cenarios" role="group" aria-label="Cenários">
-      <button class="k-btn d22-cen" data-cen="slide" aria-pressed="false">Slide V2.2</button>
-      <button class="k-btn d22-cen" data-cen="deck" aria-pressed="false">Deck V2.2.1</button>
+      <button class="k-btn d22-cen" data-cen="slide" aria-pressed="false">Caso do slide</button>
       <button class="k-btn d22-cen" data-cen="longo" aria-pressed="false">Prazo longo</button>
       <button class="k-btn d22-cen" data-cen="b2b" aria-pressed="false">B2B indústria</button>
       <button class="k-btn d22-cen" data-cen="crise" aria-pressed="false">Crise</button>
@@ -385,34 +378,18 @@
   <div class="k-zones">
     <!-- CONTROLES -->
     <div class="k-zone" id="controles" data-source="parametros sazonalidade instrumentos">
-      <h2 class="k-zt">Curva de recebimento</h2>
-      <label class="k-toggle"><input type="checkbox" data-k="direto"> Aging direto (k0…k3) <span class="k-info" tabindex="0">i<span class="k-tip">Digite os percentuais que entram no mês da venda (k0) e nos três meses seguintes, ignorando o mix de instrumentos. Necessário para reproduzir os decks.</span></span></label>
-      <div data-vis="direto" hidden>
-        <div class="d22-gap"></div>
-        <div class="d22-k4">
-          <div><label for="d22-k0">k0 %</label><input class="k-num" id="d22-k0" type="number" data-k="k0" min="0" max="100" step="0.5"></div>
-          <div><label for="d22-k1">k1 %</label><input class="k-num" id="d22-k1" type="number" data-k="k1" min="0" max="100" step="0.5"></div>
-          <div><label for="d22-k2">k2 %</label><input class="k-num" id="d22-k2" type="number" data-k="k2" min="0" max="100" step="0.5"></div>
-          <div><label for="d22-k3">k3 %</label><input class="k-num" id="d22-k3" type="number" data-k="k3" min="0" max="100" step="0.5"></div>
-        </div>
-        <p class="k-note">Soma digitada: <b data-draw="aging-soma">—</b>% (renormalizada para 100%).</p>
-      </div>
-      <div class="d22-mix" data-vis="mix">
+      <h2 class="k-zt">Mix de recebimento</h2>
+      <p class="k-note" data-vis="direto" hidden>Este cenário usa uma curva de recebimento pronta (<b data-draw="aging-txt">—</b>% em jan…abr). Mexer no mix volta ao cálculo por instrumento.</p>
+      <div class="d22-mix">
         <div class="d22-gap"></div>
         <div class="k-ctl"><label for="d22-av">À vista — Pix/débito <span class="k-u">% · entra no mês</span></label>
           <div class="k-in"><input type="range" id="d22-av" data-k="avista" min="0" max="100" step="1"><input type="number" data-k="avista" min="0" max="100" step="1" aria-label="À vista, %"></div></div>
         <div class="k-ctl"><label for="d22-ca">Cartão de crédito 1x <span class="k-u">% · mês seguinte</span></label>
           <div class="k-in"><input type="range" id="d22-ca" data-k="cartao" min="0" max="100" step="1"><input type="number" data-k="cartao" min="0" max="100" step="1" aria-label="Cartão, %"></div></div>
-        <div class="k-ctl"><label for="d22-bo">Boleto <span class="k-u">%</span></label>
+        <div class="k-ctl"><label for="d22-bo">Boleto <span class="k-u">% · <span data-draw="i-boleto">30/60</span> dias</span></label>
           <div class="k-in"><input type="range" id="d22-bo" data-k="boleto" min="0" max="100" step="1"><input type="number" data-k="boleto" min="0" max="100" step="1" aria-label="Boleto, %"></div></div>
-        <div class="d22-seg-row"><span class="k-u">Prazo do boleto</span>
-          <span class="k-seg" role="group" aria-label="Prazo do boleto"><button data-k="boletoPrazo" data-v="30/60">30/60</button><button data-k="boletoPrazo" data-v="30">30</button><button data-k="boletoPrazo" data-v="60/90">60/90</button></span></div>
-        <div class="k-ctl"><label for="d22-pa">Parcelado <span class="k-u">%</span></label>
+        <div class="k-ctl"><label for="d22-pa">Parcelado <span class="k-u">% · 3x</span></label>
           <div class="k-in"><input type="range" id="d22-pa" data-k="parcelado" min="0" max="100" step="1"><input type="number" data-k="parcelado" min="0" max="100" step="1" aria-label="Parcelado, %"></div></div>
-        <div class="d22-seg-row"><span class="k-u">Parcelas</span>
-          <span class="k-seg" role="group" aria-label="Parcelas"><button data-k="parcelas" data-v="3">3x</button><button data-k="parcelas" data-v="2">2x</button><button data-k="parcelas" data-v="6">6x</button></span></div>
-        <div class="k-ctl"><label for="d22-pr">Recebimento programado <span class="k-u">% · contratos, mês seguinte</span></label>
-          <div class="k-in"><input type="range" id="d22-pr" data-k="programado" min="0" max="100" step="1"><input type="number" data-k="programado" min="0" max="100" step="1" aria-label="Recebimento programado, %"></div></div>
         <p class="k-note">Soma do mix: <b data-draw="mix-soma">—</b>% (renormalizada para 100%).</p>
       </div>
 
@@ -437,9 +414,6 @@
         <label for="d22-cp">Captação de dívida <span class="k-u">é dívida, não geração</span></label><input class="k-num" id="d22-cp" type="number" data-k="captacao" min="0" max="20000" step="50">
       </div>
       <p class="k-note">Eventos únicos caem no mês escolhido na aba Waterfall.</p>
-      <div class="d22-out" style="margin-top:8px">
-        <label for="d22-vr">Venda de referência (jan)</label><input class="k-num" id="d22-vr" type="number" data-k="venda" min="1" max="100000" step="100">
-      </div>
     </div>
 
     <!-- VISUAL -->
@@ -447,7 +421,6 @@
       <div class="k-tabs" role="tablist">
         <button class="k-tab" role="tab" data-group="d22" data-tab="uma-venda" aria-selected="true">Uma venda</button>
         <button class="k-tab" role="tab" data-group="d22" data-tab="waterfall" aria-selected="false">Waterfall</button>
-        <button class="k-tab" role="tab" data-group="d22" data-tab="lag" aria-selected="false">Lag</button>
       </div>
 
       <section id="uma-venda" data-pane="uma-venda" data-group="d22">
@@ -471,26 +444,17 @@
         <div class="k-legend"><span><i style="background:var(--k-navy)"></i>vendas do mês</span><span><i style="background:var(--k-blue)"></i>de t−1</span><span><i style="background:var(--k-blue-l)"></i>de t−2</span><span><i style="background:var(--k-amber-l)"></i>de t−3 ou antes</span><span><i style="background:var(--k-pos)"></i>outras entradas</span><span><i style="background:var(--k-amber)"></i>captação (dívida)</span></div>
       </section>
 
-      <section id="lag" data-pane="lag" data-group="d22" hidden>
-        <div class="k-ch"><h3>Correlação entre receita de t−k e entradas de t</h3><span>meses <span data-draw="i-tini">—</span> a <span data-draw="i-nmeses">—</span></span></div>
-        <div class="k-chart d22-scatter dash-skeleton" data-draw="lag-bar" role="img" aria-label="Correlação por defasagem"></div>
-        <p class="d22-lagref">Linha de referência: DSO implícito = <b data-draw="lag-dso">—</b> dias ≈ <b data-draw="lag-dsom">—</b> meses.</p>
-        <div class="k-ch" style="margin-top:12px"><h3>Receita(t−k*) × entradas(t)</h3><span>R² <b data-draw="lag-r2">—</b></span></div>
-        <div class="k-chart d22-scatter dash-skeleton" data-draw="lag-scatter" role="img" aria-label="Dispersão da receita defasada contra as entradas, com reta de regressão"></div>
-      </section>
     </div>
 
     <!-- LEITURA -->
     <div class="k-zone" id="leitura" data-source="parametros sazonalidade instrumentos">
       <h2 class="k-zt">Leitura</h2>
       <div class="k-kpi"><span class="k-kl">DSO implícito <span class="k-u">dias</span></span><span class="k-kn dash-skeleton" data-draw="k-dso">—</span></div>
-      <div class="k-kpi"><span class="k-kl">Lag ótimo k* <span class="k-u">meses</span></span><span class="k-kn dash-skeleton" data-draw="k-kstar">—</span></div>
-      <div class="k-kpi"><span class="k-kl">Correlação máxima</span><span class="k-kn dash-skeleton" data-draw="k-corr">—</span></div>
-      <p class="k-note">% que entra no próprio mês: <b data-draw="k-k0">—</b>%</p>
+      <div class="k-kpi"><span class="k-kl">Entra no próprio mês <span class="k-u">%</span></span><span class="k-kn dash-skeleton" data-draw="k-k0">—</span></div>
       <div class="k-diag" data-frases>
         <span data-draw="frase"></span>
-        <p data-frase="base" hidden>Só <b data-draw="f-k0">—</b>% da receita vira caixa no mês da venda; o resto entra em até <b data-draw="f-n">—</b> meses. A receita de hoje prevê o caixa de daqui a <b data-draw="f-kstar">—</b> mês(es) — o lag é o prazo.</p>
-        <p data-frase="longo" hidden>Prazo mais longo empurrou o pico de correlação para k = <b data-draw="f-kstar">—</b>. Mais prazo = caixa mais distante da venda, não menos caixa.</p>
+        <p data-frase="base" hidden>Só <b data-draw="f-k0">—</b>% da receita vira caixa no mês da venda; o resto entra em até <b data-draw="f-n">—</b> meses.</p>
+        <p data-frase="longo" hidden>Prazo mais longo: DSO de <b data-draw="f-dso">—</b> dias e a venda de janeiro só completa em <b data-draw="f-ultimo">—</b>. Mais prazo = caixa mais distante da venda, não menos caixa.</p>
         <p data-frase="perda" hidden>Com <b data-draw="f-perda">—</b>% de perda, <b data-draw="f-perdaval">—</b> de cada <b data-draw="f-venda">—</b> vendidos nunca entram — e a perda cai justamente nas parcelas a prazo.</p>
         <p data-frase="divida" hidden>Captação entra no caixa mas não é geração: segregue-a da linha operacional.</p>
       </div>
@@ -504,8 +468,8 @@
         <li>A Alfa fatura <b data-draw="g1-venda">—</b> em janeiro. Quanto entra em janeiro e quando entra o resto?
           <details><summary>mostrar resposta</summary><p><b data-draw="g1-k0">—</b> em janeiro; <b data-draw="g1-k1">—</b> em fevereiro, <b data-draw="g1-k2">—</b> em março e <b data-draw="g1-k3">—</b> em abril. A DRE registra <b data-draw="g1-venda">—</b> em janeiro; o caixa só completa em abril. É por isso que DRE e fluxo de caixa contam histórias diferentes.</p></details>
         </li>
-        <li>Mude o aging para <b data-draw="g2-aging">—</b> (cenário "Prazo longo"). O que acontece com o DSO e com o lag ótimo?
-          <details><summary>mostrar resposta</summary><p>DSO sobe de <b data-draw="g2-dso0">—</b> para <b data-draw="g2-dso1">—</b> dias e o pico de correlação se desloca de k = <b data-draw="g2-k0">—</b> para k = <b data-draw="g2-k1">—</b>. A receita continua prevendo o caixa — só que dois meses à frente.</p></details>
+        <li>Clique em "Prazo longo" (curva <b data-draw="g2-aging">—</b>). O que acontece com o DSO e com o mês em que a venda de janeiro vira caixa?
+          <details><summary>mostrar resposta</summary><p>DSO sobe de <b data-draw="g2-dso0">—</b> para <b data-draw="g2-dso1">—</b> dias. Em janeiro entram só <b data-draw="g2-jan1">—</b> (antes <b data-draw="g2-jan0">—</b>), e o grosso migra para março e abril. A receita é a mesma — o caixa só chega mais tarde.</p></details>
         </li>
         <li>Por que não se aplica a inadimplência também à parcela à vista?
           <details><summary>mostrar resposta</summary><p>Porque Pix e débito liquidam no ato — não há crédito, não há risco. A perda esperada recai inteira sobre as parcelas a prazo, que por isso carregam uma perda proporcional maior do que o percentual "médio" sugere.</p></details>
@@ -520,9 +484,9 @@
 /* ============================================================
    D2.2 · Da receita ao caixa — página (funções puras em model.js, M22)
    Testes de aderência (Spec §7), conferidos em test.js com os mesmos datasets:
-   Reset: 200/525/225/50 · aging 20/52,5/22,5/5 · DSO 33,75 · k* 1 · corr(1) 0,989
-   Deck 20/50/25/5: DSO 34,5 · k* 1 · Prazo longo 10/30/40/20: DSO 51 · k* 2
-   B2B 60/90: DSO 75 · k* 2 · Inad 2%: soma 980, jan 200 · Crise: fator 1,85 → perda 3,7%
+   Caso do slide: 200/525/225/50 · aging 20/52,5/22,5/5 · DSO 33,75
+   Prazo longo 10/30/40/20: DSO 51
+   B2B 60/90: DSO 75 · Inad 2%: soma 980, jan 200 · Crise: fator 1,85 → perda 3,7%
    ============================================================ */
 const IDS = ['parametros', 'sazonalidade', 'instrumentos', 'cenarios'];
 const IDS_CALC = ['parametros', 'sazonalidade', 'instrumentos'];
@@ -560,20 +524,21 @@ const R = () => calc(S);
 const cenR = (id) => { if (K.status(IDS) !== 'ok') return null; const st = doCenario(id, dados()); return st ? calc(st) : null; };
 
 /* ---------- controles ---------- */
-const DESENHOS = ['aging-soma', 'mix-soma', 'fator', 'perda-ef', 'tab-venda', 'bar-venda', 'rod-frase', 'rod-venda', 'rod-k0', 'rod-resto', 'rod-ultimo', 'rod-perda',
-  'wf-mes', 'wf-rec', 'wf', 'lag-bar', 'lag-dso', 'lag-dsom', 'lag-r2', 'lag-scatter',
-  'i-taxa', 'i-cselic', 'i-selicref', 'i-cdesemp', 'i-desempref', 'i-nmeses', 'i-tini', 'k-dso', 'k-kstar', 'k-corr', 'k-k0', 'frase', 'f-k0', 'f-n', 'f-kstar', 'f-perda', 'f-perdaval', 'f-venda'];
+const DESENHOS = ['aging-txt', 'i-boleto', 'mix-soma', 'fator', 'perda-ef', 'tab-venda', 'bar-venda', 'rod-frase', 'rod-venda', 'rod-k0', 'rod-resto', 'rod-ultimo', 'rod-perda',
+  'wf-mes', 'wf-rec', 'wf',
+  'i-taxa', 'i-cselic', 'i-selicref', 'i-cdesemp', 'i-desempref', 'i-nmeses', 'k-dso', 'k-k0', 'frase', 'f-k0', 'f-n', 'f-dso', 'f-ultimo', 'f-perda', 'f-perdaval', 'f-venda'];
+const MIX = ['avista', 'cartao', 'boleto', 'parcelado'];
 function visibilidade() {
   if (!ativo) return;
   document.querySelectorAll('[data-vis="direto"]').forEach((x) => { x.hidden = !S.direto; });
-  document.querySelectorAll('[data-vis="mix"]').forEach((x) => { x.hidden = !!S.direto; });
   document.querySelectorAll('[data-vis="safra"]').forEach((x) => { x.hidden = !S.safra; });
   document.querySelectorAll('.d22-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === S.cen)));
 }
 function aplica(st) { Object.keys(S).forEach((k) => delete S[k]); Object.assign(S, st); ativo = true; K.sync(S); visibilidade(); }
 function mudou(k) {
   if (!ativo) return;
-  if (k !== 'mesW' && k !== 'venda') S.cen = null;
+  if (k !== 'mesW') S.cen = null;
+  if (MIX.includes(k)) S.direto = false;
   K.sync(S); visibilidade(); K.redraw(DESENHOS);
 }
 dash.onData(() => {
@@ -591,7 +556,7 @@ K.tabs('d22', () => K.redraw(DESENHOS));
 
 /* ---------- auxiliares ---------- */
 const nm = (t) => K.MES[(t - 1) % 12] + '/ano ' + Math.ceil(t / 12);
-const nomeLinha = (r, st) => (r.id === 'direto' ? 'Aging direto' : r.id === 'boleto' ? r.nome + ' ' + st.boletoPrazo : r.id === 'parcelado' ? r.nome + ' ' + st.parcelas + 'x' : r.nome);
+const nomeLinha = (r, st) => (r.id === 'direto' ? 'Curva do cenário' : r.id === 'boleto' ? r.nome + ' ' + st.boletoPrazo : r.id === 'parcelado' ? r.nome + ' ' + st.parcelas + 'x' : r.nome);
 function hatch(svg, id) {
   const p = svg.append('defs').append('pattern').attr('id', id).attr('width', 6).attr('height', 6)
     .attr('patternUnits', 'userSpaceOnUse').attr('patternTransform', 'rotate(45)');
@@ -614,12 +579,11 @@ function margemEsq(svg, y, fmt, nt) {
 
 /* ---------- leitura ---------- */
 K.txt('k-dso', pronto, () => K.n(R().dso, 2));
-K.txt('k-kstar', pronto, () => K.n(R().kStar));
-K.txt('k-corr', pronto, () => K.n(R().corrMax, 2));
 K.txt('k-k0', pronto, () => K.n(R().aging[0] * 100, 1));
 K.txt('f-k0', pronto, () => K.n(R().aging[0] * 100, 1));
 K.txt('f-n', pronto, () => K.n(R().venda.ultimo));
-K.txt('f-kstar', pronto, () => K.n(R().kStar));
+K.txt('f-dso', pronto, () => K.n(R().dso, 0));
+K.txt('f-ultimo', pronto, () => K.MESL[R().venda.ultimo]);
 K.txt('f-perda', pronto, () => K.n(R().perda * 100, 1));
 K.txt('f-perdaval', pronto, () => K.n(R().perda * S.venda));
 K.txt('f-venda', pronto, () => K.n(S.venda));
@@ -640,8 +604,8 @@ K.txt('i-selicref', ppronto, () => K.n(PP().selicRef));
 K.txt('i-cdesemp', ppronto, () => K.n(PP().cDesemp, 2));
 K.txt('i-desempref', ppronto, () => K.n(PP().desempRef));
 K.txt('i-nmeses', ppronto, () => K.n(PP().nMeses));
-K.txt('i-tini', ppronto, () => K.n(PP().tIni));
-K.txt('aging-soma', pronto, () => K.n(R().L.soma, 1));
+K.txt('aging-txt', pronto, () => [S.k0, S.k1, S.k2, S.k3].map((v) => K.n(v, 1)).join('/'));
+K.txt('i-boleto', pronto, () => S.boletoPrazo);
 K.txt('mix-soma', pronto, () => K.n(R().L.soma, 0));
 K.txt('fator', pronto, () => K.n(R().fator, 2));
 K.txt('perda-ef', pronto, () => K.n(R().perda * 100, 2));
@@ -656,6 +620,7 @@ dash.draw('tab-venda', (tb) => {
   ['Instrumento', '%'].concat(K.MES.slice(0, n)).forEach((h) => { const th = document.createElement('th'); th.textContent = h; thead.append(th); });
   const body = tb.createTBody();
   r.venda.rows.forEach((row) => {
+    if (row.id === 'programado' && !(row.share > 0)) return;
     const tr = body.insertRow();
     tr.insertCell().textContent = nomeLinha(row, S);
     tr.insertCell().textContent = K.n(row.share * 100, 1);
@@ -770,68 +735,6 @@ dash.draw('wf', (el) => {
   svg.append('line').attr('x1', ml).attr('x2', W - 8).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
 });
 
-/* ---------- aba 3: lag ---------- */
-K.txt('lag-dso', pronto, () => K.n(R().dso, 2));
-K.txt('lag-dsom', pronto, () => K.n(R().dso / 30, 2));
-K.txt('lag-r2', pronto, () => K.n(R().r2, 3));
-dash.draw('lag-bar', (el) => {
-  if (!pronto()) { K.fail(el, K.status(IDS_CALC) === 'loading' || !ativo ? 'loading' : 'error'); return; }
-  el.classList.remove('dash-skeleton');
-  const r = R();
-  const { svg, W, H } = K.svg(el, 220);
-  el.replaceChildren(svg.node());
-  const tip = K.tip(el);
-  const lo = Math.min(0, d3.min(r.ks, (d) => (Number.isFinite(d.corr) ? d.corr : 0)));
-  const y = d3.scaleLinear([lo, 1], [H - 28, 14]).nice();
-  const fmt = (v) => K.n(v, 1);
-  const ml = margemEsq(svg, y, fmt, 5);
-  const x = d3.scaleBand(r.ks.map((d) => d.k), [ml, W - 8]).padding(0.3);
-  eixoY(svg, y, ml, W - 8, fmt, 5);
-  // referência: DSO em meses
-  const xr = x(0) + x.bandwidth() / 2 + (r.dso / 30) * x.step();
-  r.ks.forEach((d) => {
-    const c = Number.isFinite(d.corr) ? d.corr : 0;
-    svg.append('rect').attr('x', x(d.k)).attr('width', x.bandwidth()).attr('y', y(Math.max(0, c))).attr('height', Math.abs(y(0) - y(c))).attr('rx', 2)
-      .style('fill', d.k === r.kStar ? 'var(--k-navy)' : 'var(--cds-chart-muted)')
-      .on('mousemove', (ev) => { const [mx, my] = d3.pointer(ev, el); tip.show('k = ' + d.k + (d.k === r.kStar ? ' (k*)' : ''), [[null, 'correlação', K.n(c, 3)]], mx, my); })
-      .on('mouseleave', () => tip.hide());
-    svg.append('text').attr('class', d.k === r.kStar ? 'k-svgb' : 'k-svgt').attr('text-anchor', 'middle').attr('x', x(d.k) + x.bandwidth() / 2).attr('y', y(Math.max(0, c)) - 5).text(K.n(c, 2));
-    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(d.k) + x.bandwidth() / 2).attr('y', H - 10).text('k = ' + d.k);
-  });
-  if (xr >= ml && xr <= W - 8) {
-    svg.append('line').attr('x1', xr).attr('x2', xr).attr('y1', 10).attr('y2', H - 28).style('stroke', 'var(--k-amber)').style('stroke-width', 2).style('stroke-dasharray', '5 4');
-    const t = svg.append('text').attr('class', 'k-svgm').attr('y', 10).text('DSO ' + K.n(r.dso / 30, 2) + ' m');
-    const tw = t.node().getComputedTextLength();
-    t.attr('x', Math.min(W - tw - 2, Math.max(ml, xr + 4)));
-  }
-  svg.append('line').attr('x1', ml).attr('x2', W - 8).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
-});
-dash.draw('lag-scatter', (el) => {
-  if (!pronto()) { K.fail(el, K.status(IDS_CALC) === 'loading' || !ativo ? 'loading' : 'error'); return; }
-  el.classList.remove('dash-skeleton');
-  const r = R(), pts = r.pts;
-  const { svg, W, H } = K.svg(el, 240);
-  el.replaceChildren(svg.node());
-  const tip = K.tip(el);
-  const ex = d3.extent(pts, (p) => p.x), ey = d3.extent(pts, (p) => p.y);
-  const y = d3.scaleLinear(ey, [H - 34, 12]).nice();
-  const fmt = (v) => K.n(v);
-  const ml = margemEsq(svg, y, fmt, 4);
-  const x = d3.scaleLinear(ex, [ml, W - 12]).nice();
-  eixoY(svg, y, ml, W - 12, fmt, 4);
-  const xt = x.ticks(Math.max(2, Math.floor((W - ml) / 90)));
-  svg.append('g').selectAll('text').data(xt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (t) => x(t)).attr('y', H - 18).text((t) => fmt(t));
-  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', W - 12).attr('y', H - 3).text('receita(t−' + r.kStar + ') → ');
-  svg.append('text').attr('class', 'k-svgm').attr('x', ml + 4).attr('y', 10).text('↑ entradas(t)');
-  const [x0, x1] = x.domain();
-  svg.append('line').attr('x1', x(x0)).attr('x2', x(x1)).attr('y1', y(r.reg.b0 + r.reg.b1 * x0)).attr('y2', y(r.reg.b0 + r.reg.b1 * x1))
-    .style('stroke', 'var(--k-amber)').style('stroke-width', 2);
-  svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.x)).attr('cy', (p) => y(p.y)).attr('r', 4)
-    .style('fill', 'var(--k-navy)').style('opacity', 0.75)
-    .on('mousemove', (ev, p) => { const [mx, my] = d3.pointer(ev, el); tip.show(nm(p.t), [[null, 'receita(t−' + r.kStar + ')', K.n(p.x)], [null, 'entradas(t)', K.n(p.y)]], mx, my); })
-    .on('mouseleave', () => tip.hide());
-});
-
 /* ---------- perguntas-guia (calculadas pelo modelo nos cenários) ---------- */
 const gpronto = () => K.status(IDS) === 'ok';
 K.txt('g1-venda', gpronto, () => K.n(dados().P.vendaRef));
@@ -839,8 +742,8 @@ K.txt('g1-venda', gpronto, () => K.n(dados().P.vendaRef));
 K.txt('g2-aging', gpronto, () => { const c = dados().cens.find((x) => x.id === 'longo'); return c ? [c.k0, c.k1, c.k2, c.k3].map((v) => K.n(v)).join('/') : null; });
 K.txt('g2-dso0', gpronto, () => { const r = cenR('slide'); return r ? K.n(r.dso, 2) : null; });
 K.txt('g2-dso1', gpronto, () => { const r = cenR('longo'); return r ? K.n(r.dso, 0) : null; });
-K.txt('g2-k0', gpronto, () => { const r = cenR('slide'); return r ? K.n(r.kStar) : null; });
-K.txt('g2-k1', gpronto, () => { const r = cenR('longo'); return r ? K.n(r.kStar) : null; });
+K.txt('g2-jan0', gpronto, () => { const r = cenR('slide'); return r ? K.n(r.venda.liq[0]) : null; });
+K.txt('g2-jan1', gpronto, () => { const r = cenR('longo'); return r ? K.n(r.venda.liq[0]) : null; });
 
 })();</script>
 

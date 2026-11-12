@@ -1,4 +1,1 @@
-[{"chave":"valor","valor":3000},{"chave":"dur","valor":150},{"chave":"recorrencia","valor":"anual"},
-{"chave":"carteira","valor":8300},{"chave":"dividaCP","valor":3500},{"chave":"txAplic","valor":0.105},
-{"chave":"iofFixo","valor":0.0038},{"chave":"iofDia","valor":0.000041},{"chave":"iofTeto","valor":365},{"chave":"tribTAC","valor":0.1425},
-{"chave":"teto","valor":0.40},{"chave":"minBancos","valor":3}]
+[{"chave":"excedente","valor":3200},{"chave":"mesAplicacao","valor":1},{"chave":"diasMes","valor":30},{"chave":"totalContraparte","valor":10000},{"chave":"minEmissores","valor":3},{"chave":"maxEmissores","valor":5},{"chave":"tetoEmissor","valor":0.30},{"chave":"ratingMinimo","valor":"AA−"},{"chave":"aliqComeCotas","valor":0.15},{"chave":"semestreDias","valor":182.5},{"chave":"base","valor":365}]

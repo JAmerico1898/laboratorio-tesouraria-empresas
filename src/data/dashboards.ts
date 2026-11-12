@@ -11,8 +11,9 @@ export const DASHBOARD_MODULES: DashboardModule[] = [
     dashboards: [
       { code: "D1.1", title: "Balanço vivo" },
       { code: "D1.2", title: "Linha do tempo do ciclo" },
-      { code: "D1.3", title: "Reclassificador Fleuriet" },
-      { code: "D1.4", title: "Efeito Tesoura" },
+      { code: "D1.3", title: "Aging, roll rates e DSO" },
+      { code: "D1.4", title: "Reclassificador Fleuriet" },
+      { code: "D1.5", title: "Efeito Tesoura" },
     ],
   },
   {
@@ -21,11 +22,12 @@ export const DASHBOARD_MODULES: DashboardModule[] = [
     dashboards: [
       { code: "D2.1", title: "Cascata do orçamento de caixa" },
       { code: "D2.2", title: "Da receita ao caixa" },
-      { code: "D2.3", title: "Calendário de saídas" },
-      { code: "D2.4", title: "Lucro × caixa" },
-      { code: "D2.5", title: "Excedentes" },
-      { code: "D2.6", title: "Financiar o déficit" },
-      { code: "D2.7", title: "Previsão de caixa" },
+      { code: "D2.3", title: "A receita prevê o caixa" },
+      { code: "D2.4", title: "Calendário de saídas" },
+      { code: "D2.5", title: "Lucro × caixa" },
+      { code: "D2.6", title: "Excedentes" },
+      { code: "D2.7", title: "Financiar o déficit" },
+      { code: "D2.8", title: "Previsão de caixa" },
     ],
   },
   {

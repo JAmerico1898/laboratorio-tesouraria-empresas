@@ -1,0 +1,50 @@
+[
+{
+"mes": "jan",
+"peso": 0.8
+},
+{
+"mes": "fev",
+"peso": 0.75
+},
+{
+"mes": "mar",
+"peso": 0.82
+},
+{
+"mes": "abr",
+"peso": 0.88
+},
+{
+"mes": "mai",
+"peso": 0.9
+},
+{
+"mes": "jun",
+"peso": 0.96
+},
+{
+"mes": "jul",
+"peso": 1.05
+},
+{
+"mes": "ago",
+"peso": 1.15
+},
+{
+"mes": "set",
+"peso": 1.3
+},
+{
+"mes": "out",
+"peso": 1.4
+},
+{
+"mes": "nov",
+"peso": 1.1
+},
+{
+"mes": "dez",
+"peso": 0.89
+}
+]

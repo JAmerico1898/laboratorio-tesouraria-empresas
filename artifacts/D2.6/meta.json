@@ -1,13 +1,16 @@
 {
   "code": "D2.6",
-  "title": "D2.6 · Financiar o déficit",
-  "slug": "5edc98de-f73c-4f77-a63f-6d15c8f95941",
+  "title": "D2.6 · Excedentes",
+  "slug": "c3c50b47-0f12-4552-a2fc-e091f13a5dea",
   "datasets": {
-    "bancos": { "file": "bancos.json", "sha256": "12e621bb1a7601b044c818314b3867f6bba0dd61f6ee54b10c1a953a1a522833" },
-    "caso": { "file": "caso.json", "sha256": "8274c0dc2e7307aa1cc52a1e8821cfeab9c9d8e7e99e385700482257a13b0c19" },
-    "cenarios": { "file": "cenarios.json", "sha256": "99c848dcd69f575c72bc1d57cf50af100898417141918cf27a3cae85f17c14da" },
-    "cotacoes": { "file": "cotacoes.json", "sha256": "2be7cf1eaec896459603f7e5292ecdaf088ea9ae6bbbf9ed13e744a6f71f3f5f" },
-    "modalidades": { "file": "modalidades.json", "sha256": "375eb6dd39040a51202e5cfacdea1cf3e55939cdcf892de38801b801c8509384" },
-    "ref_composicao": { "file": "ref_composicao.json", "sha256": "fef7da1610539da3923826b5d52c2eb008182407169a508becc08aa6373e8c3c" }
+    "caso": { "file": "caso.json", "sha256": "0726d10e632ce1af46df859566a9767e60c3d22470e06a1ef7dc31ff83eacaf9" },
+    "cenarios_taxa": { "file": "cenarios_taxa.json", "sha256": "31551dfb1079f4c6843b0286a84818fa9e201e7ded330b11404313079ea11b61" },
+    "emissores": { "file": "emissores.json", "sha256": "3c90e110e4afce093c9d9201d5b379961b3b575fd4c05c8188cafcd480298ce7" },
+    "instrumentos": { "file": "instrumentos.json", "sha256": "7bd008f6eb5e633fdd3c028cc555971a5d173850940fb58961e429cfe4e71660" },
+    "iof_regressivo": { "file": "iof_regressivo.json", "sha256": "d382823fe172f2362a31decb4b37969bde0fa6ae18ac960c82cefe9943202ff7" },
+    "ir_regressivo": { "file": "ir_regressivo.json", "sha256": "b663dbe77d7b2efe0d859e3a665aac833a2199dd8832fae9e75d76c06bb52c0f" },
+    "ratings": { "file": "ratings.json", "sha256": "ad6047eca8cb8d34107bc7f0486d3d6024ebf0a68f71228d5195eec1d9774681" },
+    "saldo_d21": { "file": "saldo_d21.json", "sha256": "10e52bae787d188147a0011331c2ce44ba02807360d3612d2a2aa256b8dfdd1f" },
+    "tiers": { "file": "tiers.json", "sha256": "71ac7bd74636c882151447bcfc85921ce0fbacc16f2d200f4b87b7f39df5dd5e" }
   }
 }

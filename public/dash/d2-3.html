@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>D2.3 · Calendário de saídas</title>
+<title>D2.3 · A receita prevê o caixa</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"categorias":{"format":"json","data":[{"ordem":1,"id":"fornecedores","nome":"Fornecedores","classe":"negociavel","dias":"5;12;20;26","regra":"fornecedores","ref":"","pct":""},{"ordem":2,"id":"salarios","nome":"Salários","classe":"inegociavel","dias":"5","regra":"premissa","ref":"salarios","pct":""},{"ordem":3,"id":"encargos","nome":"FGTS + INSS patronal","classe":"inegociavel","dias":"20","regra":"premissa","ref":"encargos","pct":""},{"ordem":4,"id":"decimo","nome":"13º salário","classe":"inegociavel","dias":"","regra":"evento","ref":"","pct":""},{"ordem":5,"id":"plr","nome":"PLR","classe":"inegociavel","dias":"","regra":"evento","ref":"","pct":""},{"ordem":6,"id":"icms","nome":"ICMS","classe":"inegociavel","dias":"uf","regra":"pctReceitaAnterior","ref":"","pct":0.04},{"ordem":7,"id":"piscofins","nome":"PIS/COFINS","classe":"inegociavel","dias":"25","regra":"pctReceitaAnterior","ref":"","pct":0.02},{"ordem":8,"id":"irpj","nome":"IRPJ/CSLL","classe":"inegociavel","dias":"ultimo","regra":"premissa","ref":"irpj","pct":""},{"ordem":9,"id":"fixas","nome":"Despesas fixas","classe":"inegociavel","dias":"10","regra":"premissa","ref":"fixas","pct":""},{"ordem":10,"id":"variaveis","nome":"Despesas variáveis","classe":"decisao","dias":"15","regra":"pctReceita","ref":"pctVariaveis","pct":""},{"ordem":11,"id":"discricionarias","nome":"Discricionárias","classe":"decisao","dias":"15","regra":"premissa","ref":"discricionarias","pct":""},{"ordem":12,"id":"jurosCP","nome":"Juros empréstimos CP","classe":"inegociavel","dias":"1","regra":"premissa","ref":"jurosCP","pct":""},{"ordem":13,"id":"jurosELP","nome":"Juros ELP","classe":"inegociavel","dias":"15","regra":"premissa","ref":"jurosELP","pct":""},{"ordem":14,"id":"amortizacao","nome":"Amortização ELP","classe":"inegociavel","dias":"","regra":"evento","ref":"","pct":""},{"ordem":15,"id":"capex","nome":"CAPEX","classe":"decisao","dias":"","regra":"evento","ref":"","pct":""},{"ordem":16,"id":"dividendos","nome":"Dividendos","classe":"decisao","dias":"","regra":"evento","ref":"","pct":""}]},"cenarios":{"format":"json","data":[{"id":"alfa","nome":"Alfa T0","mes":"set","uf":"SP","pmpf":45,"capexJunMes":"jun","capexSetMes":"set","dividendos":1250,"disc":100,"filtro":"todos"},{"id":"esqueleto","nome":"Só o esqueleto","mes":"set","uf":"SP","pmpf":45,"capexJunMes":"jun","capexSetMes":"set","dividendos":1250,"disc":100,"filtro":"inegociavel"},{"id":"dezembro","nome":"Dezembro","mes":"dez","uf":"SP","pmpf":45,"capexJunMes":"jun","capexSetMes":"set","dividendos":1250,"disc":100,"filtro":"todos"},{"id":"alongar","nome":"Alongar fornecedores","mes":"set","uf":"SP","pmpf":60,"capexJunMes":"jun","capexSetMes":"set","dividendos":1250,"disc":100,"filtro":"todos"},{"id":"cinto","nome":"Apertar o cinto","mes":"set","uf":"SP","pmpf":45,"capexJunMes":"jun","capexSetMes":"nov","dividendos":0,"disc":0,"filtro":"todos"}]},"eventos":{"format":"json","data":[{"id":"decimoNov","categoria":"decimo","mes":"nov","dia":30,"valor":150},{"id":"decimoDez","categoria":"decimo","mes":"dez","dia":20,"valor":250},{"id":"plrMar","categoria":"plr","mes":"mar","dia":31,"valor":200},{"id":"amortJun","categoria":"amortizacao","mes":"jun","dia":30,"valor":750},{"id":"amortDez","categoria":"amortizacao","mes":"dez","dia":30,"valor":750},{"id":"capexJun","categoria":"capex","mes":"jun","dia":15,"valor":800},{"id":"capexSet","categoria":"capex","mes":"set","dia":15,"valor":400},{"id":"dividendosAbr","categoria":"dividendos","mes":"abr","dia":30,"valor":1250}]},"icms_uf":{"format":"json","data":[{"uf":"SP","dia":20},{"uf":"RJ","dia":12},{"uf":"MG","dia":10}]},"premissas":{"format":"json","data":[{"chave":"receitaAnual","valor":50000},{"chave":"pctCompras","valor":0.66},{"chave":"pmrv","valor":60},{"chave":"pmpf","valor":45},{"chave":"pmrvAntigo","valor":60},{"chave":"pmpfAntigo","valor":45},{"chave":"inad","valor":2},{"chave":"salarios","valor":300},{"chave":"encargos","valor":100},{"chave":"fixas","valor":100},{"chave":"pctVariaveis","valor":0.02},{"chave":"discricionarias","valor":40},{"chave":"pctTributos","valor":0.06},{"chave":"irpj","valor":100},{"chave":"jurosCP","valor":42},{"chave":"jurosELP","valor":100},{"chave":"saldoInicial","valor":2500},{"chave":"dividendos","valor":1250},{"chave":"mesDividendos","valor":3},{"chave":"diasEntradas","valor":"5;12;19;26"}]},"sazonalidade":{"format":"json","data":[{"mes":"jan","peso":0.8},{"mes":"fev","peso":0.75},{"mes":"mar","peso":0.82},{"mes":"abr","peso":0.88},{"mes":"mai","peso":0.9},{"mes":"jun","peso":0.96},{"mes":"jul","peso":1.05},{"mes":"ago","peso":1.15},{"mes":"set","peso":1.3},{"mes":"out","peso":1.4},{"mes":"nov","peso":1.1},{"mes":"dez","peso":0.89}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"base","k0":20,"k1":50,"k2":25,"k3":5},{"id":"longo","k0":10,"k1":30,"k2":40,"k3":20}]},"parametros":{"format":"json","data":[{"chave":"receitaAnual","valor":50000},{"chave":"cresc","valor":0.01},{"chave":"ruido","valor":0.05},{"chave":"semente","valor":42},{"chave":"nMeses","valor":48},{"chave":"tIni","valor":7},{"chave":"kLag","valor":4},{"chave":"selicRef","valor":12},{"chave":"cSelic","valor":0.1},{"chave":"desempRef","valor":7},{"chave":"cDesemp","valor":0.15},{"chave":"taxaAplic","valor":0.01},{"chave":"vendaRef","valor":1000},{"chave":"mesW","valor":45}]},"sazonalidade":{"format":"json","data":[{"mes":"jan","peso":0.8},{"mes":"fev","peso":0.75},{"mes":"mar","peso":0.82},{"mes":"abr","peso":0.88},{"mes":"mai","peso":0.9},{"mes":"jun","peso":0.96},{"mes":"jul","peso":1.05},{"mes":"ago","peso":1.15},{"mes":"set","peso":1.3},{"mes":"out","peso":1.4},{"mes":"nov","peso":1.1},{"mes":"dez","peso":0.89}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -247,298 +247,183 @@
 })();</script>
 <script>(function () {
 
-/* D2.3 · Calendário de saídas — funções puras (sem DOM). Tudo em R$ mil.
-   Motor de orçamento (fracPMPF, orcamento) copiado de D2.1 (validado contra D2.1 §7);
-   aqui ele só fornece receita, entradas e pagamento a fornecedores com o PMPF escolhido.
-   Testes de aderência (Spec D2.3 §7) em test.js:
-   set: total 5.290 · negociável 3.712 (70%) · inegociável 1.030 (19%) · decisão 548 (10%)
-   set dia 20 = 1.220 · set dia 5 = 1.228 · dez dia 20 = 1.114 · dez dia 30 = 850 · abr dia 30 = 1.350
-   ano: 50.934 · inegociável 14.004 · negociável 33.000 · decisão 3.930 · UF MG → ICMS no dia 10 */
+/* Motor M22 (cópia do D2.2 · Da receita ao caixa; o D2.3 usa só o modo aging direto) — funções puras (sem DOM). Tudo em R$ mil.
+   P = parâmetros (dataset parametros), saz = 12 pesos, inst = instrumentos (dataset), C = controles. */
 (function (root) {
   const M = {};
-  M.fracPMPF = function (pmpf) {
-    const lo = Math.floor(pmpf / 30), r = (pmpf - lo * 30) / 30;
-    return r === 0 ? [[lo, 1]] : [[lo, 1 - r], [lo + 1, r]];
+  const KMAX = 6; // maior defasagem possível (parcelado 6x)
+  // fração de uma venda que entra em cada defasagem k (0..6), por instrumento, antes da inadimplência
+  M.vetor = function (row, C) {
+    const v = new Array(KMAX + 1).fill(0);
+    if (row.id === 'boleto') {
+      const dias = String(C.boletoPrazo).split('/').map(Number);
+      dias.forEach((d) => { v[Math.round(d / 30)] += 1 / dias.length; });
+    } else if (row.id === 'parcelado') {
+      const n = Number(C.parcelas);
+      for (let i = 1; i <= n; i++) v[i] += 1 / n;
+    } else v[Math.round(Number(row.dias) / 30)] += 1;
+    return v;
   };
-  M.orcamento = function (P, C) {
-    const base = P.receitaAnual / 12;
-    const pesos = C.achatar ? P.pesos.map(() => 1) : C.pesos;
-    const g = C.crescimento / 100;
-    // receita do mês s, s = -4..13 (anos vizinhos sem crescimento, mesmos pesos)
-    const rec = (s) => {
-      const m = ((s % 12) + 12) % 12;
-      const fat = s >= 0 ? Math.pow(1 + g, s / 12) : 1; // anos seguintes seguem crescendo (fecha dez = 143 em "Crescer 20%")
-      return base * pesos[m] * fat;
-    };
-    const ent = new Array(12).fill(0), forn = new Array(12).fill(0);
-    const lagRV0 = P.pmrvAntigo / 30, fr0 = M.fracPMPF(P.pmpfAntigo), fr1 = M.fracPMPF(C.pmpf);
-    for (let s = -6; s <= 11; s++) {
-      const lag = s < 0 ? lagRV0 : C.pmrv / 30;
-      const t = s + lag;
-      if (t >= 0 && t <= 11) ent[t] += rec(s) * (1 - C.inad / 100);
-      const compras = P.pctCompras * rec(s + 2);
-      (s < 0 ? fr0 : fr1).forEach(([a, f]) => { const u = s + a; if (u >= 0 && u <= 11) forn[u] += f * compras; });
+  // linhas por instrumento: share do mix (renormalizado) × vetor; no modo direto, uma linha com o aging digitado
+  M.linhas = function (inst, C) {
+    if (C.direto) {
+      const ks = [C.k0, C.k1, C.k2, C.k3].map((x) => Math.max(0, Number(x) || 0));
+      const s = ks.reduce((a, b) => a + b, 0) || 1;
+      const v = new Array(KMAX + 1).fill(0); ks.forEach((x, i) => { v[i] = x / s; });
+      return { soma: s, rows: [{ id: 'direto', share: 1, vec: v }] };
     }
-    const meses = [];
-    let saldo = P.saldoInicial;
-    for (let m = 0; m < 12; m++) {
-      const folha = P.salarios + P.encargos + P.decimo[m] + P.plr[m];
-      const varr = P.pctVariaveis * rec(m);
-      const disc = P.discricionarias * C.disc / 100;
-      const trib = P.pctTributos * rec(m - 1) + P.irpj;
-      const saidasOp = forn[m] + folha + P.fixas + varr + disc + trib;
-      const fluxoOp = ent[m] - saidasOp;
-      const capex = m === 5 ? C.capexJun : m === 8 ? C.capexSet : 0;
-      const div = m === P.mesDividendos ? C.dividendos : 0;
-      const juros = P.jurosCP + P.jurosELP;
-      const financ = -(juros + P.amortELP[m] + div);
-      const fluxoLiq = fluxoOp - capex + financ;
-      saldo += fluxoLiq;
-      meses.push({ m, receita: rec(m), entradas: ent[m], forn: forn[m], folha, fixas: P.fixas, variaveis: varr, disc, trib,
-        saidasOp, fluxoOp, invest: -capex, financ, juros, amort: P.amortELP[m], div, fluxoLiq, saldo });
-    }
-    const fl = meses.map((x) => x.fluxoLiq), media = fl.reduce((a, b) => a + b, 0) / 12;
-    const sigma = Math.sqrt(fl.reduce((a, b) => a + (b - media) ** 2, 0) / 12);
-    const minimo = C.k * sigma;
-    const soma = (k) => meses.reduce((a, x) => a + x[k], 0);
-    let pior = meses[0], exc = meses[0];
-    meses.forEach((x) => { if (x.saldo < pior.saldo) pior = x; if (x.saldo > exc.saldo) exc = x; });
-    return { meses, sigma, minimo, pior, falta: Math.max(0, minimo - pior.saldo), excMes: exc, excedente: exc.saldo - minimo,
-      abaixo: meses.filter((x) => x.saldo < minimo).map((x) => x.m), negativos: meses.filter((x) => x.saldo < 0).map((x) => x.m),
-      totais: { receita: soma('receita'), entradas: soma('entradas'), saidasOp: soma('saidasOp'), fluxoOp: soma('fluxoOp'), invest: soma('invest'), financ: soma('financ'), fluxoLiq: soma('fluxoLiq') },
-      saldoFinal: meses[11].saldo };
+    const pcts = inst.map((r) => Math.max(0, Number(C[r.id]) || 0));
+    const s = pcts.reduce((a, b) => a + b, 0);
+    return { soma: s, rows: inst.map((r, i) => {
+      const share = s > 0 ? pcts[i] / s : 0;
+      return { id: r.id, nome: r.nome, share, vec: M.vetor(r, C).map((x) => x * share) };
+    }) };
   };
-
-  M.CLASSES = ['negociavel', 'inegociavel', 'decisao'];
-  // arredondamento de exibição: meio para o par (3.712,5 → 3.712; 1.029,5 → 1.030), como nas tabelas da spec
-  M.r = (v) => { const f = Math.floor(v), d = v - f; if (Math.abs(d - 0.5) < 1e-7) return f % 2 === 0 ? f : f + 1; return Math.round(v); };
-  // dias do mês num ano não bissexto (calendário, não dado do caso)
-  M.diasNoMes = (m) => new Date(2027, m + 1, 0).getDate();
-  // "último dia útil" = dia 30 (28 em fev): assim dez dia 30 = IRPJ + amortização (Spec §7)
-  M.ultimoDia = (m) => Math.min(30, M.diasNoMes(m));
-  M.lista = (s) => String(s).split(';').map(Number).filter((x) => x > 0);
-
-  // D = {P, pesos, cats, eventos, ufDia}; C = {pmpf, uf, capexJunMes, capexSetMes, dividendos, disc}
-  M.calendario = function (D, C) {
-    const P = D.P, base = P.receitaAnual / 12;
-    const rec = (s) => base * D.pesos[((s % 12) + 12) % 12];
-    const zeros = new Array(12).fill(0);
-    const PP = Object.assign({}, P, { pesos: D.pesos, decimo: zeros, plr: zeros, amortELP: zeros });
-    const CC = { crescimento: 0, pesos: D.pesos, achatar: false, pmrv: P.pmrv, pmpf: C.pmpf, inad: P.inad, disc: 100, dividendos: 0, capexJun: 0, capexSet: 0, k: 1 };
-    const orc = M.orcamento(PP, CC);
-    const orc45 = M.orcamento(PP, Object.assign({}, CC, { pmpf: P.pmpfAntigo }));
-    const cel = [];
-    for (let m = 0; m < 12; m++) { cel.push([]); for (let d = 0; d <= M.diasNoMes(m); d++) cel[m].push([]); }
-    const put = (m, d, cat, v) => { if (v > 1e-9) cel[m][Math.min(d, M.diasNoMes(m))].push({ id: cat.id, nome: cat.nome, classe: cat.classe, valor: v }); };
-    const mesIdx = (x) => (typeof x === 'number' ? x : D.MES.indexOf(x));
-    const cats = D.cats.slice().sort((a, b) => a.ordem - b.ordem);
-    cats.forEach((cat) => {
-      for (let m = 0; m < 12; m++) {
-        let v = 0;
-        if (cat.regra === 'fornecedores') v = orc.meses[m].forn;
-        else if (cat.regra === 'premissa') v = P[cat.ref] * (cat.ref === 'discricionarias' ? C.disc / 100 : 1);
-        else if (cat.regra === 'pctReceitaAnterior') v = cat.pct * rec(m - 1);
-        else if (cat.regra === 'pctReceita') v = P[cat.ref] * rec(m);
-        else continue;
-        let dias;
-        if (cat.dias === 'uf') dias = [D.ufDia[C.uf]];
-        else if (cat.dias === 'ultimo') dias = [M.ultimoDia(m)];
-        else dias = M.lista(cat.dias);
-        dias.forEach((d) => put(m, d, cat, v / dias.length));
+  M.aging = (L) => { const a = new Array(KMAX + 1).fill(0); L.rows.forEach((r) => r.vec.forEach((x, k) => { a[k] += x; })); return a; };
+  M.dso = (a) => a.reduce((s, x, k) => s + 30 * k * x, 0);
+  M.fator = (P, C) => (C.safra ? 1 + P.cSelic * (C.selic - P.selicRef) + P.cDesemp * (C.desemp - P.desempRef) : 1);
+  M.perda = (P, C) => Math.max(0, (C.inad / 100) * M.fator(P, C));
+  // perda por defasagem: zero à vista; a perda da coorte recai só sobre as parcelas a prazo
+  M.perdaK = (a, perda) => a.map((x, k) => (k === 0 ? 0 : a[0] < 1 ? Math.min(1, perda / (1 - a[0])) : 0));
+  // série sintética determinística: t = 1..n (t = 1 é janeiro do ano 1)
+  M.serie = function (P, saz) {
+    let s = P.semente >>> 0;
+    const u = () => { s = (Math.imul(1664525, s) + 1013904223) >>> 0; return s / 4294967296; };
+    const nrm = () => { let a = 0; for (let i = 0; i < 12; i++) a += u(); return a - 6; };
+    const r = [NaN];
+    for (let t = 1; t <= P.nMeses; t++) r.push((P.receitaAnual / 12) * Math.pow(1 + P.cresc, t) * saz[(t - 1) % 12] * (1 + P.ruido * nrm()));
+    return r;
+  };
+  M.corr = function (x, y) {
+    const n = x.length, mx = x.reduce((a, b) => a + b, 0) / n, my = y.reduce((a, b) => a + b, 0) / n;
+    let sxy = 0, sxx = 0, syy = 0;
+    for (let i = 0; i < n; i++) { sxy += (x[i] - mx) * (y[i] - my); sxx += (x[i] - mx) ** 2; syy += (y[i] - my) ** 2; }
+    return sxx > 0 && syy > 0 ? sxy / Math.sqrt(sxx * syy) : NaN;
+  };
+  M.calc = function (P, saz, inst, C) {
+    const L = M.linhas(inst, C), a = M.aging(L), dso = M.dso(a);
+    const fator = M.fator(P, C), perda = M.perda(P, C), pk = M.perdaK(a, perda);
+    // uma venda de referência V em janeiro
+    const V = C.venda;
+    const venda = { rows: L.rows.map((r) => ({ id: r.id, nome: r.nome, share: r.share, liq: r.vec.map((x, k) => V * x * (1 - pk[k])) })) };
+    venda.bruto = a.map((x) => V * x);
+    venda.liq = a.map((x, k) => V * x * (1 - pk[k]));
+    venda.perda = a.map((x, k) => V * x * pk[k]);
+    venda.total = venda.liq.reduce((s, x) => s + x, 0);
+    venda.ultimo = a.reduce((m, x, k) => (x > 1e-12 ? k : m), 0);
+    // série
+    const rec = M.serie(P, saz), n = P.nMeses;
+    const entOp = [NaN], orig = [null], bruta = [NaN], perdaT = [NaN];
+    for (let t = 1; t <= n; t++) {
+      let e = 0, b = 0; const o = [0, 0, 0, 0];
+      for (let k = 0; k <= KMAX; k++) {
+        if (t - k < 1) continue;
+        const g = rec[t - k] * a[k];
+        b += g; e += g * (1 - pk[k]); o[Math.min(k, 3)] += g;
       }
-    });
-    D.eventos.forEach((e) => {
-      const cat = cats.find((c) => c.id === e.categoria); if (!cat) return;
-      let m = mesIdx(e.mes), v = e.valor;
-      if (e.id === 'capexJun' && C.capexJunMes != null) m = mesIdx(C.capexJunMes);
-      if (e.id === 'capexSet' && C.capexSetMes != null) m = mesIdx(C.capexSetMes);
-      if (e.categoria === 'dividendos' && C.dividendos != null) v = C.dividendos;
-      put(m, e.dia, cat, v);
-    });
-    // saldo: abertura de cada mês = inicial + Σ (entradas − saídas) dos meses anteriores
-    const diasEnt = M.lista(P.diasEntradas);
-    const meses = [];
-    let saldo = P.saldoInicial;
-    for (let m = 0; m < 12; m++) {
-      const porClasse = { negociavel: 0, inegociavel: 0, decisao: 0 }, porCat = {};
-      cel[m].forEach((it) => it.forEach((x) => { porClasse[x.classe] += x.valor; porCat[x.id] = (porCat[x.id] || 0) + x.valor; }));
-      const total = porClasse.negociavel + porClasse.inegociavel + porClasse.decisao;
-      const abertura = saldo;
-      saldo += orc.meses[m].entradas - total;
-      meses.push({ m, porClasse, porCat, total, entradas: orc.meses[m].entradas, receita: rec(m), forn: orc.meses[m].forn, forn45: orc45.meses[m].forn, abertura, fechamento: saldo });
+      entOp.push(e); bruta.push(b); perdaT.push(b - e); orig.push(o);
     }
-    const ano = { negociavel: 0, inegociavel: 0, decisao: 0, total: 0 };
-    meses.forEach((x) => { M.CLASSES.forEach((c) => { ano[c] += x.porClasse[c]; }); ano.total += x.total; });
-    return { cel, meses, ano, diasEnt };
-  };
-
-  // total por dia do mês m, só das classes ligadas em F = {negociavel: bool, …}
-  M.diaTotal = (cal, m, d, F) => cal.cel[m][d].reduce((a, x) => a + (!F || F[x.classe] ? x.valor : 0), 0);
-  M.resumoMes = function (cal, m, F) {
-    const n = M.diasNoMes(m), dias = [];
-    const porClasse = { negociavel: 0, inegociavel: 0, decisao: 0 };
-    let maxD = 1, maxV = -1;
-    for (let d = 1; d <= n; d++) {
-      const v = M.diaTotal(cal, m, d, F); dias.push(v);
-      if (v > maxV + 1e-9) { maxV = v; maxD = d; }
-      cal.cel[m][d].forEach((x) => { if (!F || F[x.classe]) porClasse[x.classe] += x.valor; });
+    // correlação por defasagem, t = tIni..n
+    const ks = [];
+    for (let k = 0; k <= P.kLag; k++) {
+      const x = [], y = [];
+      for (let t = P.tIni; t <= n; t++) { x.push(rec[t - k]); y.push(entOp[t]); }
+      ks.push({ k, corr: M.corr(x, y) });
     }
-    const total = porClasse.negociavel + porClasse.inegociavel + porClasse.decisao;
-    return { dias, porClasse, total, pctIneg: total > 0 ? porClasse.inegociavel / total : 0, diaMax: maxD, valorMax: maxV };
+    const best = ks.reduce((m, r) => (r.corr > m.corr || !Number.isFinite(m.corr) ? r : m), ks[0]);
+    const kStar = best.k;
+    const pts = [];
+    for (let t = P.tIni; t <= n; t++) pts.push({ t, x: rec[t - kStar], y: entOp[t] });
+    const mx = d3mean(pts.map((p) => p.x)), my = d3mean(pts.map((p) => p.y));
+    let sxy = 0, sxx = 0; pts.forEach((p) => { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) ** 2; });
+    const b1 = sxx > 0 ? sxy / sxx : 0, b0 = my - b1 * mx;
+    // waterfall do mês escolhido (eventos únicos caem nesse mês)
+    const tw = Math.min(n, Math.max(P.tIni, Math.round(C.mesW)));
+    const finRec = P.taxaAplic * C.saldoAplic;
+    const outras = finRec + C.perdcomp + C.ativos;
+    const wf = { t: tw, receitaMes: rec[tw], bruta: bruta[tw], orig: orig[tw], perda: perdaT[tw], finRec, perdcomp: C.perdcomp, ativos: C.ativos,
+      outras, captacao: C.captacao, entradas: entOp[tw] + outras + C.captacao, entOp: entOp[tw] };
+    return { L, aging: a, dso, fator, perda, pk, venda, rec, entOp, ks, kStar, corrMax: best.corr, r2: best.corr * best.corr, reg: { b0, b1 }, pts, wf,
+      checkPerda: 1 - a.reduce((s, x, k) => s + x * (1 - pk[k]), 0) };
   };
-  // saldo dentro do mês m (todas as classes): [{d, saldo}] começando na abertura
-  M.saldoDiario = function (cal, m) {
-    const x = cal.meses[m], n = M.diasNoMes(m), q = x.entradas / cal.diasEnt.length, out = [];
-    let s = x.abertura;
-    for (let d = 1; d <= n; d++) {
-      if (cal.diasEnt.indexOf(d) >= 0) s += q;
-      s -= M.diaTotal(cal, m, d, null);
-      out.push({ d, saldo: s });
-    }
-    return out;
-  };
-  // classe dominante de uma célula
-  M.dominante = (itens) => {
-    const t = { negociavel: 0, inegociavel: 0, decisao: 0 }; itens.forEach((x) => { t[x.classe] += x.valor; });
-    let best = null, bv = 0; M.CLASSES.forEach((c) => { if (t[c] > bv) { bv = t[c]; best = c; } });
-    return best;
-  };
-  root.M23 = M;
+  function d3mean(v) { return v.reduce((a, b) => a + b, 0) / v.length; }
+  root.M22 = M;
 })(typeof window !== 'undefined' ? window : globalThis);
 
 
 })();</script>
 <style>
-.d23-vz { container-type: inline-size; }
-.d23-vgrid { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
-@container (min-width: 40rem) { .d23-vgrid { grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.45fr); } }
-.d23-heat { min-height: 380px; }
-.d23-perfil { min-height: 250px; }
-.d23-sw { display: inline-block; width: .8rem; height: .8rem; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
-.d23-neg { background: var(--k-blue-l); }
-.d23-ineg { background: var(--k-neg); }
-.d23-dec { background: var(--k-neutro); }
-.d23-amb { background: var(--k-amber); }
-.d23-line { background: var(--color-fg); height: 2px; width: .9rem; vertical-align: 3px; }
-.d23-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.d23-chip[aria-pressed="false"] { opacity: .55; text-decoration: line-through; }
-.d23-chip[aria-pressed="true"] { background: var(--color-bg); color: var(--color-fg); border-color: var(--color-fg-muted); }
-.d23-atalho { margin-top: 6px; }
-.d23-comp { display: flex; height: 26px; border-radius: var(--cds-radius); overflow: hidden; margin-top: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
-.d23-comp > div { display: flex; align-items: center; justify-content: center; color: #1a1a1a; min-width: 0; overflow: hidden; white-space: nowrap; }
-.d23-comp > div.d23-ineg { color: #fff; }
-.d23-hit { cursor: pointer; }
-.d23-sel { pointer-events: none; }
+.d23-chart { min-height: 220px; }
+.d23-delta { display: block; font-size: 12px; color: var(--color-fg-muted); text-align: right; font-variant-numeric: tabular-nums; }
+.d23-kpi { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
 </style>
 
 <div class="k" id="d23">
   <header class="k-head">
     <div>
-      <h1 class="k-title">D2.3 · Calendário de saídas</h1>
-      <p class="k-sub">O que quase nunca atrasa: quais saídas têm data certa e quais a tesouraria pode mover?</p>
+      <h1 class="k-title">D2.3 · A receita prevê o caixa</h1>
+      <p class="k-sub">O passado da venda é o futuro do caixa: com que defasagem — e por quê?</p>
     </div>
-    <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios">
-      <button class="k-btn d23-cen" data-cen="alfa" aria-pressed="false">Alfa T0</button>
-      <button class="k-btn d23-cen" data-cen="esqueleto" aria-pressed="false">Só o esqueleto</button>
-      <button class="k-btn d23-cen" data-cen="dezembro" aria-pressed="false">Dezembro</button>
-      <button class="k-btn d23-cen" data-cen="alongar" aria-pressed="false">Alongar fornecedores</button>
-      <button class="k-btn d23-cen" data-cen="cinto" aria-pressed="false">Apertar o cinto</button>
+    <div class="k-cens" id="cenarios" data-source="cenarios" role="group" aria-label="Cenários">
+      <button class="k-btn d23-cen" data-cen="base" aria-pressed="false">Base 20/50/25/5</button>
+      <button class="k-btn d23-cen" data-cen="longo" aria-pressed="false">Prazo longo 10/30/40/20</button>
     </div>
   </header>
 
   <div class="k-zones">
-    <div class="k-zone" id="controles" data-source="cenarios icms_uf">
-      <h2 class="k-zt">Controles</h2>
-      <div class="k-ctl"><label for="c-mes">Mês em foco</label>
-        <select class="k-select" id="c-mes" data-k="mes">
-          <option value="0">jan</option><option value="1">fev</option><option value="2">mar</option><option value="3">abr</option>
-          <option value="4">mai</option><option value="5">jun</option><option value="6">jul</option><option value="7">ago</option>
-          <option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
-        </select></div>
-      <div class="k-ctl"><span class="k-lab">Classes visíveis</span>
-        <div class="d23-chips">
-          <button class="k-btn d23-chip" data-chip="negociavel" aria-pressed="true"><i class="d23-sw d23-neg"></i>Negociável</button>
-          <button class="k-btn d23-chip" data-chip="inegociavel" aria-pressed="true"><i class="d23-sw d23-ineg"></i>Inegociável</button>
-          <button class="k-btn d23-chip" data-chip="decisao" aria-pressed="true"><i class="d23-sw d23-dec"></i>Decisão interna</button>
-        </div>
-        <button class="k-btn d23-atalho" aria-pressed="false">Só inegociáveis</button>
-      </div>
-      <div class="k-ctl"><span class="k-lab">UF do ICMS <span class="k-u">vence no dia <b data-draw="uf-dia">—</b></span></span>
-        <div class="k-seg" role="group" aria-label="UF do ICMS">
-          <button data-k="uf" data-v="SP" aria-pressed="false">SP</button><button data-k="uf" data-v="RJ" aria-pressed="false">RJ</button><button data-k="uf" data-v="MG" aria-pressed="false">MG</button>
-        </div></div>
-      <div class="k-ctl"><label for="c-pmpf">PMPF <span class="k-u">dias · fornecedores</span></label>
-        <div class="k-in"><input type="range" id="c-pmpf" data-k="pmpf" min="30" max="90" step="15"><input type="number" data-k="pmpf" min="30" max="90" step="15" aria-label="PMPF, dias"></div></div>
-      <div class="k-ctl"><label for="c-cj">CAPEX de junho: pagar em</label>
-        <select class="k-select" id="c-cj" data-k="capexJunMes">
-          <option value="5">jun</option><option value="6">jul</option><option value="7">ago</option><option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
-        </select></div>
-      <div class="k-ctl"><label for="c-cs">CAPEX de setembro: pagar em</label>
-        <select class="k-select" id="c-cs" data-k="capexSetMes">
-          <option value="8">set</option><option value="9">out</option><option value="10">nov</option><option value="11">dez</option>
-        </select></div>
-      <div class="k-ctl"><label for="c-div">Dividendos <span class="k-u">R$ mil · abril</span></label>
-        <div class="k-in"><input type="range" id="c-div" data-k="dividendos" min="0" max="1250" step="50"><input type="number" data-k="dividendos" min="0" max="1250" step="10" aria-label="Dividendos, R$ mil"></div></div>
-      <div class="k-ctl"><label for="c-disc">Discricionárias <span class="k-u">% do orçamento</span></label>
-        <div class="k-in"><input type="range" id="c-disc" data-k="disc" min="0" max="100" step="5"><input type="number" data-k="disc" min="0" max="100" step="5" aria-label="Discricionárias, %"></div></div>
-      <label class="k-toggle"><input type="checkbox" data-k="saldo"> Mostrar saldo diário</label>
-      <p class="k-note">Só fornecedores (negociável) e decisões internas respondem aos controles.</p>
+    <!-- CONTROLES -->
+    <div class="k-zone" id="controles" data-source="parametros sazonalidade cenarios">
+      <h2 class="k-zt">Aging <span class="k-u">% da venda que entra em cada mês</span></h2>
+      <div class="k-ctl"><label for="d23-k0">k0 · no mês da venda <span class="k-u">%</span></label>
+        <div class="k-in"><input type="range" id="d23-k0" data-k="k0" min="0" max="100" step="5"><input type="number" data-k="k0" min="0" max="100" step="5" aria-label="k0, %"></div></div>
+      <div class="k-ctl"><label for="d23-k1">k1 · 30 dias <span class="k-u">%</span></label>
+        <div class="k-in"><input type="range" id="d23-k1" data-k="k1" min="0" max="100" step="5"><input type="number" data-k="k1" min="0" max="100" step="5" aria-label="k1, %"></div></div>
+      <div class="k-ctl"><label for="d23-k2">k2 · 60 dias <span class="k-u">%</span></label>
+        <div class="k-in"><input type="range" id="d23-k2" data-k="k2" min="0" max="100" step="5"><input type="number" data-k="k2" min="0" max="100" step="5" aria-label="k2, %"></div></div>
+      <div class="k-ctl"><label for="d23-k3">k3 · 90 dias <span class="k-u">%</span></label>
+        <div class="k-in"><input type="range" id="d23-k3" data-k="k3" min="0" max="100" step="5"><input type="number" data-k="k3" min="0" max="100" step="5" aria-label="k3, %"></div></div>
+      <p class="k-note">Soma: <b data-draw="soma">—</b>% (renormalizada para 100%).</p>
+      <p class="k-note">Premissas fixas: série de <b data-draw="i-n">—</b> meses = tendência (<b data-draw="i-cresc">—</b>% a.m.) × sazonalidade × ruído (<b data-draw="i-ruido">—</b>%). Correlação medida dos meses <b data-draw="i-tini">—</b> a <b data-draw="i-n">—</b>. Inadimplência fica no D2.2.</p>
     </div>
 
-    <div class="k-zone d23-vz" id="visual" data-source="premissas sazonalidade categorias eventos icms_uf">
-      <div class="d23-vgrid">
-        <div id="heatmap">
-          <div class="k-ch"><h3>Saídas do ano, dia a dia</h3><span>R$ mil por dia · clique num dia</span></div>
-          <div class="k-chart d23-heat dash-skeleton" data-draw="heat" role="img" aria-label="Mapa de calor das saídas por dia e mês"></div>
-          <div class="k-legend"><span><i class="d23-amb"></i>cor = valor do dia</span><span>borda = classe dominante</span></div>
-        </div>
-        <div id="perfil">
-          <div class="k-ch"><h3>Perfil de <span data-draw="perfil-mes">—</span></h3><span>R$ mil por dia do mês</span></div>
-          <div class="k-chart d23-perfil dash-skeleton" data-draw="perfil" role="img" aria-label="Saídas por dia do mês em foco, empilhadas por classe"></div>
-          <div class="k-legend">
-            <span><i class="d23-neg"></i>Negociável</span><span><i class="d23-ineg"></i>Inegociável</span><span><i class="d23-dec"></i>Decisão interna</span>
-            <span class="d23-leg-saldo"><i class="d23-line"></i>Saldo do dia</span>
-            <span class="k-info" tabindex="0">i<span class="k-tip">Linhas tracejadas: as janelas fixas do mês — salários, encargos e ICMS, PIS/COFINS e último dia útil (IRPJ; amortização, dividendos e 13º quando houver). Férias estão provisionadas dentro de "Salários".</span></span>
-          </div>
-          <p class="k-note" id="d23-saldo-nota" hidden>Saldo mais baixo do mês: <b data-draw="s-min">—</b> no dia <b data-draw="s-dia">—</b> (abre o mês com <b data-draw="s-ab">—</b>; entradas em quatro parcelas).</p>
-          <div class="k-alert" id="d23-aviso" hidden><b data-draw="aviso-cat">—</b>: data legal/contratual — não se move.</div>
-        </div>
-      </div>
+    <!-- VISUAL -->
+    <div class="k-zone" id="visual" data-source="parametros sazonalidade">
+      <div class="k-ch"><h3>Receita e entradas de caixa, mês a mês</h3><span>R$ mil</span></div>
+      <div class="k-chart d23-chart dash-skeleton" data-draw="serie" role="img" aria-label="Receita e entradas de caixa ao longo dos meses"></div>
+      <div class="k-legend"><span><i style="background:var(--k-amber);height:3px;vertical-align:3px"></i>receita (competência)</span><span><i style="background:var(--k-blue);height:3px;vertical-align:3px"></i>entradas de caixa</span></div>
+
+      <div class="k-ch" style="margin-top:14px"><h3>Correlação entre receita(t−k) e entradas(t)</h3><span>k em meses</span></div>
+      <div class="k-chart d23-chart dash-skeleton" data-draw="lag" role="img" aria-label="Correlação por defasagem, com o cenário Base em fantasma e linha do DSO"></div>
+      <div class="k-legend"><span><i style="background:var(--k-navy)"></i>k* (correlação máxima)</span><span><i style="background:var(--cds-chart-muted)"></i>demais k</span><span><i style="border:1.5px dashed var(--k-neutro)"></i>Base 20/50/25/5</span><span><i style="background:var(--k-amber);height:3px;vertical-align:3px"></i>DSO em meses</span></div>
     </div>
 
-    <div class="k-zone" id="leitura" data-source="premissas sazonalidade categorias eventos icms_uf">
-      <h2 class="k-zt">Leitura · <span data-draw="perfil-mes">—</span></h2>
-      <div class="k-kpi"><span class="k-kl">Total de saídas <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="k-total">—</span></div>
-      <div class="k-kpi"><span class="k-kl">Com data travada <span class="k-u">% inegociável</span></span><span class="k-kn" data-draw="k-ineg">—</span></div>
-      <div class="k-kpi"><span class="k-kl">Dia mais pesado</span><span class="k-kn"><span data-draw="k-dia">—</span><small>R$ <span data-draw="k-diaval">—</span> mil</small></span></div>
-      <div class="d23-comp" data-draw="comp" role="img" aria-label="Composição das saídas do mês por classe"></div>
-      <div class="k-legend"><span><i class="d23-neg"></i>Negociável</span><span><i class="d23-ineg"></i>Inegociável</span><span><i class="d23-dec"></i>Decisão interna</span></div>
+    <!-- LEITURA -->
+    <div class="k-zone" id="leitura" data-source="parametros sazonalidade cenarios">
+      <h2 class="k-zt">Leitura</h2>
+      <div class="k-kpi"><span class="k-kl">DSO implícito <span class="k-u">dias</span></span><span><span class="k-kn dash-skeleton" data-draw="k-dso">—</span><span class="d23-delta" data-draw="d-dso"></span></span></div>
+      <div class="k-kpi"><span class="k-kl">Lag ótimo k* <span class="k-u">meses</span></span><span><span class="k-kn dash-skeleton" data-draw="k-kstar">—</span><span class="d23-delta" data-draw="d-kstar"></span></span></div>
+      <div class="k-kpi"><span class="k-kl">Correlação máxima</span><span><span class="k-kn dash-skeleton" data-draw="k-corr">—</span><span class="d23-delta" data-draw="d-corr"></span></span></div>
+      <div class="k-kpi"><span class="k-kl">R² <span class="k-u">entradas = α + β · receita(t−k*)</span></span><span><span class="k-kn dash-skeleton" data-draw="k-r2">—</span><span class="d23-delta" data-draw="d-r2"></span></span></div>
       <div class="k-diag" data-frases>
         <span data-draw="frase"></span>
-        <p data-frase="resumo" hidden><b data-draw="f-mes">—</b>: <b data-draw="f-total">—</b> de saídas, <b data-draw="f-pct">—</b> com data travada.</p>
-        <p data-frase="janela-icms" hidden>O dia <b data-draw="f-dwin">—</b> concentra <b data-draw="f-dwinval">—</b> (encargos, ICMS e fornecedores).</p>
-        <p data-frase="janela-uf" hidden>O dia <b data-draw="f-dwin">—</b> concentra <b data-draw="f-dwinval">—</b> (encargos e fornecedores); o ICMS sai no dia <b data-draw="uf-dia">—</b>.</p>
-        <p data-frase="movel" hidden>Só os <b data-draw="f-neg">—</b> de fornecedores e os <b data-draw="f-dec">—</b> de decisão interna podem ser movidos.</p>
-        <p data-frase="decimo" hidden>Novembro e dezembro carregam o 13º: <b data-draw="f-13">—</b> a mais no mês — um mês extra de folha que precisa estar provisionado desde janeiro.</p>
-        <p data-frase="dividendos" hidden><b data-draw="f-mesl">—</b> paga dividendos (<b data-draw="f-div">—</b>) no último dia — decisão interna, mas tomada; mover exige assembleia.</p>
-        <p data-frase="pmpf-alivio" hidden>Fornecedores empurrados para o mês seguinte: alívio de <b data-draw="f-pmpf">—</b> neste mês, mesma conta um mês depois.</p>
-        <p data-frase="pmpf-peso" hidden>Com o novo PMPF, este mês paga <b data-draw="f-pmpf2">—</b> a mais a fornecedores que no prazo de <b data-draw="f-pmpf0">—</b> dias: a conta muda de mês, não de tamanho.</p>
+        <p data-frase="bate" hidden>O pico de correlação cai em k* = <b data-draw="f-kstar">—</b>, o prazo médio de recebimento (DSO <b data-draw="f-dso">—</b> dias ≈ <b data-draw="f-dsom">—</b> mês). A receita de hoje prevê o caixa de daqui a <b data-draw="f-meses">—</b>.</p>
+        <p data-frase="difere" hidden>k* = <b data-draw="f-kstar">—</b> e DSO de <b data-draw="f-dso">—</b> dias (≈ <b data-draw="f-dsom">—</b> meses): com o aging espalhado, o pico fica no mês que concentra mais recebimento, não exatamente na média.</p>
       </div>
     </div>
   </div>
 
-  <details class="k-help" id="perguntas" data-source="premissas sazonalidade categorias eventos icms_uf cenarios">
+  <details class="k-help" id="perguntas" data-source="parametros sazonalidade cenarios">
     <summary>? Perguntas-guia</summary>
     <div class="k-help-body">
       <ol>
-        <li>Que fração das saídas de setembro a Alfa realmente pode mover?
-          <details><summary>mostrar resposta</summary><p>Fornecedores (<b data-draw="gb" data-q="q1-neg">—</b> = <b data-draw="gb" data-q="q1-negp">—</b>) por negociação, e CAPEX + variáveis + discricionárias (<b data-draw="gb" data-q="q1-dec">—</b> = <b data-draw="gb" data-q="q1-decp">—</b>) por decisão interna; o resto (folha, encargos, tributos, juros, fixas = <b data-draw="gb" data-q="q1-ineg">—</b>, <b data-draw="gb" data-q="q1-inegp">—</b>) tem data travada. A alavanca da tesouraria é o PMPF — e ela tem preço (M5).</p></details>
+        <li>No cenário Base, em qual defasagem a receita melhor explica as entradas? Por que essa?
+          <details><summary>mostrar resposta</summary><p>k* = <b data-draw="g-k0">—</b>, com correlação <b data-draw="g-c0">—</b>. O DSO implícito é <b data-draw="g-dso0">—</b> dias (Σ dias × %): a maior parte da venda entra 30 dias depois. O pico cai no prazo médio de recebimento — não é coincidência, é a estrutura do aging.</p></details>
         </li>
-        <li>Compare novembro e dezembro com um mês comum. De onde vem o "mês extra"?
-          <details><summary>mostrar resposta</summary><p>Do 13º salário (<b data-draw="gb" data-q="q2-nov">—</b> em <b data-draw="gb" data-q="q2-novd">—</b>/nov e <b data-draw="gb" data-q="q2-dez">—</b> em <b data-draw="gb" data-q="q2-dezd">—</b>/dez, com encargos) e, em dezembro, da amortização de <b data-draw="gb" data-q="q2-am">—</b> no dia <b data-draw="gb" data-q="q2-amd">—</b>. São saídas conhecidas um ano antes: devem ser provisionadas mês a mês, não descobertas em novembro.</p></details>
+        <li>Clique em "Prazo longo". O que acontece com o DSO e com k*?
+          <details><summary>mostrar resposta</summary><p>DSO sobe de <b data-draw="g-dso0">—</b> para <b data-draw="g-dso1">—</b> dias e k* passa de <b data-draw="g-k0">—</b> para <b data-draw="g-k1">—</b> (as barras fantasmas mostram a Base). A receita continua prevendo o caixa — só que mais adiante. Prazo longo, lag maior.</p></details>
         </li>
-        <li>Mude a UF para MG. O que muda no perfil do dia <b data-draw="gb" data-q="q3-sp">—</b>?
-          <details><summary>mostrar resposta</summary><p>O ICMS sai do dia <b data-draw="gb" data-q="q3-sp">—</b> para o dia <b data-draw="gb" data-q="q3-mg">—</b>, desafogando a janela <b data-draw="gb" data-q="q3-enc">—</b>–<b data-draw="gb" data-q="q3-pis">—</b> e carregando o dia <b data-draw="gb" data-q="q3-mg">—</b> (junto com as fixas). O calendário tributário é local — por isso se consulta o time fiscal, não se memoriza.</p></details>
+        <li>Por que a correlação não chega a 1, se as entradas são calculadas só a partir da receita?
+          <details><summary>mostrar resposta</summary><p>Porque as entradas de um mês misturam vendas de vários meses (k0…k3) com sazonalidade diferente. Concentre tudo em um único prazo — por exemplo, 100% em k1 — e a correlação vai a <b data-draw="g-c1">—</b>. Quanto mais disperso o aging, mais difusa a relação: prever é conhecer o próprio perfil de recebimento.</p></details>
         </li>
       </ol>
     </div>
@@ -548,314 +433,144 @@
 <script>(function () {
 
 /* ============================================================
-   D2.3 · Calendário de saídas — controles e desenhos
-   Cálculo em model.js (M23, funções puras); testes de aderência em test.js (Spec §7):
-   set 5.290 · 70/19/10% · dia 20 = 1.220 · dia 5 = 1.228 · dez dia 20 = 1.114 · dez dia 30 = 850
-   abr dia 30 = 1.350 · ano 50.934 (14.004 / 33.000 / 3.930) · MG → ICMS no dia 10
+   D2.3 · A receita prevê o caixa — página (motor M22, cópia do D2.2, em modo aging direto)
+   Testes de aderência: Base 20/50/25/5: DSO 34,5 · k* 1 · corr 0,987 · R² 0,974
+   Prazo longo 10/30/40/20: DSO 51 · k* 2 · corr 0,972 · R² 0,945
    ============================================================ */
-const G = window.D23 = { D: null, S: null, memo: { k: '', v: null }, base: null, aviso: '' };
-const IDS = ['premissas', 'sazonalidade', 'categorias', 'eventos', 'icms_uf', 'cenarios'];
-const VIS = ['premissas', 'sazonalidade', 'categorias', 'eventos', 'icms_uf'];
-const COR = { negociavel: 'var(--k-blue-l)', inegociavel: 'var(--k-neg)', decisao: 'var(--k-neutro)' };
-const ORDEM = ['inegociavel', 'decisao', 'negociavel'];   // empilhamento: o que é travado fica na base
-const NOMES = ['heat', 'perfil', 'perfil-mes', 'k-total', 'k-ineg', 'k-dia', 'k-diaval', 'comp', 'frase', 'f-mes', 'f-total', 'f-pct',
-  'f-dwin', 'f-dwinval', 'f-neg', 'f-dec', 'f-13', 'f-mesl', 'f-div', 'f-pmpf', 'f-pmpf2', 'f-pmpf0', 'uf-dia', 's-min', 's-dia', 's-ab', 'aviso-cat'];
+const IDS = ['parametros', 'sazonalidade', 'cenarios'];
+const S = {};
+let ativo = false;
+const AG = ['k0', 'k1', 'k2', 'k3'];
 
-/* ---------- dados e estado ---------- */
-function montaDados() {
-  const saz = K.num(dash.data('sazonalidade').data);
-  return {
-    P: K.obj(dash.data('premissas').data),
-    pesos: saz.map((r) => r.peso), MES: saz.map((r) => String(r.mes)),
-    cats: K.num(dash.data('categorias').data).map((c) => Object.assign(c, { dias: String(c.dias == null ? '' : c.dias) })),
-    eventos: K.num(dash.data('eventos').data),
-    ufDia: K.obj(dash.data('icms_uf').data, 'uf', 'dia'),
-    cenarios: K.num(dash.data('cenarios').data),
-  };
-}
-const pronto = () => !!(G.D && G.S) && K.status(VIS) === 'ok';
-const estadoCarga = () => { const s = K.status(VIS); return s === 'ok' ? 'loading' : s; };
-const filtro = () => ({ negociavel: G.S.negociavel, inegociavel: G.S.inegociavel, decisao: G.S.decisao });
-const parCal = (S) => ({ pmpf: S.pmpf, uf: S.uf, capexJunMes: S.capexJunMes, capexSetMes: S.capexSetMes, dividendos: S.dividendos, disc: S.disc });
-function cal() {
-  const p = parCal(G.S), k = JSON.stringify(p);
-  if (G.memo.k !== k) G.memo = { k, v: M23.calendario(G.D, p) };
-  return G.memo.v;
-}
-const mesIdx = (s) => G.D.MES.indexOf(String(s));
-const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-const r0 = (v) => K.n(M23.r(v));
-function doCenario(row) {
-  return {
-    mes: mesIdx(row.mes), uf: String(row.uf), pmpf: row.pmpf, capexJunMes: mesIdx(row.capexJunMes), capexSetMes: mesIdx(row.capexSetMes),
-    dividendos: row.dividendos, disc: row.disc,
-    negociavel: row.filtro !== 'inegociavel', inegociavel: true, decisao: row.filtro !== 'inegociavel',
-  };
-}
-function aplicar(id) {
-  const row = (G.D.cenarios || []).find((c) => c.id === id);
-  if (!row) return false;
-  const saldo = G.S ? G.S.saldo : false;
-  G.S = Object.assign(doCenario(row), { saldo, cen: id, mexido: false });
-  G.aviso = '';
-  sincroniza();
-  return true;
-}
-function sincroniza() {
-  if (!G.S) return;
-  K.sync(G.S);
-  document.querySelectorAll('.d23-chip').forEach((b) => b.setAttribute('aria-pressed', String(!!G.S[b.dataset.chip])));
-  const so = G.S.inegociavel && !G.S.negociavel && !G.S.decisao;
-  document.querySelectorAll('.d23-atalho').forEach((b) => b.setAttribute('aria-pressed', String(so)));
-  document.querySelectorAll('.d23-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === G.S.cen && !G.S.mexido)));
-  document.querySelectorAll('#d23-saldo-nota, .d23-leg-saldo').forEach((n) => { n.hidden = !G.S.saldo; });
-  document.querySelectorAll('#d23-aviso').forEach((n) => { n.hidden = !G.aviso; });
-}
-const mudou = (k) => { if (k !== 'saldo') G.S.mexido = true; G.aviso = ''; sincroniza(); K.redraw(NOMES); };
-function avisar(itens) {
-  const trav = itens.filter((x) => x.classe === 'inegociavel').map((x) => x.nome);
-  G.aviso = trav.join(', ');
-  sincroniza();
-  dash.draw('aviso-cat');
-}
-
-dash.onData(() => {
-  if (!G.D && K.status(IDS) === 'ok') { G.D = montaDados(); aplicar('alfa'); }
-});
-K.bind(new Proxy({}, { set(o, k, v) { if (G.S) G.S[k] = v; return true; } }), (k) => { if (G.S) mudou(k); });
-document.querySelectorAll('.d23-cen').forEach((b) => b.addEventListener('click', () => { if (G.D && aplicar(b.dataset.cen)) K.redraw(NOMES); }));
-document.querySelectorAll('.d23-chip').forEach((b) => b.addEventListener('click', () => {
-  if (!G.S) return;
-  const c = b.dataset.chip, ligados = ['negociavel', 'inegociavel', 'decisao'].filter((x) => G.S[x]);
-  if (G.S[c] && ligados.length === 1) return;          // ao menos uma classe visível
-  G.S[c] = !G.S[c];
-  mudou();
-}));
-document.querySelectorAll('.d23-atalho').forEach((b) => b.addEventListener('click', () => {
-  if (!G.S) return;
-  const so = G.S.inegociavel && !G.S.negociavel && !G.S.decisao;
-  G.S.negociavel = so; G.S.decisao = so; G.S.inegociavel = true;
-  mudou();
-}));
-
-/* ---------- auxiliares de desenho ---------- */
-const texto = (name, fn) => K.txt(name, pronto, fn);
-const resumo = () => M23.resumoMes(cal(), G.S.mes, filtro());
-const resumoTodos = () => M23.resumoMes(cal(), G.S.mes, null);
-const catDia = (id) => { const c = G.D.cats.find((x) => x.id === id); return c ? M23.lista(c.dias)[0] : null; };
-const eventoDe = (id) => G.D.eventos.find((e) => e.id === id);
-const linhasTip = (itens) => {
-  const out = [];
-  ORDEM.forEach((cl) => itens.filter((x) => x.classe === cl).forEach((x) => out.push([COR[cl], x.nome, r0(x.valor)])));
-  return out;
-};
-function mede(svg, cls, textos) {
-  let w = 0;
-  textos.forEach((t) => { const n = svg.append('text').attr('class', cls).text(t); w = Math.max(w, n.node().getComputedTextLength()); n.remove(); });
-  return w;
-}
-
-/* ---------- mapa de calor 12 × 31 ---------- */
-dash.draw('heat', (el) => {
-  if (!pronto()) { K.fail(el, estadoCarga()); return; }
-  el.classList.remove('dash-skeleton');
-  const c = cal(), F = filtro(), S = G.S, MES = G.D.MES;
-  const W = Math.max(280, el.clientWidth || 280), ch = 11, top = 34, lab = 24, H = top + 31 * ch + 6;
-  const cw = (W - lab - 2) / 12;
-  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
-  el.replaceChildren(svg.node());
-  const tip = K.tip(el);
-  let vmax = 1;
-  for (let m = 0; m < 12; m++) for (let d = 1; d <= M23.diasNoMes(m); d++) vmax = Math.max(vmax, M23.diaTotal(c, m, d, F));
-  const op = d3.scaleSqrt([0, vmax], [0.08, 1]);
-  // "mês extra": meses com 13º
-  const extra = c.meses.filter((x) => (x.porCat.decimo || 0) > 0).map((x) => x.m);
-  if (extra.length) {
-    const a = d3.min(extra), b = d3.max(extra);
-    const x0 = lab + a * cw + 2, x1 = lab + (b + 1) * cw - 2;
-    svg.append('line').attr('x1', x0).attr('x2', x1).attr('y1', 13).attr('y2', 13).attr('stroke', 'var(--k-neg)').attr('stroke-width', 1.5);
-    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x1).attr('y', 10).style('fill', 'var(--k-neg)').text('mês extra · 13º');
+const dados = () => ({ P: K.obj(dash.data('parametros').data), saz: K.num(dash.data('sazonalidade').data).map((r) => r.peso), cens: K.num(dash.data('cenarios').data) });
+const memo = {};
+function calc(ag) {
+  const key = ag.join('/');
+  if (!memo[key]) {
+    const D = dados();
+    memo[key] = M22.calc(D.P, D.saz, [], { direto: true, k0: ag[0], k1: ag[1], k2: ag[2], k3: ag[3], inad: 0, safra: false, venda: 1000, mesW: D.P.mesW, saldoAplic: 0, perdcomp: 0, ativos: 0, captacao: 0 });
   }
-  MES.forEach((nm, m) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', lab + (m + 0.5) * cw).attr('y', 28)
-    .style('font-weight', m === S.mes ? '700' : null).style('fill', m === S.mes ? 'var(--color-fg)' : null).text(nm));
-  [1, 5, 10, 15, 20, 25, 30].forEach((d) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'end')
-    .attr('x', lab - 5).attr('y', top + (d - 0.5) * ch + 4).text(String(d)));
-  const g = svg.append('g');
-  for (let m = 0; m < 12; m++) {
-    for (let d = 1; d <= M23.diasNoMes(m); d++) {
-      const itens = c.cel[m][d].filter((x) => F[x.classe]);
-      const v = itens.reduce((s, x) => s + x.valor, 0);
-      const dom = v > 0 ? M23.dominante(itens) : null;
-      g.append('rect').attr('class', 'd23-hit').attr('x', lab + m * cw + 1.5).attr('y', top + (d - 1) * ch + 0.75)
-        .attr('width', Math.max(1, cw - 3)).attr('height', ch - 1.5).attr('rx', 1.5)
-        .attr('fill', v > 0 ? 'var(--k-amber)' : 'transparent').attr('fill-opacity', v > 0 ? op(v) : 1)
-        .attr('stroke', dom ? COR[dom] : 'var(--color-border-line)').attr('stroke-width', dom ? 1.4 : 0.6)
-        .on('mousemove', (ev) => {
-          const [px, py] = d3.pointer(ev, el);
-          const l = linhasTip(itens); l.push([null, 'Total', r0(v)]);
-          tip.show(d + '/' + MES[m], l, px, py);
-        })
-        .on('mouseleave', () => tip.hide())
-        .on('click', () => {
-          if (G.S.mes !== m) { G.S.mes = m; G.S.mexido = true; }
-          sincroniza(); K.redraw(NOMES.filter((n) => n !== 'aviso-cat'));
-          avisar(itens);
-        });
-    }
-  }
-  svg.append('rect').attr('class', 'd23-sel').attr('x', lab + S.mes * cw + 0.5).attr('y', top - 1).attr('width', cw - 1).attr('height', 31 * ch + 2)
-    .attr('fill', 'none').attr('stroke', 'var(--k-navy)').attr('stroke-width', 2).attr('rx', 2);
-});
+  return memo[key];
+}
+const cenAg = (id) => { const c = dados().cens.find((r) => r.id === id); return c ? AG.map((k) => c[k]) : null; };
+const pronto = () => ativo && K.status(IDS) === 'ok';
+const R = () => calc(AG.map((k) => S[k]));
+const B = () => calc(cenAg('base'));
 
-/* ---------- perfil do mês em foco ---------- */
-dash.draw('perfil', (el) => {
-  if (!pronto()) { K.fail(el, estadoCarga()); return; }
-  el.classList.remove('dash-skeleton');
-  const c = cal(), F = filtro(), S = G.S, m = S.mes, n = M23.diasNoMes(m);
-  const res = M23.resumoMes(c, m, F);
-  const sd = S.saldo ? M23.saldoDiario(c, m) : null;
-  const W = Math.max(300, el.clientWidth || 300), H = 250;
-  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H).style('display', 'block');
-  el.replaceChildren(svg.node());
-  const tip = K.tip(el);
-  const y = d3.scaleLinear([0, Math.max(1, res.valorMax)], [H - 24, 30]).nice();
-  const yt = y.ticks(4);
-  const ml = mede(svg, 'k-svgm', yt.map((t) => K.n(t))) + 10;
-  let y2 = null, mr = 8, y2t = [];
-  if (sd) {
-    const ext = d3.extent(sd, (p) => p.saldo);
-    y2 = d3.scaleLinear([Math.min(0, ext[0]), Math.max(0, ext[1])], [H - 24, 30]).nice();
-    y2t = y2.ticks(4);
-    mr = mede(svg, 'k-svgm', y2t.map((t) => K.n(t))) + 10;
-  }
-  const dias = d3.range(1, n + 1);
-  const x = d3.scaleBand(dias, [ml, W - mr]).padding(0.18);
-  svg.append('g').selectAll('line').data(yt).join('line').attr('x1', ml).attr('x2', W - mr).attr('y1', (t) => y(t)).attr('y2', (t) => y(t))
-    .attr('stroke', 'var(--cds-chart-grid)');
-  svg.append('g').selectAll('text').data(yt).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', ml - 6).attr('y', (t) => y(t) + 4).text((t) => K.n(t));
-  svg.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
-  [1, 5, 10, 15, 20, 25, 30].filter((d) => d <= n).forEach((d) => svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle')
-    .attr('x', x(d) + x.bandwidth() / 2).attr('y', H - 8).text(String(d)));
-  // janelas fixas
-  const ult = M23.ultimoDia(m);
-  const jan = [[catDia('salarios'), String(catDia('salarios'))], [catDia('encargos'), String(catDia('encargos'))], [catDia('piscofins'), String(catDia('piscofins'))], [ult, 'últ.']];
-  const vistos = new Set();
-  jan.forEach(([d, t]) => {
-    if (!d || d > n || vistos.has(d)) return; vistos.add(d);
-    const cx = x(d) + x.bandwidth() / 2;
-    svg.append('line').attr('x1', cx).attr('x2', cx).attr('y1', 18).attr('y2', H - 24).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '3 3');
-    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', cx).attr('y', 13).text(t);
-  });
-  // barras empilhadas
-  dias.forEach((d) => {
-    const itens = c.cel[m][d].filter((it) => F[it.classe]);
-    let acc = 0;
-    ORDEM.forEach((cl) => itens.filter((it) => it.classe === cl).forEach((it) => {
-      const y0 = y(acc), y1 = y(acc + it.valor); acc += it.valor;
-      svg.append('rect').attr('class', 'd23-hit').attr('x', x(d)).attr('width', x.bandwidth()).attr('y', y1).attr('height', Math.max(0, y0 - y1))
-        .attr('fill', COR[cl]).attr('stroke', 'var(--color-panel)').attr('stroke-width', 0.6)
-        .on('click', () => avisar([it]));
-    }));
-  });
-  // saldo diário
-  if (sd) {
-    svg.append('g').selectAll('text').data(y2t).join('text').attr('class', 'k-svgm').attr('x', W - mr + 6).attr('y', (t) => y2(t) + 4).text((t) => K.n(t));
-    if (y2.domain()[0] < 0) svg.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y2(0)).attr('y2', y2(0)).attr('stroke', 'var(--k-neg)').attr('stroke-dasharray', '4 3');
-    const line = d3.line().x((p) => x(p.d) + x.bandwidth() / 2).y((p) => y2(p.saldo));
-    svg.append('path').attr('d', line(sd)).attr('fill', 'none').attr('stroke', 'var(--color-fg)').attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
-    const mn = sd.reduce((a, p) => (p.saldo < a.saldo ? p : a), sd[0]);
-    svg.append('circle').attr('cx', x(mn.d) + x.bandwidth() / 2).attr('cy', y2(mn.saldo)).attr('r', 4).attr('fill', mn.saldo < 0 ? 'var(--k-neg)' : 'var(--color-fg)');
-  }
-  // tooltip por dia: banda mais próxima do ponteiro
-  svg.on('mousemove', (ev) => {
-    const [px, py] = d3.pointer(ev, el);
-    const d = dias[d3.minIndex(dias, (dd) => Math.abs(x(dd) + x.bandwidth() / 2 - px))];
-    if (px < ml || px > W - mr) { tip.hide(); return; }
-    const itens = c.cel[m][d].filter((it) => F[it.classe]);
-    const l = linhasTip(itens);
-    l.push([null, 'Total', r0(itens.reduce((s, it) => s + it.valor, 0))]);
-    if (sd) l.push([null, 'Saldo ao fim do dia', r0(sd[d - 1].saldo)]);
-    tip.show(d + '/' + G.D.MES[m], l, px, py);
-  }).on('mouseleave', () => tip.hide());
-});
+/* ---------- controles ---------- */
+const DESENHOS = ['soma', 'i-n', 'i-cresc', 'i-ruido', 'i-tini', 'serie', 'lag', 'k-dso', 'k-kstar', 'k-corr', 'k-r2', 'd-dso', 'd-kstar', 'd-corr', 'd-r2', 'frase', 'f-kstar', 'f-meses', 'f-dso', 'f-dsom'];
+function marca() { document.querySelectorAll('.d23-cen').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cen === S.cen))); }
+function aplica(id) { const ag = cenAg(id); if (!ag) return; AG.forEach((k, i) => { S[k] = ag[i]; }); S.cen = id; ativo = true; K.sync(S); marca(); }
+dash.onData(() => { if (!ativo && K.status(IDS) === 'ok') { aplica('base'); K.redraw(DESENHOS); } });
+K.bind(S, () => { if (!ativo) return; S.cen = null; K.sync(S); marca(); K.redraw(DESENHOS); });
+document.querySelectorAll('.d23-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplica(b.dataset.cen); K.redraw(DESENHOS); }));
 
-/* ---------- leitura ---------- */
-texto('perfil-mes', () => K.MESL[G.S.mes]);
-texto('k-total', () => r0(resumo().total));
-texto('k-ineg', () => K.p(resumo().pctIneg, 0));
-texto('k-dia', () => String(resumo().diaMax));
-texto('k-diaval', () => r0(resumo().valorMax));
-dash.draw('comp', (el) => {
-  if (!pronto()) { K.fail(el, estadoCarga()); return; }
-  el.classList.remove('dash-skeleton');
-  const res = resumo(), tot = res.total || 1;
-  const segs = ['negociavel', 'inegociavel', 'decisao'].filter((cl) => res.porClasse[cl] > 0).map((cl) => {
-    const dv = document.createElement('div');
-    const p = res.porClasse[cl] / tot;
-    dv.className = cl === 'negociavel' ? 'd23-neg' : cl === 'inegociavel' ? 'd23-ineg' : 'd23-dec';
-    dv.style.width = (p * 100) + '%';
-    dv.textContent = p >= 0.08 ? K.p(p, 0) : '';
-    return dv;
-  });
-  el.replaceChildren(...segs);
-});
+/* ---------- textos ---------- */
+const PP = () => dados().P;
+K.txt('soma', pronto, () => K.n(R().L.soma, 0));
+K.txt('i-n', pronto, () => K.n(PP().nMeses));
+K.txt('i-cresc', pronto, () => K.n(PP().cresc * 100, 0));
+K.txt('i-ruido', pronto, () => K.n(PP().ruido * 100, 0));
+K.txt('i-tini', pronto, () => K.n(PP().tIni));
+K.txt('k-dso', pronto, () => K.n(R().dso, 1));
+K.txt('k-kstar', pronto, () => K.n(R().kStar));
+K.txt('k-corr', pronto, () => K.n(R().corrMax, 3));
+K.txt('k-r2', pronto, () => K.n(R().r2, 3));
+const delta = (fn, d) => () => { const v = fn(R()) - fn(B()); return Math.abs(v) < 0.5 * Math.pow(10, -d) ? 'igual à Base' : K.s(v, d) + ' vs Base'; };
+K.txt('d-dso', pronto, delta((r) => r.dso, 1));
+K.txt('d-kstar', pronto, delta((r) => r.kStar, 0));
+K.txt('d-corr', pronto, delta((r) => r.corrMax, 3));
+K.txt('d-r2', pronto, delta((r) => r.r2, 3));
+K.txt('f-kstar', pronto, () => K.n(R().kStar));
+K.txt('f-meses', pronto, () => { const k = R().kStar; return k === 0 ? 'zero meses (mesmo mês)' : k + (k === 1 ? ' mês' : ' meses'); });
+K.txt('f-dso', pronto, () => K.n(R().dso, 1));
+K.txt('f-dsom', pronto, () => K.n(R().dso / 30, 1));
 dash.draw('frase', (el) => {
   if (!pronto()) { K.frases(el, []); return; }
-  const c = cal(), S = G.S, x = c.meses[S.mes];
-  const k = ['resumo', G.D.ufDia[S.uf] === catDia('encargos') ? 'janela-icms' : 'janela-uf', 'movel'];
-  if ((x.porCat.decimo || 0) > 0) k.push('decimo');
-  const ev = eventoDe('dividendosAbr');
-  if (ev && mesIdx(ev.mes) === S.mes && (x.porCat.dividendos || 0) > 0) k.push('dividendos');
-  if (x.forn45 - x.forn > 0.5) k.push('pmpf-alivio');
-  else if (x.forn - x.forn45 > 0.5) k.push('pmpf-peso');
-  K.frases(el, k);
+  const r = R();
+  K.frases(el, [Math.abs(r.kStar - r.dso / 30) <= 0.5 ? 'bate' : 'difere']);
 });
-texto('f-mes', () => cap(G.D.MES[G.S.mes]));
-texto('f-mesl', () => cap(K.MESL[G.S.mes]));
-texto('f-total', () => r0(resumo().total));
-texto('f-pct', () => K.p(resumo().pctIneg, 0));
-texto('f-dwin', () => String(catDia('encargos')));
-texto('f-dwinval', () => r0(resumoTodos().dias[catDia('encargos') - 1]));
-texto('f-neg', () => r0(cal().meses[G.S.mes].porClasse.negociavel));
-texto('f-dec', () => r0(cal().meses[G.S.mes].porClasse.decisao));
-texto('f-13', () => r0(cal().meses[G.S.mes].porCat.decimo || 0));
-texto('f-div', () => r0(cal().meses[G.S.mes].porCat.dividendos || 0));
-texto('f-pmpf', () => { const x = cal().meses[G.S.mes]; return r0(x.forn45 - x.forn); });
-texto('f-pmpf2', () => { const x = cal().meses[G.S.mes]; return r0(x.forn - x.forn45); });
-texto('f-pmpf0', () => String(G.D.P.pmpfAntigo));
-texto('uf-dia', () => String(G.D.ufDia[G.S.uf]));
-const minSaldo = () => { const sd = M23.saldoDiario(cal(), G.S.mes); return sd.reduce((a, p) => (p.saldo < a.saldo ? p : a), sd[0]); };
-texto('s-min', () => r0(minSaldo().saldo));
-texto('s-dia', () => String(minSaldo().d));
-texto('s-ab', () => r0(cal().meses[G.S.mes].abertura));
-texto('aviso-cat', () => G.aviso || null);
 
-/* ---------- gabaritos (calculados no cenário Alfa T0) ---------- */
-function base() {
-  if (!G.base) {
-    const row = G.D.cenarios.find((c) => c.id === 'alfa');
-    const S0 = doCenario(row);
-    const c = M23.calendario(G.D, parCal(S0));
-    G.base = { c, set: M23.resumoMes(c, mesIdx('set'), null) };
-  }
-  return G.base;
+/* ---------- gráficos ---------- */
+function eixoY(svg, y, x0, x1, fmt, nt) {
+  const ticks = y.ticks(nt);
+  svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x0).attr('x2', x1).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).style('stroke', 'var(--cds-chart-grid)');
+  svg.append('g').selectAll('text').data(ticks).join('text').attr('class', 'k-svgm').attr('text-anchor', 'end').attr('x', x0 - 6).attr('y', (t) => y(t) + 4).text((t) => fmt(t));
 }
-const GB = {
-  'q1-neg': (b) => r0(b.set.porClasse.negociavel), 'q1-negp': (b) => K.p(b.set.porClasse.negociavel / b.set.total, 0),
-  'q1-dec': (b) => r0(b.set.porClasse.decisao), 'q1-decp': (b) => K.p(b.set.porClasse.decisao / b.set.total, 0),
-  'q1-ineg': (b) => r0(b.set.porClasse.inegociavel), 'q1-inegp': (b) => K.p(b.set.pctIneg, 0),
-  'q2-nov': () => r0(eventoDe('decimoNov').valor), 'q2-novd': () => String(eventoDe('decimoNov').dia),
-  'q2-dez': () => r0(eventoDe('decimoDez').valor), 'q2-dezd': () => String(eventoDe('decimoDez').dia),
-  'q2-am': () => r0(eventoDe('amortDez').valor), 'q2-amd': () => String(eventoDe('amortDez').dia),
-  'q3-sp': () => String(G.D.ufDia.SP), 'q3-mg': () => String(G.D.ufDia.MG),
-  'q3-enc': () => String(catDia('encargos')), 'q3-pis': () => String(catDia('piscofins')),
-};
-dash.draw('gb', (el) => {
-  const fn = GB[el.dataset.q];
-  if (!fn || !G.D || K.status(IDS) !== 'ok') { el.textContent = '—'; return; }
-  const v = fn(base());
-  el.textContent = v == null ? '—' : v;
+function margem(svg, y, fmt, nt) {
+  const t = svg.append('text').attr('class', 'k-svgm');
+  let w = 0; y.ticks(nt).forEach((v) => { t.text(fmt(v)); w = Math.max(w, t.node().getComputedTextLength()); });
+  t.remove(); return Math.ceil(w) + 12;
+}
+const rot = (t) => K.MES[(t - 1) % 12] + '/' + Math.ceil(t / 12);
+dash.draw('serie', (el) => {
+  if (!pronto()) { K.fail(el, K.status(IDS) === 'error' ? 'error' : 'loading'); return; }
+  el.classList.remove('dash-skeleton');
+  const r = R(), n = PP().nMeses, ts = d3.range(1, n + 1);
+  const { svg, W, H } = K.svg(el, 220);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const vals = ts.flatMap((t) => [r.rec[t], r.entOp[t]]);
+  const y = d3.scaleLinear([d3.min(vals) * 0.95, d3.max(vals) * 1.03], [H - 26, 10]).nice();
+  const fmt = (v) => K.n(v);
+  const ml = margem(svg, y, fmt, 4);
+  const x = d3.scaleLinear([1, n], [ml, W - 8]);
+  eixoY(svg, y, ml, W - 8, fmt, 4);
+  svg.append('g').selectAll('text').data(ts.filter((t) => (t - 1) % 12 === 0)).join('text').attr('class', 'k-svgm').attr('text-anchor', 'middle')
+    .attr('x', (t) => x(t)).attr('y', H - 8).text((t) => 'ano ' + Math.ceil(t / 12));
+  const ln = (key, cor) => svg.append('path').attr('d', d3.line().x((t) => x(t)).y((t) => y(r[key][t]))(ts)).style('fill', 'none').style('stroke', cor).style('stroke-width', 2).style('stroke-linejoin', 'round');
+  ln('rec', 'var(--k-amber)'); ln('entOp', 'var(--k-blue)');
+  svg.append('rect').attr('x', ml).attr('width', W - 8 - ml).attr('y', 0).attr('height', H - 20).style('fill', 'transparent')
+    .on('mousemove', (ev) => {
+      const [mx, my] = d3.pointer(ev, el);
+      const t = Math.min(n, Math.max(1, Math.round(x.invert(d3.pointer(ev)[0]))));
+      tip.show(rot(t), [['var(--k-amber)', 'receita', K.n(r.rec[t])], ['var(--k-blue)', 'entradas', K.n(r.entOp[t])]], mx, my);
+    }).on('mouseleave', () => tip.hide());
 });
+dash.draw('lag', (el) => {
+  if (!pronto()) { K.fail(el, K.status(IDS) === 'error' ? 'error' : 'loading'); return; }
+  el.classList.remove('dash-skeleton');
+  const r = R(), b = B();
+  const { svg, W, H } = K.svg(el, 220);
+  el.replaceChildren(svg.node());
+  const tip = K.tip(el);
+  const cs = r.ks.concat(b.ks).map((d) => (Number.isFinite(d.corr) ? d.corr : 0));
+  const y = d3.scaleLinear([Math.min(0, d3.min(cs)), 1], [H - 26, 32]).nice();
+  const fmt = (v) => K.n(v, 1);
+  const ml = margem(svg, y, fmt, 5);
+  const x = d3.scaleBand(r.ks.map((d) => d.k), [ml, W - 8]).padding(0.3);
+  eixoY(svg, y, ml, W - 8, fmt, 5);
+  r.ks.forEach((d, i) => {
+    const c = Number.isFinite(d.corr) ? d.corr : 0;
+    const cb = Number.isFinite(b.ks[i].corr) ? b.ks[i].corr : 0;
+    svg.append('rect').attr('x', x(d.k)).attr('width', x.bandwidth()).attr('y', y(Math.max(0, c))).attr('height', Math.abs(y(0) - y(c))).attr('rx', 2)
+      .style('fill', d.k === r.kStar ? 'var(--k-navy)' : 'var(--cds-chart-muted)');
+    svg.append('rect').attr('x', x(d.k) - 3).attr('width', x.bandwidth() + 6).attr('y', y(Math.max(0, cb))).attr('height', Math.abs(y(0) - y(cb))).attr('rx', 2)
+      .style('fill', 'none').style('stroke', 'var(--k-neutro)').style('stroke-width', 1.5).style('stroke-dasharray', '4 3');
+    svg.append('text').attr('class', d.k === r.kStar ? 'k-svgb' : 'k-svgt').attr('text-anchor', 'middle').attr('x', x(d.k) + x.bandwidth() / 2).attr('y', y(Math.max(0, c, cb)) - 5).text(K.n(c, 2));
+    svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', x(d.k) + x.bandwidth() / 2).attr('y', H - 8).text('k = ' + d.k);
+    svg.append('rect').attr('x', x(d.k) - x.step() * x.paddingInner() / 2).attr('width', x.step()).attr('y', 0).attr('height', H - 20).style('fill', 'transparent')
+      .on('mousemove', (ev) => { const [mx, my] = d3.pointer(ev, el); tip.show('k = ' + d.k + (d.k === r.kStar ? ' (k*)' : ''), [[null, 'correlação', K.n(c, 3)], [null, 'Base', K.n(cb, 3)]], mx, my); })
+      .on('mouseleave', () => tip.hide());
+  });
+  const xr = x(0) + x.bandwidth() / 2 + (r.dso / 30) * x.step();
+  if (xr >= ml && xr <= W - 8) {
+    svg.append('line').attr('x1', xr).attr('x2', xr).attr('y1', 16).attr('y2', H - 26).style('stroke', 'var(--k-amber)').style('stroke-width', 2).style('stroke-dasharray', '5 4');
+    const t = svg.append('text').attr('class', 'k-svgm').attr('y', 10).text('DSO ' + K.n(r.dso / 30, 2) + ' m');
+    t.attr('x', Math.min(W - t.node().getComputedTextLength() - 2, Math.max(ml, xr + 4)));
+  }
+  svg.append('line').attr('x1', ml).attr('x2', W - 8).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+});
+
+/* ---------- perguntas-guia ---------- */
+const gp = () => K.status(IDS) === 'ok';
+const gB = () => calc(cenAg('base')), gL = () => calc(cenAg('longo'));
+K.txt('g-k0', gp, () => K.n(gB().kStar));
+K.txt('g-c0', gp, () => K.n(gB().corrMax, 3));
+K.txt('g-dso0', gp, () => K.n(gB().dso, 1));
+K.txt('g-dso1', gp, () => K.n(gL().dso, 1));
+K.txt('g-k1', gp, () => K.n(gL().kStar));
+K.txt('g-c1', gp, () => K.n(calc([0, 100, 0, 0]).corrMax, 3));
 
 })();</script>
 
