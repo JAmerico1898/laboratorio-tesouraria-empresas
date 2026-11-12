@@ -1,0 +1,15 @@
+{
+  "code": "D1.5",
+  "title": "D1.5 · Efeito Tesoura",
+  "slug": "c89c7ee3-19fe-4277-bb7c-1097ac234d6e",
+  "datasets": {
+    "alfa_base": {
+      "file": "alfa_base.json",
+      "sha256": "bfdb1436bfdc574fa1e8333dec9e48074d90e73f3c8950470121f26f3ba9779f"
+    },
+    "cenarios": {
+      "file": "cenarios.json",
+      "sha256": "faa9b1ac31fc3f1195e6837f782c64fd6897d167df6e6bdb085e0efd4a955af1"
+    }
+  }
+}

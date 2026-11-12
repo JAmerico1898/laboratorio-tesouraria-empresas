@@ -210,7 +210,29 @@ export default function HomePage() {
               );
             })}
 
-            {/* 6th card — Estudos de Caso */}
+            {/* 6th card — Dashboards */}
+            <Link href="/dashboards" className="block">
+              <div className="group cursor-pointer bg-primary text-white rounded-xl p-8 hover:shadow-[0_12px_32px_rgba(25,28,29,0.06)] transition-all duration-300 flex flex-col justify-between min-h-[320px] relative overflow-hidden">
+                <div className="space-y-4 relative z-10">
+                  <div className="w-12 h-12 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center">
+                    <span className="material-symbols-outlined">monitoring</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-white font-heading leading-tight">
+                    Dashboards
+                  </h3>
+                  <p className="text-white/85 leading-relaxed text-sm">
+                    Dashboards interativos de cada módulo do curso para explorar
+                    os indicadores financeiros na prática.
+                  </p>
+                </div>
+                <div className="mt-8 relative z-10 flex items-center gap-2 font-bold text-sm text-white/90 group-hover:translate-x-1 transition-transform">
+                  <span>Acessar dashboards</span>
+                  <span>→</span>
+                </div>
+              </div>
+            </Link>
+
+            {/* 7th card — Estudos de Caso */}
             <Link href="/estudos-de-caso" className="block">
               <div className="group cursor-pointer bg-tertiary-container text-white rounded-xl p-8 hover:shadow-[0_12px_32px_rgba(25,28,29,0.06)] transition-all duration-300 flex flex-col justify-between min-h-[320px] relative overflow-hidden">
                 <div className="space-y-4 relative z-10">

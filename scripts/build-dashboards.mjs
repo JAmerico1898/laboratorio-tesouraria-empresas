@@ -25,6 +25,13 @@ for (const code of fs.readdirSync(SRC).sort()) {
   const meta = JSON.parse(fs.readFileSync(path.join(dir, "meta.json"), "utf8"));
   let page = fs.readFileSync(path.join(dir, "page.html"), "utf8");
 
+  // Página HTML completa e autocontida (sem runtime nem dados): copiada como está
+  if (meta.standalone) {
+    fs.writeFileSync(path.join(OUT, `${slugOf(code)}.html`), page);
+    console.log(`ok ${code} -> public/dash/${slugOf(code)}.html (standalone)`);
+    continue;
+  }
+
   // Dados: confere sha256 com o do artifact e embute
   const data = {};
   for (const [id, ds] of Object.entries(meta.datasets || {})) {

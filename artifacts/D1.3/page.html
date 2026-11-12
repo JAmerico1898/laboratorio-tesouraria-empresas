@@ -1,731 +1,355 @@
-<meta name="dash-one-writer">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D1.3 · Aging, roll rates e DSO</title>
 <style>
-#dash-root { --dash-gutter: clamp(8px, 2vw, 24px); }
-.fl {
-  --fl-aco: #E3A21A; --fl-pco: #9C6206; --fl-acf: #74B9EE; --fl-pcf: #1E4E8C;
-  --fl-ccl: #2A3F7A; --fl-pos: #2E9E5B; --fl-neg: #D64545; --fl-neutro: #9AA0A6;
-  font-family: var(--font-anthropic-sans); font-size: 15px; color: var(--color-fg);
-  container-type: inline-size;
-}
-.fl-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--cds-gap-sm); margin-bottom: var(--cds-gap-md); }
-.fl-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.75rem; margin: 0; line-height: 1.15; }
-.fl-sub { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 15px; }
-.fl-tabs { display: flex; gap: 4px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 3px; background: var(--color-panel); }
-.fl-tab { font: inherit; font-size: 14px; border: 0; background: transparent; color: var(--color-fg-muted); padding: 6px 14px; border-radius: var(--cds-radius); cursor: pointer; }
-.fl-tab[aria-selected="true"] { background: var(--color-bg); color: var(--color-fg); font-weight: var(--cds-font-weight-medium); box-shadow: 0 0 0 1px var(--color-border-line); }
-
-.fl-zones { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 1fr); }
-@container (min-width: 62rem) {
-  .fl-zones { grid-template-columns: minmax(17rem, 1fr) minmax(0, 1.75fr) minmax(15rem, 1fr); }
-}
-.fl-zone { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
-.fl-zt { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--color-fg-muted); margin: 0 0 var(--cds-gap-sm); font-weight: var(--cds-font-weight-medium); }
-.fl-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--cds-gap-sm); }
-.fl-btn { font: inherit; font-size: 14px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); padding: 5px 12px; border-radius: var(--cds-radius); cursor: pointer; }
-.fl-btn:hover { border-color: var(--color-fg-muted); }
-.fl-btn[aria-pressed="true"] { background: var(--fl-ccl); border-color: var(--fl-ccl); color: #fff; }
-.fl-btn.fl-prim { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
-.fl-caso { font-size: 13px; color: var(--color-fg-muted); margin: 0 0 6px; min-height: 1.2em; }
-
-.fl-list { list-style: none; margin: 0 0 var(--cds-gap-sm); padding: 0; display: grid; gap: 4px; min-height: 12rem; }
-.fl-row { position: relative; display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; padding: 4px 6px 4px 9px; border: 1px solid var(--color-border-line); border-left: 5px solid var(--fl-neutro); border-radius: var(--cds-radius); background: var(--color-bg); cursor: grab; font-size: 14px; }
-.fl-row[data-g="ACO"] { border-left-color: var(--fl-aco); }
-.fl-row[data-g="ACF"] { border-left-color: var(--fl-acf); }
-.fl-row[data-g="PCO"] { border-left-color: var(--fl-pco); }
-.fl-row[data-g="PCF"] { border-left-color: var(--fl-pcf); }
-.fl-row.fl-errado { border-color: var(--fl-neg); border-left-color: var(--fl-neg); box-shadow: 0 0 0 1px var(--fl-neg); }
-.fl-nm { line-height: 1.2; }
-.fl-vl { font-variant-numeric: tabular-nums; color: var(--color-fg-muted); }
-.fl-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
-.fl-seg button { font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--color-fg-muted); padding: 3px 7px; cursor: pointer; }
-.fl-seg button + button { border-left: 1px solid var(--color-border-line); }
-.fl-seg button[aria-pressed="true"][data-g="ACO"] { background: var(--fl-aco); color: #1a1a1a; }
-.fl-seg button[aria-pressed="true"][data-g="ACF"] { background: var(--fl-acf); color: #0b2340; }
-.fl-seg button[aria-pressed="true"][data-g="PCO"] { background: var(--fl-pco); color: #fff; }
-.fl-seg button[aria-pressed="true"][data-g="PCF"] { background: var(--fl-pcf); color: #fff; }
-.fl-mk { position: absolute; right: -6px; top: -7px; font-size: 12px; line-height: 1; border-radius: 9px; padding: 2px 4px; color: #fff; }
-.fl-mk.fl-ok { background: var(--fl-pos); }
-.fl-mk.fl-x { background: var(--fl-neg); }
-.fl-tipline { display: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 5; margin-top: 3px; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; pointer-events: none; }
-.fl-row:hover .fl-tipline, .fl-row:focus-within .fl-tipline { display: block; }
-.fl-count { font-size: 14px; color: var(--color-fg-muted); min-height: 1.3em; }
-
-.fl-quads { min-height: 20rem; }
-.fl-qgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.fl-q { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); min-height: 8.5rem; display: flex; flex-direction: column; overflow: hidden; }
-.fl-q.fl-over { box-shadow: 0 0 0 2px var(--color-fg-muted); }
-.fl-qh { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 5px 9px; }
-.fl-q[data-g="ACO"] .fl-qh { background: var(--fl-aco); color: #1a1a1a; }
-.fl-q[data-g="ACF"] .fl-qh { background: var(--fl-acf); color: #0b2340; }
-.fl-q[data-g="PCO"] .fl-qh { background: var(--fl-pco); color: #fff; }
-.fl-q[data-g="PCF"] .fl-qh { background: var(--fl-pcf); color: #fff; }
-.fl-qs { font-weight: 700; font-size: 15px; }
-.fl-qn { font-size: 13px; opacity: .9; flex: 1; }
-.fl-qt { font-family: var(--font-anthropic-serif); font-size: 1.6rem; font-variant-numeric: tabular-nums; line-height: 1.1; }
-.fl-chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 6px; align-content: flex-start; }
-.fl-chip { font-size: 13px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 2px 6px; background: var(--color-panel); cursor: grab; white-space: nowrap; }
-.fl-chip b { font-weight: 400; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; margin-left: 4px; }
-.fl-tray { margin-top: 8px; border: 1px dashed var(--fl-neutro); border-radius: var(--cds-radius); min-height: 3.2rem; }
-.fl-tray.fl-over { box-shadow: 0 0 0 2px var(--color-fg-muted); }
-.fl-tray .fl-qh { color: var(--color-fg-muted); font-size: 13px; padding-bottom: 0; }
-
-.fl-idh { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: var(--cds-gap-md) 0 4px; }
-.fl-idh h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
-.fl-idh span { font-size: 13px; color: var(--color-fg-muted); }
-.fl-bar { min-height: 132px; }
-.fl-svgt { font-family: var(--font-anthropic-sans); font-size: 14px; fill: var(--color-fg); font-variant-numeric: tabular-nums; }
-.fl-svgm { font-family: var(--font-anthropic-sans); font-size: 13px; fill: var(--color-fg-muted); }
-
-.fl-kpi { padding: 6px 0 10px; border-bottom: 1px solid var(--color-border-line); }
-.fl-kpi:last-of-type { border-bottom: 0; }
-.fl-kl { font-size: 14px; color: var(--color-fg-muted); display: flex; align-items: center; gap: 6px; }
-.fl-kn { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2.25rem; line-height: 1.1; font-variant-numeric: tabular-nums; min-height: 2.5rem; }
-.fl-kn.fl-parcial { opacity: .55; }
-.fl-kn.fl-pos, .fl-pos-t { color: var(--fl-pos); }
-.fl-kn.fl-neg, .fl-neg-t { color: var(--fl-neg); }
-.fl-note { font-size: 13px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; line-height: 1.35; }
-.fl-sema { display: flex; align-items: center; gap: 6px; font-size: 14px; margin-top: 4px; }
-.fl-dot { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; background: var(--fl-neutro); }
-.fl-sema [data-sema="pos"] .fl-dot { background: var(--fl-pos); }
-.fl-sema [data-sema="neg"] .fl-dot { background: var(--fl-neg); }
-.fl-diag { margin-top: var(--cds-gap-sm); padding: 10px 12px; border-left: 4px solid var(--fl-ccl); background: var(--color-bg); border-radius: var(--cds-radius); font-size: 15px; line-height: 1.4; }
-.fl-diag p { margin: 0; }
-.fl-diag b { font-weight: 700; font-variant-numeric: tabular-nums; }
-
-.fl-info { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 1.1rem; height: 1.1rem; border-radius: 50%; border: 1px solid var(--color-fg-muted); font-size: 11px; font-style: normal; cursor: help; color: var(--color-fg-muted); }
-.fl-info .fl-tip { display: none; position: absolute; left: 50%; top: 130%; transform: translateX(-50%); width: 14rem; z-index: 6; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; color: var(--color-fg); text-transform: none; letter-spacing: 0; font-weight: 400; pointer-events: none; }
-.fl-info:hover .fl-tip, .fl-info:focus .fl-tip { display: block; }
-
-.fl-dd { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); }
-.fl-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); min-width: 0; }
-.fl-card h3 { margin: 0 0 4px; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
-.fl-card .fl-cn { margin: 0 0 var(--cds-gap-sm); font-size: 13px; color: var(--color-fg-muted); }
-.fl-table { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
-.fl-table th { text-align: right; font-weight: var(--cds-font-weight-medium); font-size: 13px; color: var(--color-fg-muted); padding: 6px 8px; border-bottom: 1px solid var(--color-border-line); }
-.fl-table th:first-child, .fl-table td:first-child { text-align: left; }
-.fl-table td { text-align: right; padding: 8px; border-bottom: 1px solid var(--color-border-line); }
-.fl-table td.fl-big { font-family: var(--font-anthropic-serif); font-size: 1.35rem; }
-.fl-decomp { margin: 10px 0 0; font-size: 15px; font-variant-numeric: tabular-nums; padding: 8px 10px; background: var(--color-bg); border-radius: var(--cds-radius); }
-.fl-tag { display: inline-block; font-size: 12px; padding: 1px 6px; border-radius: var(--cds-radius); font-weight: 700; }
-.fl-tag[data-g="ACO"] { background: var(--fl-aco); color: #1a1a1a; }
-.fl-tag[data-g="ACF"] { background: var(--fl-acf); color: #0b2340; }
-.fl-tag[data-g="PCO"] { background: var(--fl-pco); color: #fff; }
-.fl-tag[data-g="PCF"] { background: var(--fl-pcf); color: #fff; }
-.fl-chart { position: relative; min-height: 280px; }
-.fl-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--color-fg-muted); margin-top: 6px; }
-.fl-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 5px; }
-.fl-tt { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: 13px; white-space: nowrap; }
-.fl-tt span { color: var(--cds-text-secondary); }
-.fl-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; margin-bottom: var(--cds-gap-sm); }
-.fl-leitura { margin-top: var(--cds-gap-md); }
-
-.fl-help { margin-top: var(--cds-gap-md); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
-.fl-help > summary { cursor: pointer; padding: 8px 12px; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
-.fl-help-body { max-height: 18rem; overflow: auto; padding: 0 12px 10px; }
-.fl-help ol { margin: 0; padding-left: 1.3rem; display: grid; gap: 10px; font-size: 15px; }
-.fl-help details summary { cursor: pointer; font-size: 13px; color: var(--color-fg-muted); margin-top: 3px; }
-.fl-help details p { margin: 4px 0 0; font-size: 14px; }
-.fl-help b { font-variant-numeric: tabular-nums; }
-
-.fl-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
-.fl-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
-[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  :root{
+    --bg:#f6f6f4; --card:#fff; --line:#e4e4e0; --ink:#1d1d1f; --mute:#6b6b70;
+    --navy:#1e3a6e; --navy-soft:#e8eef8; --red:#c8433b; --amber:#e9a825; --green:#2f7d4f;
+    --b0:#9fb6d8; --b1:#f3d58a; --b2:#edb452; --b3:#e08d38; --b4:#cc5f38; --b5:#8f2a2a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1320px;margin:0 auto;padding:18px 20px 28px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  h1{font:400 24px/1.15 Georgia,"Times New Roman",serif;margin:0}
+  .sub{color:var(--mute);margin-top:2px}
+  .pills{display:flex;gap:6px;flex-wrap:wrap}
+  .pill{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 11px;font:inherit;cursor:pointer;color:var(--ink)}
+  .pill:hover{border-color:#bfc6d4}
+  .pill.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .grid{display:grid;gap:12px}
+  .g3{grid-template-columns:250px 1fr 300px}
+  .g2{grid-template-columns:1fr 1fr}
+  .gd{grid-template-columns:1fr 340px}
+  @media (max-width:1100px){.g3,.g2,.gd{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+  .ttl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+  .ttl2{font-size:14px;font-weight:600;margin-bottom:2px}
+  .hint{color:var(--mute);font-size:12px}
+  .ctl{margin-bottom:14px}
+  .ctl label{display:flex;justify-content:space-between;align-items:baseline}
+  .ctl .val{font-variant-numeric:tabular-nums;border:1px solid var(--line);border-radius:6px;padding:1px 8px;min-width:58px;text-align:right}
+  .ctl small{display:block;color:var(--mute);font-size:11.5px;margin-top:1px}
+  input[type=range]{width:100%;accent-color:var(--navy);margin:6px 0 0}
+  .seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .seg button{flex:1;border:0;background:#fff;padding:5px 6px;font:inherit;cursor:pointer;color:var(--ink)}
+  .seg button.on{background:var(--navy);color:#fff}
+  .kpi{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid #f0f0ec}
+  .kpi:last-of-type{border-bottom:0}
+  .kpi .k{color:var(--mute)}
+  .kpi .v{font:400 21px/1 Georgia,serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .kpi .k{font-size:12px}
+  .kpi .v small{font:12px system-ui;color:var(--mute)}
+  .red{color:var(--red)} .navy{color:var(--navy)} .green{color:var(--green)}
+  .note{border-left:3px solid var(--navy);background:var(--navy-soft);padding:9px 11px;border-radius:0 7px 7px 0;margin-top:10px;font-size:12.5px}
+  .note.warn{border-color:var(--red);background:#fbeceb}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--mute);margin-top:6px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+  svg text{font:10.5px system-ui,sans-serif;fill:#6b6b70}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:12px}
+  th,td{padding:4px 6px;text-align:right;border-bottom:1px solid #f0f0ec;white-space:nowrap}
+  th{font-weight:600;color:var(--mute);font-size:11px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  tr.warm td{color:#a5a5aa}
+  td.hl-o{outline:2px solid var(--navy);outline-offset:-2px;background:var(--navy-soft)}
+  td.hl-d{outline:2px solid var(--red);outline-offset:-2px;background:#fbeceb}
+  td.rr{cursor:pointer}
+  td.rr:hover{outline:1px solid #9aa6bd;outline-offset:-1px}
+  td.rr.sel{outline:2px solid var(--ink);outline-offset:-2px}
+  tr.avg td{font-weight:600;border-top:1px solid var(--line)}
+  tr.avg.on td{background:#f3f5f9}
+  .tag{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+  .verify{margin-top:10px;padding:9px 11px;border:1px dashed #c9ccd4;border-radius:8px;font-size:12.5px;min-height:40px}
+  .verify b{font-variant-numeric:tabular-nums}
+  .sc{overflow-x:auto}
+  .steps{margin:6px 0 0;padding-left:18px}
+  .steps li{margin:3px 0;font-variant-numeric:tabular-nums}
+  details{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:12px}
+  details summary{cursor:pointer;font-weight:600}
+  details .q{margin:10px 0 0}
+  details .q details{border:0;padding:0;margin:4px 0 0 0}
+  details .q details summary{font-weight:400;color:var(--navy);font-size:12.5px}
+  details .q p{margin:6px 0 0;color:#333}
+  .foot{color:var(--mute);font-size:11.5px;margin-top:10px}
 </style>
-
-<div class="fl" id="d13">
-  <header class="fl-head">
+</head>
+<body>
+<div class="wrap">
+  <header>
     <div>
-      <h1 class="fl-title">D1.3 · Reclassificador Fleuriet</h1>
-      <p class="fl-sub">Natureza, não vencimento: onde cada conta vai — e o que isso faz com NCG, CCL e ST?</p>
+      <h1>D1.3 · Aging, roll rates e DSO</h1>
+      <div class="sub">Quanto da carteira de hoje vira caixa — e quanto escorrega faixa abaixo até a perda?</div>
     </div>
-    <div class="fl-tabs" role="tablist" aria-label="Modo">
-      <button class="fl-tab" role="tab" data-tab="classificar" aria-selected="true">Classificar</button>
-      <button class="fl-tab" role="tab" data-tab="duas-datas" aria-selected="false">Duas datas</button>
-    </div>
+    <div class="pills" id="pills"></div>
   </header>
 
-  <section class="fl-page" id="classificar">
-    <div class="fl-zones">
-      <div class="fl-zone" id="controles" data-source="contas_circulantes">
-        <h2 class="fl-zt">Cenário</h2>
-        <div class="fl-btns">
-          <button class="fl-btn fl-preset" data-caso="Alfa" aria-pressed="true">Alfa T0</button>
-          <button class="fl-btn fl-preset" data-caso="Varejista" aria-pressed="false">Varejista</button>
-        </div>
-        <p class="fl-caso" data-draw="caso-nome">—</p>
-        <ul class="fl-list dash-skeleton" data-draw="lista" aria-label="Contas circulantes"></ul>
-        <div class="fl-btns">
-          <button class="fl-btn fl-prim fl-act" data-act="conferir">Conferir</button>
-          <button class="fl-btn fl-act" data-act="resolver">Resolver</button>
-          <button class="fl-btn fl-act" data-act="limpar">Limpar</button>
-        </div>
-        <div class="fl-count" data-draw="contador">—</div>
+  <!-- LINHA 1 -->
+  <div class="grid g3">
+    <div class="card">
+      <div class="ttl">Parâmetros da carteira</div>
+      <div class="ctl">
+        <label>Vendas de dezembro <span class="val" id="vV"></span></label>
+        <small>variação contra o mês anterior (R$ 4.000 mil)</small>
+        <input type="range" id="sV" min="-40" max="40" step="5">
       </div>
-
-      <div class="fl-zone" id="visual" data-source="contas_circulantes nao_circulantes">
-        <h2 class="fl-zt">Quadrantes Fleuriet <span class="fl-info" tabindex="0">i<span class="fl-tip">Arraste uma conta para o quadrante, ou use o seletor ao lado dela. Contas do ativo só vão para ACO/ACF; do passivo, só PCO/PCF.</span></span></h2>
-        <div class="fl-quads dash-skeleton" data-draw="quadrantes"></div>
-        <div class="fl-idh">
-          <h3>CCL = NCG + ST</h3>
-          <span>a barra do CCL não muda com a classificação</span>
-        </div>
-        <div class="fl-bar dash-skeleton" data-draw="barra" role="img" aria-label="Barra da identidade CCL = NCG + ST"></div>
+      <div class="ctl">
+        <label>Deterioração jul–dez <span class="val" id="vD"></span></label>
+        <small>aumento das roll rates no 2º semestre</small>
+        <input type="range" id="sD" min="0" max="80" step="10">
       </div>
+      <div class="ctl">
+        <label>Baixa do 180+ por mês <span class="val" id="vW"></span></label>
+        <small>parcela do saldo 180+ lançada a perda a cada mês</small>
+        <input type="range" id="sW" min="0" max="100" step="5">
+      </div>
+      <div class="ctl" style="margin-bottom:4px">
+        <label>Roll rate usada na perda esperada</label>
+        <div class="seg" id="seg" style="margin-top:6px">
+          <button data-w="12">Média 12 meses</button><button data-w="6">Últimos 6</button>
+        </div>
+      </div>
+      <div class="hint" style="margin-top:12px">Roll rates de referência (slide): 20% · 50% · 25% · 60% · 80%, com pequena oscilação mês a mês.</div>
+    </div>
 
-      <div class="fl-zone" id="leitura" data-source="contas_circulantes nao_circulantes">
-        <h2 class="fl-zt">Leitura · R$ mil</h2>
-        <div class="fl-kpi">
-          <div class="fl-kl">NCG <span class="fl-info" tabindex="0">i<span class="fl-tip">O sinal da NCG exige contexto (setor).</span></span></div>
-          <div class="fl-kn dash-skeleton" data-draw="ncg">—</div>
-          <div class="fl-note">ACO − PCO = <span data-draw="ncg-conta">—</span></div>
-        </div>
-        <div class="fl-kpi">
-          <div class="fl-kl">CCL <span class="fl-info" tabindex="0">i<span class="fl-tip">O sinal do CCL exige contexto (setor). Depende só de vencimento: não muda com a classificação.</span></span></div>
-          <div class="fl-kn dash-skeleton" data-draw="ccl">—</div>
-          <div class="fl-note">AC − PC = <span data-draw="ccl-conta">—</span></div>
-          <div class="fl-note">ótica LP: (PL + ELP) − ANC = <span data-draw="ccl-lp">—</span></div>
-        </div>
-        <div class="fl-kpi">
-          <div class="fl-kl">ST</div>
-          <div class="fl-kn dash-skeleton" data-draw="st">—</div>
-          <div class="fl-note">ACF − PCF = <span data-draw="st-conta">—</span></div>
-          <div class="fl-note">identidade: CCL − NCG = <span data-draw="st-id">—</span></div>
-          <div class="fl-sema">
-            <span data-draw="sema-sel"></span>
-            <span data-sema="pos" hidden><i class="fl-dot"></i> folga de tesouraria</span>
-            <span data-sema="neg" hidden><i class="fl-dot"></i> dívida onerosa de CP sustenta a operação</span>
-            <span data-sema="zero" hidden><i class="fl-dot"></i> ST zero: sem folga nem dívida de CP sobrando</span>
-            <span data-sema="pend" hidden><i class="fl-dot"></i> parcial: há contas a classificar</span>
-          </div>
-        </div>
-        <div class="fl-diag">
-          <span data-draw="frase"></span>
-          <p data-frase="pend" hidden>Classifique todas as contas para ler NCG e ST. Note que o CCL já está definido — ele não depende de natureza, só de vencimento.</p>
-          <p data-frase="st-neg" hidden>O CCL de <b data-draw="v-ccl">—</b> não cobre a NCG de <b data-draw="v-ncg">—</b>: <span data-draw="v-empresa">—</span> rola R$ <b data-draw="v-st-abs">—</b> mil em dívida de curto prazo para operar — ST negativo, sinal de alerta estrutural.</p>
-          <p data-frase="ccl-zero" hidden>CCL zero, mas ST de <b data-draw="v-st">—</b>: a operação gera caixa (NCG negativa) antes de pagar fornecedores — CCL = 0 não é problema aqui.</p>
-          <p data-frase="ncg-neg" hidden>NCG negativa (<b data-draw="v-ncg">—</b>): a operação gera caixa antes de pagar fornecedores, e o ST de <b data-draw="v-st">—</b> é folga.</p>
-          <p data-frase="st-pos" hidden>O CCL de <b data-draw="v-ccl">—</b> cobre a NCG de <b data-draw="v-ncg">—</b>: ST de <b data-draw="v-st">—</b>, folga de tesouraria para o ciclo.</p>
-          <p data-frase="st-zero" hidden>CCL e NCG empatam em <b data-draw="v-ccl">—</b>: ST zero — a operação está financiada no limite.</p>
-        </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="ttl2">Aging mensal da carteira</div><div class="hint">saldo a receber por faixa · R$ mil</div>
+      </div>
+      <svg id="chAging" viewBox="0 0 660 250" width="100%"></svg>
+      <div class="legend" id="leg"></div>
+    </div>
+
+    <div class="card">
+      <div class="ttl">Leitura · dezembro</div>
+      <div class="kpi"><span class="k">Recebíveis <small>R$ mil</small></span><span class="v" id="kAR"></span></div>
+      <div class="kpi"><span class="k">DSO <small>simples × countback</small></span><span class="v" id="kDSO"></span></div>
+      <div class="kpi"><span class="k">Perda esperada</span><span class="v red" id="kPE"></span></div>
+      <div class="kpi"><span class="k">91–180→180+ <small>aparente · de fato</small></span><span class="v" id="k180"></span></div>
+      <div class="note" id="nRead"></div>
+    </div>
+  </div>
+
+  <!-- LINHA 2 -->
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="ttl2">1 · Aging (tabela)</div><div class="hint">R$ mil · vendas a 30 dias</div>
+      </div>
+      <div class="sc"><table id="tAging"></table></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="ttl2">2 · Matriz de migração (roll rates)</div><div class="hint">clique numa taxa para conferir</div>
+      </div>
+      <div class="sc"><table id="tRoll"></table></div>
+      <div class="verify" id="verify"></div>
+    </div>
+  </div>
+
+  <!-- LINHA 3 -->
+  <div class="grid gd" style="margin-top:12px">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="ttl2">3 · DSO simples × countback</div><div class="hint">dias · barras: vendas do mês (R$ mil, eixo à direita)</div>
+      </div>
+      <svg id="chDSO" viewBox="0 0 760 230" width="100%"></svg>
+      <div class="legend">
+        <span><i style="background:var(--amber)"></i>DSO simples</span>
+        <span><i style="background:var(--navy)"></i>DSO countback</span>
+        <span><i style="background:#e6e8ee"></i>Vendas</span>
       </div>
     </div>
-  </section>
-
-  <section class="fl-page" id="duas-datas" hidden>
-    <div class="fl-dd">
-      <div class="fl-card" id="tabela-datas">
-        <h3>T-1 × T0 · Indústria Alfa</h3>
-        <p class="fl-cn">R$ mil · Δ = T0 − T-1</p>
-        <table class="fl-table" data-source="indicadores" data-row-key="indicador">
-          <thead><tr><th data-field="indicador">Indicador</th><th data-field="t_1">T-1</th><th data-field="t0">T0</th><th data-field="delta">Δ</th></tr></thead>
-          <tbody data-draw="tab-ind"></tbody>
-        </table>
-        <p class="fl-decomp">ΔST = ΔCCL − ΔNCG = (<b data-draw="dd-ccl" data-source="indicadores" data-field="delta" data-where="indicador=CCL — folga estrutural">—</b>) − (<b data-draw="dd-ncg" data-source="indicadores" data-field="delta" data-where="indicador=NCG — demanda operacional">—</b>) = <b data-draw="dd-st" data-source="indicadores" data-field="delta" data-where="indicador=ST — saldo de tesouraria">—</b></p>
-      </div>
-      <div class="fl-card" id="grafico-datas">
-        <h3>CCL e NCG nas duas datas</h3>
-        <p class="fl-cn">O traço entre as barras é o ST = CCL − NCG</p>
-        <div class="fl-chart" data-draw="dd-chart" data-source="indicadores"></div>
-        <div class="fl-legend"><span><i style="background: var(--fl-ccl)"></i>CCL</span><span><i style="background: var(--fl-aco)"></i>NCG</span><span><i style="background: var(--fl-pos)"></i>ST positivo</span><span><i style="background: var(--fl-neg)"></i>ST negativo</span></div>
-      </div>
+    <div class="card">
+      <div class="ttl">A conta de dezembro</div>
+      <div><b>Simples</b> = recebíveis ÷ vendas do mês × 30</div>
+      <div class="hint" id="cSimple" style="margin:2px 0 10px"></div>
+      <div><b>Countback</b> = consome o saldo contra as vendas mais recentes</div>
+      <ol class="steps" id="cCount"></ol>
+      <div class="note" id="nDSO"></div>
+      <div style="margin-top:12px"><b>Perda esperada</b> = produto das roll rates</div>
+      <div class="hint" id="cPE" style="margin-top:2px"></div>
     </div>
-    <div class="fl-card fl-leitura" id="leitura-datas">
-      <label class="fl-toggle"><input type="checkbox" class="fl-abrir"> Abrir as contas</label>
-      <div class="fl-diag">A NCG cresceu R$ <b data-draw="dd-ncg-u" data-source="indicadores" data-field="delta" data-where="indicador=NCG — demanda operacional">—</b> mil e o CCL só R$ <b data-draw="dd-ccl-u" data-source="indicadores" data-field="delta" data-where="indicador=CCL — folga estrutural">—</b> mil. O ST despencou não por fraqueza da estrutura, mas por expansão operacional não financiada — a tesoura começou a abrir (D1.4).</div>
-      <div class="fl-contas" hidden>
-        <table class="fl-table" style="margin-top: 10px" data-source="variacoes" data-row-key="conta">
-          <thead><tr><th data-field="conta">Conta</th><th data-field="grupo">Grupo</th><th data-field="t_1">T-1</th><th data-field="t0">T0</th><th data-field="delta">Δ</th></tr></thead>
-          <tbody data-draw="tab-contas"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+  </div>
 
-  <details class="fl-help" id="perguntas">
+  <details>
     <summary>? Perguntas-guia</summary>
-    <div class="fl-help-body">
-      <ol>
-        <li>Duplicatas descontadas nascem de vendas a clientes. Por que vão para PCF e não para PCO?
-          <details><summary>mostrar resposta</summary><p>Descontar é decisão financeira (antecipar caixa pagando juros), não consequência automática da operação. Natureza define o grupo, não a origem da conta.</p></details>
-        </li>
-        <li>Se a Alfa trocasse R$ <b data-draw="g-valor" data-source="alongamento" data-field="valor" data-row="0">—</b> mil de empréstimos CP por dívida de longo prazo, o que acontece com NCG, CCL e ST?
-          <details><summary>mostrar resposta</summary><p>NCG não muda (<b data-draw="g-ncg" data-source="alongamento" data-field="ncg" data-row="0">—</b>); CCL sobe para <b data-draw="g-ccl" data-source="alongamento" data-field="ccl" data-row="0">—</b> (PC cai, ELP sobe); ST vai a <b data-draw="g-st" data-source="alongamento" data-field="st" data-row="0">—</b>. Alongar dívida fecha o ST sem reduzir o endividamento — primeira alavanca do plano de mitigação (V1.8).</p></details>
-        </li>
-        <li>No modo "Duas datas", de onde veio a queda do ST?
-          <details><summary>mostrar resposta</summary><p>Da operação: ΔNCG = <b data-draw="g-dncg" data-source="indicadores" data-field="delta" data-where="indicador=NCG — demanda operacional">—</b> (clientes <b data-draw="g-dup" data-source="variacoes" data-field="delta" data-where="conta=Duplicatas a receber (clientes)">—</b>, estoques <b data-draw="g-est" data-source="variacoes" data-field="delta" data-where="conta=Estoques">—</b>, compensados em parte por fornecedores <b data-draw="g-forn" data-source="variacoes" data-field="delta" data-where="conta=Fornecedores">—</b> e outros) contra ΔCCL = <b data-draw="g-dccl" data-source="indicadores" data-field="delta" data-where="indicador=CCL — folga estrutural">—</b>. ΔST = <b data-draw="g-dst" data-source="indicadores" data-field="delta" data-where="indicador=ST — saldo de tesouraria">—</b>.</p></details>
-        </li>
-      </ol>
-    </div>
+    <div class="q"><b>1 · Recência.</b> A média dos últimos 6 meses estima melhor as roll rates do que a média de todos os meses? Em que situação?
+      <details><summary>mostrar resposta</summary><p>Quando a carteira muda de regime — nova política de crédito, cliente grande piorando, virada do ciclo econômico. A média longa dilui a mudança e subestima a perda. Teste o cenário “Carteira deteriorando” e alterne a janela: a perda esperada salta com os últimos 6 meses. Se o processo é estável, mais meses só reduzem o ruído e a média longa é a melhor estimativa.</p></details></div>
+    <div class="q"><b>2 · Faixa final.</b> Por que a razão 91–180 → 180+ pode passar de 100%?
+      <details><summary>mostrar resposta</summary><p>Porque o 180+ é absorvente: o saldo antigo fica lá até ser baixado e se soma ao que chega da 91–180. A razão destino(t) ÷ origem(t−1) põe no numerador o estoque que já estava na faixa, mas só a migração no denominador. Arraste a baixa do 180+: com 100% de baixa mensal a razão aparente coincide com a migração de fato; sem baixa, ela explode.</p></details></div>
+    <div class="q"><b>3 · Divergência.</b> Em que situações o DSO simples e o countback mais se afastam?
+      <details><summary>mostrar resposta</summary><p>Quando as vendas do último mês fogem das anteriores — pico, queda, sazonalidade. O simples divide o saldo inteiro pelas vendas de um só mês: um pico infla o denominador e o prazo parece menor; uma queda faz o prazo parecer maior. O countback casa o saldo com as vendas que o geraram e não sofre esse efeito.</p></details></div>
   </details>
+  <div class="foot">Carteira ilustrativa da Indústria Alfa, R$ mil. Simplificações: faturamento a 30 dias (vendas do mês = saldo a vencer); cada faixa avança um degrau por mês, inclusive a 91–180; o 180+ só sai por baixa a perda. Perda esperada = probabilidade de uma venda chegar ao 180+.</div>
 </div>
 
 <script>
-/* ============================================================
-   D1.3 · Reclassificador Fleuriet — lógica pura + desenhos
-   Testes de aderência (Spec §7), conferidos com calcular():
-   1. Resolver, Alfa T0 → ACO 14.000 · ACF 2.500 · PCO 5.100 · PCF 3.500
-      NCG 8.900 · CCL 7.900 (AC−PC e (PL+ELP)−ANC) · ST −1.000 (ACF−PCF e CCL−NCG) · semáforo vermelho
-   2. Duplicatas descontadas em PCO (demais certas) → NCG 8.000 · ST −100 · CCL 7.900; Conferir: 11 de 12
-   3. Varejista resolvido → NCG −3.000 · CCL 0 · ST +3.000 · semáforo verde
-   4. Duas datas → 7.500/7.900/+400 · 7.000/8.900/+1.900 · +500/−1.000/−1.500
-   5. Contas abertas → Δ Duplicatas +1.700 · Estoques +1.100 · Fornecedores +700 · Empréstimos CP +700
-   ============================================================ */
-const FL = window.FL = { caso: 'Alfa', cls: {}, conferido: false, arrastando: null };
-const LADOS = { ativo: ['ACO', 'ACF'], passivo: ['PCO', 'PCF'] };
-const NOMES = { ACO: 'operacional', ACF: 'financeiro', PCO: 'operacional', PCF: 'financeiro' };
-const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''], minus: '−' });
-const f = loc.format(',.0f');
-const fsg = loc.format('+,.0f');
-const fs = (v) => (v === 0 ? '0' : fsg(v));
-
-/* ---------- funções puras ---------- */
-function calcular(contas, cls) {
-  const g = { ACO: 0, ACF: 0, PCO: 0, PCF: 0 };
-  let AC = 0, PC = 0, pend = 0, pendSaldo = 0, certas = 0;
-  for (const c of contas) {
-    if (c.lado === 'ativo') AC += c.v; else PC += c.v;
-    const k = cls[c.id];
-    if (k) { g[k] += c.v; if (k === c.grupo) certas += 1; }
-    else { pend += 1; pendSaldo += c.lado === 'ativo' ? c.v : -c.v; }
-  }
-  const NCG = g.ACO - g.PCO;           // parcial enquanto houver pendentes
-  const ST = g.ACF - g.PCF;            // parcial enquanto houver pendentes
-  const CCL = AC - PC;                 // independe da classificação
-  const CCLc = CCL - pendSaldo;        // CCL só das classificadas: CCLc − NCG = ST sempre
-  return { g, AC, PC, NCG, ST, CCL, CCLc, pend, certas, total: contas.length };
-}
-function cclLP(nc) { return (nc.PL + nc.ELP) - nc.ANC; }
-
-function estado() {
-  const a = dash.data('contas_circulantes');
-  const b = dash.data('nao_circulantes');
-  if (a.status !== 'ok' || b.status !== 'ok') {
-    const s = (a.status === 'loading' || b.status === 'loading') ? 'loading' : 'error';
-    return { ok: false, s };
-  }
-  const contas = a.data.filter((r) => r.caso === FL.caso).map((r) => ({
-    id: String(r.id), conta: String(r.conta), lado: String(r.lado), grupo: String(r.grupo),
-    v: Number(r.t0), criterio: String(r.criterio ?? ''),
-  }));
-  const nc = {};
-  b.data.filter((r) => r.caso === FL.caso).forEach((r) => { nc[r.item] = Number(r.t0); });
-  return { ok: true, contas, nc, ...calcular(contas, FL.cls) };
-}
-
-const NOMES_DESENHO = ['caso-nome', 'lista', 'contador', 'quadrantes', 'barra', 'sema-sel', 'frase',
-  'ncg', 'ncg-conta', 'ccl', 'ccl-conta', 'ccl-lp', 'st', 'st-conta', 'st-id',
-  'v-ccl', 'v-ncg', 'v-st', 'v-st-abs', 'v-empresa'];
-const redraw = () => NOMES_DESENHO.forEach((n) => dash.draw(n));
-
-function falha(el) {
-  const d = document.createElement('div');
-  d.className = 'fl-fail';
-  d.append(document.createElement('i'), 'Não carregou');
-  el.replaceChildren(d);
-}
-function caixa(el, e) {
-  el.classList.toggle('dash-skeleton', e.s === 'loading');
-  if (e.s === 'loading') el.replaceChildren(); else falha(el);
-}
-function texto(name, fn) {
-  dash.draw(name, (el) => {
-    const e = estado();
-    if (!e.ok) { el.classList.toggle('dash-skeleton', e.s === 'loading'); el.textContent = '—'; return; }
-    el.classList.remove('dash-skeleton');
-    fn(el, e);
-  });
-}
-function mk(tag, cls, txt) {
-  const n = document.createElement(tag);
-  if (cls) n.className = cls;
-  if (txt != null) n.textContent = txt;
-  return n;
-}
-function arrastavel(node, c) {
-  node.draggable = true;
-  node.addEventListener('dragstart', (ev) => {
-    ev.dataTransfer.setData('text/plain', c.id);
-    ev.dataTransfer.effectAllowed = 'move';
-    FL.arrastando = c.lado;
-  });
-  node.addEventListener('dragend', () => { FL.arrastando = null; });
-}
-function alvo(node, aceita, aplicar) {
-  node.addEventListener('dragover', (ev) => { if (aceita(FL.arrastando)) { ev.preventDefault(); node.classList.add('fl-over'); } });
-  node.addEventListener('dragleave', () => node.classList.remove('fl-over'));
-  node.addEventListener('drop', (ev) => {
-    ev.preventDefault();
-    node.classList.remove('fl-over');
-    const id = ev.dataTransfer.getData('text/plain');
-    if (id) { aplicar(id); redraw(); }
-  });
-}
-
-/* ---------- modo Classificar ---------- */
-texto('caso-nome', (el, e) => {
-  el.textContent = (FL.caso === 'Alfa' ? 'Indústria Alfa, T0' : 'Varejista fictício, só para contraste') + ' · ' + e.total + ' contas · R$ mil';
-});
-
-dash.draw('lista', (el) => {
-  const e = estado();
-  if (!e.ok) { caixa(el, e); return; }
-  el.classList.remove('dash-skeleton');
-  el.replaceChildren(...e.contas.map((c) => {
-    const k = FL.cls[c.id] || '';
-    const li = mk('li', 'fl-row');
-    li.dataset.g = k;
-    arrastavel(li, c);
-    const errado = FL.conferido && k && k !== c.grupo;
-    const certo = FL.conferido && k === c.grupo;
-    if (errado) li.classList.add('fl-errado');
-    const seg = mk('div', 'fl-seg');
-    seg.setAttribute('role', 'group');
-    seg.setAttribute('aria-label', 'Grupo de ' + c.conta);
-    LADOS[c.lado].forEach((g) => {
-      const b = mk('button', '', g);
-      b.dataset.g = g;
-      b.setAttribute('aria-pressed', String(k === g));
-      b.addEventListener('click', () => {
-        if (FL.cls[c.id] === g) delete FL.cls[c.id]; else FL.cls[c.id] = g;
-        redraw();
-      });
-      seg.append(b);
-    });
-    li.append(mk('span', 'fl-nm', c.conta), mk('span', 'fl-vl', f(c.v)), seg);
-    if (errado) {
-      li.append(mk('span', 'fl-mk fl-x', '✕'), mk('span', 'fl-tipline', c.criterio));
-    } else if (certo) {
-      li.append(mk('span', 'fl-mk fl-ok', '✓'));
-    }
-    return li;
-  }));
-});
-
-texto('contador', (el, e) => {
-  if (!FL.conferido) { el.textContent = e.pend ? e.pend + ' de ' + e.total + ' a classificar' : 'Tudo classificado — clique em Conferir'; return; }
-  el.textContent = e.certas + ' de ' + e.total + ' corretas' + (e.pend ? ' · ' + e.pend + ' a classificar' : '') + (e.certas < e.total - e.pend ? ' · passe o mouse nas marcadas com ✕' : '');
-});
-
-dash.draw('quadrantes', (el) => {
-  const e = estado();
-  if (!e.ok) { caixa(el, e); return; }
-  el.classList.remove('dash-skeleton');
-  const grid = mk('div', 'fl-qgrid');
-  ['ACO', 'ACF', 'PCO', 'PCF'].forEach((g) => {
-    const box = mk('div', 'fl-q');
-    box.dataset.g = g;
-    const lado = g[0] === 'A' ? 'ativo' : 'passivo';
-    const h = mk('div', 'fl-qh');
-    h.append(mk('span', 'fl-qs', g), mk('span', 'fl-qn', NOMES[g]), mk('span', 'fl-qt', f(e.g[g])));
-    const chips = mk('div', 'fl-chips');
-    e.contas.filter((c) => FL.cls[c.id] === g).forEach((c) => {
-      const ch = mk('span', 'fl-chip', c.conta);
-      ch.append(mk('b', '', f(c.v)));
-      arrastavel(ch, c);
-      chips.append(ch);
-    });
-    box.append(h, chips);
-    alvo(box, (l) => l === lado, (id) => { FL.cls[id] = g; });
-    grid.append(box);
-  });
-  const tray = mk('div', 'fl-tray');
-  const pend = e.contas.filter((c) => !FL.cls[c.id]);
-  tray.append(mk('div', 'fl-qh', pend.length ? 'A classificar · ' + pend.length : 'A classificar · nenhuma'));
-  const chips = mk('div', 'fl-chips');
-  pend.forEach((c) => {
-    const ch = mk('span', 'fl-chip', c.conta);
-    ch.append(mk('b', '', f(c.v)));
-    arrastavel(ch, c);
-    chips.append(ch);
-  });
-  tray.append(chips);
-  alvo(tray, (l) => !!l, (id) => { delete FL.cls[id]; });
-  el.replaceChildren(grid, tray);
-});
-
-dash.draw('barra', (el) => {
-  const e = estado();
-  if (!e.ok) { caixa(el, e); return; }
-  el.classList.remove('dash-skeleton');
-  const W = Math.max(280, el.clientWidth);
-  const rowH = 34, top = 6, legendH = e.pend ? 22 : 0;
-  const H = top + rowH * 3 + legendH + 4;
-  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
-  el.replaceChildren(svg.node());
-  const fim = e.NCG + e.ST;                      // onde o ST termina
-  const rot = [
-    { t: 'CCL ' + f(e.CCL), cor: 'var(--color-fg)' },
-    { t: 'NCG ' + f(e.NCG), cor: 'var(--color-fg)' },
-    { t: 'ST ' + fs(e.ST), cor: e.pend ? 'var(--color-fg)' : (e.ST > 0 ? 'var(--fl-pos)' : e.ST < 0 ? 'var(--fl-neg)' : 'var(--color-fg)') },
-  ];
-  const labels = svg.selectAll('text.lab').data(rot).join('text').attr('class', 'fl-svgt lab')
-    .attr('x', 0).attr('y', (d, i) => top + i * rowH + rowH / 2 + 5).style('fill', (d) => d.cor).text((d) => d.t);
-  let lw = 0;
-  labels.each(function () { lw = Math.max(lw, this.getComputedTextLength()); });
-  const x0 = lw + 14;
-  const vals = [0, e.CCL, e.NCG, fim];
-  let lo = Math.min(...vals), hi = Math.max(...vals);
-  if (hi === lo) hi = lo + 1;
-  const pad = (hi - lo) * 0.04;
-  const x = d3.scaleLinear([lo - pad, hi + pad], [x0, W - 6]);
-  const bar = (i, a, b, cor, extra) => {
-    const r = svg.append('rect').attr('x', x(Math.min(a, b))).attr('y', top + i * rowH + 6)
-      .attr('width', Math.max(2, Math.abs(x(b) - x(a)))).attr('height', rowH - 12).attr('rx', 3)
-      .attr('fill', cor);
-    if (extra) extra(r);
-    return r;
-  };
-  // eixo zero e guia do CCL
-  svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', top).attr('y2', top + rowH * 3)
-    .attr('stroke', 'var(--cds-chart-axis)').attr('stroke-width', 1);
-  bar(0, 0, e.CCL, 'var(--fl-ccl)');
-  bar(1, 0, e.NCG, 'var(--fl-aco)');
-  bar(2, e.NCG, fim, e.ST > 0 ? 'var(--fl-pos)' : e.ST < 0 ? 'var(--fl-neg)' : 'var(--fl-neutro)');
-  if (e.pend && fim !== e.CCL) {
-    bar(2, fim, e.CCL, 'none', (r) => r.attr('stroke', 'var(--fl-neutro)').attr('stroke-width', 1.5).attr('stroke-dasharray', '4 3'));
-  }
-  // conector NCG → ST (cascata)
-  svg.append('line').attr('x1', x(e.NCG)).attr('x2', x(e.NCG)).attr('y1', top + rowH + rowH - 6).attr('y2', top + 2 * rowH + 6)
-    .attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '2 2');
-  svg.append('line').attr('x1', x(e.CCL)).attr('x2', x(e.CCL)).attr('y1', top + rowH - 6).attr('y2', top + 3 * rowH - 6)
-    .attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
-  if (e.pend) {
-    svg.append('text').attr('class', 'fl-svgm').attr('x', x0).attr('y', top + rowH * 3 + 16)
-      .text('tracejado: contas ainda não classificadas');
-  }
-});
-
-dash.draw('sema-sel', (el) => {
-  const e = estado();
-  const k = !e.ok ? '' : e.pend ? 'pend' : e.ST > 0 ? 'pos' : e.ST < 0 ? 'neg' : 'zero';
-  el.parentElement.querySelectorAll('[data-sema]').forEach((s) => { s.hidden = s.dataset.sema !== k; });
-});
-dash.draw('frase', (el) => {
-  const e = estado();
-  let k = '';
-  if (e.ok) {
-    if (e.pend) k = 'pend';
-    else if (e.ST < 0) k = 'st-neg';
-    else if (e.ST === 0) k = 'st-zero';
-    else if (e.CCL === 0) k = 'ccl-zero';
-    else if (e.NCG < 0) k = 'ncg-neg';
-    else k = 'st-pos';
-  }
-  el.parentElement.querySelectorAll('[data-frase]').forEach((p) => { p.hidden = p.dataset.frase !== k; });
-});
-
-texto('ncg', (el, e) => { el.textContent = f(e.NCG); el.classList.toggle('fl-parcial', e.pend > 0); });
-texto('ncg-conta', (el, e) => { el.textContent = f(e.g.ACO) + ' − ' + f(e.g.PCO) + (e.pend ? ' (parcial)' : ''); });
-texto('ccl', (el, e) => { el.textContent = f(e.CCL); });
-texto('ccl-conta', (el, e) => { el.textContent = f(e.AC) + ' − ' + f(e.PC); });
-texto('ccl-lp', (el, e) => { el.textContent = '(' + f(e.nc.PL) + ' + ' + f(e.nc.ELP) + ') − ' + f(e.nc.ANC) + ' = ' + f(cclLP(e.nc)); });
-texto('st', (el, e) => {
-  el.textContent = fs(e.ST);
-  el.classList.toggle('fl-parcial', e.pend > 0);
-  el.classList.toggle('fl-pos', !e.pend && e.ST > 0);
-  el.classList.toggle('fl-neg', !e.pend && e.ST < 0);
-});
-texto('st-conta', (el, e) => { el.textContent = f(e.g.ACF) + ' − ' + f(e.g.PCF) + (e.pend ? ' (parcial)' : ''); });
-texto('st-id', (el, e) => {
-  el.textContent = (e.pend ? '(só classificadas) ' : '') + f(e.CCLc) + ' − ' + f(e.NCG) + ' = ' + fs(e.CCLc - e.NCG);
-});
-texto('v-ccl', (el, e) => { el.textContent = f(e.CCL); });
-texto('v-ncg', (el, e) => { el.textContent = f(e.NCG); });
-texto('v-st', (el, e) => { el.textContent = fs(e.ST); });
-texto('v-st-abs', (el, e) => { el.textContent = f(Math.abs(e.ST)); });
-texto('v-empresa', (el) => { el.textContent = FL.caso === 'Alfa' ? 'a Alfa' : 'a varejista'; });
-
-/* ---------- controles ---------- */
-document.querySelectorAll('.fl-act').forEach((b) => b.addEventListener('click', () => {
-  const a = b.dataset.act;
-  if (a === 'conferir') FL.conferido = true;
-  if (a === 'limpar') { FL.cls = {}; FL.conferido = false; }
-  if (a === 'resolver') {
-    const d = dash.data('contas_circulantes');
-    if (d.status === 'ok') d.data.filter((r) => r.caso === FL.caso).forEach((r) => { FL.cls[String(r.id)] = String(r.grupo); });
-  }
-  redraw();
-}));
-document.querySelectorAll('.fl-preset').forEach((b) => b.addEventListener('click', () => {
-  FL.caso = b.dataset.caso;
-  FL.cls = {};
-  FL.conferido = false;
-  document.querySelectorAll('.fl-preset').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
-  redraw();
-}));
-
-/* ---------- abas ---------- */
-const abrir = (id) => {
-  document.querySelectorAll('.fl-page').forEach((s) => { s.hidden = s.id !== id; });
-  document.querySelectorAll('.fl-tab').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+(function(){
+const BASE=[0.20,0.50,0.25,0.60,0.80];
+const FX=["A vencer","1–30","31–60","61–90","91–180","180+"];
+const TR=["A vencer→1–30","1–30→31–60","31–60→61–90","61–90→91–180","91–180→180+"];
+const COL=["--b0","--b1","--b2","--b3","--b4","--b5"].map(v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim());
+const MES=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const N=24, F=12; // 12 meses de aquecimento + 12 exibidos
+const S0=4000;
+const SCEN={
+  "Indústria Alfa":{v:20,d:0,w:30},
+  "Vendas estáveis":{v:0,d:0,w:30},
+  "Queda de vendas":{v:-25,d:0,w:30},
+  "Carteira deteriorando":{v:0,d:50,w:30},
+  "Sem baixa do 180+":{v:20,d:0,w:0}
 };
-document.querySelectorAll('.fl-tab').forEach((t) => t.addEventListener('click', () => { abrir(t.dataset.tab); dash.setLink(t.dataset.tab); }));
-document.querySelectorAll('.fl-abrir').forEach((cb) => cb.addEventListener('change', () => {
-  document.querySelectorAll('.fl-contas').forEach((x) => { x.hidden = !cb.checked; });
-}));
-const nomeado = document.getElementById(location.hash.slice(1));
-if (nomeado && nomeado.classList.contains('fl-page')) abrir(nomeado.id);
+// ruído determinístico das roll rates (±8%)
+let seed=7; const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+const NOISE=[...Array(N)].map(()=>BASE.map(()=> (rnd()-0.5)*0.16));
+const st={v:20,d:0,w:30,win:12,sel:null,scen:"Indústria Alfa"};
 
-/* ---------- cálculos das duas datas (visíveis em Fontes) ---------- */
-dash.calc('indicadores', {
-  title: 'CCL, NCG e ST · T-1 × T0',
-  description: 'CCL = AC − PC, NCG = ACO − PCO e ST = ACF − PCF da Indústria Alfa nas duas datas, com Δ = T0 − T-1.',
-  inputs: ['contas_circulantes'],
-  fn: (contas_circulantes) => {
-    const alfa = contas_circulantes.filter((r) => r.caso === 'Alfa');
-    const soma = (col, g) => alfa.filter((r) => r.grupo === g).reduce((s, r) => s + Number(r[col]), 0);
-    const ind = (col) => {
-      const ACO = soma(col, 'ACO'), ACF = soma(col, 'ACF'), PCO = soma(col, 'PCO'), PCF = soma(col, 'PCF');
-      return { CCL: (ACO + ACF) - (PCO + PCF), NCG: ACO - PCO, ST: ACF - PCF };
-    };
-    const a = ind('t_1'), b = ind('t0');
-    return [
-      { indicador: 'CCL — folga estrutural', t_1: a.CCL, t0: b.CCL, delta: b.CCL - a.CCL },
-      { indicador: 'NCG — demanda operacional', t_1: a.NCG, t0: b.NCG, delta: b.NCG - a.NCG },
-      { indicador: 'ST — saldo de tesouraria', t_1: a.ST, t0: b.ST, delta: b.ST - a.ST },
-    ];
-  },
-});
-dash.calc('variacoes', {
-  title: 'Variação das contas · T-1 → T0',
-  description: 'Cada conta circulante da Indústria Alfa em T-1 e T0, com Δ = T0 − T-1.',
-  inputs: ['contas_circulantes'],
-  fn: (contas_circulantes) => contas_circulantes
-    .filter((r) => r.caso === 'Alfa')
-    .map((r) => ({ conta: r.conta, grupo: r.grupo, t_1: Number(r.t_1), t0: Number(r.t0), delta: Number(r.t0) - Number(r.t_1) })),
-});
-dash.calc('alongamento', {
-  title: 'Alongar R$ 1.000 mil de dívida CP',
-  description: 'Alfa T0 com R$ 1.000 mil de empréstimos CP trocados por dívida de longo prazo (pergunta-guia 2).',
-  inputs: ['contas_circulantes', 'nao_circulantes'],
-  fn: (contas_circulantes, nao_circulantes) => {
-    const valor = 1000;
-    const alfa = contas_circulantes.filter((r) => r.caso === 'Alfa');
-    const soma = (g) => alfa.filter((r) => r.grupo === g).reduce((s, r) => s + Number(r.t0), 0);
-    const nc = {};
-    nao_circulantes.filter((r) => r.caso === 'Alfa').forEach((r) => { nc[r.item] = Number(r.t0); });
-    const ncg = soma('ACO') - soma('PCO');
-    const st = soma('ACF') - (soma('PCF') - valor);
-    const ccl = (nc.PL + nc.ELP + valor) - nc.ANC;
-    return [{ valor, ncg, ccl, st }];
-  },
-});
+const fmt=(x,d=0)=>x.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=(x,d=0)=>fmt(x*100,d)+"%";
+const lbl=a=> a<F ? "Dez/25" : MES[a-F];
 
-function calcTexto(name, id, fn) {
-  dash.draw(name, (el) => {
-    const d = dash.data(id);
-    if (d.status !== 'ok') { el.textContent = '—'; return; }
-    el.textContent = fn(d.data);
-  });
+function model(){
+  const v=st.v/100,d=st.d/100,w=st.w/100;
+  const S=[...Array(N)].map((_,a)=>S0*(1+0.05*Math.sin(2*Math.PI*(a+2)/12)));
+  S[N-2]=S0; S[N-1]=S0*(1+v);
+  const R=[...Array(N)].map((_,a)=>BASE.map((b,k)=>Math.min(0.95,b*(1+NOISE[a][k])*(a>=N-6?1+d:1))));
+  const B=[];
+  B[0]=[S[0]]; for(let k=1;k<5;k++) B[0][k]=B[0][k-1]*BASE[k-1]; B[0][5]=0;
+  for(let a=1;a<N;a++){
+    const p=B[a-1], r=R[a], b=[S[a]];
+    for(let k=1;k<5;k++) b[k]=r[k-1]*p[k-1];
+    b[5]=(1-w)*p[5]+r[4]*p[4];
+    B.push(b);
+  }
+  const AR=B.map(b=>b.reduce((s,x)=>s+x,0));
+  // roll rates estimadas a partir do aging
+  const est=[]; for(let a=F;a<N;a++){
+    const p=B[a-1], c=B[a], row=[];
+    for(let k=0;k<4;k++) row.push(c[k+1]/p[k]);
+    row.push(c[5]/p[4]);                       // aparente
+    row.push((c[5]-(1-w)*p[5])/p[4]);          // de fato
+    est.push(row);
+  }
+  const mean=(arr)=>arr[0].map((_,j)=>arr.reduce((s,r)=>s+r[j],0)/arr.length);
+  const m12=mean(est), m6=mean(est.slice(-6));
+  const dso=[]; for(let a=F;a<N;a++){
+    const simple=AR[a]/S[a]*30;
+    let rem=AR[a],days=0,steps=[],m=a;
+    while(m>=0){ if(rem<=S[m]){days+=rem/S[m]*30;steps.push({m,rem,s:S[m],full:false});break;}
+      steps.push({m,rem,s:S[m],full:true}); rem-=S[m]; days+=30; m--; }
+    dso.push({simple,cb:days,steps});
+  }
+  return {S,R,B,AR,est,m12,m6,dso,w};
 }
-const linha = (rows, p) => rows.find((r) => String(r.indicador).startsWith(p)) || {};
-calcTexto('dd-ccl', 'indicadores', (r) => fs(linha(r, 'CCL').delta));
-calcTexto('dd-ncg', 'indicadores', (r) => fs(linha(r, 'NCG').delta));
-calcTexto('dd-st', 'indicadores', (r) => fs(linha(r, 'ST').delta));
-calcTexto('dd-ncg-u', 'indicadores', (r) => f(linha(r, 'NCG').delta));
-calcTexto('dd-ccl-u', 'indicadores', (r) => f(linha(r, 'CCL').delta));
-calcTexto('g-dncg', 'indicadores', (r) => fs(linha(r, 'NCG').delta));
-calcTexto('g-dccl', 'indicadores', (r) => fs(linha(r, 'CCL').delta));
-calcTexto('g-dst', 'indicadores', (r) => fs(linha(r, 'ST').delta));
-const conta = (rows, n) => rows.find((r) => r.conta === n) || {};
-calcTexto('g-dup', 'variacoes', (r) => fs(conta(r, 'Duplicatas a receber (clientes)').delta));
-calcTexto('g-est', 'variacoes', (r) => fs(conta(r, 'Estoques').delta));
-calcTexto('g-forn', 'variacoes', (r) => fs(conta(r, 'Fornecedores').delta));
-calcTexto('g-valor', 'alongamento', (r) => f(r[0].valor));
-calcTexto('g-ncg', 'alongamento', (r) => f(r[0].ncg));
-calcTexto('g-ccl', 'alongamento', (r) => f(r[0].ccl));
-calcTexto('g-st', 'alongamento', (r) => fs(r[0].st));
 
-const corST = (v) => (v > 0 ? 'fl-pos-t' : v < 0 ? 'fl-neg-t' : '');
-dash.draw('tab-ind', (tb) => {
-  const d = dash.data('indicadores');
-  if (d.status !== 'ok') { tb.replaceChildren(); return; }
-  tb.replaceChildren(...d.data.map((r) => {
-    const tr = mk('tr');
-    const st = String(r.indicador).startsWith('ST');
-    const v = (n) => (st ? fs(n) : f(n));
-    tr.append(mk('td', '', r.indicador));
-    [r.t_1, r.t0].forEach((n) => { const td = mk('td', 'fl-big' + (st ? ' ' + corST(n) : ''), v(n)); tr.append(td); });
-    tr.append(mk('td', 'fl-big ' + (st ? corST(r.delta) : ''), fs(r.delta)));
-    return tr;
-  }));
-});
+function pills(){
+  const el=document.getElementById("pills"); el.innerHTML="";
+  Object.keys(SCEN).forEach(n=>{const b=document.createElement("button");b.className="pill"+(st.scen===n?" on":"");b.textContent=n;
+    b.onclick=()=>{Object.assign(st,SCEN[n]);st.scen=n;st.sel=null;sync();};el.appendChild(b);});
+}
+function sync(){
+  sV.value=st.v; sD.value=st.d; sW.value=st.w;
+  vV.textContent=(st.v>0?"+":"")+st.v+"%"; vD.textContent="+"+st.d+"%"; vW.textContent=st.w+"%";
+  document.querySelectorAll("#seg button").forEach(b=>b.classList.toggle("on",+b.dataset.w===st.win));
+  pills(); render();
+}
+["sV","sD","sW"].forEach(id=>{document.getElementById(id).oninput=e=>{
+  st[{sV:"v",sD:"d",sW:"w"}[id]]=+e.target.value; st.scen=null; sync();};});
+document.querySelectorAll("#seg button").forEach(b=>b.onclick=()=>{st.win=+b.dataset.w;sync();});
 
-dash.draw('tab-contas', (tb) => {
-  const d = dash.data('variacoes');
-  if (d.status !== 'ok') { tb.replaceChildren(); return; }
-  tb.replaceChildren(...d.data.map((r) => {
-    const tr = mk('tr');
-    tr.append(mk('td', '', r.conta));
-    const tg = mk('td');
-    const s = mk('span', 'fl-tag', r.grupo);
-    s.dataset.g = r.grupo;
-    tg.append(s);
-    tr.append(tg, mk('td', '', f(r.t_1)), mk('td', '', f(r.t0)), mk('td', '', fs(r.delta)));
-    return tr;
-  }));
-});
+function render(){
+  const M=model(), last=N-1, D=M.dso[11], avg=st.win===12?M.m12:M.m6;
+  const rates=[avg[0],avg[1],avg[2],avg[3],avg[5]];
+  const PE=rates.reduce((p,x)=>p*x,1);
+  const PEap=[avg[0],avg[1],avg[2],avg[3],avg[4]].reduce((p,x)=>p*x,1);
 
-dash.draw('dd-chart', (el) => {
-  const d = dash.data('indicadores');
-  if (d.status !== 'ok') { if (d.status === 'loading') el.replaceChildren(); else falha(el); return; }
-  const ccl = linha(d.data, 'CCL'), ncg = linha(d.data, 'NCG');
-  const datas = [
-    { data: 'T-1', CCL: Number(ccl.t_1), NCG: Number(ncg.t_1) },
-    { data: 'T0', CCL: Number(ccl.t0), NCG: Number(ncg.t0) },
-  ];
-  datas.forEach((p) => { p.ST = p.CCL - p.NCG; });
-  const W = Math.max(280, el.clientWidth), H = 280;
-  const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
-  el.replaceChildren(svg.node());
-  const ymax = d3.max(datas, (p) => Math.max(p.CCL, p.NCG)) * 1.12;
-  const y = d3.scaleLinear([0, ymax], [H - 48, 12]).nice();
-  const ticks = y.ticks(4);
-  const tg = svg.append('g');
-  tg.selectAll('text').data(ticks).join('text').attr('class', 'fl-svgm').attr('x', 0)
-    .attr('y', (t) => y(t) + 4).text((t) => f(t));
-  let mw = 0;
-  tg.selectAll('text').each(function () { mw = Math.max(mw, this.getComputedTextLength()); });
-  const left = mw + 10;
-  svg.insert('g', ':first-child').selectAll('line').data(ticks).join('line')
-    .attr('x1', left).attr('x2', W - 4).attr('y1', (t) => y(t)).attr('y2', (t) => y(t))
-    .attr('stroke', 'var(--cds-chart-grid)');
-  const x = d3.scaleBand(datas.map((p) => p.data), [left, W - 4]).padding(0.28);
-  const bw = Math.min(56, x.bandwidth() * 0.36);
-  const gap = Math.min(28, x.bandwidth() * 0.16);
-  const tt = mk('div', 'fl-tt');
-  tt.style.display = 'none';
-  el.append(tt);
-  const mostra = (ev, p, k) => {
-    tt.replaceChildren(mk('span', '', p.data), document.createElement('br'), k + ' ' + f(p[k]) + ' · ST ' + fs(p.ST));
-    tt.style.display = 'block';
-    const r = el.getBoundingClientRect();
-    const tx = Math.min(Math.max(0, ev.clientX - r.left + 10), el.clientWidth - tt.offsetWidth - 2);
-    tt.style.left = tx + 'px';
-    tt.style.top = Math.max(0, ev.clientY - r.top - 44) + 'px';
-  };
-  datas.forEach((p) => {
-    const cx = x(p.data) + x.bandwidth() / 2;
-    const xs = { CCL: cx - gap / 2 - bw, NCG: cx + gap / 2 };
-    [['CCL', 'var(--fl-ccl)'], ['NCG', 'var(--fl-aco)']].forEach(([k, cor]) => {
-      svg.append('rect').attr('x', xs[k]).attr('y', y(p[k])).attr('width', bw).attr('height', y(0) - y(p[k]))
-        .attr('rx', 3).attr('fill', cor)
-        .on('pointermove', (ev) => mostra(ev, p, k)).on('pointerleave', () => { tt.style.display = 'none'; });
-      if (bw >= 34) {
-        svg.append('text').attr('class', 'fl-svgt').attr('text-anchor', 'middle').attr('x', xs[k] + bw / 2)
-          .attr('y', y(p[k]) - 6).style('font-size', '13px').text(f(p[k]));
-      }
-    });
-    const corS = p.ST > 0 ? 'var(--fl-pos)' : p.ST < 0 ? 'var(--fl-neg)' : 'var(--fl-neutro)';
-    svg.append('line').attr('x1', cx).attr('x2', cx).attr('y1', y(p.CCL)).attr('y2', y(p.NCG))
-      .attr('stroke', corS).attr('stroke-width', 4).attr('stroke-linecap', 'round');
-    [p.CCL, p.NCG].forEach((v) => svg.append('line').attr('x1', cx - 6).attr('x2', cx + 6).attr('y1', y(v)).attr('y2', y(v))
-      .attr('stroke', corS).attr('stroke-width', 2));
-    svg.append('text').attr('class', 'fl-svgt').attr('text-anchor', 'middle').attr('x', cx).attr('y', H - 28)
-      .style('font-weight', '700').text(p.data);
-    svg.append('text').attr('class', 'fl-svgt').attr('text-anchor', 'middle').attr('x', cx).attr('y', H - 9)
-      .style('fill', corS).style('font-size', '13px').text('ST ' + fs(p.ST));
-  });
-  svg.append('line').attr('x1', left).attr('x2', W - 4).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
-});
+  // KPIs
+  kAR.textContent=fmt(M.AR[last]);
+  kDSO.innerHTML=`<span style="color:var(--amber)">${fmt(D.simple,1)}</span> <small>×</small> <span class="navy">${fmt(D.cb,1)}</span>`;
+  kPE.innerHTML=pct(PE,2)+` <small>recup. ${pct(1-PE,1)}</small>`;
+  const e=M.est[11];
+  k180.innerHTML=`<span class="${e[4]>1?'red':''}">${pct(e[4])}</span> <small>·</small> ${pct(e[5])}`;
+
+  // leitura
+  const gap=D.simple-D.cb; let t="";
+  if(e[4]>1) t+=`A razão aparente 91–180 → 180+ de dezembro é <b>${pct(e[4])}</b>, mas só <b>${pct(e[5])}</b> migrou de fato: o resto já estava na faixa final. `;
+  else t+=`Com baixa de ${st.w}% ao mês, a razão aparente do 180+ (${pct(e[4])}) fica perto da migração de fato (${pct(e[5])}). `;
+  if(Math.abs(gap)<0.5) t+=`Vendas estáveis no fim do ano: os dois DSOs coincidem.`;
+  else if(gap<0) t+=`O pico de vendas de dezembro infla o denominador: o DSO simples <b>subestima</b> o prazo em ${fmt(-gap,1)} dias.`;
+  else t+=`A queda de vendas de dezembro encolhe o denominador: o DSO simples <b>superestima</b> o prazo em ${fmt(gap,1)} dias.`;
+  nRead.innerHTML=t; nRead.className="note"+(e[4]>1?" warn":"");
+
+  // gráfico de aging empilhado
+  const W=660,H=250,pl=44,pr=8,pt=10,pb=24,cw=(W-pl-pr)/12;
+  const max=Math.max(...M.AR.slice(F)); const top=Math.ceil(max/1000)*1000;
+  const y=v=>pt+(H-pt-pb)*(1-v/top);
+  let g="";
+  for(let i=0;i<=4;i++){const v=top*i/4;g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="#eee"/><text x="${pl-6}" y="${y(v)+3}" text-anchor="end">${fmt(v)}</text>`;}
+  for(let i=0;i<12;i++){const a=F+i;let acc=0;const x=pl+i*cw+cw*0.18,bw=cw*0.64;
+    for(let k=0;k<6;k++){const h=M.B[a][k];g+=`<rect x="${x}" y="${y(acc+h)}" width="${bw}" height="${Math.max(0,y(acc)-y(acc+h))}" fill="${COL[k]}"><title>${MES[i]} · ${FX[k]}: ${fmt(h)}</title></rect>`;acc+=h;}
+    g+=`<text x="${x+bw/2}" y="${H-8}" text-anchor="middle">${MES[i]}</text>`;}
+  if(st.d>0) g+=`<rect x="${pl+6*cw}" y="${pt}" width="${6*cw}" height="${H-pt-pb}" fill="none" stroke="#c8433b" stroke-dasharray="4 3"/><text x="${pl+6*cw+6}" y="${pt+12}" style="fill:#c8433b">roll rates +${st.d}%</text>`;
+  chAging.innerHTML=g;
+  leg.innerHTML=FX.map((f,k)=>`<span><i style="background:${COL[k]}"></i>${f}</span>`).join("");
+
+  // tabela aging
+  let h=`<tr><th>Mês</th><th>Vendas</th>${FX.map((f,k)=>`<th><span class="tag" style="background:${COL[k]}"></span>${f}</th>`).join("")}<th>Total</th></tr>`;
+  for(let a=F-1;a<N;a++){
+    h+=`<tr class="${a<F?'warm':''}"><td>${lbl(a)}</td><td>${fmt(M.S[a])}</td>${M.B[a].map((x,k)=>`<td id="ag-${a}-${k}">${fmt(x)}</td>`).join("")}<td>${fmt(M.AR[a])}</td></tr>`;}
+  tAging.innerHTML=h;
+
+  // matriz de migração
+  const hdr=["0→1–30","1–30→31–60","31–60→61–90","61–90→91–180","→180+ aparente","→180+ de fato"];
+  const heat=(r,j)=>{const b=j>=4?BASE[4]:BASE[j];const rel=Math.min(1,Math.max(0,(r/b-0.8)/0.9));
+    if(j===4&&r>1) return "background:#f6d5d2";return `background:rgba(200,67,59,${(rel*0.28).toFixed(2)})`;};
+  let r=`<tr><th>Mês</th>${hdr.map(x=>`<th>${x}</th>`).join("")}</tr><tr class="warm"><td>Dez/25</td>${hdr.map(()=>"<td>—</td>").join("")}</tr>`;
+  M.est.forEach((row,i)=>{r+=`<tr><td>${MES[i]}</td>${row.map((x,j)=>`<td class="rr${st.sel&&st.sel[0]===i&&st.sel[1]===j?' sel':''}" data-i="${i}" data-j="${j}" style="${heat(x,j)}">${pct(x)}</td>`).join("")}</tr>`;});
+  r+=`<tr class="avg${st.win===12?' on':''}"><td>Média 12m</td>${M.m12.map(x=>`<td>${pct(x)}</td>`).join("")}</tr>`;
+  r+=`<tr class="avg${st.win===6?' on':''}"><td>Últimos 6</td>${M.m6.map(x=>`<td>${pct(x)}</td>`).join("")}</tr>`;
+  tRoll.innerHTML=r;
+  tRoll.querySelectorAll("td.rr").forEach(td=>td.onclick=()=>{st.sel=[+td.dataset.i,+td.dataset.j];render();});
+
+  // conferência
+  const vf=document.getElementById("verify");
+  if(!st.sel){vf.innerHTML=`<span class="hint">Cada taxa sai de dois saldos do aging. Clique numa célula da matriz: a origem (mês anterior) acende em azul e o destino (mês seguinte) em vermelho na tabela ao lado.</span>`;}
+  else{
+    const [i,j]=st.sel,a=F+i,p=M.B[a-1],c=M.B[a];
+    const k=Math.min(j,4); const o=document.getElementById(`ag-${a-1}-${k}`), dd=document.getElementById(`ag-${a}-${k+1}`);
+    if(o)o.classList.add("hl-o"); if(dd)dd.classList.add("hl-d");
+    if(j<4) vf.innerHTML=`<b>${TR[j]}</b>, ${lbl(a-1)} → ${lbl(a)}: ${fmt(c[j+1])} ÷ ${fmt(p[j])} = <b>${pct(M.est[i][j],1)}</b>`;
+    else if(j===4) vf.innerHTML=`<b>Razão aparente</b>, ${lbl(a-1)} → ${lbl(a)}: ${fmt(c[5])} ÷ ${fmt(p[4])} = <b class="${M.est[i][4]>1?'red':''}">${pct(M.est[i][4],1)}</b>. O numerador mistura ${fmt((1-M.w)*p[5])} que já estavam no 180+ com ${fmt(c[5]-(1-M.w)*p[5])} que chegaram da 91–180.`;
+    else vf.innerHTML=`<b>Migração de fato</b>: (${fmt(c[5])} − ${fmt((1-M.w)*p[5])} que já estavam) ÷ ${fmt(p[4])} = <b>${pct(M.est[i][5],1)}</b>. Os ${fmt((1-M.w)*p[5])} são o 180+ de ${lbl(a-1)} (${fmt(p[5])}) menos a baixa de ${st.w}%.`;
+  }
+
+  // gráfico DSO
+  const W2=760,H2=230,l2=40,r2=50,t2=12,b2=24,cw2=(W2-l2-r2)/12;
+  const dv=M.dso.flatMap(d=>[d.simple,d.cb]); let lo=Math.floor((Math.min(...dv)-3)/5)*5, hi=Math.ceil((Math.max(...dv)+3)/5)*5;
+  const yd=v=>t2+(H2-t2-b2)*(1-(v-lo)/(hi-lo));
+  const smax=Math.ceil(Math.max(...M.S.slice(F))/1000)*1000+1000; const ys=v=>t2+(H2-t2-b2)*(1-v/smax);
+  let q="";
+  for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;q+=`<line x1="${l2}" x2="${W2-r2}" y1="${yd(v)}" y2="${yd(v)}" stroke="#eee"/><text x="${l2-6}" y="${yd(v)+3}" text-anchor="end">${fmt(v)}</text><text x="${W2-r2+6}" y="${yd(v)+3}">${fmt(smax*(1-(yd(v)-t2)/(H2-t2-b2)))}</text>`;}
+  for(let i=0;i<12;i++){const x=l2+i*cw2+cw2*0.25,bw=cw2*0.5,s=M.S[F+i];q+=`<rect x="${x}" y="${ys(s)}" width="${bw}" height="${ys(0)-ys(s)}" fill="#e6e8ee"><title>Vendas ${MES[i]}: ${fmt(s)}</title></rect><text x="${x+bw/2}" y="${H2-8}" text-anchor="middle">${MES[i]}</text>`;}
+  const line=(key,c)=>{const pts=M.dso.map((d,i)=>`${l2+i*cw2+cw2/2},${yd(d[key])}`).join(" ");
+    return `<polyline points="${pts}" fill="none" stroke="${c}" stroke-width="2.2"/>`+M.dso.map((d,i)=>`<circle cx="${l2+i*cw2+cw2/2}" cy="${yd(d[key])}" r="3" fill="${c}"><title>${MES[i]}: ${fmt(d[key],1)} dias</title></circle>`).join("");};
+  q+=line("simple","#e9a825")+line("cb","#1e3a6e");
+  const xl=l2+11*cw2+cw2/2;
+  q+=`<text x="${xl-8}" y="${yd(D.simple)+(D.simple<D.cb?14:-7)}" text-anchor="end" style="fill:#b07c0f;font-weight:600">${fmt(D.simple,1)}</text><text x="${xl-8}" y="${yd(D.cb)+(D.simple<D.cb?-7:14)}" text-anchor="end" style="fill:#1e3a6e;font-weight:600">${fmt(D.cb,1)}</text>`;
+  chDSO.innerHTML=q;
+
+  // contas
+  cSimple.textContent=`${fmt(M.AR[last])} ÷ ${fmt(M.S[last])} × 30 = ${fmt(D.simple,1)} dias`;
+  cCount.innerHTML=D.steps.map(s=>s.full
+    ? `<li>Saldo ${fmt(s.rem)} &gt; vendas de ${lbl(s.m)} (${fmt(s.s)}) → consome o mês inteiro: <b>+30 dias</b>, sobram ${fmt(s.rem-s.s)}</li>`
+    : `<li>Sobra ${fmt(s.rem)} ÷ vendas de ${lbl(s.m)} (${fmt(s.s)}) × 30 = <b>+${fmt(s.rem/s.s*30,1)} dias</b></li>`).join("")+`<li>Total: <b>${fmt(D.cb,1)} dias</b></li>`;
+  nDSO.innerHTML= Math.abs(gap)<0.5 ? "Vendas de dezembro iguais às de novembro: os métodos coincidem."
+    : `Diferença de <b>${fmt(Math.abs(gap),1)} dias</b>, causada só pela variação das vendas de dezembro — a carteira é a mesma.`;
+  cPE.innerHTML=rates.map(x=>pct(x)).join(" × ")+` = <b class="red">${pct(PE,2)}</b> (${st.win===12?"média 12m":"últimos 6"}). Com a razão aparente do 180+ no lugar da migração de fato, daria ${pct(PEap,2)}.`;
+}
+sync();
+})();
 </script>
+</body>
+</html>

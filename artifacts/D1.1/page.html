@@ -36,6 +36,7 @@
 .bv-seg button { font: inherit; font-size: 13px; border: 0; background: var(--color-bg); color: var(--color-fg-muted); padding: 5px 10px; cursor: pointer; }
 .bv-seg button + button { border-left: 1px solid var(--color-border-line); }
 .bv-seg button[aria-pressed="true"] { background: var(--bv-ccl); color: #fff; }
+.bv-seg button:disabled { opacity: .45; cursor: not-allowed; }
 
 .bv-ch { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .bv-ch h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
@@ -109,8 +110,9 @@
       <div class="bv-ctl"><label for="c-obs">Estoque obsoleto / sem giro <span class="bv-u">%</span></label>
         <div class="bv-in"><input type="range" id="c-obs" data-k="obs" min="0" max="50" step="1"><input type="number" data-k="obs" min="0" max="50" step="1" aria-label="Estoque obsoleto, %"></div></div>
       <div class="bv-sep"></div>
-      <div class="bv-tg"><span>Quem financia a variação <span class="bv-info" tabindex="0">i<span class="bv-tip">O que a operação demanda e a estrutura não cobre, a Alfa toma em dívida — de curto prazo ou de longo prazo, conforme esta escolha.</span></span></span>
-        <div class="bv-seg" role="group" aria-label="Quem financia a variação"><button class="bv-fin" data-fin="CP" aria-pressed="true">Empréstimos CP</button><button class="bv-fin" data-fin="ELP" aria-pressed="false">Exigível LP</button></div></div>
+      <div class="bv-tg"><span>Quem financia a variação vs. balanço <span class="bv-info" tabindex="0">i<span class="bv-tip">Não altera o balanço de partida (T0 ou T-1). Quando Disponível, Clientes, Estoques ou Fornecedores mudam, a diferença é coberta com dívida — ou a sobra abate dívida — de curto ou de longo prazo, conforme esta escolha. Dívida curta: o CCL não muda e a liquidez corrente se move. Dívida longa: o CCL absorve toda a variação.</span></span></span>
+        <div class="bv-seg" role="group" aria-label="Quem financia a variação"><button class="bv-fin" data-fin="CP" aria-pressed="true">Empréstimos CP</button><button class="bv-fin" data-fin="ELP" aria-pressed="false">Exigível LP</button></div>
+        <p class="bv-fn" data-draw="var">—</p></div>
       <div class="bv-tg"><span>Base da foto</span>
         <div class="bv-seg" role="group" aria-label="Base da foto"><button class="bv-modo" data-modo="foto" aria-pressed="true">Foto 31/12</button><button class="bv-modo" data-modo="media" aria-pressed="false">Média 4 trimestres</button></div></div>
     </div>
@@ -118,7 +120,7 @@
     <div class="bv-zone" id="balanco" data-source="balanco_alfa trimestres">
       <div class="bv-ch"><h3>Balanço em blocos proporcionais</h3><span>R$ mil · a distância entre as fronteiras é o CCL</span></div>
       <div class="bv-blocos dash-skeleton" data-draw="blocos" role="img" aria-label="Balanço da Alfa em blocos proporcionais"></div>
-      <p class="bv-fn">⇄ marca a conta que fecha o balanço. Hachurado: a parte de Clientes e Estoques que não vale o que o balanço diz.</p>
+      <p class="bv-fn">⇄ marca a conta que absorve a variação dos sliders, conforme a escolha em "Quem financia a variação". Hachurado: a parte de Clientes e Estoques que não vale o que o balanço diz.</p>
       <p class="bv-fn bv-media-nota" hidden>Média de 4 trimestres: só AC e PC mudam; o balanço médio não precisa fechar.</p>
     </div>
 
@@ -197,9 +199,10 @@ function media(tri) {
   ['disp', 'cli', 'est', 'oaco', 'forn', 'opco', 'emp'].forEach((k) => { m[k] = d3.mean(tri, (r) => Number(r[k])); });
   return m;
 }
+const variacao = (B, S) => (S.disp - B.disp) + (S.cli - B.cli) + (S.est - B.est) - (S.forn - B.forn);
 function fechar(B, S) {
   const d = { ...B, disp: S.disp, cli: S.cli, est: S.est, forn: S.forn };
-  const delta = (S.disp - B.disp) + (S.cli - B.cli) + (S.est - B.est) - (S.forn - B.forn);
+  const delta = variacao(B, S);
   let excesso = 0;
   const k = S.fin === 'ELP' ? 'elp' : 'emp';
   d[k] = B[k] + delta;
@@ -242,7 +245,7 @@ function estado() {
 }
 
 /* ---------- controles ---------- */
-const NOMES_DESENHO = ['blocos', 'aj-sel', 'v', 'totais', 'frase', 'v-lc', 'v-lcpct', 'v-lcaj', 'v-lcfoto'];
+const NOMES_DESENHO = ['blocos', 'aj-sel', 'v', 'var', 'totais', 'frase', 'v-lc', 'v-lcpct', 'v-lcaj', 'v-lcfoto'];
 const redraw = () => NOMES_DESENHO.forEach((n) => dash.draw(n));
 function ajustaFechamento() {
   const a = dash.data('balanco_alfa');
@@ -260,7 +263,7 @@ function sincroniza() {
     i.value = circ && med ? Math.round(med[k]) : S[k];
     i.disabled = circ && S.modo === 'media';
   });
-  document.querySelectorAll('.bv-fin').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.fin === S.fin)));
+  document.querySelectorAll('.bv-fin').forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.fin === S.fin)); b.disabled = S.modo === 'media'; });
   document.querySelectorAll('.bv-modo').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === S.modo)));
   document.querySelectorAll('.bv-media-nota').forEach((n) => { n.hidden = S.modo !== 'media'; });
 }
@@ -355,7 +358,7 @@ dash.draw('blocos', (el) => {
   const G = Math.max(84, Math.min(120, W * 0.24));
   const colW = (W - G) / 2;
   const k = (H - top - 2) / Math.max(ind.ativo, ind.passivo);
-  const foto = S.modo !== 'media';
+  const ajuste = S.modo !== 'media' && variacao(bases(dash.data('balanco_alfa').data)[S.base], S) !== 0;
   const ativo = [
     { n: 'Disponível', v: d.disp, g: 'ACF' },
     { n: 'Clientes', v: d.cli, g: 'ACO', podre: S.inad / 100 },
@@ -367,8 +370,8 @@ dash.draw('blocos', (el) => {
   const passivo = [
     { n: 'Fornecedores', v: d.forn, g: 'PCO' },
     { n: 'Outros operacionais', v: d.opco, g: 'PCO' },
-    { n: 'Empréstimos CP', v: d.emp, g: 'PCF', fecha: foto && S.fin === 'CP' },
-    { n: 'Exigível LP', v: d.elp, g: 'ELP', fecha: foto && S.fin === 'ELP' },
+    { n: 'Empréstimos CP', v: d.emp, g: 'PCF', fecha: ajuste && S.fin === 'CP' },
+    { n: 'Exigível LP', v: d.elp, g: 'ELP', fecha: ajuste && S.fin === 'ELP' },
     { n: 'Patrimônio líquido', v: d.pl, g: 'PL' },
   ];
   const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
@@ -403,7 +406,7 @@ dash.draw('blocos', (el) => {
       g.on('pointermove', (ev) => mostra(ev, b)).on('pointerleave', () => { tt.style.display = 'none'; });
       const nome = (b.fecha ? '⇄ ' : '') + b.n;
       const valor = b.podre ? f(b.v) + ' → ' + f(b.v * (1 - b.podre)) : f(b.v);
-      const linhas = h >= 52 && b.fecha ? [nome, valor, '(fecha o balanço)'] : h >= 36 ? [nome, valor] : h >= 18 ? [nome + ' ' + valor] : [];
+      const linhas = h >= 52 && b.fecha ? [nome, valor, '(absorve a variação)'] : h >= 36 ? [nome, valor] : h >= 18 ? [nome + ' ' + valor] : [];
       const ys = y + 15;
       linhas.forEach((l, i) => {
         const t = g.append('text').attr('class', 'bv-svgt').attr('x', x0 + 7).attr('y', ys + i * 16).style('fill', TXT[b.g])
@@ -444,6 +447,16 @@ dash.draw('v', (el) => {
   if (!e.ok) { el.textContent = '—'; return; }
   const src = el.hasAttribute('data-aj') ? e.ind.aj : e.ind.cheio;
   el.textContent = fmtInd(el.dataset.i, src[el.dataset.i]);
+});
+texto('var', (el, e) => {
+  const { S } = e;
+  if (S.modo === 'media') { el.textContent = 'Na média de 4 trimestres o balanço não fecha: esta escolha não se aplica.'; return; }
+  const B = bases(dash.data('balanco_alfa').data)[S.base];
+  const v = variacao(B, S);
+  const base = S.base === 't_1' ? 'T-1' : 'T0';
+  const conta = S.fin === 'ELP' ? 'Exigível LP' : 'Empréstimos CP';
+  el.textContent = 'Variação vs. balanço ' + base + ': ' + (v > 0 ? '+' : '') + f(v) + ' · '
+    + (v === 0 ? 'mova Disponível, Clientes, Estoques ou Fornecedores.' : v > 0 ? 'coberta com ' + conta + '.' : 'abate ' + conta + '.');
 });
 texto('totais', (el, e) => {
   el.textContent = 'AC ' + f(e.ind.cheio.AC) + ' · PC ' + f(e.ind.PC) + ' · Total do ativo ' + f(e.ind.ativo)
