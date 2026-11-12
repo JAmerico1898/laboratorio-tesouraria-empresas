@@ -1,6 +1,4 @@
 [
- {"id":"t0","nome":"Horizonte","criterio":"valor","ab":80,"bc":95,"x1":0.5,"x2":1.0,"alfa":false},
- {"id":"didatico","nome":"Didático 20/30/50","criterio":"skus","ab":20,"bc":50,"x1":0.5,"x2":1.0,"alfa":false},
- {"id":"pareto","nome":"Pareto estrito","criterio":"valor","ab":80,"bc":95,"x1":0.5,"x2":1.0,"alfa":false},
- {"id":"soalfa","nome":"Só Alfa","criterio":"valor","ab":80,"bc":95,"x1":0.5,"x2":1.0,"alfa":true}
+ {"id":"t0","nome":"Horizonte","criterio":"valor","ab":80,"bc":95,"x1":0.5,"x2":1.0},
+ {"id":"didatico","nome":"Didático 20/30/50","criterio":"skus","ab":20,"bc":50,"x1":0.5,"x2":1.0}
 ]
