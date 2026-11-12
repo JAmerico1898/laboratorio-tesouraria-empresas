@@ -1,8 +1,6 @@
 [
-  {"chave": "pctVencMin", "c": "Caráter", "regra": "amarelo se % pago no vencimento abaixo de", "valor": 80},
-  {"chave": "atrasoMax", "c": "Caráter", "regra": "amarelo se atraso médio acima de (dias)", "valor": 15},
-  {"chave": "fatorNovo", "c": "Caráter", "regra": "fator no limite com Caráter amarelo", "valor": 0.75},
-  {"chave": "prazoNovo", "c": "Caráter", "regra": "prazo máximo de cliente sem histórico (dias)", "valor": 30},
+  {"chave": "pctVencMin", "c": "Caráter", "regra": "vermelho (pagamento errático) se % pago no vencimento abaixo de", "valor": 80},
+  {"chave": "atrasoMax", "c": "Caráter", "regra": "vermelho (pagamento errático) se atraso médio acima de (dias)", "valor": 15},
   {"chave": "icjV", "c": "Capacidade", "regra": "ICJ verde a partir de", "valor": 2.0},
   {"chave": "icjA", "c": "Capacidade", "regra": "ICJ amarelo a partir de (abaixo: vermelho)", "valor": 1.2},
   {"chave": "dleV", "c": "Capacidade", "regra": "D.Líq/EBITDA verde até", "valor": 2.5},

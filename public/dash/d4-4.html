@@ -6,7 +6,7 @@
 <title>D4.4 · 5 Cs · dossiê Horizonte</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"hoje","nome":"Horizonte hoje","neg":0,"protestos":0,"processos":0,"semHist":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":0,"aval":0,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"cessao","nome":"Com cessão de recebíveis","neg":0,"protestos":0,"processos":0,"semHist":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":1,"aval":0,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"fraca","nome":"Colateral forte, capacidade fraca","neg":0,"protestos":0,"processos":0,"semHist":0,"pctVenc":92,"atraso":4,"ebitda":1200,"despFin":1200,"divBruta":9000,"pcf":3500,"pl":9000,"plCresc":1,"cessao":1,"aval":1,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"retracao","nome":"Retração setorial, Selic 14%","neg":0,"protestos":0,"processos":0,"semHist":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":0,"aval":0,"selic":14,"setor":"retracao","prazoPedido":60},{"id":"novo","nome":"Cliente novo sem histórico","neg":0,"protestos":0,"processos":0,"semHist":1,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":0,"aval":0,"selic":12,"setor":"neutro","prazoPedido":60}]},"dossie":{"format":"json","data":[{"chave":"ebitda","rotulo":"EBITDA","fonte":"DRE","valor":2400,"unidade":"R$ mil"},{"chave":"despFin","rotulo":"Despesas financeiras","fonte":"DRE","valor":1000,"unidade":"R$ mil"},{"chave":"ll","rotulo":"Lucro líquido","fonte":"DRE","valor":726,"unidade":"R$ mil"},{"chave":"ir","rotulo":"IR/CSLL","fonte":"DRE","valor":374,"unidade":"R$ mil"},{"chave":"capex","rotulo":"CAPEX (= depreciação)","fonte":"DRE","valor":400,"unidade":"R$ mil"},{"chave":"ac","rotulo":"Ativo circulante","fonte":"Balanço","valor":10800,"unidade":"R$ mil"},{"chave":"pc","rotulo":"Passivo circulante","fonte":"Balanço","valor":7800,"unidade":"R$ mil"},{"chave":"pcf","rotulo":"PCF (dívida financeira CP)","fonte":"Balanço","valor":3500,"unidade":"R$ mil"},{"chave":"divBruta","rotulo":"Dívida bruta","fonte":"Balanço","valor":5500,"unidade":"R$ mil"},{"chave":"caixaAplic","rotulo":"Caixa + aplicações","fonte":"Balanço","valor":1000,"unidade":"R$ mil"},{"chave":"pl","rotulo":"Patrimônio líquido","fonte":"Balanço","valor":9000,"unidade":"R$ mil"},{"chave":"anc","rotulo":"Ativo não circulante","fonte":"Balanço","valor":8000,"unidade":"R$ mil"},{"chave":"comprasAno","rotulo":"Compras da Alfa por ano","fonte":"Relação com a Alfa","valor":6000,"unidade":"R$ mil"},{"chave":"prazoAtual","rotulo":"Prazo vigente (30/60/90)","fonte":"Relação com a Alfa","valor":60,"unidade":"dias"},{"chave":"saldo","rotulo":"Saldo em aberto com a Alfa","fonte":"Relação com a Alfa","valor":1000,"unidade":"R$ mil"},{"chave":"pctVenc","rotulo":"% pago no vencimento","fonte":"Histórico interno (construído)","valor":92,"unidade":"%"},{"chave":"atraso","rotulo":"Atraso médio","fonte":"Histórico interno (construído)","valor":4,"unidade":"dias"},{"chave":"anosRel","rotulo":"Anos de relação","fonte":"Histórico interno (construído)","valor":7,"unidade":"anos"},{"chave":"scoreBureau","rotulo":"Score bureau","fonte":"Bureau (construído)","valor":740,"unidade":"pontos"},{"chave":"pl1","rotulo":"PL há 2 anos","fonte":"PL em 3 anos (construído)","valor":7600,"unidade":"R$ mil"},{"chave":"pl2","rotulo":"PL há 1 ano","fonte":"PL em 3 anos (construído)","valor":8300,"unidade":"R$ mil"},{"chave":"carteiraCessao","rotulo":"Carteira de clientes cedível","fonte":"Colateral (construído)","valor":2000,"unidade":"R$ mil"},{"chave":"pmrvCessao","rotulo":"PMRV da carteira cedível","fonte":"Colateral (construído)","valor":20,"unidade":"dias"}]},"regras":{"format":"json","data":[{"chave":"pctVencMin","c":"Caráter","regra":"amarelo se % pago no vencimento abaixo de","valor":80},{"chave":"atrasoMax","c":"Caráter","regra":"amarelo se atraso médio acima de (dias)","valor":15},{"chave":"fatorNovo","c":"Caráter","regra":"fator no limite com Caráter amarelo","valor":0.75},{"chave":"prazoNovo","c":"Caráter","regra":"prazo máximo de cliente sem histórico (dias)","valor":30},{"chave":"icjV","c":"Capacidade","regra":"ICJ verde a partir de","valor":2},{"chave":"icjA","c":"Capacidade","regra":"ICJ amarelo a partir de (abaixo: vermelho)","valor":1.2},{"chave":"dleV","c":"Capacidade","regra":"D.Líq/EBITDA verde até","valor":2.5},{"chave":"dleA","c":"Capacidade","regra":"D.Líq/EBITDA amarelo até (acima: vermelho)","valor":3.5},{"chave":"fcoV","c":"Capacidade","regra":"FCO/PCF verde a partir de","valor":1},{"chave":"fcoA","c":"Capacidade","regra":"FCO/PCF amarelo a partir de (abaixo: vermelho)","valor":0.5},{"chave":"fator0","c":"Capacidade","regra":"fator com tudo verde","valor":1},{"chave":"fator1","c":"Capacidade","regra":"fator com 1 amarelo","valor":0.8},{"chave":"fator2","c":"Capacidade","regra":"fator com 2 amarelos ou 1 vermelho","valor":0.6},{"chave":"capV","c":"Capital","regra":"Dív.bruta/PL verde até","valor":1},{"chave":"capA","c":"Capital","regra":"Dív.bruta/PL amarelo até (acima: vermelho)","valor":2},{"chave":"tetoV","c":"Capital","regra":"teto patrimonial com Capital verde (fração do PL)","valor":0.15},{"chave":"tetoA","c":"Capital","regra":"teto patrimonial com Capital amarelo","valor":0.1},{"chave":"tetoR","c":"Capital","regra":"teto patrimonial com Capital vermelho","valor":0.05},{"chave":"cessaoAdd","c":"Colateral","regra":"acréscimo no limite com cessão fiduciária registrada","valor":0.25},{"chave":"avalAdd","c":"Colateral","regra":"acréscimo no limite com aval dos sócios com bens","valor":0.1},{"chave":"selicLo","c":"Condições","regra":"Selic até (% a.a.): multiplicador cheio","valor":10},{"chave":"selicHi","c":"Condições","regra":"Selic até (% a.a.): multiplicador intermediário","valor":13},{"chave":"multLo","c":"Condições","regra":"multiplicador com Selic baixa","valor":1},{"chave":"multMid","c":"Condições","regra":"multiplicador com Selic intermediária","valor":0.95},{"chave":"multHi","c":"Condições","regra":"multiplicador com Selic alta","valor":0.85},{"chave":"multRetr","c":"Condições","regra":"multiplicador adicional com setor em retração","valor":0.9},{"chave":"prazoExp","c":"Condições","regra":"prazo máximo com setor em expansão (dias)","valor":90},{"chave":"prazoNeu","c":"Condições","regra":"prazo máximo com setor neutro (dias)","valor":60},{"chave":"prazoRetr","c":"Condições","regra":"prazo máximo com setor em retração (dias)","valor":45}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"hoje","nome":"Horizonte hoje","neg":0,"protestos":0,"processos":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":0,"aval":0,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"cessao","nome":"Com cessão de recebíveis","neg":0,"protestos":0,"processos":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":1,"aval":0,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"fraca","nome":"Colateral forte, capacidade fraca","neg":0,"protestos":0,"processos":0,"pctVenc":92,"atraso":4,"ebitda":1200,"despFin":1200,"divBruta":9000,"pcf":3500,"pl":9000,"plCresc":1,"cessao":1,"aval":1,"selic":12,"setor":"neutro","prazoPedido":60},{"id":"retracao","nome":"Retração setorial, Selic 14%","neg":0,"protestos":0,"processos":0,"pctVenc":92,"atraso":4,"ebitda":2400,"despFin":1000,"divBruta":5500,"pcf":3500,"pl":9000,"plCresc":1,"cessao":0,"aval":0,"selic":14,"setor":"retracao","prazoPedido":60}]},"dossie":{"format":"json","data":[{"chave":"ebitda","rotulo":"EBITDA","fonte":"DRE","valor":2400,"unidade":"R$ mil"},{"chave":"despFin","rotulo":"Despesas financeiras","fonte":"DRE","valor":1000,"unidade":"R$ mil"},{"chave":"ll","rotulo":"Lucro líquido","fonte":"DRE","valor":726,"unidade":"R$ mil"},{"chave":"ir","rotulo":"IR/CSLL","fonte":"DRE","valor":374,"unidade":"R$ mil"},{"chave":"capex","rotulo":"CAPEX (= depreciação)","fonte":"DRE","valor":400,"unidade":"R$ mil"},{"chave":"ac","rotulo":"Ativo circulante","fonte":"Balanço","valor":10800,"unidade":"R$ mil"},{"chave":"pc","rotulo":"Passivo circulante","fonte":"Balanço","valor":7800,"unidade":"R$ mil"},{"chave":"pcf","rotulo":"PCF (dívida financeira CP)","fonte":"Balanço","valor":3500,"unidade":"R$ mil"},{"chave":"divBruta","rotulo":"Dívida bruta","fonte":"Balanço","valor":5500,"unidade":"R$ mil"},{"chave":"caixaAplic","rotulo":"Caixa + aplicações","fonte":"Balanço","valor":1000,"unidade":"R$ mil"},{"chave":"pl","rotulo":"Patrimônio líquido","fonte":"Balanço","valor":9000,"unidade":"R$ mil"},{"chave":"anc","rotulo":"Ativo não circulante","fonte":"Balanço","valor":8000,"unidade":"R$ mil"},{"chave":"comprasAno","rotulo":"Compras da Alfa por ano","fonte":"Relação com a Alfa","valor":6000,"unidade":"R$ mil"},{"chave":"prazoAtual","rotulo":"Prazo vigente (30/60/90)","fonte":"Relação com a Alfa","valor":60,"unidade":"dias"},{"chave":"saldo","rotulo":"Saldo em aberto com a Alfa","fonte":"Relação com a Alfa","valor":1000,"unidade":"R$ mil"},{"chave":"pctVenc","rotulo":"% pago no vencimento","fonte":"Histórico interno (construído)","valor":92,"unidade":"%"},{"chave":"atraso","rotulo":"Atraso médio","fonte":"Histórico interno (construído)","valor":4,"unidade":"dias"},{"chave":"anosRel","rotulo":"Anos de relação","fonte":"Histórico interno (construído)","valor":7,"unidade":"anos"},{"chave":"pl1","rotulo":"PL há 2 anos","fonte":"PL em 3 anos (construído)","valor":7600,"unidade":"R$ mil"},{"chave":"pl2","rotulo":"PL há 1 ano","fonte":"PL em 3 anos (construído)","valor":8300,"unidade":"R$ mil"},{"chave":"carteiraCessao","rotulo":"Carteira de clientes cedível","fonte":"Colateral (construído)","valor":2000,"unidade":"R$ mil"},{"chave":"pmrvCessao","rotulo":"PMRV da carteira cedível","fonte":"Colateral (construído)","valor":20,"unidade":"dias"}]},"regras":{"format":"json","data":[{"chave":"pctVencMin","c":"Caráter","regra":"vermelho (pagamento errático) se % pago no vencimento abaixo de","valor":80},{"chave":"atrasoMax","c":"Caráter","regra":"vermelho (pagamento errático) se atraso médio acima de (dias)","valor":15},{"chave":"icjV","c":"Capacidade","regra":"ICJ verde a partir de","valor":2},{"chave":"icjA","c":"Capacidade","regra":"ICJ amarelo a partir de (abaixo: vermelho)","valor":1.2},{"chave":"dleV","c":"Capacidade","regra":"D.Líq/EBITDA verde até","valor":2.5},{"chave":"dleA","c":"Capacidade","regra":"D.Líq/EBITDA amarelo até (acima: vermelho)","valor":3.5},{"chave":"fcoV","c":"Capacidade","regra":"FCO/PCF verde a partir de","valor":1},{"chave":"fcoA","c":"Capacidade","regra":"FCO/PCF amarelo a partir de (abaixo: vermelho)","valor":0.5},{"chave":"fator0","c":"Capacidade","regra":"fator com tudo verde","valor":1},{"chave":"fator1","c":"Capacidade","regra":"fator com 1 amarelo","valor":0.8},{"chave":"fator2","c":"Capacidade","regra":"fator com 2 amarelos ou 1 vermelho","valor":0.6},{"chave":"capV","c":"Capital","regra":"Dív.bruta/PL verde até","valor":1},{"chave":"capA","c":"Capital","regra":"Dív.bruta/PL amarelo até (acima: vermelho)","valor":2},{"chave":"tetoV","c":"Capital","regra":"teto patrimonial com Capital verde (fração do PL)","valor":0.15},{"chave":"tetoA","c":"Capital","regra":"teto patrimonial com Capital amarelo","valor":0.1},{"chave":"tetoR","c":"Capital","regra":"teto patrimonial com Capital vermelho","valor":0.05},{"chave":"cessaoAdd","c":"Colateral","regra":"acréscimo no limite com cessão fiduciária registrada","valor":0.25},{"chave":"avalAdd","c":"Colateral","regra":"acréscimo no limite com aval dos sócios com bens","valor":0.1},{"chave":"selicLo","c":"Condições","regra":"Selic até (% a.a.): multiplicador cheio","valor":10},{"chave":"selicHi","c":"Condições","regra":"Selic até (% a.a.): multiplicador intermediário","valor":13},{"chave":"multLo","c":"Condições","regra":"multiplicador com Selic baixa","valor":1},{"chave":"multMid","c":"Condições","regra":"multiplicador com Selic intermediária","valor":0.95},{"chave":"multHi","c":"Condições","regra":"multiplicador com Selic alta","valor":0.85},{"chave":"multRetr","c":"Condições","regra":"multiplicador adicional com setor em retração","valor":0.9},{"chave":"prazoExp","c":"Condições","regra":"prazo máximo com setor em expansão (dias)","valor":90},{"chave":"prazoNeu","c":"Condições","regra":"prazo máximo com setor neutro (dias)","valor":60},{"chave":"prazoRetr","c":"Condições","regra":"prazo máximo com setor em retração (dias)","valor":45}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -150,7 +150,6 @@
 .d44-lim { margin-top: 10px; }
 .d44-blk { border-top: 1px solid var(--color-border-line); padding-top: 8px; margin-top: 10px; }
 .d44-blk:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
-.d44 .k-in input:disabled { opacity: .45; }
 </style>
 
 <div class="k d44" id="d44">
@@ -164,7 +163,6 @@
       <button class="k-btn d44-cen" data-cen="cessao" aria-pressed="false">Com cessão de recebíveis</button>
       <button class="k-btn d44-cen" data-cen="fraca" aria-pressed="false">Colateral forte, capacidade fraca</button>
       <button class="k-btn d44-cen" data-cen="retracao" aria-pressed="false">Retração setorial, Selic 14%</button>
-      <button class="k-btn d44-cen" data-cen="novo" aria-pressed="false">Cliente novo sem histórico</button>
     </div>
   </header>
 
@@ -178,11 +176,10 @@
         <label class="k-toggle"><input type="checkbox" data-k="processos"> Processos por inadimplência</label>
         <div class="k-ctl" style="margin-top: 6px"><label for="c-prot">Protestos abertos <span class="k-u">nº</span></label>
           <div class="k-in"><span></span><input type="number" id="c-prot" data-k="protestos" min="0" max="20" step="1"></div></div>
-        <label class="k-toggle"><input type="checkbox" data-k="semHist"> Cliente novo, sem histórico interno</label>
         <div class="k-ctl" style="margin-top: 6px"><label for="c-venc">% pago no vencimento</label>
-          <div class="k-in"><input type="range" id="c-venc" class="d44-hist" data-k="pctVenc" min="50" max="100" step="1"><input type="number" class="d44-hist" data-k="pctVenc" min="50" max="100" step="1" aria-label="% pago no vencimento"></div></div>
+          <div class="k-in"><input type="range" id="c-venc" data-k="pctVenc" min="50" max="100" step="1"><input type="number" data-k="pctVenc" min="50" max="100" step="1" aria-label="% pago no vencimento"></div></div>
         <div class="k-ctl"><label for="c-atr">Atraso médio <span class="k-u">dias</span></label>
-          <div class="k-in"><input type="range" id="c-atr" class="d44-hist" data-k="atraso" min="0" max="60" step="1"><input type="number" class="d44-hist" data-k="atraso" min="0" max="60" step="1" aria-label="Atraso médio, dias"></div></div>
+          <div class="k-in"><input type="range" id="c-atr" data-k="atraso" min="0" max="60" step="1"><input type="number" data-k="atraso" min="0" max="60" step="1" aria-label="Atraso médio, dias"></div></div>
       </div>
 
       <div class="d44-blk">
@@ -235,8 +232,7 @@
         <section class="d44-c" id="card-carater">
           <div class="d44-ch"><h3>1 · Caráter <span class="k-u">quer pagar?</span></h3><span class="d44-chip" data-draw="farol" data-c="carater">—</span></div>
           <p>Negativação <b data-draw="v" data-q="neg">—</b> · protestos <b data-draw="v" data-q="protestos">—</b> · processos <b data-draw="v" data-q="processos">—</b></p>
-          <p class="d44-comhist">Pago no vencimento <b data-draw="v" data-q="pctVenc">—</b> · atraso médio <b data-draw="v" data-q="atraso">—</b> dias <span class="k-u">amarelo abaixo de <span data-draw="v" data-q="r-pctVencMin">—</span> ou acima de <span data-draw="v" data-q="r-atrasoMax">—</span> dias</span></p>
-          <p class="d44-semhist" hidden>Sem histórico interno: Caráter só pelo bureau (score <b data-draw="v" data-q="score">—</b>) — limite × <b data-draw="v" data-q="r-fatorNovo">—</b>, prazo até <b data-draw="v" data-q="r-prazoNovo">—</b> dias.</p>
+          <p>Pago no vencimento <b data-draw="v" data-q="pctVenc">—</b> · atraso médio <b data-draw="v" data-q="atraso">—</b> dias <span class="k-u">pagamento errático (vermelho) abaixo de <span data-draw="v" data-q="r-pctVencMin">—</span> ou acima de <span data-draw="v" data-q="r-atrasoMax">—</span> dias</span></p>
           <p class="d44-stop" hidden><b>STOP.</b> Os outros quatro Cs não entram em cena.</p>
         </section>
         <div class="d44-arrow" aria-hidden="true">↓</div>
@@ -303,18 +299,17 @@
           <span><i style="background: var(--k-amber-d)"></i>Saldo em aberto</span>
           <span><i style="background: var(--k-neutro)"></i>Teto patrimonial</span>
         </div>
-        <p class="k-note d44-conta">Base = compras <b data-draw="v" data-q="compras">—</b> × <b data-draw="v" data-q="prazo">—</b> dias ÷ 360 = <b data-draw="v" data-q="base">—</b> · × capacidade <b data-draw="v" data-q="fator">—</b> · × condições <b data-draw="v" data-q="mult">—</b> · × caráter <b data-draw="v" data-q="fatorCar">—</b> · × colateral <b data-draw="v" data-q="colMult">—</b> = <b data-draw="v" data-q="bruto">—</b> · teto <b data-draw="v" data-q="teto">—</b></p>
+        <p class="k-note d44-conta">Base = compras <b data-draw="v" data-q="compras">—</b> × <b data-draw="v" data-q="prazo">—</b> dias ÷ 360 = <b data-draw="v" data-q="base">—</b> · × capacidade <b data-draw="v" data-q="fator">—</b> · × condições <b data-draw="v" data-q="mult">—</b> · × colateral <b data-draw="v" data-q="colMult">—</b> = <b data-draw="v" data-q="bruto">—</b> · teto <b data-draw="v" data-q="teto">—</b></p>
       </div>
 
       <div class="k-diag" data-frases>
         <span data-draw="frase"></span>
-        <p data-frase="carater" hidden>STOP em Caráter. Protesto aberto ou negativação: os outros quatro Cs não entram em cena.</p>
+        <p data-frase="carater" hidden>STOP em Caráter. Negativação, protesto, processo ou pagamento errático: os outros quatro Cs não entram em cena.</p>
         <p data-frase="capacidade" hidden>Capacidade não sustenta a operação. Colateral não corrige isso — executar garantia custa tempo, dinheiro e o cliente.</p>
         <p data-frase="aprovado" hidden>Aprovado. Limite <b data-draw="v" data-q="limite">—</b> para <b data-draw="v" data-q="prazo">—</b> dias; a Horizonte usa <b data-draw="v" data-q="uso">—</b> do limite.</p>
         <p data-frase="prazo" hidden>O limite de <b data-draw="v" data-q="limite">—</b> cobre o saldo, mas o prazo máximo é <b data-draw="v" data-q="prazoMax">—</b> dias (pedido: <b data-draw="v" data-q="prazoPedido">—</b>). Aprovar com prazo reduzido.</p>
         <p data-frase="excede" hidden>A exposição atual (<b data-draw="v" data-q="saldo">—</b>) excede o limite sugerido (<b data-draw="v" data-q="limite">—</b>). Opções: reduzir prazo para <b data-draw="v" data-q="prazoCabe">—</b> dias<span class="d44-sugcessao">, exigir cessão de recebíveis (limite vai a <b data-draw="v" data-q="comCessao">—</b>)</span> ou aceitar o excesso com decisão de comitê.</p>
         <p data-frase="teto" hidden>Quem segura o limite é o teto patrimonial (<b data-draw="v" data-q="tetoPct">—</b> do PL): Capital limita antes de Capacidade.</p>
-        <p data-frase="novo" hidden>Cliente sem histórico: só o bureau fala por ele. Prazo curto e limite reduzido até haver histórico próprio.</p>
       </div>
     </div>
   </div>
@@ -324,7 +319,7 @@
     <div class="k-help-body">
       <ol>
         <li>Por que, com todos os índices razoáveis, o dashboard sugere <span data-draw="v" data-q="g-lim">—</span> e não os <span data-draw="v" data-q="g-saldo">—</span> que a Horizonte já usa?
-          <details><summary>mostrar resposta</summary><p>Porque FCO/PCF = <b data-draw="v" data-q="g-fco">—</b> é amarelo: a Horizonte gera <b data-draw="v" data-q="g-fcoR">—</b> de caixa operacional para <b data-draw="v" data-q="g-pcf">—</b> de dívida financeira de curto prazo — depende de rolagem. Capacidade dimensiona (fator <b data-draw="v" data-q="g-fator">—</b>) e a Selic de <b data-draw="v" data-q="g-selic">—</b> ainda aplica × <b data-draw="v" data-q="g-mSelic">—</b>.</p></details>
+          <details><summary>mostrar resposta</summary><p>Porque FCO/PCF = <b data-draw="v" data-q="g-fco">—</b> é amarelo: a Horizonte gera <b data-draw="v" data-q="g-fcoR">—</b> de caixa operacional para <b data-draw="v" data-q="g-pcf">—</b> de dívida financeira de curto prazo — depende de rolagem. Capacidade define quanto, não se (fator <b data-draw="v" data-q="g-fator">—</b>) e a Selic de <b data-draw="v" data-q="g-selic">—</b> ainda aplica × <b data-draw="v" data-q="g-mSelic">—</b>.</p></details>
         </li>
         <li>Ligue a cessão de recebíveis no cenário "Colateral forte, capacidade fraca". Por que nada muda?
           <details><summary>mostrar resposta</summary><p>Colateral é mitigador de uma operação que já se sustenta. Com ICJ <b data-draw="v" data-q="g2-icj">—</b> e D.Líq/EBITDA <b data-draw="v" data-q="g2-dle">—</b> a operação não se sustenta; executar garantia custa tempo e desgaste, e a garantia desvaloriza justamente quando o tomador piora.</p></details>
@@ -474,10 +469,9 @@
   M.faixaMin = (v, lv, la) => (v >= lv ? 'verde' : v >= la ? 'amarelo' : 'vermelho');   // maior é melhor
   M.faixaMax = (v, lv, la) => (v <= lv ? 'verde' : v <= la ? 'amarelo' : 'vermelho');   // menor é melhor
 
-  // 1 · Caráter — passa/não passa
+  // 1 · Caráter — passa/não passa, sem meio-termo
   M.carater = function (C, R) {
-    if (C.neg || C.protestos > 0 || C.processos) return 'vermelho';
-    if (C.semHist || C.pctVenc < R.pctVencMin || C.atraso > R.atrasoMax) return 'amarelo';
+    if (C.neg || C.protestos > 0 || C.processos || C.pctVenc < R.pctVencMin || C.atraso > R.atrasoMax) return 'vermelho';
     return 'verde';
   };
 
@@ -522,13 +516,12 @@
     const kap = M.capital(C, R);
     const cond = M.condicoes(C, R);
     const bloqueio = car === 'vermelho' ? 'carater' : cap.reprova ? 'capacidade' : null;
-    const fatorCar = car === 'amarelo' ? R.fatorNovo : 1;
-    const prazoMax = C.semHist ? Math.min(cond.prazoSetor, R.prazoNovo) : cond.prazoSetor;
+    const prazoMax = cond.prazoSetor;
     const prazo = Math.min(C.prazoPedido, prazoMax);
     const base = D.comprasAno * prazo / 360;
     const colAtivo = !bloqueio;
     const colMult = colAtivo ? 1 + R.cessaoAdd * (C.cessao ? 1 : 0) + R.avalAdd * (C.aval ? 1 : 0) : 1;
-    const bruto = base * cap.fator * cond.mult * fatorCar * colMult;
+    const bruto = base * cap.fator * cond.mult * colMult;
     const limite = bloqueio ? 0 : Math.min(kap.teto, bruto);
     const tetoLimita = !bloqueio && bruto > kap.teto;
     const saldo = D.saldo;
@@ -542,7 +535,7 @@
     const comCessao = bloqueio || C.cessao ? null : Math.min(kap.teto, bruto / colMult * (colMult + R.cessaoAdd));
     const farolCol = bloqueio ? 'cinza' : temColateral ? 'verde' : 'amarelo';
     return {
-      car, cap, kap, cond, bloqueio, fatorCar, prazoMax, prazo, base, colAtivo, colMult, bruto, limite, tetoLimita,
+      car, cap, kap, cond, bloqueio, prazoMax, prazo, base, colAtivo, colMult, bruto, limite, tetoLimita,
       saldo, uso: limite > 0 ? saldo / limite : null, decisao, prazoCabe, comCessao, farolCol, temColateral,
     };
   };
@@ -560,13 +553,12 @@
    Reset: ICJ 2,40 · D.Líq/EBITDA 1,88 · FCO/PCF 0,58 · Dív.bruta/PL 0,61 · teto 1.350 · fator 0,80 · limite 760 · prazo 60
    Reset + cessão: 950 · Colateral forte/capacidade fraca: 1,00 · 6,67 · 0,24 · limite 0
    Retração + Selic 14: 459 · prazo 45 · Protesto = 1: Caráter vermelho, 4 cartões cinza, limite 0
-   Cliente novo: Caráter amarelo, × 0,75, prazo 30 → 285
    ============================================================ */
 const ST = window.D44 = { S: null, cen: null, mexido: false };
 const IDS = ['dossie', 'regras', 'cenarios'];
 const NOMES = ['v', 'farol', 'dec', 'barra', 'frase'];
-const BOOL = ['neg', 'processos', 'semHist', 'plCresc', 'cessao', 'aval'];
-const CTL = ['neg', 'protestos', 'processos', 'semHist', 'pctVenc', 'atraso', 'ebitda', 'despFin', 'divBruta', 'pcf', 'pl', 'plCresc', 'cessao', 'aval', 'selic', 'setor', 'prazoPedido'];
+const BOOL = ['neg', 'processos', 'plCresc', 'cessao', 'aval'];
+const CTL = ['neg', 'protestos', 'processos', 'pctVenc', 'atraso', 'ebitda', 'despFin', 'divBruta', 'pcf', 'pl', 'plCresc', 'cessao', 'aval', 'selic', 'setor', 'prazoPedido'];
 const SETOR = { expansao: 'expansão', neutro: 'neutro', retracao: 'retração' };
 const FAROL = { verde: 'verde', amarelo: 'amarelo', vermelho: 'vermelho', cinza: 'não avaliado' };
 
@@ -584,7 +576,6 @@ const base = (id, extra) => M44.estado(D(), R(), { ...ctlDe(cenario(id)), ...(ex
 function sincroniza() {
   if (!ST.S) return;
   K.sync(ST.S);
-  document.querySelectorAll('.d44-hist').forEach((i) => { i.disabled = !!ST.S.semHist; });
   document.querySelectorAll('.d44-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexido && b.dataset.cen === ST.cen)));
   if (K.status(IDS) !== 'ok') return;
   const E = atual();
@@ -599,8 +590,6 @@ function sincroniza() {
     c.querySelectorAll('.d44-off').forEach((x) => { x.hidden = !stop; });
     c.querySelectorAll('.d44-arm').forEach((x) => { x.hidden = E.bloqueio !== 'capacidade'; });
   });
-  document.querySelectorAll('.d44-comhist').forEach((x) => { x.hidden = !!ST.S.semHist; });
-  document.querySelectorAll('.d44-semhist').forEach((x) => { x.hidden = !ST.S.semHist; });
   document.querySelectorAll('.d44-stop').forEach((x) => { x.hidden = !stop; });
   document.querySelectorAll('.d44-conta').forEach((x) => { x.hidden = !!E.bloqueio; });
   document.querySelectorAll('.d44-sugcessao').forEach((x) => { x.hidden = E.comCessao == null; });
@@ -693,8 +682,8 @@ dash.draw('barra', (el) => {
 const simnao = (b) => (b ? 'sim' : 'não');
 const VAL = {
   neg: () => simnao(ST.S.neg), processos: () => simnao(ST.S.processos), protestos: () => K.n(ST.S.protestos),
-  pctVenc: () => K.n(ST.S.pctVenc) + '%', atraso: () => K.n(ST.S.atraso), score: () => K.n(D().scoreBureau),
-  'r-pctVencMin': () => K.n(R().pctVencMin) + '%', 'r-atrasoMax': () => K.n(R().atrasoMax), 'r-fatorNovo': () => K.n(R().fatorNovo, 2), 'r-prazoNovo': () => K.n(R().prazoNovo),
+  pctVenc: () => K.n(ST.S.pctVenc) + '%', atraso: () => K.n(ST.S.atraso),
+  'r-pctVencMin': () => K.n(R().pctVencMin) + '%', 'r-atrasoMax': () => K.n(R().atrasoMax),
   'r-icjV': () => K.n(R().icjV, 1), 'r-icjA': () => K.n(R().icjA, 1), 'r-dleV': () => K.n(R().dleV, 1), 'r-dleA': () => K.n(R().dleA, 1),
   'r-fcoV': () => K.n(R().fcoV, 1), 'r-fcoA': () => K.n(R().fcoA, 1), 'r-capV': () => K.n(R().capV, 1), 'r-capA': () => K.n(R().capA, 1),
   parcela: () => K.n(D().comprasAno / 12), fcl: (E) => K.n(ST.S.ebitda - ST.S.despFin - D().ir - D().capex),
@@ -709,7 +698,7 @@ const VAL = {
   limite: (E) => K.n(E.limite), prazoMax: (E) => (E.bloqueio ? null : K.n(E.prazoMax)), prazo: (E) => K.n(E.prazo),
   prazoPedido: () => K.n(ST.S.prazoPedido), saldo: (E) => K.n(E.saldo), uso: (E) => (E.uso == null ? null : K.p(E.uso, 0)),
   prazoCabe: (E) => K.n(E.prazoCabe), comCessao: (E) => (E.comCessao == null ? null : K.n(E.comCessao)),
-  compras: () => K.n(D().comprasAno), base: (E) => K.n(E.base), fatorCar: (E) => K.n(E.fatorCar, 2), bruto: (E) => K.n(E.bruto),
+  compras: () => K.n(D().comprasAno), base: (E) => K.n(E.base), bruto: (E) => K.n(E.bruto),
   'g-lim': () => K.n(base('hoje').limite), 'g-saldo': () => K.n(base('hoje').saldo), 'g-fco': () => K.n(base('hoje').cap.fcoPcf, 2),
   'g-fcoR': () => K.n(base('hoje').cap.fco), 'g-pcf': () => K.n(cenario('hoje').pcf), 'g-fator': () => K.n(base('hoje').cap.fator, 2),
   'g-selic': () => K.n(cenario('hoje').selic) + '%', 'g-mSelic': () => K.n(base('hoje').cond.mSelic, 2),
@@ -733,7 +722,6 @@ dash.draw('frase', (el) => {
       if (E.limite < E.saldo) keys.push('excede');
       else keys.push(ST.S.prazoPedido > E.prazoMax ? 'prazo' : 'aprovado');
       if (E.tetoLimita) keys.push('teto');
-      if (ST.S.semHist) keys.push('novo');
     }
   }
   K.frases(el, keys);

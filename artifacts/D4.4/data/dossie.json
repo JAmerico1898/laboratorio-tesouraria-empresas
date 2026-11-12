@@ -17,7 +17,6 @@
   {"chave": "pctVenc", "rotulo": "% pago no vencimento", "fonte": "Histórico interno (construído)", "valor": 92, "unidade": "%"},
   {"chave": "atraso", "rotulo": "Atraso médio", "fonte": "Histórico interno (construído)", "valor": 4, "unidade": "dias"},
   {"chave": "anosRel", "rotulo": "Anos de relação", "fonte": "Histórico interno (construído)", "valor": 7, "unidade": "anos"},
-  {"chave": "scoreBureau", "rotulo": "Score bureau", "fonte": "Bureau (construído)", "valor": 740, "unidade": "pontos"},
   {"chave": "pl1", "rotulo": "PL há 2 anos", "fonte": "PL em 3 anos (construído)", "valor": 7600, "unidade": "R$ mil"},
   {"chave": "pl2", "rotulo": "PL há 1 ano", "fonte": "PL em 3 anos (construído)", "valor": 8300, "unidade": "R$ mil"},
   {"chave": "carteiraCessao", "rotulo": "Carteira de clientes cedível", "fonte": "Colateral (construído)", "valor": 2000, "unidade": "R$ mil"},

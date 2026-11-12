@@ -7,10 +7,9 @@
   M.faixaMin = (v, lv, la) => (v >= lv ? 'verde' : v >= la ? 'amarelo' : 'vermelho');   // maior é melhor
   M.faixaMax = (v, lv, la) => (v <= lv ? 'verde' : v <= la ? 'amarelo' : 'vermelho');   // menor é melhor
 
-  // 1 · Caráter — passa/não passa
+  // 1 · Caráter — passa/não passa, sem meio-termo
   M.carater = function (C, R) {
-    if (C.neg || C.protestos > 0 || C.processos) return 'vermelho';
-    if (C.semHist || C.pctVenc < R.pctVencMin || C.atraso > R.atrasoMax) return 'amarelo';
+    if (C.neg || C.protestos > 0 || C.processos || C.pctVenc < R.pctVencMin || C.atraso > R.atrasoMax) return 'vermelho';
     return 'verde';
   };
 
@@ -55,13 +54,12 @@
     const kap = M.capital(C, R);
     const cond = M.condicoes(C, R);
     const bloqueio = car === 'vermelho' ? 'carater' : cap.reprova ? 'capacidade' : null;
-    const fatorCar = car === 'amarelo' ? R.fatorNovo : 1;
-    const prazoMax = C.semHist ? Math.min(cond.prazoSetor, R.prazoNovo) : cond.prazoSetor;
+    const prazoMax = cond.prazoSetor;
     const prazo = Math.min(C.prazoPedido, prazoMax);
     const base = D.comprasAno * prazo / 360;
     const colAtivo = !bloqueio;
     const colMult = colAtivo ? 1 + R.cessaoAdd * (C.cessao ? 1 : 0) + R.avalAdd * (C.aval ? 1 : 0) : 1;
-    const bruto = base * cap.fator * cond.mult * fatorCar * colMult;
+    const bruto = base * cap.fator * cond.mult * colMult;
     const limite = bloqueio ? 0 : Math.min(kap.teto, bruto);
     const tetoLimita = !bloqueio && bruto > kap.teto;
     const saldo = D.saldo;
@@ -75,7 +73,7 @@
     const comCessao = bloqueio || C.cessao ? null : Math.min(kap.teto, bruto / colMult * (colMult + R.cessaoAdd));
     const farolCol = bloqueio ? 'cinza' : temColateral ? 'verde' : 'amarelo';
     return {
-      car, cap, kap, cond, bloqueio, fatorCar, prazoMax, prazo, base, colAtivo, colMult, bruto, limite, tetoLimita,
+      car, cap, kap, cond, bloqueio, prazoMax, prazo, base, colAtivo, colMult, bruto, limite, tetoLimita,
       saldo, uso: limite > 0 ? saldo / limite : null, decisao, prazoCabe, comCessao, farolCol, temColateral,
     };
   };

@@ -3,8 +3,8 @@
   "title": "D4.4 · 5 Cs · dossiê Horizonte",
   "slug": "64fbc5a0-0fd4-4543-be94-3d1c0c24ee8f",
   "datasets": {
-    "cenarios": { "file": "cenarios.json", "sha256": "3eb5a42f6ae17f9bb2eebf235a78f447eab4fff9366aa8fda9b65ad415a31674" },
-    "dossie": { "file": "dossie.json", "sha256": "52f7bb78bb3ecb78c3516af37c9497770a19fd7fa6007ab90160937f83fd5ab5" },
-    "regras": { "file": "regras.json", "sha256": "b5e0803c43f771a2a3d25a71e040be8b96363abb41e316e6a990d09644f37ffa" }
+    "cenarios": { "file": "cenarios.json", "sha256": "4837085f49b0b1318e40f09f20bc1f25c7102e80282ac5a85aef375c3cbe68c6" },
+    "dossie": { "file": "dossie.json", "sha256": "7e7f7c3f35da29a73024728c873d5188e102dd5a08d732fc24a60bf9c1297499" },
+    "regras": { "file": "regras.json", "sha256": "d74494a3d8665c59efff468a2d00158abad99e664b2084d9efdaebce95e853ce" }
   }
 }
