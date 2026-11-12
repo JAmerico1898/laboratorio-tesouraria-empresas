@@ -6,7 +6,7 @@
 <title>D4.2 · Condições de venda</title>
 <link rel="stylesheet" href="runtime/dash.css">
 <script src="runtime/d3.v7.min.js"></script>
-<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"slide","cenario":"Slide V4.2","d":2,"k":10,"n":30,"venda":100,"m":35,"adesao":60,"i":1.2,"e":0.8,"cc":17,"descVista":2.5},{"id":"alfa","cenario":"Alfa → Horizonte","d":2,"k":10,"n":60,"venda":500,"m":35,"adesao":60,"i":1.2,"e":0.8,"cc":17,"descVista":2.5}]},"instrumentos":{"format":"json","data":[{"id":"duplicata","instrumento":"Duplicata + boleto","liquidez_dias":60,"garantia":2,"garantia_txt":"média (título executivo, protesto)","custo":1,"custo_txt":"baixo (tarifa por boleto)","uso":"B2B recorrente"},{"id":"boleto_pix","instrumento":"Boleto + Pix","liquidez_dias":1,"garantia":1,"garantia_txt":"fraca (sem aceite)","custo":1,"custo_txt":"baixo (tarifa fixa; Pix quase zero)","uso":"B2C"},{"id":"ccb","instrumento":"CCB","liquidez_dias":0,"garantia":3,"garantia_txt":"forte (título executivo + garantias)","custo":3,"custo_txt":"alto (juros + IOF)","uso":"empréstimo bancário"},{"id":"cartao","instrumento":"Recebível de cartão","liquidez_dias":30,"garantia":3,"garantia_txt":"forte (devedor é o adquirente)","custo":2,"custo_txt":"médio (MDR + antecipação)","uso":"fluxo de cartão, D+30 antecipável"},{"id":"bndes","instrumento":"Cartão BNDES","liquidez_dias":30,"garantia":3,"garantia_txt":"forte (risco do banco emissor)","custo":2,"custo_txt":"médio (comissão do emissor)","uso":"MPE bens de capital"},{"id":"np","instrumento":"Nota promissória","liquidez_dias":60,"garantia":2,"garantia_txt":"média (título executivo, sem lastro em venda)","custo":1,"custo_txt":"baixo","uso":"acordos e renegociações"}]},"praticas":{"format":"json","data":[{"id":"306090","pratica":"30/60/90","parcelas":"30|60|90","descricao":"três duplicatas de 1/3","venda":100},{"id":"283030","pratica":"28/30/30","parcelas":"0|30|60","descricao":"1/3 à vista + 30 + 60","venda":100},{"id":"net30","pratica":"Boleto único net 30","parcelas":"30","descricao":"um boleto em 30 dias","venda":100}]},"recomendacoes":{"format":"json","data":[{"perfil":"b2b","prioridade":"liquidez","id":"duplicata","justificativa":"Duplicata registrada é antecipável no banco ou em FIDC: vira caixa antes do vencimento."},{"perfil":"b2b","prioridade":"garantia","id":"duplicata","justificativa":"Com aceite e protesto, a duplicata é título executivo: cobra-se sem ação de conhecimento."},{"perfil":"b2b","prioridade":"custo","id":"duplicata","justificativa":"Boleto registrado custa poucos reais por título; o custo é o prazo, não o instrumento."},{"perfil":"b2c","prioridade":"liquidez","id":"boleto_pix","justificativa":"Pix liquida em D+0 e o boleto compensa em D+1: o caixa chega quando o cliente paga."},{"perfil":"b2c","prioridade":"garantia","id":"cartao","justificativa":"No cartão o risco de crédito é do emissor: a empresa troca garantia por MDR."},{"perfil":"b2c","prioridade":"custo","id":"boleto_pix","justificativa":"Sem MDR: tarifa fixa baixa por boleto e Pix quase gratuito."},{"perfil":"mpe","prioridade":"liquidez","id":"bndes","justificativa":"O banco emissor paga o vendedor em cerca de 30 dias; o comprador parcela em até 48 vezes."},{"perfil":"mpe","prioridade":"garantia","id":"bndes","justificativa":"O risco do comprador fica com o banco emissor, não com o vendedor."},{"perfil":"mpe","prioridade":"custo","id":"bndes","justificativa":"Taxa favorecida para o comprador; o vendedor paga só a comissão do emissor."},{"perfil":"cartao","prioridade":"liquidez","id":"cartao","justificativa":"D+30 antecipável a D+0 com o adquirente, sem análise de crédito do cliente."},{"perfil":"cartao","prioridade":"garantia","id":"cartao","justificativa":"O devedor é o adquirente: risco de crédito praticamente nulo."},{"perfil":"cartao","prioridade":"custo","id":"cartao","justificativa":"Antecipe só a parcela que falta no caixa; o MDR já está pago."}]},"tipicas":{"format":"json","data":[{"id":"1-10-30","condicao":"1/10 net 30","d":1,"k":10,"n":30},{"id":"2-10-30","condicao":"2/10 net 30","d":2,"k":10,"n":30},{"id":"2-10-60","condicao":"2/10 net 60","d":2,"k":10,"n":60},{"id":"3-10-30","condicao":"3/10 net 30","d":3,"k":10,"n":30}]}};window.__DASH_PARAMS = {};</script>
+<script>window.__DASH_DATA = {"cenarios":{"format":"json","data":[{"id":"slide","cenario":"Slide V4.2","d":2,"k":10,"n":30,"venda":100,"m":35,"adesao":60,"i":1.2,"e":0.8,"cc":17,"descVista":2.5}]},"praticas":{"format":"json","data":[{"id":"306090","pratica":"30/60/90","parcelas":"30|60|90","descricao":"três duplicatas de 1/3","venda":100},{"id":"283030","pratica":"28/30/30","parcelas":"0|30|60","descricao":"1/3 à vista + 30 + 60","venda":100},{"id":"net30","pratica":"Boleto único net 30","parcelas":"30","descricao":"um boleto em 30 dias","venda":100}]},"tipicas":{"format":"json","data":[{"id":"1-10-30","condicao":"1/10 net 30","d":1,"k":10,"n":30},{"id":"2-10-30","condicao":"2/10 net 30","d":2,"k":10,"n":30},{"id":"2-10-60","condicao":"2/10 net 60","d":2,"k":10,"n":60},{"id":"3-10-30","condicao":"3/10 net 30","d":3,"k":10,"n":30}]}};window.__DASH_PARAMS = {};</script>
 <script src="runtime/dash.js"></script>
 </head>
 <body>
@@ -134,19 +134,7 @@
 .d42-tip > summary { cursor: pointer; color: var(--color-fg-muted); font-size: 13px; }
 .d42-cards { min-height: 180px; }
 .d42-cards .k-card .d42-big { font-family: var(--font-anthropic-serif); font-size: 1.6rem; font-variant-numeric: tabular-nums; }
-.d42-rec { border: 1px solid var(--color-border-line); border-left: 5px solid var(--k-navy); border-radius: var(--cds-radius); padding: 12px; background: var(--color-bg); }
-.d42-rec h3 { margin: 0 0 4px; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 1.5rem; }
-.d42-trow { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 4px 10px; align-items: center; margin-top: 10px; font-size: 14px; }
-.d42-bar { min-height: 34px; }
-.d42-track { height: 12px; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 3px; overflow: hidden; }
-.d42-fill { height: 100%; background: var(--k-navy); }
-.d42-bval { font-size: 13px; color: var(--color-fg-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
-.d42-seglab { font-size: 14px; margin: 10px 0 4px; display: block; }
-.d42-kname { font-family: var(--font-anthropic-serif); font-size: 1.5rem; line-height: 1.2; padding: 6px 0; border-bottom: 1px solid var(--color-border-line); }
-.d42-todos { margin-top: 12px; }
-.d42-todos > summary { cursor: pointer; font-size: 14px; color: var(--color-fg-muted); }
 .d42-table tr.k-sel td { font-weight: 600; }
-.d42-table td.d42-left, .d42-table th.d42-left { text-align: left; white-space: normal; }
 </style>
 
 <div class="k d42" id="d42">
@@ -157,7 +145,6 @@
     </div>
     <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios tipicas">
       <button class="k-btn d42-cen" data-cen="slide" aria-pressed="false">Slide V4.2</button>
-      <button class="k-btn d42-cen" data-cen="alfa" aria-pressed="false">Alfa → Horizonte</button>
       <button class="k-btn d42-tipb" data-tip="1-10-30" aria-pressed="false">1/10 net 30</button>
       <button class="k-btn d42-tipb" data-tip="2-10-30" aria-pressed="false">2/10 net 30</button>
       <button class="k-btn d42-tipb" data-tip="2-10-60" aria-pressed="false">2/10 net 60</button>
@@ -168,7 +155,6 @@
   <div class="k-tabs" role="tablist">
     <button class="k-tab" id="tab-condicao" data-group="v" data-tab="condicao" role="tab" aria-selected="true">A condição</button>
     <button class="k-tab" id="tab-praticas" data-group="v" data-tab="praticas" role="tab" aria-selected="false">Práticas brasileiras</button>
-    <button class="k-tab" id="tab-veiculo" data-group="v" data-tab="veiculo" role="tab" aria-selected="false">O veículo</button>
   </div>
 
   <div class="k-zones">
@@ -207,22 +193,6 @@
         <p class="k-note">Prazo médio de cada prática = média dos dias das parcelas iguais.</p>
       </section>
 
-      <section data-group="v" data-pane="veiculo" hidden>
-        <h2 class="k-zt">Filtros</h2>
-        <span class="d42-seglab">Perfil</span>
-        <div class="k-seg" role="group" aria-label="Perfil">
-          <button data-k="perfil" data-v="b2b" aria-pressed="true">B2B ticket alto</button>
-          <button data-k="perfil" data-v="b2c" aria-pressed="false">B2C varejo</button>
-          <button data-k="perfil" data-v="mpe" aria-pressed="false">MPE bens de capital</button>
-          <button data-k="perfil" data-v="cartao" aria-pressed="false">Fluxo de cartão</button>
-        </div>
-        <span class="d42-seglab">Prioridade</span>
-        <div class="k-seg" role="group" aria-label="Prioridade">
-          <button data-k="prio" data-v="liquidez" aria-pressed="true">Liquidez</button>
-          <button data-k="prio" data-v="garantia" aria-pressed="false">Garantia</button>
-          <button data-k="prio" data-v="custo" aria-pressed="false">Custo</button>
-        </div>
-      </section>
     </div>
 
     <!-- ============ VISUAL ============ -->
@@ -250,7 +220,6 @@
           <div class="d42-panel" id="painel-comprador">
             <div class="k-ch"><h3>Comprador · Horizonte</h3><span>% a.a.</span></div>
             <div class="k-chart d42-med dash-skeleton" id="medidor" data-draw="medidor" role="img" aria-label="Custo anualizado de recusar o desconto contra o custo de capital do comprador"></div>
-            <p class="k-note">Por R$ <b data-draw="v" data-q="P">—</b> de compra, em valor presente ao custo de capital: pagar no prazo R$ <b data-draw="v" data-q="vpPrazo">—</b> · tomar o desconto R$ <b data-draw="v" data-q="vpVista">—</b>.</p>
             <div class="k-diag" data-frases>
               <span data-draw="frase"></span>
               <p data-frase="tomar" hidden>Tomar o desconto: recusar custa mais que o capital da Horizonte.</p>
@@ -276,25 +245,6 @@
         <div class="k-cards d42-cards dash-skeleton" data-draw="praticas"></div>
       </section>
 
-      <section data-group="v" data-pane="veiculo" id="veiculo" data-source="recomendacoes instrumentos" hidden>
-        <div class="k-ch"><h3>Instrumento recomendado</h3><span>tripé liquidez · garantia · custo</span></div>
-        <div class="d42-rec">
-          <h3 data-draw="v" data-q="instNome">—</h3>
-          <p class="k-note" data-draw="v" data-q="instJust">—</p>
-          <div class="d42-trow"><span>Liquidez <span class="k-u">dias até o caixa</span></span><div class="d42-bar" data-draw="tripe" data-dim="liq"></div></div>
-          <div class="d42-trow"><span>Garantia</span><div class="d42-bar" data-draw="tripe" data-dim="gar"></div></div>
-          <div class="d42-trow"><span>Custo típico</span><div class="d42-bar" data-draw="tripe" data-dim="custo"></div></div>
-        </div>
-        <details class="d42-todos">
-          <summary>ver todos</summary>
-          <div class="k-tw" data-source="instrumentos">
-            <table class="k-table d42-table">
-              <thead><tr><th>Instrumento</th><th>Liquidez (dias)</th><th class="d42-left">Garantia</th><th class="d42-left">Custo típico</th><th class="d42-left">Quando usar</th></tr></thead>
-              <tbody data-draw="instr"></tbody>
-            </table>
-          </div>
-        </details>
-      </section>
     </div>
 
     <!-- ============ LEITURA ============ -->
@@ -302,8 +252,8 @@
       <section data-group="v" data-pane="condicao" data-source="cenarios tipicas">
         <h2 class="k-zt">Leitura</h2>
         <div class="k-kpi"><span class="k-kl">Resultado do vendedor <span class="k-u">R$/mês</span></span><span class="k-kn" data-draw="v" data-q="resV">—</span></div>
-        <div class="k-kpi"><span class="k-kl">Custo da recusa <span class="k-u">composto, a.a.</span> <span class="k-info" tabindex="0">i<span class="k-tip">Base 360: (1 + d ÷ (1 − d))^(360 ÷ (n − k)) − 1. O V5.1 usa base 365 e chega a um número um pouco maior; os dashboards padronizam em 360.</span></span></span><span class="k-kn" data-draw="v" data-q="custoComp">—</span></div>
-        <p class="k-note">Linear <b data-draw="v" data-q="custoLin">—</b> · base 365 <b data-draw="v" data-q="custo365">—</b> · custo de capital <b data-draw="v" data-q="cc">—</b></p>
+        <div class="k-kpi"><span class="k-kl">Custo da recusa <span class="k-u">composto, a.a.</span> <span class="k-info" tabindex="0">i<span class="k-tip">Base 360: (1 + d ÷ (1 − d))^(360 ÷ (n − k)) − 1.</span></span></span><span class="k-kn" data-draw="v" data-q="custoComp">—</span></div>
+        <p class="k-note">Linear <b data-draw="v" data-q="custoLin">—</b> · custo de capital <b data-draw="v" data-q="cc">—</b></p>
         <div class="d42-dec"><span>Alfa: oferecer?</span><b data-draw="dec" data-q="of">—</b></div>
         <div class="d42-dec"><span>Horizonte: aceitar?</span><b data-draw="dec" data-q="ac">—</b></div>
         <div class="k-diag" data-frases>
@@ -319,15 +269,9 @@
         <h2 class="k-zt">Leitura</h2>
         <div class="k-kpi"><span class="k-kl">Pricing implícito do <b data-draw="v" data-q="pr0nome">—</b></span><span class="k-kn" data-draw="v" data-q="pr0">—</span></div>
         <p class="k-note">Prazo médio <b data-draw="v" data-q="pr0pmr">—</b> dias · preço à vista <b data-draw="v" data-q="descV">—</b> abaixo do a prazo.</p>
-        <div class="k-diag"><p>A notação americana é rara no Brasil; a matemática é a mesma. Tratar "30/60/90" como prazo neutro é o erro mais frequente.</p></div>
+        <div class="k-diag"><p>A notação americana é rara no Brasil; a matemática é a mesma. Tratar "30/60/90" como prazo neutro é o erro mais frequente. O boleto não é condição: é o veículo da condição.</p></div>
       </section>
 
-      <section data-group="v" data-pane="veiculo" data-source="recomendacoes instrumentos" hidden>
-        <h2 class="k-zt">Leitura</h2>
-        <div class="d42-kname" data-draw="v" data-q="instNome">—</div>
-        <p class="k-note">Usado em: <b data-draw="v" data-q="instUso">—</b></p>
-        <div class="k-diag"><p>Regra prática: B2B recorrente → duplicata + boleto; B2C → boleto + Pix; empréstimo bancário → CCB; fluxo de cartão → recebível D+30 antecipável; MPE bens de capital → cartão BNDES.</p></div>
-      </section>
     </div>
   </div>
 
@@ -484,12 +428,12 @@
 (function (root) {
   const M = {};
 
-  // custo anualizado de recusar o desconto "d/k net n" — base 360 por padrão (00_Convencoes §3.6)
-  M.custoRecusa = function (d, k, n, base = 360) {
+  // custo anualizado de recusar o desconto "d/k net n" — base 360 (00_Convencoes §3.6)
+  M.custoRecusa = function (d, k, n) {
     const dias = n - k;
     if (!(dias > 0) || !(d < 1)) return { lin: Infinity, comp: Infinity };
     const r = d / (1 - d);
-    return { lin: r * base / dias, comp: Math.pow(1 + r, base / dias) - 1 };
+    return { lin: r * 360 / dias, comp: Math.pow(1 + r, 360 / dias) - 1 };
   };
 
   // conta do vendedor (R$ mil/mês). V = venda × adesão
@@ -505,13 +449,10 @@
   M.breakEvenFunding = ({ d, k, n, e }) => (n - k > 0 ? (d - e) / ((n - k) / 30) : Infinity);
   M.breakEvenInad = ({ d, k, n, iVend }) => d - (n - k) / 30 * iVend;
 
-  // conta do comprador: VP dos dois caminhos para um preço P, ao custo de capital anual cc
-  M.comprador = function ({ d, k, n, cc }, P = 100) {
-    const iComp = Math.pow(1 + cc, 1 / 12) - 1;
-    const vpPrazo = P / Math.pow(1 + iComp, n / 30);
-    const vpVista = P * (1 - d) / Math.pow(1 + iComp, k / 30);
+  // conta do comprador: custo da recusa contra o custo de capital anual cc
+  M.comprador = function ({ d, k, n, cc }) {
     const c = M.custoRecusa(d, k, n);
-    return { iComp, vpPrazo, vpVista, custoLin: c.lin, custoComp: c.comp, tomar: c.comp > cc };
+    return { custoLin: c.lin, custoComp: c.comp, tomar: c.comp > cc };
   };
 
   // práticas brasileiras: prazo médio de parcelas iguais e pricing implícito do desconto à vista
@@ -523,7 +464,6 @@
     const p = { venda: C.venda, adesao: C.adesao / 100, d: C.d / 100, k: C.k, n: C.n, iVend: C.i / 100, e: C.e / 100, cc: C.cc / 100 };
     const vend = M.vendedor(p);
     const comp = M.comprador(p);
-    const c365 = M.custoRecusa(p.d, p.k, p.n, 365);
     const oferecer = vend.res > 0;
     let caso;
     if (vend.res <= 0 && comp.tomar) caso = 'compradorGanha';
@@ -531,7 +471,7 @@
     else if (vend.res > 0 && !comp.tomar) caso = 'pequeno';
     else caso = 'ninguem';
     return {
-      p, vend, comp, oferecer, aceitar: comp.tomar, caso, custo365: c365.comp,
+      p, vend, comp, oferecer, aceitar: comp.tomar, caso,
       beFunding: M.breakEvenFunding(p), beInad: M.breakEvenInad(p),
       pctMargem: C.m > 0 ? p.d / (C.m / 100) : null,
     };
@@ -549,17 +489,13 @@
    Testes de aderência (Spec §7), conferidos com M42 em node (32 PASS / 0 FAIL):
    2/10 net 30: linear 36,7% · composto 43,9% · 1/10 net 30 19,8% · 2/10 net 60 15,7% · 3/10 net 30 73,0%
    Slide: V 60 · −1.200 · +480 · +480 · −240/mês · não oferecer · comprador 43,9% > 17% → tomar
-   Alfa → Horizonte (2/10, n 60, V 300): 15,7% < 17% → manter · −6,0 + 6,0 + 2,4 = +2,4 mil/mês
    Práticas 30/60/90 com 2,5%: 16,4% a.a.
    ============================================================ */
 const ST = window.D42 = { S: null, cen: null, mexido: false };
-const IDS = ['cenarios', 'tipicas', 'praticas', 'instrumentos', 'recomendacoes'];
-const NOMES = ['v', 'dec', 'frase', 'regua', 'cascata', 'medidor', 'tipicas', 'praticas', 'tripe', 'instr'];
+const IDS = ['cenarios', 'tipicas', 'praticas'];
+const NOMES = ['v', 'dec', 'frase', 'regua', 'cascata', 'medidor', 'tipicas', 'praticas'];
 const Q2_N = 60;          // prazo n sugerido na pergunta-guia 2
-const LIQ_MAX = 60;       // escala da barra de liquidez (dias)
-const NIVEL_MAX = 3;      // escala de garantia e custo (1 a 3)
 const X_MAX = 1.5;        // teto do medidor (150% a.a.)
-const P_COMPRA = 100;     // preço de referência do VP do comprador (M42.comprador)
 
 /* ---------- dados ---------- */
 const rows = (id) => K.num(dash.data(id).data);
@@ -573,8 +509,6 @@ const ctlDe = (r) => { const o = {}; CAMPOS.forEach((c) => { o[c] = r[c]; }); re
 const base = (extra) => M42.estado({ ...ctlDe(cenario('slide')), ...(extra || {}) });
 const dias = (p) => String(p.parcelas).split('|').map(Number);
 const praticas = () => rows('praticas').map((p) => { const pmr = M42.pmr(dias(p)); return { ...p, pmr, pr: M42.pricingImplicito(ST.S.descVista / 100, pmr) }; });
-const rec = () => rows('recomendacoes').find((r) => r.perfil === ST.S.perfil && r.prioridade === ST.S.prio);
-const inst = () => { const r = rec(); return r ? rows('instrumentos').find((x) => x.id === r.id) : null; };
 const pct1 = (x) => K.p(x, 1);
 
 /* ---------- controles ---------- */
@@ -589,8 +523,7 @@ function sincroniza() {
 function aplicar(id) {
   const r = cenario(id);
   if (!r) return;
-  const keep = ST.S ? { perfil: ST.S.perfil, prio: ST.S.prio } : { perfil: 'b2b', prio: 'liquidez' };
-  ST.S = { ...ctlDe(r), ...keep }; ST.cen = id; ST.mexido = false;
+  ST.S = ctlDe(r); ST.cen = id; ST.mexido = false;
   sincroniza();
 }
 dash.onData(() => {
@@ -745,46 +678,16 @@ dash.draw('praticas', (el) => {
   });
 });
 
-/* ---------- veículo: tripé e tabela ---------- */
-dash.draw('tripe', (el) => {
-  el.replaceChildren();
-  const ok = pronto() && inst();
-  if (!ok) { el.textContent = '—'; return; }
-  const I = inst(), dim = el.dataset.dim;
-  const frac = dim === 'liq' ? Math.min(1, I.liquidez_dias / LIQ_MAX) : (dim === 'gar' ? I.garantia : I.custo) / NIVEL_MAX;
-  const txt = dim === 'liq' ? (I.liquidez_dias === 0 ? 'imediata' : K.n(I.liquidez_dias) + ' dias') : dim === 'gar' ? I.garantia_txt : I.custo_txt;
-  const cor = dim === 'liq' ? 'var(--k-blue)' : dim === 'gar' ? 'var(--k-navy)' : 'var(--k-amber)';
-  const tr = document.createElement('div'); tr.className = 'd42-track';
-  const fi = document.createElement('div'); fi.className = 'd42-fill'; fi.style.width = Math.max(2, frac * 100) + '%'; fi.style.background = cor; tr.append(fi);
-  const v = document.createElement('div'); v.className = 'd42-bval'; v.textContent = txt;
-  el.append(tr, v);
-});
-dash.draw('instr', (el) => {
-  el.replaceChildren();
-  if (!pronto()) return;
-  const sel = inst();
-  rows('instrumentos').forEach((I) => {
-    const tr = document.createElement('tr');
-    if (sel && sel.id === I.id) tr.className = 'k-sel';
-    [[I.instrumento, ''], [K.n(I.liquidez_dias), ''], [I.garantia_txt, 'd42-left'], [I.custo_txt, 'd42-left'], [I.uso, 'd42-left']].forEach(([s, c]) => { const td = document.createElement('td'); td.textContent = s; if (c) td.className = c; tr.append(td); });
-    el.append(tr);
-  });
-});
-
 /* ---------- números ---------- */
 const VAL = {
   resV: (R) => K.s(R.vend.res * 1000), absRes: (R) => K.n(Math.abs(R.vend.res * 1000)),
-  custoComp: (R) => pct1(R.comp.custoComp), custoLin: (R) => pct1(R.comp.custoLin), custo365: (R) => pct1(R.custo365), cc: (R) => pct1(R.p.cc),
+  custoComp: (R) => pct1(R.comp.custoComp), custoLin: (R) => pct1(R.comp.custoLin), cc: (R) => pct1(R.p.cc),
   V: (R) => K.n(R.vend.V, 1), dpct: (R) => K.p(R.p.d, 1), pctMargem: (R) => (R.pctMargem == null ? null : pct1(R.pctMargem)),
-  P: () => K.n(P_COMPRA), vpPrazo: (R) => K.n(R.comp.vpPrazo, 2), vpVista: (R) => K.n(R.comp.vpVista, 2),
   prVenda: () => { const p = praticas()[0]; return p ? K.n(p.venda) : null; },
   pr0nome: () => { const p = praticas()[0]; return p ? p.pratica : null; },
   pr0: () => { const p = praticas()[0]; return p && p.pr != null ? pct1(p.pr) : null; },
   pr0pmr: () => { const p = praticas()[0]; return p ? K.n(p.pmr) : null; },
   descV: () => K.n(ST.S.descVista, 1) + '%',
-  instNome: () => { const I = inst(); return I ? I.instrumento : null; },
-  instJust: () => { const r = rec(); return r ? r.justificativa : null; },
-  instUso: () => { const I = inst(); return I ? I.uso : null; },
   'g-res': () => K.s(base().vend.res * 1000), 'g-fund': () => K.p(base().beFunding, 1), 'g-inad': () => K.p(base().beInad, 1),
   'g-q2n': () => K.n(Q2_N), 'g-c60': () => pct1(base({ n: Q2_N }).comp.custoComp), 'g-cc': () => pct1(base().p.cc), 'g-d': () => K.p(base().p.d, 0),
   'g-nk60': () => K.n(Q2_N - base().p.k), 'g-nk': () => K.n(base().p.n - base().p.k), 'g-c': () => pct1(base().comp.custoComp),

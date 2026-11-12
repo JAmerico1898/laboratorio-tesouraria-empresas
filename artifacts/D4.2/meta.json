@@ -3,10 +3,8 @@
   "title": "D4.2 · Condições de venda",
   "slug": "14a5a528-3993-4968-a88d-dd29b735cd18",
   "datasets": {
-    "cenarios": { "file": "cenarios.json", "sha256": "a1c6f3a8d673b4ccb4ab3f5f29a657d76580113feb11be80712eebfdc26a071e" },
-    "instrumentos": { "file": "instrumentos.json", "sha256": "9440781310d069b309450aa3dde8efaa0262454a29ecdb91b8dee49872d3f04a" },
+    "cenarios": { "file": "cenarios.json", "sha256": "a23c7b80bd2020ae9752c1c35b2b637c63de2b4b9ce586ad54e7a9e7b8ffd582" },
     "praticas": { "file": "praticas.json", "sha256": "7cc9d6f54e20f9b1deeacb8fc443e7a42c0bfc27c9449355ea5787252f4d6a51" },
-    "recomendacoes": { "file": "recomendacoes.json", "sha256": "0ada8367477683c4b66c325983243080d8cb3f8f241a564042cb03096296f54a" },
     "tipicas": { "file": "tipicas.json", "sha256": "a4cf87a4a473fc99bb294d1629bbfa28e63a0059027c4fbfb054970c4c6766e7" }
   }
 }

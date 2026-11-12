@@ -5,12 +5,12 @@
 (function (root) {
   const M = {};
 
-  // custo anualizado de recusar o desconto "d/k net n" — base 360 por padrão (00_Convencoes §3.6)
-  M.custoRecusa = function (d, k, n, base = 360) {
+  // custo anualizado de recusar o desconto "d/k net n" — base 360 (00_Convencoes §3.6)
+  M.custoRecusa = function (d, k, n) {
     const dias = n - k;
     if (!(dias > 0) || !(d < 1)) return { lin: Infinity, comp: Infinity };
     const r = d / (1 - d);
-    return { lin: r * base / dias, comp: Math.pow(1 + r, base / dias) - 1 };
+    return { lin: r * 360 / dias, comp: Math.pow(1 + r, 360 / dias) - 1 };
   };
 
   // conta do vendedor (R$ mil/mês). V = venda × adesão
@@ -26,13 +26,10 @@
   M.breakEvenFunding = ({ d, k, n, e }) => (n - k > 0 ? (d - e) / ((n - k) / 30) : Infinity);
   M.breakEvenInad = ({ d, k, n, iVend }) => d - (n - k) / 30 * iVend;
 
-  // conta do comprador: VP dos dois caminhos para um preço P, ao custo de capital anual cc
-  M.comprador = function ({ d, k, n, cc }, P = 100) {
-    const iComp = Math.pow(1 + cc, 1 / 12) - 1;
-    const vpPrazo = P / Math.pow(1 + iComp, n / 30);
-    const vpVista = P * (1 - d) / Math.pow(1 + iComp, k / 30);
+  // conta do comprador: custo da recusa contra o custo de capital anual cc
+  M.comprador = function ({ d, k, n, cc }) {
     const c = M.custoRecusa(d, k, n);
-    return { iComp, vpPrazo, vpVista, custoLin: c.lin, custoComp: c.comp, tomar: c.comp > cc };
+    return { custoLin: c.lin, custoComp: c.comp, tomar: c.comp > cc };
   };
 
   // práticas brasileiras: prazo médio de parcelas iguais e pricing implícito do desconto à vista
@@ -44,7 +41,6 @@
     const p = { venda: C.venda, adesao: C.adesao / 100, d: C.d / 100, k: C.k, n: C.n, iVend: C.i / 100, e: C.e / 100, cc: C.cc / 100 };
     const vend = M.vendedor(p);
     const comp = M.comprador(p);
-    const c365 = M.custoRecusa(p.d, p.k, p.n, 365);
     const oferecer = vend.res > 0;
     let caso;
     if (vend.res <= 0 && comp.tomar) caso = 'compradorGanha';
@@ -52,7 +48,7 @@
     else if (vend.res > 0 && !comp.tomar) caso = 'pequeno';
     else caso = 'ninguem';
     return {
-      p, vend, comp, oferecer, aceitar: comp.tomar, caso, custo365: c365.comp,
+      p, vend, comp, oferecer, aceitar: comp.tomar, caso,
       beFunding: M.breakEvenFunding(p), beInad: M.breakEvenInad(p),
       pctMargem: C.m > 0 ? p.d / (C.m / 100) : null,
     };
