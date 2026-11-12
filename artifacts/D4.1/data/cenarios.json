@@ -1,5 +1,3 @@
 [
-  {"id":"slide","nome":"Slide V4.1","venda":10000,"unidade":"R$","custo":70,"prazo":60,"parcelas":"","inad":2,"taxa":1.2,"adm":0},
-  {"id":"alfa","nome":"Na escala da Alfa","venda":4166.6667,"unidade":"R$ mil","custo":65,"prazo":60,"parcelas":"","inad":2,"taxa":1.2,"adm":0},
-  {"id":"horizonte","nome":"Horizonte 30/60/90","venda":500,"unidade":"R$ mil","custo":65,"prazo":60,"parcelas":"30/60/90","inad":2,"taxa":1.2,"adm":0}
+  {"id":"slide","nome":"Slide V4.1","venda":10000,"custo":70,"prazo":60,"inad":2,"taxa":1.2,"adm":0}
 ]

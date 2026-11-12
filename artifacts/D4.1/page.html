@@ -24,8 +24,6 @@
     <div class="k-cens" id="cenarios" role="group" aria-label="Cenários" data-source="cenarios politica">
       <span class="k-cens" data-group="v" data-pane="venda">
         <button class="k-btn d41-cen" data-cen="slide" aria-pressed="false">Slide V4.1</button>
-        <button class="k-btn d41-cen" data-cen="alfa" aria-pressed="false">Na escala da Alfa</button>
-        <button class="k-btn d41-cen" data-cen="horizonte" aria-pressed="false">Horizonte 30/60/90</button>
       </span>
       <span class="k-cens" data-group="v" data-pane="politica" hidden>
         <button class="k-btn d41-pol" data-pol="slide5" aria-pressed="false">Política do slide 5</button>
@@ -43,20 +41,15 @@
     <div class="k-zone" id="controles" data-source="cenarios politica">
       <section data-group="v" data-pane="venda">
         <h2 class="k-zt">A venda</h2>
-        <div class="k-ctl"><label for="c-venda">Valor da venda <span class="k-u" data-draw="v" data-q="un">—</span></label>
+        <div class="k-ctl"><label for="c-venda">Valor da venda <span class="k-u">R$</span></label>
           <input type="number" class="k-num" id="c-venda" data-k="venda" min="1" max="100000" step="any" aria-label="Valor da venda"></div>
-        <div class="k-ctl"><span class="k-lab">Unidade <span class="k-info" tabindex="0">i<span class="k-tip">O cenário do slide está em reais; os da Alfa e da Horizonte, em R$ mil. Só muda o rótulo: as contas são as mesmas.</span></span></span>
-          <div class="k-seg"><button data-k="un" data-v="R$">R$</button><button data-k="un" data-v="R$ mil">R$ mil</button></div></div>
         <div class="k-ctl"><label for="c-custo">Custo <span class="k-u">% da venda, sai em t = 0</span></label>
           <div class="k-in"><input type="range" id="c-custo" data-k="custo" min="40" max="90" step="1"><input type="number" data-k="custo" min="40" max="90" step="1" aria-label="Custo, % da venda"></div></div>
-        <div class="k-ctl"><span class="k-lab">Recebimento</span>
-          <div class="k-seg"><button data-k="parc" data-v="false">Parcela única</button><button data-k="parc" data-v="true">30/60/90</button></div></div>
         <div class="k-ctl"><label for="c-prazo">Prazo <span class="k-u">dias</span></label>
-          <div class="k-in"><input type="range" id="c-prazo" data-k="prazo" min="0" max="180" step="1"><input type="number" data-k="prazo" min="0" max="180" step="1" aria-label="Prazo, dias"></div>
-          <p class="k-note d41-parcnote" hidden>Em 30/60/90 o prazo vem das parcelas: 1/3 em cada vencimento.</p></div>
+          <div class="k-in"><input type="range" id="c-prazo" data-k="prazo" min="0" max="180" step="1"><input type="number" data-k="prazo" min="0" max="180" step="1" aria-label="Prazo, dias"></div></div>
         <div class="k-ctl"><label for="c-inad">Inadimplência esperada <span class="k-u">%</span></label>
           <div class="k-in"><input type="range" id="c-inad" data-k="inad" min="0" max="10" step="0.1"><input type="number" data-k="inad" min="0" max="10" step="0.1" aria-label="Inadimplência, %"></div></div>
-        <div class="k-ctl"><label for="c-taxa">Taxa de desconto <span class="k-u">% a.m.</span> <span class="k-info" tabindex="0">i<span class="k-tip">Custo do capital empatado no prazo: o funding da Alfa (CDI + spread, em base mensal).</span></span></label>
+        <div class="k-ctl"><label for="c-taxa">Taxa de desconto <span class="k-u">% a.m.</span> <span class="k-info" tabindex="0">i<span class="k-tip">Custo do capital empatado no prazo: usualmente CDI + spread ou WACC, em base mensal.</span></span></label>
           <div class="k-in"><input type="range" id="c-taxa" data-k="taxa" min="0.5" max="3" step="0.05"><input type="number" data-k="taxa" min="0.5" max="3" step="0.05" aria-label="Taxa, % a.m."></div></div>
         <div class="k-ctl"><label for="c-adm">Custos adm. + cobrança <span class="k-u">% da venda</span></label>
           <div class="k-in"><input type="range" id="c-adm" data-k="adm" min="0" max="5" step="0.1"><input type="number" data-k="adm" min="0" max="5" step="0.1" aria-label="Custos adm. e cobrança, % da venda"></div></div>
@@ -83,7 +76,7 @@
     <!-- ===================== VISUAL ===================== -->
     <div class="k-zone" id="visual" data-source="cenarios politica">
       <section data-group="v" data-pane="venda" id="venda">
-        <div class="k-ch"><h3>Linha do tempo da venda</h3><span><b data-draw="v" data-q="un">—</b> · dias</span></div>
+        <div class="k-ch"><h3>Linha do tempo da venda</h3><span><b>R$</b> · dias</span></div>
         <div class="k-chart d41-linha dash-skeleton" id="linha" data-draw="linha" role="img" aria-label="Saída do custo em t = 0, recebimento no vencimento e seu valor presente trazido a t = 0"></div>
         <div class="k-legend">
           <span><i style="background: var(--k-neg)"></i>Saída: custo + adm</span>
@@ -92,7 +85,7 @@
         </div>
 
         <div class="d41-sep">
-          <div class="k-ch"><h3>Preço efetivo do crédito</h3><span>para onde vai a venda nominal · <b data-draw="v" data-q="un">—</b></span></div>
+          <div class="k-ch"><h3>Preço efetivo do crédito</h3><span>para onde vai a venda nominal · <b>R$</b></span></div>
           <div class="k-chart d41-preco dash-skeleton" id="preco" data-draw="preco" role="img" aria-label="Barra empilhada: inadimplência, custo de oportunidade, adm, custo do produto e caixa líquido"></div>
           <div class="d41-leg">
             <span><i style="background: var(--k-neg)"></i>Inadimplência · <b data-draw="v" data-q="inad">—</b></span>
@@ -115,17 +108,15 @@
     <!-- ===================== LEITURA ===================== -->
     <div class="k-zone" id="leitura" data-source="cenarios politica">
       <section data-group="v" data-pane="venda">
-        <h2 class="k-zt">Leitura · <span data-draw="v" data-q="un">—</span></h2>
+        <h2 class="k-zt">Leitura · R$</h2>
         <div class="k-kpi"><span class="k-kl">Recebimento esperado</span><span class="k-kn" data-draw="v" data-q="receb">—</span></div>
         <div class="k-kpi"><span class="k-kl">VP do recebimento</span><span class="k-kn" data-draw="v" data-q="vp">—</span></div>
         <div class="k-kpi"><span class="k-kl">Caixa líquido (VP)</span><span class="k-kn" data-draw="v" data-q="caixa">—</span></div>
         <p class="k-note">Custo do crédito nesta venda: <b data-draw="v" data-q="custoCred">—</b> = inadimplência <b data-draw="v" data-q="inad">—</b> + oportunidade <b data-draw="v" data-q="oport">—</b> + adm <b data-draw="v" data-q="adm">—</b></p>
-        <p class="k-note d41-pmrnote" hidden>PMR efetivo das parcelas: <b data-draw="v" data-q="pmr">—</b> dias; o VP é a soma das três parcelas, cada uma descontada ao seu prazo.</p>
         <div class="k-diag" data-frases>
           <span data-draw="frase"></span>
           <p data-frase="cria" hidden>Vender a prazo nestas condições cria valor: cada R$ 100 vendidos devolvem R$ <b data-draw="v" data-q="porCem">—</b> em VP, após custo.</p>
           <p data-frase="destroi" hidden>A venda destrói valor em VP: o prazo e a inadimplência consomem toda a margem.</p>
-          <p data-frase="semsalva" hidden>Inadimplência de <b data-draw="v" data-q="inadPct">—</b> com margem de <b data-draw="v" data-q="margem">—</b>: nenhum prazo salva esta venda.</p>
         </div>
       </section>
 
@@ -138,10 +129,6 @@
           <span class="d41-dec d41-nao" data-frase="recusar" hidden>RECUSAR</span>
         </div>
         <p class="k-note">Custos marginais: <b data-draw="v" data-q="custos">—</b> = fin <b data-draw="v" data-q="fin">—</b> + inad <b data-draw="v" data-q="inadR">—</b> + adm <b data-draw="v" data-q="padm">—</b></p>
-        <div class="k-diag">
-          <p>Ponto de equilíbrio: a política deixa de compensar com inadimplência adicional de <b data-draw="v" data-q="istar">—</b> ou PMR de <b data-draw="v" data-q="pstar">—</b> dias. <span class="k-info" tabindex="0">i<span class="k-tip">Cada um mantendo os demais parâmetros. O PMR exibido é o maior número inteiro de dias com ganho ainda não negativo.</span></span></p>
-          <p>Cada 30 dias a mais de PMR custam R$ <b data-draw="v" data-q="c30">—</b> mil/mês.</p>
-        </div>
       </section>
     </div>
   </div>
@@ -156,8 +143,8 @@
         <li>Na aba "A política", ligue a armadilha. Quanto o ganho muda e por quê?
           <details><summary>mostrar resposta</summary><p>A receita marginal salta de <b data-draw="v" data-q="g-rm">—</b> para <b data-draw="v" data-q="g-rmA">—</b> e o ganho de <b data-draw="v" data-q="g-gl">—</b> para <b data-draw="v" data-q="g-glA">—</b> — <b data-draw="v" data-q="g-x">—</b> vezes maior, mas errado: só a margem de contribuição (<b data-draw="v" data-q="g-m">—</b>) das vendas que não ocorreriam à vista é ganho; o resto é custo de produto que já saiu do caixa.</p></details>
         </li>
-        <li>Com os defaults da política, até que inadimplência adicional ela ainda compensa?
-          <details><summary>mostrar resposta</summary><p>≈ <b data-draw="v" data-q="g-istar">—</b> = (<b data-draw="v" data-q="g-rm">—</b> − <b data-draw="v" data-q="g-fin">—</b> − <b data-draw="v" data-q="g-padm">—</b>) ÷ <b data-draw="v" data-q="g-dv">—</b>. Folga enorme; o número a vigiar é o PMR: cada 30 dias a mais custam R$ <b data-draw="v" data-q="g-c30">—</b> mil/mês.</p></details>
+        <li>Na política do slide 5, os custos marginais somam R$ <span data-draw="v" data-q="g-custos">—</span> mil/mês. Qual componente pesa mais e qual alavanca gerencia cada um?
+          <details><summary>mostrar resposta</summary><p>O custo financeiro: <b data-draw="v" data-q="g-dv">—</b> × <b data-draw="v" data-q="g-taxa">—</b> × <b data-draw="v" data-q="g-meses">—</b> meses = <b data-draw="v" data-q="g-fin">—</b> — o custo de oportunidade do capital empatado, gerido pelo funding e pelo prazo. A inadimplência (<b data-draw="v" data-q="g-inadR">—</b>) se gerencia na seleção de clientes; adm + cobrança (<b data-draw="v" data-q="g-padm">—</b>), com automação e cobrança escalonada. O incremento continua positivo: <b data-draw="v" data-q="g-rm">—</b> − <b data-draw="v" data-q="g-custos">—</b> = <b data-draw="v" data-q="g-gl">—</b> → aprovar.</p></details>
         </li>
       </ol>
     </div>
@@ -169,16 +156,15 @@
 <script>
 /* ============================================================
    D4.1 · Venda a prazo: o fluxo
-   Testes de aderência (Spec §7), conferidos com M41 em node (25 PASS / 0 FAIL):
+   Testes de aderência (Spec §7), conferidos com M41 em node:
    Slide V4.1: receb 9.800 · VP 9.569 · caixa líquido 2.569 · oportunidade 231 · inadimplência 200
-   Escala da Alfa: VP 3.987 · caixa 1.279 · Horizonte 30/60/90: VP 478,5 · caixa 153,5 · PMR 60
    Política: receita marginal 70,0 · fin 4,8 · inad 3,0 · adm 1,2 · GL 61,0 · APROVAR
-   Armadilha: receita marginal 200 · GL 191 · Break-even: inad* 32,0% · PMR* 822,5 (exibido 822)
+   Armadilha: receita marginal 200 · GL 191
    ============================================================ */
 const ST = window.D41 = { S: null, cen: null, pol: null, mexV: false, mexP: false };
 const IDS = ['cenarios', 'politica'];
 const NOMES = ['linha', 'preco', 'cascata', 'v', 'frase', 'decisao'];
-const KV = ['venda', 'un', 'custo', 'prazo', 'parc', 'inad', 'taxa', 'adm'];
+const KV = ['venda', 'custo', 'prazo', 'inad', 'taxa', 'adm'];
 const KP = ['dV', 'm', 'pmr', 'ptaxa', 'inadAd', 'padm', 'arm'];
 
 /* ---------- dados ---------- */
@@ -187,23 +173,18 @@ const cenario = (id) => linhas('cenarios').find((r) => r.id === id);
 const politica = (id) => linhas('politica').find((r) => r.id === id);
 const pronto = () => ST.S != null && K.status(IDS) === 'ok';
 const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(IDS));
-const parcelasRef = () => { const r = linhas('cenarios').find((x) => String(x.parcelas || '').trim() !== ''); return r ? M41.parcelas(r.parcelas) : []; };
-const ctlVenda = (S) => ({ venda: S.venda, custo: S.custo, prazo: S.prazo, inad: S.inad, taxa: S.taxa, adm: S.adm, parcelas: S.parc ? parcelasRef() : null });
+const ctlVenda = (S) => ({ venda: S.venda, custo: S.custo, prazo: S.prazo, inad: S.inad, taxa: S.taxa, adm: S.adm });
 const ctlPol = (S) => ({ dV: S.dV, m: S.m, pmr: S.pmr, taxa: S.ptaxa, inadAd: S.inadAd, adm: S.padm, arm: !!S.arm });
-const deCen = (r) => ({ venda: r.venda, un: r.unidade, custo: r.custo, prazo: r.prazo, parc: String(r.parcelas || '').trim() !== '', inad: r.inad, taxa: r.taxa, adm: r.adm });
+const deCen = (r) => ({ venda: r.venda, custo: r.custo, prazo: r.prazo, inad: r.inad, taxa: r.taxa, adm: r.adm });
 const dePol = (r) => ({ dV: r.dV, m: r.m, pmr: r.pmr, ptaxa: r.taxa, inadAd: r.inadAd, padm: r.adm, arm: false });
 const V = () => M41.venda(ctlVenda(ST.S));
 const P = () => M41.politica(ctlPol(ST.S));
-// casas decimais do valor em reais: R$ → 0; R$ mil abaixo de 1.000 → 1
-const dec = () => (ST.S.un === 'R$ mil' && Math.abs(ST.S.venda) < 1000 ? 1 : 0);
-const baseV = () => M41.venda(ctlVenda({ ...deCen(cenario('slide')) }));
+const baseV = () => M41.venda(deCen(cenario('slide')));
 const baseP = (arm) => M41.politica(ctlPol({ ...dePol(politica('slide5')), arm: !!arm }));
 
 /* ---------- controles ---------- */
 function sincroniza() {
   K.sync(ST.S);
-  document.querySelectorAll('input[data-k="prazo"]').forEach((i) => { i.disabled = !!ST.S.parc; });
-  document.querySelectorAll('.d41-parcnote, .d41-pmrnote').forEach((x) => { x.hidden = !ST.S.parc; });
   document.querySelectorAll('.d41-arm').forEach((x) => { x.hidden = !ST.S.arm; });
   document.querySelectorAll('.d41-cen').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexV && b.dataset.cen === ST.cen)));
   document.querySelectorAll('.d41-pol').forEach((b) => b.setAttribute('aria-pressed', String(!ST.mexP && b.dataset.pol === ST.pol)));
@@ -230,16 +211,15 @@ K.tabs('v', () => K.redraw(NOMES));
 dash.draw('linha', (el) => {
   if (!pronto()) { falha(el); return; }
   el.classList.remove('dash-skeleton');
-  const R = V(), d = dec(), fx = (v) => K.n(v, d);
+  const R = V(), fx = (v) => K.n(v);
   const { svg, W, H } = K.svg(el, 290, 300);
   el.replaceChildren(svg.node());
   const tip = K.tip(el);
-  const tLast = d3.max(R.fluxos, (f) => f.t) || 0;
-  const tMax = Math.max(30, Math.ceil(tLast / 30) * 30);
+  const tMax = Math.max(30, Math.ceil(R.prazo / 30) * 30);
   const mL = 46, mR = 46;
   const x = d3.scaleLinear([0, tMax], [mL, W - mR]);
   const saida = R.custo + R.adm;
-  const top = Math.max(R.receb / (R.fluxos.length > 1 ? R.fluxos.length : 1), R.vp, 1e-9);
+  const top = Math.max(R.receb, R.vp, 1e-9);
   const y = d3.scaleLinear([-saida, top], [H - 34, 46]);
   const bw = Math.max(14, Math.min(34, (W - mL - mR) / 14));
   // eixo do tempo
@@ -258,24 +238,19 @@ dash.draw('linha', (el) => {
   hover(svg.append('rect').attr('x', xV).attr('width', bw).attr('y', y(R.vp)).attr('height', Math.max(0, y(0) - y(R.vp))).attr('fill', 'var(--k-blue-l)').attr('rx', 2),
     't = 0 · valor presente', [['var(--k-blue-l)', 'VP do recebimento', fx(R.vp)], [null, 'Custo de oportunidade', fx(R.oport)]]);
   const tVP = svg.append('text').attr('class', 'k-svgb').style('fill', 'var(--color-fg)').attr('x', xV).attr('y', y(R.vp) - 8).text('VP ' + fx(R.vp));
-  // recebimentos
-  R.fluxos.forEach((f) => {
-    if (f.t === 0) return;
-    const xr = x(f.t) - bw / 2;
-    hover(svg.append('rect').attr('x', xr).attr('width', bw).attr('y', y(f.receb)).attr('height', Math.max(0, y(0) - y(f.receb))).attr('fill', 'var(--k-pos)').attr('rx', 2),
-      K.n(f.t) + ' dias · recebimento', [['var(--k-pos)', 'Esperado', fx(f.receb)], ['var(--k-blue-l)', 'VP', fx(f.vp)], [null, 'Fator', K.n(f.fator, 4)]]);
-    svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', x(f.t)).attr('y', y(f.receb) - 8).text(fx(f.receb));
+  // recebimento e rótulo do desconto
+  if (R.prazo > 0) {
+    const xr = x(R.prazo) - bw / 2;
+    hover(svg.append('rect').attr('x', xr).attr('width', bw).attr('y', y(R.receb)).attr('height', Math.max(0, y(0) - y(R.receb))).attr('fill', 'var(--k-pos)').attr('rx', 2),
+      K.n(R.prazo) + ' dias · recebimento', [['var(--k-pos)', 'Esperado', fx(R.receb)], ['var(--k-blue-l)', 'VP', fx(R.vp)], [null, 'Fator', K.n(R.fator, 4)]]);
+    svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'middle').attr('x', x(R.prazo)).attr('y', y(R.receb) - 8).text(fx(R.receb));
     // seta tracejada de volta a t = 0
-    const x1 = xr - 2, y1 = y(f.receb) + 2, x2 = xV + bw + 4, y2 = y(f.vp) + 2;
+    const x1 = xr - 2, y1 = y(R.receb) + 2, x2 = xV + bw + 4, y2 = y(R.vp) + 2;
     const cx = (x1 + x2) / 2, cy = Math.min(y1, y2) - 18;
     svg.append('path').attr('d', `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`).attr('fill', 'none').attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5).attr('stroke-dasharray', '5 4');
     svg.append('path').attr('d', `M${x2 + 7},${y2 - 5} L${x2},${y2} L${x2 + 8},${y2 + 3}`).attr('fill', 'none').attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1.5);
-  });
-  // rótulo do desconto
-  const ult = R.fluxos[R.fluxos.length - 1];
-  if (ult && ult.t > 0) {
-    const lab = R.parcelado ? '÷ (1 + i)^(prazoⱼ/30) em cada parcela' : '÷ (1 + i)^(prazo/30) = ÷ ' + K.n(ult.fator, 4);
-    const tx = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (x(0) + x(ult.t)) / 2).attr('y', 16).text(lab);
+    const lab = '÷ (1 + i)^(prazo/30) = ÷ ' + K.n(R.fator, 4);
+    const tx = svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', (x(0) + x(R.prazo)) / 2).attr('y', 16).text(lab);
     const b = tx.node().getBBox(); if (b.x < 2) tx.attr('text-anchor', 'start').attr('x', 2);
   } else {
     svg.append('text').attr('class', 'k-svgm').attr('x', xV + bw + 8).attr('y', y(R.vp / 2)).text('à vista: VP = recebimento');
@@ -287,7 +262,7 @@ dash.draw('linha', (el) => {
 dash.draw('preco', (el) => {
   if (!pronto()) { falha(el); return; }
   el.classList.remove('dash-skeleton');
-  const R = V(), d = dec();
+  const R = V();
   const { svg, W, H } = K.svg(el, 74, 280);
   el.replaceChildren(svg.node());
   const tip = K.tip(el);
@@ -298,15 +273,15 @@ dash.draw('preco', (el) => {
   segs.forEach(([nome, v, cor]) => {
     if (v <= 0) return;
     svg.append('rect').attr('x', x(acc)).attr('width', Math.max(0, x(acc + v) - x(acc))).attr('y', 14).attr('height', 30).attr('fill', cor)
-      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(nome, [[cor, '', K.n(v, d)], [null, '% da venda', K.p(v / R.venda, 1)]], px, py); })
+      .on('mousemove', (ev) => { const [px, py] = d3.pointer(ev, el); tip.show(nome, [[cor, '', K.n(v)], [null, '% da venda', K.p(v / R.venda, 1)]], px, py); })
       .on('mouseleave', () => tip.hide());
     acc += v;
   });
   // marca da venda nominal
   svg.append('line').attr('x1', x(R.venda)).attr('x2', x(R.venda)).attr('y1', 8).attr('y2', 50).attr('stroke', 'var(--color-fg)').attr('stroke-width', 1.5);
-  const t = svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'end').attr('x', x(R.venda)).attr('y', 66).text('venda nominal ' + K.n(R.venda, d));
+  const t = svg.append('text').attr('class', 'k-svgt').attr('text-anchor', 'end').attr('x', x(R.venda)).attr('y', 66).text('venda nominal ' + K.n(R.venda));
   if (t.node().getBBox().x < 0) t.attr('text-anchor', 'start').attr('x', 2);
-  if (R.caixa < 0) svg.append('text').attr('class', 'k-svgt').style('fill', 'var(--k-neg)').attr('x', 4).attr('y', 66).text('caixa líquido ' + K.n(R.caixa, d));
+  if (R.caixa < 0) svg.append('text').attr('class', 'k-svgt').style('fill', 'var(--k-neg)').attr('x', 4).attr('y', 66).text('caixa líquido ' + K.n(R.caixa));
 });
 
 /* ---------- cascata da política ---------- */
@@ -366,19 +341,17 @@ dash.draw('cascata', (el) => {
 
 /* ---------- números ---------- */
 const VAL = {
-  un: () => ST.S.un,
-  receb: (R) => K.n(R.receb, dec()), vp: (R) => K.n(R.vp, dec()), caixa: (R) => K.n(R.caixa, dec()), custoCred: (R) => K.n(R.custoCredito, dec()),
-  inad: (R) => K.n(R.inad, dec()), oport: (R) => K.n(R.oport, dec()), adm: (R) => K.n(R.adm, dec()), custo: (R) => K.n(R.custo, dec()),
-  porCem: (R) => K.n(R.porCem, 2), inadPct: () => K.n(ST.S.inad, 1) + '%', margem: (R) => K.n(R.margem, 0) + '%', pmr: (R) => K.n(R.pmr),
+  receb: (R) => K.n(R.receb), vp: (R) => K.n(R.vp), caixa: (R) => K.n(R.caixa), custoCred: (R) => K.n(R.custoCredito),
+  inad: (R) => K.n(R.inad), oport: (R) => K.n(R.oport), adm: (R) => K.n(R.adm), custo: (R) => K.n(R.custo),
+  porCem: (R) => K.n(R.porCem, 2),
   gl: (R, Q) => K.n(Q.GL, 1), custos: (R, Q) => K.n(Q.custos, 1), fin: (R, Q) => K.n(Q.fin, 1), inadR: (R, Q) => K.n(Q.inadR, 1), padm: (R, Q) => K.n(Q.adm, 1),
-  istar: (R, Q) => (Q.inadStar == null ? null : K.p(Math.max(0, Q.inadStar), 1)),
-  pstar: (R, Q) => (Q.pmrStar == null ? null : K.n(Math.max(0, Math.floor(Q.pmrStar + 1e-9)))), c30: (R, Q) => K.n(Q.custo30, 1),
-  'g-vp': () => K.n(baseV().vp), 'g-receb': () => K.n(baseV().receb), 'g-prazo': () => K.n(baseV().pmr), 'g-fator': () => K.n(baseV().fluxos[0].fator, 4),
+  'g-vp': () => K.n(baseV().vp), 'g-receb': () => K.n(baseV().receb), 'g-prazo': () => K.n(baseV().prazo), 'g-fator': () => K.n(baseV().fator, 4),
   'g-oport': () => K.n(baseV().oport), 'g-inad': () => K.n(baseV().inad),
   'g-rm': () => K.n(baseP().recMarg, 1), 'g-rmA': () => K.n(baseP(true).recMarg, 1), 'g-gl': () => K.n(baseP().GL, 1), 'g-glA': () => K.n(baseP(true).GL, 1),
   'g-x': () => K.n(baseP(true).GL / baseP().GL, 1), 'g-m': () => K.n(politica('slide5').m, 0) + '%',
-  'g-istar': () => K.p(baseP().inadStar, 1), 'g-fin': () => K.n(baseP().fin, 1), 'g-padm': () => K.n(baseP().adm, 1), 'g-dv': () => K.n(politica('slide5').dV),
-  'g-c30': () => K.n(baseP().custo30, 1),
+  'g-fin': () => K.n(baseP().fin, 1), 'g-padm': () => K.n(baseP().adm, 1), 'g-dv': () => K.n(politica('slide5').dV),
+  'g-taxa': () => K.n(politica('slide5').taxa, 1) + '%', 'g-meses': () => K.n(politica('slide5').pmr / 30),
+  'g-inadR': () => K.n(baseP().inadR, 1), 'g-custos': () => K.n(baseP().custos, 1),
 };
 dash.draw('v', (el) => {
   const fn = VAL[el.dataset.q];
@@ -388,7 +361,7 @@ dash.draw('v', (el) => {
 });
 dash.draw('frase', (el) => {
   const keys = [];
-  if (pronto()) { const R = V(); keys.push(R.semSalva ? 'semsalva' : R.caixa > 0 ? 'cria' : 'destroi'); }
+  if (pronto()) { const R = V(); keys.push(R.caixa > 0 ? 'cria' : 'destroi'); }
   K.frases(el, keys);
 });
 dash.draw('decisao', (el) => {
