@@ -75,8 +75,6 @@
 
       <section data-group="v" data-pane="jogo" hidden>
         <h2 class="k-zt">Espremer hoje</h2>
-        <div class="k-ctl"><label for="c-jvol">Volume anual com o fornecedor <span class="k-u">R$ mil</span></label>
-          <div class="k-in"><input type="range" id="c-jvol" data-k="jVol" min="300" max="12000" step="50"><input type="number" data-k="jVol" min="300" max="12000" step="50" aria-label="Volume anual com o fornecedor, R$ mil"></div></div>
         <div class="k-ctl"><label for="c-dex">Desconto extra espremido <span class="k-u">% · um trimestre</span></label>
           <div class="k-in"><input type="range" id="c-dex" data-k="dExtra" min="0" max="5" step="0.1"><input type="number" data-k="dExtra" min="0" max="5" step="0.1" aria-label="Desconto extra, %"></div></div>
         <h2 class="k-zt2">Perder amanhã</h2>
@@ -84,8 +82,7 @@
           <div class="k-in"><input type="range" id="c-rep" data-k="repasse" min="0" max="10" step="0.5"><input type="number" data-k="repasse" min="0" max="10" step="0.5" aria-label="Repasse futuro, % ao ano do volume"></div></div>
         <div class="k-ctl"><label for="c-anos">Memória do fornecedor <span class="k-u">anos</span></label>
           <div class="k-in"><input type="range" id="c-anos" data-k="anos" min="1" max="8" step="1"><input type="number" data-k="anos" min="1" max="8" step="1" aria-label="Memória do fornecedor, anos"></div></div>
-        <div class="k-ctl"><label for="c-tx">Taxa de desconto <span class="k-u">% a.a.</span></label>
-          <div class="k-in"><input type="range" id="c-tx" data-k="taxa" min="5" max="30" step="0.5"><input type="number" data-k="taxa" min="5" max="30" step="0.5" aria-label="Taxa de desconto, % ao ano"></div></div>
+        <p class="k-note">Volume anual com o fornecedor fixo em R$ <b data-draw="v" data-q="jVol">—</b> mil (a razão perda ÷ ganho não depende dele); repasse trazido a valor presente a <b data-draw="v" data-q="jTaxa">—</b> a.a.</p>
       </section>
     </div>
 
@@ -198,7 +195,7 @@
 const ST = window.D52 = { S: null, cen: null, mexido: false };
 const IDS = ['fornecedores', 'regras', 'cenarios', 'jogo'];
 const NOMES = ['balanca', 'barra', 'conc', 'jogo', 'v', 'frase'];
-const JOGO_KEYS = ['jVol', 'dExtra', 'repasse', 'anos', 'taxa'];
+const JOGO_KEYS = ['dExtra', 'repasse', 'anos'];
 
 /* ---------- dados ---------- */
 const pronto = () => ST.S != null && K.status(IDS) === 'ok';
@@ -213,7 +210,7 @@ const doCenario = (id, over) => {
   return { margem: f.margem, fundingMes: f.fundingMes, volume: f.volume, partCat: f.partCat, prazo: r.prazo, pont: r.pont, compromisso: !!r.compromisso, volGar: false, riscoZero: !!r.riscoZero, ...(over || {}) };
 };
 const atual = () => M52.estado(ctl(ST.S), regras());
-const jogoAtual = () => M52.jogo({ volume: ST.S.jVol, dExtra: ST.S.dExtra, repasse: ST.S.repasse, anos: ST.S.anos, taxa: ST.S.taxa });
+const jogoAtual = () => M52.jogo({ ...jogo0(), dExtra: ST.S.dExtra, repasse: ST.S.repasse, anos: ST.S.anos });
 const pct1 = (v) => K.n(v, 1) + '%';
 const pctS = (v) => K.n(v, 1).replace(/,0$/, '') + '%';
 const tx = (v) => K.n(v, 2).replace(/0$/, '') + '%';
@@ -234,7 +231,7 @@ function aplicar(id) {
   const r = cenario(id);
   if (!r) return;
   const J = jogo0();
-  if (!ST.S) ST.S = { jVol: J.volume, dExtra: J.dExtra, repasse: J.repasse, anos: J.anos, taxa: J.taxa };
+  if (!ST.S) ST.S = { dExtra: J.dExtra, repasse: J.repasse, anos: J.anos };
   aplicaForn(r.fornecedor);
   Object.assign(ST.S, { prazo: r.prazo, pont: r.pont, riscoZero: !!r.riscoZero, compromisso: !!r.compromisso, volGar: false, desc: false, dev: false });
   ST.cen = id; ST.mexido = false;
@@ -416,6 +413,7 @@ const VAL = {
   janela: () => K.n(regras().janela), compPp: () => K.n(regras().compPp, 1), batnaPp: () => K.n(regras().batnaPp, 1),
   batnaLim: () => pctS(regras().batnaLim), limTotal: () => pctS(regras().limTotal), pdBase: () => pct1(regras().pdBase), pontRef: () => pctS(regras().pontRef),
   pdAbaixo: () => K.n(regras().pdAbaixo, 1), pdAcima: () => K.n(regras().pdAcima, 1), pdPiso: () => pct1(regras().pdPiso),
+  jVol: () => K.n(jogo0().volume), jTaxa: () => pctS(jogo0().taxa),
   ganho: () => K.n(jogoAtual().ganho, 1), perda: () => K.n(jogoAtual().perda, 1),
   razao: () => { const g = jogoAtual(); return Number.isFinite(g.razao) ? K.n(g.razao) + '×' : '—'; },
   'g1-prazo': () => K.n(cenario('slide').prazo), 'g1-fund': () => tx(forn(cenario('slide').fornecedor).fundingMes), 'g1-meses': () => K.n(cenario('slide').prazo / 30),
