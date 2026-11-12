@@ -1,4 +1,0 @@
-[{"id":"A","nome":"Banco A","tipo":"publico","partAtual":50,"partExemplar":30},
-{"id":"B","nome":"Banco B","tipo":"privado","partAtual":30,"partExemplar":25},
-{"id":"C","nome":"Banco C","tipo":"privado","partAtual":20,"partExemplar":25},
-{"id":"D","nome":"Banco D","tipo":"publico","partAtual":0,"partExemplar":20}]

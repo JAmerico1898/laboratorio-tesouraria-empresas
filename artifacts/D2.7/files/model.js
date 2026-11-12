@@ -22,13 +22,13 @@
   M.cet = cet;
 
   /* ---------- cotação bullet (aba 2) ---------- */
-  // q = {valor, dur, nominal (a.m.), tac (fração do valor), iof: bool, trib: bool}; enc = encargos
+  // q = {valor, dur, nominal (a.m.), tac (fração do valor)}; enc = encargos. IOF e tributos sobre a TAC sempre entram no CET.
   M.cotacaoBullet = (q, enc) => {
     const meses = q.dur / 30;
     const juros = q.valor * (Math.pow(1 + q.nominal, meses) - 1);
-    const iof = q.iof ? cet.iof(q.valor, q.dur, enc) : 0;
+    const iof = cet.iof(q.valor, q.dur, enc);
     const tac = q.tac * q.valor;
-    const tributos = q.trib ? enc.tribTAC * tac : 0;
+    const tributos = enc.tribTAC * tac;
     const liquido = q.valor - iof - tac - tributos;
     const pagamento = q.valor + juros;
     const fluxos = [{ t: 0, v: liquido }];
@@ -46,45 +46,17 @@
   // mods = {cg:{cet, prazoMax}, desc:{cet, prazoMax}, giro:{cet, contrato}}
   M.indicada = (dur, mods) => (dur < mods.cg.prazoMax ? 'cg' : dur <= mods.desc.prazoMax ? 'desc' : 'giro');
   M.custoComposto = (valor, taxa, dur) => valor * (Math.pow(1 + taxa, dur / 360) - 1);
-  // capital de giro com prazo contratual: paga o contrato inteiro; o excedente fica aplicado até o fim
-  M.custoGiro = (valor, taxa, dur, contrato, txAplic) => {
-    if (dur >= contrato) { const c = M.custoComposto(valor, taxa, dur); return { bruto: c, liquido: c, prazo: dur }; }
-    const bruto = M.custoComposto(valor, taxa, contrato);
-    return { bruto, liquido: bruto - valor * ((contrato - dur) / 360) * txAplic, prazo: contrato };
-  };
-  M.custosModalidades = (valor, dur, mods, txAplic) => {
-    const giro = M.custoGiro(valor, mods.giro.cet, dur, mods.giro.contrato, txAplic);
+  // capital de giro paga o contrato inteiro, mesmo que o déficit acabe antes
+  M.custosModalidades = (valor, dur, mods) => {
+    const pGiro = Math.max(dur, mods.giro.contrato);
     const r = {
       cg: { custo: M.custoComposto(valor, mods.cg.cet, dur), passivo: mods.cg.prazoMax },
       desc: { custo: M.custoComposto(valor, mods.desc.cet, dur), passivo: mods.desc.prazoMax },
-      giro: { custo: giro.liquido, bruto: giro.bruto, liquido: giro.liquido, passivo: giro.prazo },
+      giro: { custo: M.custoComposto(valor, mods.giro.cet, pGiro), passivo: pGiro },
     };
     Object.keys(r).forEach((k) => { r[k].cobre = r[k].passivo >= dur; });
     return r;
   };
-
-  /* ---------- diversificação (aba 3) ---------- */
-  // bancos = [{nome, tipo: 'publico'|'privado', part (0–100)}]
-  M.diversificacao = (total, bancos, teto, minBancos) => {
-    const linhas = bancos.map((b) => ({ ...b, share: b.part / 100, valor: total * b.part / 100, acima: b.part / 100 > teto + 1e-9 }));
-    const ativos = linhas.filter((l) => l.part > 0);
-    const pub = ativos.filter((l) => l.tipo === 'publico').reduce((a, l) => a + l.share, 0);
-    const tot = ativos.reduce((a, l) => a + l.share, 0) || 1;
-    const maior = linhas.reduce((m, l) => (l.part > m.part ? l : m), linhas[0]);
-    const nPub = ativos.filter((l) => l.tipo === 'publico').length;
-    return {
-      linhas, nAtivos: ativos.length, pctPublico: pub / tot, maior,
-      acimaTeto: linhas.filter((l) => l.acima).map((l) => l.nome),
-      alertas: {
-        teto: linhas.some((l) => l.acima),
-        min: ativos.length < minBancos,
-        soPriv: ativos.length > 0 && nPub === 0,
-        soPub: ativos.length > 0 && nPub === ativos.length,
-      },
-    };
-  };
-  // participação residual do último banco (os três primeiros são sliders)
-  M.residual = (a, b, c) => Math.max(0, 100 - a - b - c);
 
   root.M26 = M;
 })(typeof window !== 'undefined' ? window : globalThis);

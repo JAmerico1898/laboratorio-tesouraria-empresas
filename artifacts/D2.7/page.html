@@ -25,8 +25,6 @@
 .d26-col .d26-sub { font-size: 13px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
 .d26-col .k-kn { font-size: 1.9rem; }
 .d26-pizza { min-height: 170px; }
-.d26-barras { min-height: 160px; }
-.d26-pp { min-height: 34px; }
 .d26-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 6px; }
 .d26-row .k-lab { font-size: 14px; }
 .d26-cetk .k-kn.k-pos::after { content: " menor"; font-family: var(--font-anthropic-sans); font-size: 13px; color: var(--k-pos); }
@@ -38,18 +36,16 @@
       <h1 class="k-title">D2.7 · Financiar o déficit</h1>
       <p class="k-sub">Quanto tempo o buraco dura? Isso decide o instrumento — o CET decide o banco.</p>
     </div>
-    <div class="k-cens" id="cenarios" data-source="cenarios bancos cotacoes caso" role="group" aria-label="Cenários">
+    <div class="k-cens" id="cenarios" data-source="cenarios cotacoes caso" role="group" aria-label="Cenários">
       <button class="k-btn" data-cen="reset" aria-pressed="false">Alfa jul–nov</button>
       <button class="k-btn" data-cen="aperto" aria-pressed="false">Aperto de folha</button>
       <button class="k-btn" data-cen="estrutural" aria-pressed="false">Déficit estrutural</button>
-      <button class="k-btn" data-cen="exemplar" aria-pressed="false">Composição exemplar</button>
     </div>
   </header>
 
   <div class="k-tabs" role="tablist" aria-label="Abas">
     <button class="k-tab" role="tab" data-group="d26" data-tab="perfil" aria-selected="true">Perfil → modalidade</button>
     <button class="k-tab" role="tab" data-group="d26" data-tab="cotacao" aria-selected="false">Cotação pelo CET</button>
-    <button class="k-tab" role="tab" data-group="d26" data-tab="diversificacao" aria-selected="false">Diversificação</button>
   </div>
 
   <!-- ================= Aba 1 · Perfil → modalidade ================= -->
@@ -61,10 +57,7 @@
           <div class="k-in"><input type="range" id="c-valor" data-k="valor" min="200" max="5000" step="50"><input type="number" data-k="valor" min="200" max="5000" step="50" aria-label="Valor do déficit, R$ mil"></div></div>
         <div class="k-ctl"><label for="c-dur">Duração <span class="k-u">dias</span></label>
           <div class="k-in"><input type="range" id="c-dur" data-k="dur" min="5" max="720" step="5"><input type="number" data-k="dur" min="5" max="720" step="5" aria-label="Duração do déficit, dias"></div></div>
-        <div class="k-ctl"><span class="k-lab">Recorrência</span>
-          <div class="k-seg" role="group" aria-label="Recorrência"><button data-k="rec" data-v="pontual" aria-pressed="false">Pontual</button><button data-k="rec" data-v="anual" aria-pressed="false">Anual</button></div></div>
-        <label class="k-toggle"><input type="checkbox" data-k="forcaCG"> E se eu usar conta garantida?</label>
-        <p class="k-note">Regra do matching <span class="k-info" tabindex="0">i<span class="k-tip">V2.6, slide 6: menos de <b data-draw="v" data-q="limcg">—</b> dias → conta garantida; de <b data-draw="v" data-q="limcg">—</b> a <b data-draw="v" data-q="limdesc">—</b> dias → desconto de recebíveis; acima → capital de giro com garantia. O prazo do passivo deve cobrir com folga o prazo do déficit — nunca ser inferior a ele.</span></span></p>
+        <p class="k-note">Regra do matching <span class="k-info" tabindex="0">i<span class="k-tip">Menos de <b data-draw="v" data-q="limcg">—</b> dias → conta garantida; de <b data-draw="v" data-q="limcg">—</b> a <b data-draw="v" data-q="limdesc">—</b> dias → desconto de recebíveis; acima → capital de giro com garantia. O prazo do passivo deve cobrir com folga o prazo do déficit — nunca ser inferior a ele.</span></span></p>
       </div>
 
       <div class="k-zone" id="perfil-visual" data-source="modalidades caso">
@@ -77,7 +70,6 @@
             <div class="k-note">prazo típico <b data-draw="v" data-q="modfaixa" data-mod="cg">—</b> dias · CET <b data-draw="v" data-q="modcet" data-mod="cg">—</b> a.a.</div>
             <div class="d26-custo">custo <b data-draw="v" data-q="modcusto" data-mod="cg">—</b> <span class="k-u">R$ mil</span></div>
             <div class="k-chart d26-pict" data-draw="mod-pict" data-mod="cg" role="img" aria-label="Prazo do passivo contra prazo do déficit"></div>
-            <p class="k-note" data-cgnota hidden>Conta garantida para <b data-draw="v" data-q="dur">—</b> dias: instrumento de dias tampando buraco de meses.</p>
           </div>
           <div class="k-card" data-mc="desc">
             <h4><span data-draw="v" data-q="modnome" data-mod="desc">—</span><span class="d26-tag">indicada</span></h4>
@@ -88,8 +80,8 @@
           <div class="k-card" data-mc="giro">
             <h4><span data-draw="v" data-q="modnome" data-mod="giro">—</span><span class="d26-tag">indicada</span></h4>
             <div class="k-note">prazo típico <b data-draw="v" data-q="modfaixa" data-mod="giro">—</b> dias · CET <b data-draw="v" data-q="modcet" data-mod="giro">—</b> a.a.</div>
-            <div class="d26-custo">custo <b data-draw="v" data-q="modcusto" data-mod="giro">—</b> <span class="k-u">R$ mil líquidos</span></div>
-            <p class="k-note"><b data-draw="v" data-q="modbruto">—</b> brutos, menos o excedente aplicado a <b data-draw="v" data-q="aplic">—</b> a.a. até o fim do contrato</p>
+            <div class="d26-custo">custo <b data-draw="v" data-q="modcusto" data-mod="giro">—</b> <span class="k-u">R$ mil</span></div>
+            <p class="k-note">paga juros pelo contrato inteiro de <b data-draw="v" data-q="giromeses">—</b> meses, mesmo que o déficit acabe antes</p>
             <div class="k-chart d26-pict" data-draw="mod-pict" data-mod="giro" role="img" aria-label="Prazo do passivo contra prazo do déficit"></div>
           </div>
         </div>
@@ -103,10 +95,9 @@
         <div class="k-diag" data-frases>
           <span data-draw="frase1"></span>
           <p data-frase="curto" hidden>Aperto curto: conta garantida — cara, mas por poucos dias o encargo é pequeno. Zere em até <b data-draw="v" data-q="limcg">—</b> dias.</p>
-          <p data-frase="recorrente" hidden>Déficit recorrente de <b data-draw="v" data-q="dur">—</b> dias: a carteira de recebíveis da Alfa (<b data-draw="v" data-q="carteira">—</b>) é o funding natural — desconto de duplicatas casa prazo e custo.</p>
-          <p data-frase="pontual" hidden>Déficit pontual de <b data-draw="v" data-q="dur">—</b> dias: o desconto de duplicatas da carteira da Alfa (<b data-draw="v" data-q="carteira">—</b>) cobre o prazo sem criar dívida permanente.</p>
-          <p data-frase="estrutural" hidden>Déficit estrutural: só capital de giro de <b data-draw="v" data-q="giromeses">—</b>+ meses com garantia. Conta garantida aqui é "falência por juros" (V2.6).</p>
-          <p data-frase="forcado" hidden>Pagar <b data-draw="v" data-q="cetcg">—</b> por <b data-draw="v" data-q="dur">—</b> dias custa <b data-draw="v" data-q="custocg">—</b> — <b data-draw="v" data-q="deltacg">—</b> a mais que a modalidade indicada, pelo mesmo caixa.</p>
+          <p data-frase="medio" hidden>Déficit de <b data-draw="v" data-q="dur">—</b> dias: a carteira de recebíveis da Alfa (<b data-draw="v" data-q="carteira">—</b>) é o funding natural — desconto de duplicatas casa prazo e custo, sem comprometer garantias reais.</p>
+          <p data-frase="estrutural" hidden>Déficit estrutural: só capital de giro de <b data-draw="v" data-q="giromeses">—</b>+ meses com garantia. Conta garantida aqui é "falência por juros".</p>
+          <p data-frase="cgcaro" hidden>Conta garantida a <b data-draw="v" data-q="cetcg">—</b> por <b data-draw="v" data-q="dur">—</b> dias custaria <b data-draw="v" data-q="custocg">—</b> — <b data-draw="v" data-q="deltacg">—</b> a mais que a modalidade indicada, pelo mesmo caixa.</p>
         </div>
       </div>
     </div>
@@ -124,7 +115,6 @@
             <div class="k-in"><input type="range" id="c-nomX" data-k="nomX" min="0.5" max="4" step="0.01"><input type="number" data-k="nomX" min="0.5" max="4" step="0.01" aria-label="Nominal do banco X, % ao mês"></div></div>
           <div class="k-ctl"><label for="c-tacX">TAC <span class="k-u">% do valor</span></label>
             <div class="k-in"><input type="range" id="c-tacX" data-k="tacX" min="0" max="5" step="0.1"><input type="number" data-k="tacX" min="0" max="5" step="0.1" aria-label="TAC do banco X, %"></div></div>
-          <label class="k-toggle"><input type="checkbox" data-k="iofX"> IOF</label>
         </div>
         <div class="d26-bank">
           <h4>Banco Y · privado</h4>
@@ -132,7 +122,6 @@
             <div class="k-in"><input type="range" id="c-nomY" data-k="nomY" min="0.5" max="4" step="0.01"><input type="number" data-k="nomY" min="0.5" max="4" step="0.01" aria-label="Nominal do banco Y, % ao mês"></div></div>
           <div class="k-ctl"><label for="c-tacY">TAC <span class="k-u">% do valor</span></label>
             <div class="k-in"><input type="range" id="c-tacY" data-k="tacY" min="0" max="5" step="0.1"><input type="number" data-k="tacY" min="0" max="5" step="0.1" aria-label="TAC do banco Y, %"></div></div>
-          <label class="k-toggle"><input type="checkbox" data-k="iofY"> IOF</label>
         </div>
         <div class="d26-bank">
           <h4>Banco Z · público</h4>
@@ -140,25 +129,20 @@
             <div class="k-in"><input type="range" id="c-nomZ" data-k="nomZ" min="0.5" max="4" step="0.01"><input type="number" data-k="nomZ" min="0.5" max="4" step="0.01" aria-label="Nominal do banco Z, % ao mês"></div></div>
           <div class="k-ctl"><label for="c-tacZ">TAC <span class="k-u">% do valor</span></label>
             <div class="k-in"><input type="range" id="c-tacZ" data-k="tacZ" min="0" max="5" step="0.1"><input type="number" data-k="tacZ" min="0" max="5" step="0.1" aria-label="TAC do banco Z, %"></div></div>
-          <label class="k-toggle"><input type="checkbox" data-k="iofZ"> IOF</label>
         </div>
-        <h3 class="k-zt2">Convenção</h3>
-        <label class="k-toggle"><input type="checkbox" data-k="trib"> Tributos sobre a TAC
-          <span class="k-info" tabindex="0">i<span class="k-tip">Desligado (padrão), a TAC entra "cheia", como na tabela da spec (§3.3). Ligado, somam-se <b data-draw="v" data-q="tribpct">—</b> da TAC em tributos retidos na origem: com as cotações atuais o CET fica X <b data-draw="v" data-q="tribcet" data-b="X">—</b> · Y <b data-draw="v" data-q="tribcet" data-b="Y">—</b> · Z <b data-draw="v" data-q="tribcet" data-b="Z">—</b>. IOF: <b data-draw="v" data-q="ioffixo">—</b> + <b data-draw="v" data-q="iofdia">—</b> ao dia, teto de <b data-draw="v" data-q="iofteto">—</b> dias. CET = (1 + TIR mensal)^12 − 1.</span></span></label>
+        <p class="k-note">Custo efetivo total <span class="k-info" tabindex="0">i<span class="k-tip">O CET soma juros, IOF (<b data-draw="v" data-q="ioffixo">—</b> + <b data-draw="v" data-q="iofdia">—</b> ao dia, teto de <b data-draw="v" data-q="iofteto">—</b> dias), TAC e tributos sobre a TAC (<b data-draw="v" data-q="tribpct">—</b>), todos retidos na origem. CET = (1 + TIR mensal)^12 − 1.</span></span></p>
       </div>
 
       <div class="k-zone" id="cotacao-visual" data-source="cotacoes caso ref_composicao">
         <div class="d26-row">
-          <div class="k-ch"><h3>Entrada líquida hoje · pagamento no fim</h3></div>
-          <div class="k-seg" role="group" aria-label="Ordenar"><button data-k="ordem" data-v="nominal" aria-pressed="false">Ordenar por nominal</button><button data-k="ordem" data-v="cet" aria-pressed="false">Ordenar por CET</button></div>
+          <div class="k-ch"><h3>Entrada líquida hoje · pagamento no fim</h3><span>menor CET primeiro · clique para ver a composição</span></div>
         </div>
         <div class="d26-cols dash-skeleton" data-draw="cotacoes" role="group" aria-label="Cotações dos três bancos"></div>
         <div class="d26-row" style="margin-top:14px">
           <div class="k-ch"><h3>Composição do custo · Banco <span data-draw="v" data-q="sel">—</span></h3></div>
-          <div class="k-seg" role="group" aria-label="Banco da composição"><button data-k="sel" data-v="X" aria-pressed="false">X</button><button data-k="sel" data-v="Y" aria-pressed="false">Y</button><button data-k="sel" data-v="Z" aria-pressed="false">Z</button></div>
         </div>
         <div class="k-chart d26-pizza dash-skeleton" data-draw="pizza" role="img" aria-label="Composição do custo da cotação selecionada"></div>
-        <p class="k-note"><span class="k-chip">referência V2.6: <span data-draw="v" data-q="refcomp">—</span></span> <span class="k-u">taxa · IOF · tarifas · tributos, ilustrativo</span></p>
+        <p class="k-note"><span class="k-chip">referência: <span data-draw="v" data-q="refcomp">—</span></span> <span class="k-u">taxa · IOF · tarifas · tributos, ilustrativo</span></p>
       </div>
 
       <div class="k-zone d26-cetk" id="cotacao-leitura" data-source="cotacoes caso">
@@ -171,46 +155,7 @@
           <p data-frase="nom-maior" hidden>O Banco <b data-draw="v" data-q="f2bn">—</b> tem a menor nominal (<b data-draw="v" data-q="f2nom">—</b>) e o maior CET (<b data-draw="v" data-q="f2cet">—</b>): a TAC de <b data-draw="v" data-q="f2tac">—</b> na origem custa mais que os <b data-draw="v" data-q="f2dif">—</b> p.p. ao mês que ele economiza frente ao <b data-draw="v" data-q="f2bc">—</b>.</p>
           <p data-frase="nom-nao" hidden>O Banco <b data-draw="v" data-q="f2bn">—</b> tem a menor nominal (<b data-draw="v" data-q="f2nom">—</b>), mas não o menor CET (<b data-draw="v" data-q="f2cet">—</b> contra <b data-draw="v" data-q="f2cetmin">—</b> do <b data-draw="v" data-q="f2bc">—</b>): os encargos na origem anulam os <b data-draw="v" data-q="f2dif">—</b> p.p. ao mês que ele economiza.</p>
           <p data-frase="igual" hidden>O Banco <b data-draw="v" data-q="f2bn">—</b> tem a menor nominal e também o menor CET (<b data-draw="v" data-q="f2cet">—</b>).</p>
-          <p data-frase="regra" hidden>Cote sempre pelo CET — pelo menos <b data-draw="v" data-q="minbancos">—</b> bancos (V2.6).</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= Aba 3 · Diversificação ================= -->
-  <section class="d26-pane" id="diversificacao" data-group="d26" data-pane="diversificacao" hidden>
-    <div class="k-zones">
-      <div class="k-zone" id="div-controles" data-source="bancos caso">
-        <h2 class="k-zt">Dívida bancária</h2>
-        <p class="k-note">Total R$ <b data-draw="v" data-q="divtotal">—</b> mil = <b data-draw="v" data-q="divcp">—</b> de empréstimos CP + <b data-draw="v" data-q="valor">—</b> da nova operação. Teto por banco <b data-draw="v" data-q="divteto">—</b> = R$ <b data-draw="v" data-q="divtetors">—</b> mil.</p>
-        <div class="k-ctl"><div class="d26-row"><label for="c-pA">Banco A <span class="k-u">%</span></label><div class="k-seg" role="group" aria-label="Tipo do banco A"><button data-k="tA" data-v="publico" aria-pressed="false">público</button><button data-k="tA" data-v="privado" aria-pressed="false">privado</button></div></div>
-          <div class="k-in"><input type="range" id="c-pA" data-k="pA" min="0" max="100" step="1"><input type="number" data-k="pA" min="0" max="100" step="1" aria-label="Participação do banco A, %"></div></div>
-        <div class="k-ctl"><div class="d26-row"><label for="c-pB">Banco B <span class="k-u">%</span></label><div class="k-seg" role="group" aria-label="Tipo do banco B"><button data-k="tB" data-v="publico" aria-pressed="false">público</button><button data-k="tB" data-v="privado" aria-pressed="false">privado</button></div></div>
-          <div class="k-in"><input type="range" id="c-pB" data-k="pB" min="0" max="100" step="1"><input type="number" data-k="pB" min="0" max="100" step="1" aria-label="Participação do banco B, %"></div></div>
-        <div class="k-ctl"><div class="d26-row"><label for="c-pC">Banco C <span class="k-u">%</span></label><div class="k-seg" role="group" aria-label="Tipo do banco C"><button data-k="tC" data-v="publico" aria-pressed="false">público</button><button data-k="tC" data-v="privado" aria-pressed="false">privado</button></div></div>
-          <div class="k-in"><input type="range" id="c-pC" data-k="pC" min="0" max="100" step="1"><input type="number" data-k="pC" min="0" max="100" step="1" aria-label="Participação do banco C, %"></div></div>
-        <div class="k-ctl"><div class="d26-row"><span class="k-lab">Banco D <span class="k-u">% · o que sobra</span> <b data-draw="v" data-q="pD">—</b></span><div class="k-seg" role="group" aria-label="Tipo do banco D"><button data-k="tD" data-v="publico" aria-pressed="false">público</button><button data-k="tD" data-v="privado" aria-pressed="false">privado</button></div></div></div>
-        <button class="k-btn" data-cen="exemplar" aria-pressed="false">Composição exemplar</button>
-      </div>
-
-      <div class="k-zone" id="div-visual" data-source="bancos caso">
-        <div class="k-ch"><h3>Participação por banco</h3><span>linha tracejada: teto</span></div>
-        <div class="k-chart d26-barras dash-skeleton" data-draw="div-barras" role="img" aria-label="Barras de participação por banco com o teto"></div>
-        <h3 class="k-zt2">Público × privado</h3>
-        <div class="k-chart d26-pp dash-skeleton" data-draw="div-pubpriv" role="img" aria-label="Divisão entre bancos públicos e privados"></div>
-      </div>
-
-      <div class="k-zone" id="div-leitura" data-source="bancos caso">
-        <h2 class="k-zt">Leitura</h2>
-        <div class="k-kpi"><span class="k-kl">Maior exposição <span class="k-u" data-draw="v" data-q="divmaior">—</span></span><span class="k-kn" data-draw="v" data-q="divmaiorpct">—</span></div>
-        <div class="k-kpi"><span class="k-kl">Bancos ativos <span class="k-u">mínimo <span data-draw="v" data-q="minbancos">—</span></span></span><span class="k-kn" data-draw="v" data-q="divativos">—</span></div>
-        <div data-frases>
-          <span data-draw="alertas"></span>
-          <div class="k-alert" data-frase="teto" hidden><b data-draw="v" data-q="alteto">—</b> acima do teto de <b data-draw="v" data-q="divteto">—</b>.</div>
-          <div class="k-alert" data-frase="min" hidden>Menos de <b data-draw="v" data-q="minbancos">—</b> bancos ativos: dependência.</div>
-          <div class="k-alert" data-frase="soPriv" hidden>Só privados: perde linhas longas e subsidiadas.</div>
-          <div class="k-alert" data-frase="soPub" hidden>Só públicos: perde agilidade.</div>
-          <div class="k-alert k-ok" data-frase="ok" hidden>Composição dentro das três regras: teto por banco, número mínimo de parceiros e equilíbrio público × privado.</div>
+          <p data-frase="regra" hidden>Cote sempre pelo CET — pelo menos <b data-draw="v" data-q="minbancos">—</b> bancos.</p>
         </div>
       </div>
     </div>
@@ -221,13 +166,13 @@
     <div class="k-help-body">
       <ol>
         <li>Por que o Banco Y, com a menor taxa nominal, é o mais caro?
-          <details><summary>mostrar resposta</summary><p>A TAC de <b data-draw="g" data-q="tacy">—</b> (R$ <b data-draw="g" data-q="tacyrs">—</b> mil) é retida na origem: a Alfa recebe <b data-draw="g" data-q="liqy">—</b> e paga juros sobre <b data-draw="g" data-q="valor">—</b>. Em <b data-draw="g" data-q="meses">—</b> meses, isso vale mais que os <b data-draw="g" data-q="difyz">—</b> p.p. ao mês que Y economiza frente a Z (≈ R$ <b data-draw="g" data-q="jzy">—</b> mil de juros). Nominais parecidas escondem CETs diferentes (V2.6).</p></details>
+          <details><summary>mostrar resposta</summary><p>A TAC de <b data-draw="g" data-q="tacy">—</b> (R$ <b data-draw="g" data-q="tacyrs">—</b> mil) é retida na origem: a Alfa recebe <b data-draw="g" data-q="liqy">—</b> e paga juros sobre <b data-draw="g" data-q="valor">—</b>. Em <b data-draw="g" data-q="meses">—</b> meses, isso vale mais que os <b data-draw="g" data-q="difyz">—</b> p.p. ao mês que Y economiza frente a Z (≈ R$ <b data-draw="g" data-q="jzy">—</b> mil de juros). Nominais parecidas escondem CETs diferentes.</p></details>
         </li>
         <li>Use conta garantida para o déficit de <b data-draw="g" data-q="dur">—</b> dias. Quanto a mais a Alfa paga que no desconto de recebíveis?
-          <details><summary>mostrar resposta</summary><p>≈ <b data-draw="g" data-q="cg">—</b> contra ≈ <b data-draw="g" data-q="desc">—</b> — cerca de <b data-draw="g" data-q="dcg">—</b> a mais, e com IOF a cada nova tomada; para um déficit anual recorrente, a conta errada se repete todo ano.</p></details>
+          <details><summary>mostrar resposta</summary><p>≈ <b data-draw="g" data-q="cg">—</b> contra ≈ <b data-draw="g" data-q="desc">—</b> — cerca de <b data-draw="g" data-q="dcg">—</b> a mais, e com IOF a cada nova tomada; se o déficit se repete todo ano, a conta errada também se repete.</p></details>
         </li>
         <li>O capital de giro de <b data-draw="g" data-q="gm">—</b> meses tem o menor CET (<b data-draw="g" data-q="gcet">—</b>). Por que não é a melhor escolha para um déficit de <b data-draw="g" data-q="meses">—</b> meses?
-          <details><summary>mostrar resposta</summary><p>Porque a Alfa paga <b data-draw="g" data-q="gm">—</b> meses de juros (<b data-draw="g" data-q="gbruto">—</b>) e precisa do dinheiro por <b data-draw="g" data-q="meses">—</b>; mesmo aplicando o excedente nos <b data-draw="g" data-q="resto">—</b> meses restantes a <b data-draw="g" data-q="aplic">—</b>, sobra custo líquido de ≈ <b data-draw="g" data-q="gliq">—</b> — cerca de <b data-draw="g" data-q="gpct">—</b> a mais que o desconto de recebíveis (<b data-draw="g" data-q="desc">—</b>). Casar o prazo vale mais que a menor taxa.</p></details>
+          <details><summary>mostrar resposta</summary><p>Porque a Alfa paga <b data-draw="g" data-q="gm">—</b> meses de juros (<b data-draw="g" data-q="gbruto">—</b>) e precisa do dinheiro por <b data-draw="g" data-q="meses">—</b>; os <b data-draw="g" data-q="resto">—</b> meses restantes são juros sem uso — cerca de <b data-draw="g" data-q="gpct">—</b> a mais que o desconto de recebíveis (<b data-draw="g" data-q="desc">—</b>). Casar o prazo vale mais que a menor taxa.</p></details>
         </li>
       </ol>
     </div>
@@ -238,18 +183,15 @@
 /* ============================================================
    D2.7 · Financiar o déficit — estado, controles e desenhos.
    Cálculo em model.js (M26). Testes de aderência (Spec §7), conferidos em test.js:
-   Reset 3.000 · 150 d → desconto de recebíveis · custos 325 / 259 / 570 (386 líquido)
+   Reset 3.000 · 150 d → desconto de recebíveis · custos 325 / 259 / 570 (giro paga 12 meses)
    Aperto 600 · 10 d → conta garantida ≈ 4,1 · Estrutural 3.000 · 360 d → capital de giro 570
-   Cotação: X 24,7% · Y 28,7% · Z 23,2% · TIR 1,860 / 2,124 / 1,753% a.m. · entradas 2.940 / 2.895 / 2.970 · pagam 3.224 / 3.216 / 3.240
-   Ordem por nominal Y, X, Z; por CET Z, X, Y · tributos sobre TAC ligados: X 25,2% · Y 29,8%
-   Exemplar: 6.500 em 1.950 / 1.625 / 1.625 / 1.300 sem alertas; A em 45% → alerta de teto
+   Cotação (IOF e tributos sobre a TAC sempre no CET): X 25,2% · Y 29,8% · Z 23,2% · ordem por CET Z, X, Y
    ============================================================ */
-const IDS = ['caso', 'modalidades', 'cotacoes', 'bancos', 'cenarios', 'ref_composicao'];
+const IDS = ['caso', 'modalidades', 'cotacoes', 'cenarios', 'ref_composicao'];
 const BK = ['X', 'Y', 'Z'];
-const DV = ['A', 'B', 'C', 'D'];
 const COR = { cg: '#D64545', desc: '#E3A21A', giro: '#2A3F7A' };
 const S = { init: false, cen: 'reset' };
-const NAMES = ['regua', 'mod-pict', 'cards', 'frase1', 'v', 'cotacoes', 'pizza', 'cet-b', 'frase2', 'div-barras', 'div-pubpriv', 'alertas'];
+const NAMES = ['regua', 'mod-pict', 'cards', 'frase1', 'v', 'cotacoes', 'pizza', 'cet-b', 'frase2'];
 
 /* ---------- dados ---------- */
 let DC = null, DCsrc = null;
@@ -259,8 +201,8 @@ function dados() {
   if (DCsrc && raw.every((r, i) => r === DCsrc[i])) return DC;
   DCsrc = raw;
   const mods = {}; K.num(raw[1]).forEach((r) => { mods[r.id] = r; });
-  const cens = {}; K.num(raw[4]).forEach((r) => { cens[r.id] = r; });
-  DC = { caso: K.obj(raw[0]), mods, cot: K.num(raw[2]), bancos: K.num(raw[3]), cens, ref: K.num(raw[5]) };
+  const cens = {}; K.num(raw[3]).forEach((r) => { cens[r.id] = r; });
+  DC = { caso: K.obj(raw[0]), mods, cot: K.num(raw[2]), cens, ref: K.num(raw[4]) };
   return DC;
 }
 const ready = () => !!(dados() && S.init);
@@ -269,27 +211,23 @@ const ready = () => !!(dados() && S.init);
 function calc() {
   const d = dados();
   if (!d || !S.init) return null;
-  const cm = M26.custosModalidades(S.valor, S.dur, d.mods, d.caso.txAplic);
+  const cm = M26.custosModalidades(S.valor, S.dur, d.mods);
   const ind = M26.indicada(S.dur, d.mods);
   const cots = d.cot.map((b) => {
     const k = b.banco;
-    const q = { valor: S.valor, dur: S.dur, nominal: S['nom' + k] / 100, tac: S['tac' + k] / 100, iof: !!S['iof' + k] };
-    return { banco: k, tipo: b.tipo, nominal: q.nominal, tacPct: q.tac, ...M26.cotacaoBullet({ ...q, trib: !!S.trib }, d.caso), cetTrib: M26.cotacaoBullet({ ...q, trib: true }, d.caso).cet };
+    const q = { valor: S.valor, dur: S.dur, nominal: S['nom' + k] / 100, tac: S['tac' + k] / 100 };
+    return { banco: k, tipo: b.tipo, nominal: q.nominal, tacPct: q.tac, ...M26.cotacaoBullet(q, d.caso) };
   });
-  const total = d.caso.dividaCP + S.valor;
-  const pD = M26.residual(S.pA, S.pB, S.pC);
-  const parts = { A: S.pA, B: S.pB, C: S.pC, D: pD };
-  const dv = M26.diversificacao(total, d.bancos.map((b) => ({ id: b.id, nome: b.nome, tipo: S['t' + b.id], part: parts[b.id] })), d.caso.teto, d.caso.minBancos);
-  return { d, cm, ind, cots, total, pD, dv };
+  return { d, cm, ind, cots };
 }
 // caso-base (para os gabaritos): sempre o default dos datasets, independente dos controles
 function base() {
   const d = dados();
   if (!d) return null;
   const c = d.cens.reset;
-  const cm = M26.custosModalidades(c.valor, c.dur, d.mods, d.caso.txAplic);
+  const cm = M26.custosModalidades(c.valor, c.dur, d.mods);
   const q = {};
-  d.cot.forEach((b) => { q[b.banco] = { ...b, ...M26.cotacaoBullet({ valor: c.valor, dur: c.dur, nominal: b.nominal, tac: b.tac, iof: true, trib: false }, d.caso) }; });
+  d.cot.forEach((b) => { q[b.banco] = { ...b, ...M26.cotacaoBullet({ valor: c.valor, dur: c.dur, nominal: b.nominal, tac: b.tac }, d.caso) }; });
   return { d, c, cm, q };
 }
 
@@ -300,16 +238,12 @@ function aplicar(id) {
   if (!d) return false;
   if (id === 'reset') {
     const c = d.cens.reset;
-    Object.assign(S, { valor: c.valor, dur: c.dur, rec: c.recorrencia, forcaCG: false, trib: false, ordem: 'cet', sel: 'Y' });
-    d.cot.forEach((b) => { S['nom' + b.banco] = Math.round(b.nominal * 1e6) / 1e4; S['tac' + b.banco] = Math.round(b.tac * 1e6) / 1e4; S['iof' + b.banco] = true; });
-    d.bancos.forEach((b) => { S['p' + b.id] = b.partAtual; S['t' + b.id] = b.tipo; });
-  } else if (id === 'aperto' || id === 'estrutural') {
+    Object.assign(S, { valor: c.valor, dur: c.dur, sel: 'Y' });
+    d.cot.forEach((b) => { S['nom' + b.banco] = Math.round(b.nominal * 1e6) / 1e4; S['tac' + b.banco] = Math.round(b.tac * 1e6) / 1e4; });
+  } else {
     const c = d.cens[id];
-    Object.assign(S, { valor: c.valor, dur: c.dur, rec: c.recorrencia, forcaCG: false });
-  } else if (id === 'exemplar') {
-    d.bancos.forEach((b) => { S['p' + b.id] = b.partExemplar; S['t' + b.id] = b.tipo; });
+    Object.assign(S, { valor: c.valor, dur: c.dur });
   }
-  S.pD = M26.residual(S.pA, S.pB, S.pC);
   S.cen = id;
   S.init = true;
   return true;
@@ -325,18 +259,12 @@ dash.onData(() => {
 });
 K.bind(S, (k) => {
   if (!S.init) return;
-  if (k === 'pA' || k === 'pB' || k === 'pC') {
-    const outros = ['pA', 'pB', 'pC'].filter((x) => x !== k).reduce((a, x) => a + S[x], 0);
-    if (S[k] + outros > 100) S[k] = 100 - outros;
-    S.pD = M26.residual(S.pA, S.pB, S.pC);
-  }
   S.cen = null;
   tudo();
 });
 document.querySelectorAll('[data-cen]').forEach((b) => b.addEventListener('click', () => {
   if (!aplicar(b.dataset.cen)) return;
-  if (b.dataset.cen === 'exemplar') showTab('diversificacao');
-  else if (b.dataset.cen !== 'reset') showTab('perfil');
+  if (b.dataset.cen !== 'reset') showTab('perfil');
   tudo();
 }));
 
@@ -352,17 +280,12 @@ const VQ = {
   modfaixa: (e, el) => { const m = e.d.mods[el.dataset.mod]; return K.n(m.prazoMin) + '–' + K.n(m.prazoMax); },
   modcet: (e, el) => K.p(e.d.mods[el.dataset.mod].cet, 0),
   modcusto: (e, el) => K.n(e.cm[el.dataset.mod].custo),
-  modbruto: (e) => K.n(e.cm.giro.bruto), aplic: (e) => K.p(e.d.caso.txAplic, 1),
   sel: () => S.sel, refcomp: (e) => e.d.ref.map((r) => K.n(r.pct)).join('/'),
   tir: (e, el) => { const c = e.cots.find((x) => x.banco === el.dataset.b); return c ? K.p(c.tirM, 3) : null; },
-  tribcet: (e, el) => { const c = e.cots.find((x) => x.banco === el.dataset.b); return c ? K.p(c.cetTrib, 1) : null; },
   tribpct: (e) => K.p(e.d.caso.tribTAC, 2), ioffixo: (e) => K.p(e.d.caso.iofFixo, 2), iofdia: (e) => K.p(e.d.caso.iofDia, 4), iofteto: (e) => K.n(e.d.caso.iofTeto),
   f2bn: (e) => f2(e).bn.banco, f2nom: (e) => K.p(f2(e).bn.nominal, 2) + ' a.m.', f2cet: (e) => K.p(f2(e).bn.cet, 1),
   f2tac: (e) => K.p(f2(e).bn.tacPct, 1), f2dif: (e) => pp(f2(e).bc.nominal - f2(e).bn.nominal), f2bc: (e) => 'Banco ' + f2(e).bc.banco,
   f2cetmin: (e) => K.p(f2(e).bc.cet, 1), minbancos: (e) => K.n(e.d.caso.minBancos),
-  divtotal: (e) => K.n(e.total), divcp: (e) => K.n(e.d.caso.dividaCP), divteto: (e) => K.p(e.d.caso.teto, 0), divtetors: (e) => K.n(e.total * e.d.caso.teto),
-  pD: (e) => K.n(e.pD) + '%', divativos: (e) => K.n(e.dv.nAtivos), divmaior: (e) => e.dv.maior.nome, divmaiorpct: (e) => K.p(e.dv.maior.share, 0),
-  alteto: (e) => e.dv.acimaTeto.join(' e ') || null,
 };
 function f2(e) {
   const bn = e.cots.reduce((m, c) => (c.nominal < m.nominal ? c : m), e.cots[0]);
@@ -380,9 +303,9 @@ const GQ = {
   tacy: (b) => K.p(b.q.Y.tac / b.c.valor, 1), tacyrs: (b) => K.n(b.q.Y.tac), liqy: (b) => K.n(b.q.Y.liquido), valor: (b) => K.n(b.c.valor),
   meses: (b) => K.n(b.c.dur / 30), difyz: (b) => pp(b.q.Z.nominal - b.q.Y.nominal), jzy: (b) => K.n(b.q.Z.juros - b.q.Y.juros),
   dur: (b) => K.n(b.c.dur), cg: (b) => K.n(b.cm.cg.custo), desc: (b) => K.n(b.cm.desc.custo), dcg: (b) => K.n(b.cm.cg.custo - b.cm.desc.custo),
-  gm: (b) => K.n(b.d.mods.giro.contrato / 30), gcet: (b) => K.p(b.d.mods.giro.cet, 0), gbruto: (b) => K.n(b.cm.giro.bruto),
-  resto: (b) => K.n((b.d.mods.giro.contrato - b.c.dur) / 30), aplic: (b) => K.p(b.d.caso.txAplic, 1), gliq: (b) => K.n(b.cm.giro.liquido),
-  gpct: (b) => K.p(b.cm.giro.liquido / b.cm.desc.custo - 1, 0),
+  gm: (b) => K.n(b.d.mods.giro.contrato / 30), gcet: (b) => K.p(b.d.mods.giro.cet, 0), gbruto: (b) => K.n(b.cm.giro.custo),
+  resto: (b) => K.n((b.d.mods.giro.contrato - b.c.dur) / 30),
+  gpct: (b) => K.p(b.cm.giro.custo / b.cm.desc.custo - 1, 0),
 };
 dash.draw('g', (el) => {
   const b = base(), fn = GQ[el.dataset.q];
@@ -448,21 +371,17 @@ dash.draw('mod-pict', (el) => {
 
 dash.draw('cards', (el) => {
   const e = calc();
-  const foco = e ? (S.forcaCG && e.ind !== 'cg' ? 'cg' : e.ind) : null;
   document.querySelectorAll('[data-mc]').forEach((c) => {
     c.classList.toggle('k-on', !!e && c.dataset.mc === e.ind);
-    c.classList.toggle('k-dim', !!e && c.dataset.mc !== e.ind && c.dataset.mc !== foco);
-    c.classList.toggle('k-warn', !!e && c.dataset.mc === 'cg' && foco === 'cg' && e.ind !== 'cg');
+    c.classList.toggle('k-dim', !!e && c.dataset.mc !== e.ind);
   });
-  document.querySelectorAll('[data-cgnota]').forEach((p) => { p.hidden = !(e && !e.cm.cg.cobre && (e.ind === 'cg' || S.forcaCG)); });
-  document.querySelectorAll('input[data-k="forcaCG"]').forEach((i) => { i.disabled = !!e && e.ind === 'cg'; });
 });
 
 dash.draw('frase1', (el) => {
   const e = calc();
   if (!e) { K.frases(el, []); return; }
-  const k = [e.ind === 'cg' ? 'curto' : e.ind === 'giro' ? 'estrutural' : S.rec === 'anual' ? 'recorrente' : 'pontual'];
-  if (S.forcaCG && e.ind !== 'cg') k.push('forcado');
+  const k = [e.ind === 'cg' ? 'curto' : e.ind === 'giro' ? 'estrutural' : 'medio'];
+  if (e.ind !== 'cg') k.push('cgcaro');
   K.frases(el, k);
 });
 
@@ -473,7 +392,7 @@ dash.draw('cotacoes', (el) => {
   if (!e) { K.fail(el, s === 'ok' ? 'loading' : s); return; }
   el.classList.remove('dash-skeleton');
   const { bc } = f2(e);
-  const ord = [...e.cots].sort((a, b) => (S.ordem === 'nominal' ? a.nominal - b.nominal : a.cet - b.cet));
+  const ord = [...e.cots].sort((a, b) => a.cet - b.cet);
   const mk = (tag, cls, txt) => { const n = document.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
   const cols = ord.map((c) => {
     const col = mk('div', 'd26-col' + (c.banco === S.sel ? ' d26-sel' : ''));
@@ -515,7 +434,7 @@ dash.draw('pizza', (el) => {
   const c = e.cots.find((x) => x.banco === S.sel) || e.cots[0];
   const itens = [
     { nome: 'Juros', v: c.juros, cor: 'var(--k-navy)' }, { nome: 'IOF', v: c.iof, cor: 'var(--k-amber)' },
-    { nome: 'TAC', v: c.tac, cor: 'var(--k-neutro)' }, { nome: 'Tributos sobre TAC', v: c.tributos, cor: 'var(--k-amber-d)' },
+    { nome: 'Tarifas (TAC)', v: c.tac, cor: 'var(--k-neutro)' }, { nome: 'Tributos sobre tarifas', v: c.tributos, cor: 'var(--k-amber-d)' },
   ].filter((i) => i.v > 1e-9);
   const tot = d3.sum(itens, (i) => i.v);
   const { svg, W } = K.svg(el, 170);
@@ -555,54 +474,4 @@ dash.draw('frase2', (el) => {
   K.frases(el, [bn.banco === bc.banco ? 'igual' : bn.banco === bmax.banco ? 'nom-maior' : 'nom-nao', 'regra']);
 });
 
-/* ---------- aba 3: diversificação ---------- */
-dash.draw('div-barras', (el) => {
-  const s = K.status(IDS);
-  const e = calc();
-  if (!e) { K.fail(el, s === 'ok' ? 'loading' : s); return; }
-  el.classList.remove('dash-skeleton');
-  const L = e.dv.linhas, teto = e.d.caso.teto;
-  const rowH = 36, H = L.length * rowH + 22;
-  const { svg, W } = K.svg(el, H);
-  el.replaceChildren(svg.node());
-  const tip = K.tip(el);
-  const x = d3.scaleLinear([0, Math.max(0.6, d3.max(L, (l) => l.share) * 1.1)], [2, W - 70]);
-  L.forEach((l, i) => {
-    const y = i * rowH;
-    svg.append('text').attr('class', 'k-svgt').attr('x', 2).attr('y', y + 12).text(l.nome + ' · ' + TIPO[l.tipo]);
-    const cor = l.acima ? 'var(--k-neg)' : l.tipo === 'publico' ? 'var(--k-navy)' : 'var(--k-blue)';
-    svg.append('rect').attr('x', x(0)).attr('y', y + 17).attr('width', Math.max(0, x(l.share) - x(0))).attr('height', 14).attr('rx', 3).attr('fill', cor)
-      .on('pointermove', (ev) => { const [mx, my] = d3.pointer(ev, el); tip.show(l.nome, [[cor, TIPO[l.tipo], K.p(l.share, 0) + ' · R$ ' + K.n(l.valor) + ' mil']], mx, my); })
-      .on('pointerleave', () => tip.hide());
-    svg.append('text').attr('class', 'k-svgm').attr('x', x(l.share) + 6).attr('y', y + 29).text(K.p(l.share, 0) + ' · ' + K.n(l.valor));
-  });
-  const xt = x(teto);
-  svg.append('line').attr('x1', xt).attr('x2', xt).attr('y1', 0).attr('y2', H - 18).attr('stroke', 'var(--k-neg)').attr('stroke-width', 1.5).attr('stroke-dasharray', '5 4');
-  svg.append('text').attr('class', 'k-svgm').attr('text-anchor', 'middle').attr('x', xt).attr('y', H - 4).style('fill', 'var(--k-neg)').text('teto ' + K.p(teto, 0) + ' = ' + K.n(e.total * teto));
-});
-
-dash.draw('div-pubpriv', (el) => {
-  const e = calc();
-  if (!e) { el.replaceChildren(); return; }
-  el.classList.remove('dash-skeleton');
-  const { svg, W } = K.svg(el, 34);
-  el.replaceChildren(svg.node());
-  const pub = e.dv.nAtivos ? e.dv.pctPublico : 0, priv = e.dv.nAtivos ? 1 - pub : 0;
-  const x = d3.scaleLinear([0, 1], [0, W]);
-  const seg = (a, b, cor, txt) => {
-    if (b - a <= 0) return;
-    svg.append('rect').attr('x', x(a)).attr('y', 4).attr('width', x(b) - x(a)).attr('height', 24).attr('fill', cor);
-    const t = svg.append('text').attr('class', 'k-svgt').attr('x', x(a) + 6).attr('y', 21).style('fill', '#fff').text(txt);
-    if (t.node().getComputedTextLength() > x(b) - x(a) - 10) t.remove();
-  };
-  seg(0, pub, 'var(--k-navy)', 'público ' + K.p(pub, 0));
-  seg(pub, pub + priv, 'var(--k-blue)', 'privado ' + K.p(priv, 0));
-});
-
-dash.draw('alertas', (el) => {
-  const e = calc();
-  if (!e) { K.frases(el, []); return; }
-  const a = e.dv.alertas, k = Object.keys(a).filter((x) => a[x]);
-  K.frases(el, k.length ? k : ['ok']);
-});
 </script>
