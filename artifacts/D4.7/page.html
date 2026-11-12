@@ -7,11 +7,6 @@
 .d47-step h3 { margin: 0; font-size: 14px; font-weight: var(--cds-font-weight-medium); }
 .d47-step .k-note { margin: 1px 0 4px; }
 .d47-tom { display: block; height: 6px; border-radius: 3px; background: var(--color-panel); border: 1px solid var(--color-border-line); overflow: hidden; margin-bottom: 4px; }
-.d47-mat { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
-.d47-mat label { font-size: 12px; color: var(--color-fg-muted); text-align: center; display: block; }
-.d47-mat input { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px; text-align: center; padding: 1px 2px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); font-variant-numeric: tabular-nums; }
-.d47-adv { margin: 6px 0 8px; font-size: 14px; }
-.d47-adv > summary { cursor: pointer; color: var(--color-fg-muted); font-size: 13px; margin-bottom: 6px; }
 .d47-aging { min-height: 300px; }
 .d47-meds { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); margin-top: 12px; }
 .d47-med { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 8px 10px; background: var(--color-bg); }
@@ -21,7 +16,6 @@
 .d47-ctl3 { display: grid; gap: 4px 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
 .d47 .k-table td.d47-win { font-weight: 600; outline: 2px solid var(--k-navy); outline-offset: -2px; }
 .d47 .k-table td.d47-na { color: var(--color-fg-muted); }
-.d47-pp { font-size: 13px; color: var(--color-fg-muted); margin: 8px 0 0; font-variant-numeric: tabular-nums; line-height: 1.5; }
 </style>
 
 <div class="k d47" id="d47">
@@ -73,21 +67,6 @@
         <span class="d47-tom" data-draw="tom" data-e="5"></span>
         <div class="k-in"><input type="range" data-k="i5" min="0" max="100" step="5" aria-label="Intensidade do judicial"><input type="number" data-k="i5" min="0" max="100" step="5" aria-label="Intensidade do judicial"></div>
       </div>
-
-      <details class="d47-adv">
-        <summary>Matriz de migração · roll rates base</summary>
-        <div class="d47-mat">
-          <div><label for="c-r0">r₀ vence</label><input id="c-r0" type="number" data-k="r0" min="0" max="1" step="0.01"></div>
-          <div><label for="c-r1">r₁ 1–30</label><input id="c-r1" type="number" data-k="r1" min="0" max="1" step="0.01"></div>
-          <div><label for="c-r2">r₂ 31–60</label><input id="c-r2" type="number" data-k="r2" min="0" max="1" step="0.01"></div>
-          <div><label for="c-r3">r₃ 61–90</label><input id="c-r3" type="number" data-k="r3" min="0" max="1" step="0.01"></div>
-          <div><label for="c-r4">r₄ 91–180</label><input id="c-r4" type="number" data-k="r4" min="0" max="1" step="0.01"></div>
-        </div>
-        <p class="k-note">Fração de cada faixa que migra para a seguinte no mês. r₄ vale sobre o terço do saldo que sai da faixa de três meses; do 180+, um terço é baixado por mês e <b data-draw="v" data-q="recEf">—</b> é recuperado.</p>
-      </details>
-
-      <div class="k-ctl"><label for="c-mes">Mês exibido <span class="k-u">a partir de T0</span></label>
-        <div class="k-in"><input type="range" id="c-mes" data-k="mes" min="0" max="12" step="1"><input type="number" data-k="mes" min="0" max="12" step="1" aria-label="Mês exibido"></div></div>
     </div>
 
     <div class="k-zone" id="visual" data-source="carteira estagios cenarios">
@@ -97,7 +76,7 @@
       </div>
 
       <section data-group="v" data-pane="regua" id="painel-regua">
-        <div class="k-ch"><h3>A carteira envelhece mês a mês</h3><span>R$ mil · clique num mês para fixá-lo</span></div>
+        <div class="k-ch"><h3>A carteira envelhece mês a mês</h3><span>R$ mil · meses 0 a 12</span></div>
         <div class="k-chart d47-aging dash-skeleton" id="aging" data-draw="aging" role="img" aria-label="Aging empilhado por faixa de atraso nos meses 0 a 12, com a perda acumulada"></div>
         <div class="k-legend">
           <span><i style="background: var(--d47-f0)"></i>Em dia</span>
@@ -108,7 +87,7 @@
           <span><i style="background: var(--d47-f5)"></i>180+ d</span>
           <span><i style="background: var(--k-navy); height: 3px; vertical-align: 3px"></i>Perda acumulada (eixo da direita)</span>
         </div>
-        <p class="k-note">Mês <b data-draw="v" data-q="mes">—</b>: carteira <b data-draw="v" data-q="fotoTot">—</b> · DSO <b data-draw="v" data-q="fotoDso">—</b> dias · perda acumulada <b data-draw="v" data-q="fotoPerda">—</b>. O aging de T0 não é o regime da matriz: a carteira caminha para ele.</p>
+        <p class="k-note">A carteira de hoje (mês 0) caminha para o regime da régua escolhida; os números do trilema e da leitura são do regime.</p>
 
         <h2 class="k-zt2">O trilema · em regime</h2>
         <div class="d47-meds">
@@ -124,9 +103,8 @@
             <div class="k-in"><input type="range" id="c-fee" data-k="fee" min="15" max="30" step="1"><input type="number" data-k="fee" min="15" max="30" step="1" aria-label="Success fee, %"></div></div>
           <div class="k-ctl"><label for="c-ces">Preço de cessão <span class="k-u">% do nominal</span></label>
             <div class="k-in"><input type="range" id="c-ces" data-k="cessao" min="5" max="20" step="1"><input type="number" data-k="cessao" min="5" max="20" step="1" aria-label="Preço de cessão, %"></div></div>
-          <div class="k-ctl"><label for="c-fixo">Custo fixo da equipe própria <span class="k-u">R$ mil/mês</span> <span class="k-info" tabindex="0">i<span class="k-tip">Rateado entre as faixas pelo saldo. O custo próprio da faixa é o custo anual dos estágios que agem sobre ela mais a sua parte do fixo, dividido pelo saldo.</span></span></label>
-            <div class="k-in"><input type="range" id="c-fixo" data-k="fixo" min="0" max="60" step="1"><input type="number" data-k="fixo" min="0" max="60" step="1" aria-label="Custo fixo da equipe, R$ mil por mês"></div></div>
         </div>
+        <p class="k-note">Própria: o que se espera recuperar menos o custo — estágios que agem sobre a faixa e o fixo da equipe (R$ <b data-draw="v" data-q="fixo">—</b> mil/mês), rateado pelo saldo.</p>
         <div class="k-ch"><h3>Valor líquido esperado por faixa</h3><span>% do saldo · mês <b data-draw="v" data-q="mes">—</b></span></div>
         <div class="k-tw" id="comparador">
           <table class="k-table">
@@ -145,9 +123,9 @@
     <div class="k-zone" id="leitura" data-source="carteira estagios cenarios">
       <h2 class="k-zt">Leitura · em regime</h2>
       <div class="k-kpi"><span class="k-kl">Perda anual <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="perda">—</span></div>
-      <p class="k-note"><b data-draw="v" data-q="perdaPct">—</b> das vendas a prazo · por real vendido <b data-draw="v" data-q="porReal">—</b></p>
+      <p class="k-note"><b data-draw="v" data-q="perdaPct">—</b> das vendas a prazo</p>
       <div class="k-kpi"><span class="k-kl">Custo anual da régua <span class="k-u">R$ mil</span></span><span class="k-kn" data-draw="v" data-q="custo">—</span></div>
-      <div class="k-kpi"><span class="k-kl">Resultado líquido vs. padrão <span class="k-u">R$ mil/ano</span> <span class="k-info" tabindex="0">i<span class="k-tip">Perda evitada menos custo adicional, contra a régua com todos os estágios em 50 e a mesma matriz.</span></span></span><span class="k-kn" data-draw="liq">—</span></div>
+      <div class="k-kpi"><span class="k-kl">Resultado líquido vs. padrão <span class="k-u">R$ mil/ano</span> <span class="k-info" tabindex="0">i<span class="k-tip">Perda evitada menos custo adicional, contra a régua com todos os estágios em 50 e a mesma carteira.</span></span></span><span class="k-kn" data-draw="liq">—</span></div>
       <p class="k-note">perda evitada <b data-draw="v" data-q="evitada">—</b> · custo adicional <b data-draw="v" data-q="custoAdic">—</b></p>
       <div class="k-diag" data-frases>
         <span data-draw="frase"></span>
@@ -158,7 +136,6 @@
         <p data-frase="pagaGratis" hidden>Esta régua evita R$ <b data-draw="v" data-q="evitadaAbs">—</b> mil de perda e ainda custa R$ <b data-draw="v" data-q="custoAdicAbs">—</b> mil a menos que a padrão: menos títulos chegam aos estágios caros.</p>
         <p data-frase="outro" hidden>Contra a régua padrão: perda <b data-draw="v" data-q="dPerda">—</b> e custo <b data-draw="v" data-q="custoAdic">—</b> mil/ano. Valor líquido, não bruto: o que decide é a soma das duas linhas.</p>
       </div>
-      <p class="d47-pp">Chance de um título virar perda: 1–30 <b data-draw="v" data-q="pp1">—</b> · 31–60 <b data-draw="v" data-q="pp2">—</b> · 61–90 <b data-draw="v" data-q="pp3">—</b> · 91–180 <b data-draw="v" data-q="pp4">—</b> · 180+ <b data-draw="v" data-q="pp5">—</b></p>
     </div>
   </div>
 
@@ -186,7 +163,7 @@
 /* ============================================================
    D4.7 · Régua de cobrança
    Testes de aderência (Spec §7), conferidos com M47.estado() em node (54 PASS / 0 FAIL):
-   Mês 0: 5.810 · 1.245 · 581 · 332 · 208 · 124 = 8.300 · DSO 85 · perda por real 2,03%
+   Mês 0: 5.810 · 1.245 · 581 · 332 · 208 · 124 = 8.300 · DSO 85
    Prob. de perda: 4,7 · 10,0 · 17,6 · 32,0 · 80% · Regime padrão: 1.254 · 589 · 336 · 554 · 222 · perda 710 · DSO 90,4 · custo 238
    Mês 12: 1.254 · 589 · 336 · 552 · 214 · perda acumulada 525 · Intensa 264 (0,75%) · DSO 79,0 · relação 0
    Frouxa 1.634 (4,67%) · DSO 108 · Só o lembrete 568 (1,62%) · DSO 84,3 · relação 95
@@ -208,7 +185,7 @@ const falha = (el) => K.fail(el, K.status(IDS) === 'ok' ? 'loading' : K.status(I
 const atual = () => M47.estado(P(), E(), ST.S);
 function ctlDe(id) {
   const p = P(), c = cenario(id);
-  return { i1: c.i1, i2: c.i2, i3: c.i3, i4: c.i4, i5: c.i5, r0: p.r0, r1: p.r1, r2: p.r2, r3: p.r3, r4: p.r4, mes: p.mesesSimulados, fee: p.fee, cessao: p.cessao, fixo: p.fixoEquipe };
+  return { i1: c.i1, i2: c.i2, i3: c.i3, i4: c.i4, i5: c.i5, fee: p.fee, cessao: p.cessao };
 }
 const caso = (id) => M47.estado(P(), E(), ctlDe(id));
 
@@ -229,7 +206,7 @@ dash.onData(() => {
 });
 K.bind(new Proxy({}, { set(_, k, v) { if (ST.S) ST.S[k] = v; return true; } }), (k) => {
   if (!ST.S) return;
-  if (k !== 'mes') ST.mexido = true;
+  ST.mexido = true;
   sincroniza(); K.redraw(NOMES);
 });
 document.querySelectorAll('.d47-cen').forEach((b) => b.addEventListener('click', () => { if (K.status(IDS) !== 'ok') return; aplicar(b.dataset.cen); K.redraw(NOMES); }));
@@ -278,15 +255,14 @@ dash.draw('aging', (el) => {
   if (y2(fim.perdaAcum) - 9 < 14) tf.attr('y', y2(fim.perdaAcum) + 18);
   // clique e tooltip por mês
   svg.append('g').selectAll('rect').data(sim).join('rect')
-    .attr('x', (m) => x(m.mes) - x.step() * x.paddingInner() / 2).attr('width', x.step()).attr('y', 10).attr('height', y(0) - 10).attr('fill', 'transparent').style('cursor', 'pointer')
+    .attr('x', (m) => x(m.mes) - x.step() * x.paddingInner() / 2).attr('width', x.step()).attr('y', 10).attr('height', y(0) - 10).attr('fill', 'transparent')
     .on('mousemove', (ev, m) => {
       const [px, py] = d3.pointer(ev, el);
       const linhas = [m.emDia].concat(m.s).map((v, k) => [CORES[k], FAIXAS[k], K.n(v)]).reverse();
       linhas.push([null, 'Carteira', K.n(m.total)], ['var(--k-navy)', 'Perda acumulada', K.n(m.perdaAcum)]);
       tip.show('Mês ' + m.mes + ' · DSO ' + K.n(m.dso, 1), linhas, px, py);
     })
-    .on('mouseleave', () => tip.hide())
-    .on('click', (ev, m) => { ST.S.mes = m.mes; sincroniza(); K.redraw(NOMES); });
+    .on('mouseleave', () => tip.hide());
 });
 
 /* ---------- tom do degrau ---------- */
@@ -351,19 +327,17 @@ dash.draw('fraseComp', (el) => {
 
 /* ---------- números ---------- */
 const RVAL = {
-  mes: (R) => K.n(R.mes), fotoTot: (R) => K.n(R.foto.total), fotoDso: (R) => K.n(R.foto.dso, 1), fotoPerda: (R) => K.n(R.foto.perdaAcum),
+  mes: (R) => K.n(R.mes),
   recuperar: (R) => K.p(R.recuperar, 2), dso: (R) => K.n(R.dso, 1), dso0: (R) => K.n(R.dso), relacao: (R) => K.n(R.relacao),
   perda: (R) => K.n(R.perda), perdaPct: (R) => K.p(R.perdaPct, 2), perdaPct1: (R) => K.p(R.perdaPct, 1), perda50Pct1: (R) => K.p(R.perda50Pct, 1),
-  porReal: (R) => K.p(R.perdaPorReal, 2), custo: (R) => K.n(R.custo), evitada: (R) => K.s(R.evitada), custoAdic: (R) => K.s(R.custoAdic),
+  custo: (R) => K.n(R.custo), evitada: (R) => K.s(R.evitada), custoAdic: (R) => K.s(R.custoAdic),
   evitadaAbs: (R) => K.n(Math.abs(R.evitada)), custoAdicAbs: (R) => K.n(Math.abs(R.custoAdic)), dPerda: (R) => K.s(-R.evitada),
-  recEf: (R) => K.p(R.R.rec, 0),
   nCes: (R) => K.n(R.comp.filter((c) => c.venc === 'cessao').length), nEsp: (R) => K.n(R.comp.filter((c) => c.venc === 'esp').length),
-  pp1: (R) => K.p(R.probPerda[0], 1), pp2: (R) => K.p(R.probPerda[1], 1), pp3: (R) => K.p(R.probPerda[2], 1), pp4: (R) => K.p(R.probPerda[3], 1), pp5: (R) => K.p(R.probPerda[4], 0),
 };
 const ca = (k) => (R) => K.n(R.custos[k], 1);
 [0, 1, 2, 3, 4].forEach((k) => { RVAL['ca' + (k + 1)] = ca(k); RVAL['cu' + (k + 1)] = () => K.n(E()[k].custo); });
 const FVAL = {
-  opMin: () => K.n(P().atrasoOpMin), opMax: () => K.n(P().atrasoOpMax), fj: () => K.p(E()[4].fracTitulos, 0),
+  opMin: () => K.n(P().atrasoOpMin), opMax: () => K.n(P().atrasoOpMax), fixo: () => K.n(P().fixoEquipe), fj: () => K.p(E()[4].fracTitulos, 0),
   g1p0: () => K.p(caso('padrao').perdaPct, 1), g1p1: () => K.p(caso('lembrete').perdaPct, 1), g1ev: () => K.n(caso('lembrete').evitada),
   g1cl: () => K.n(caso('lembrete').custos[0] - caso('padrao').custos[0], 1), g1c0: () => K.n(caso('padrao').custo), g1c1: () => K.n(caso('lembrete').custo),
   g2p: () => K.p(caso('intensa').perdaPct, 2), g2ev: () => K.n(caso('intensa').evitada), g2dso: () => K.n(caso('intensa').dso), g2c: () => K.n(caso('intensa').custo), g2rel: () => K.n(caso('intensa').relacao),

@@ -1,18 +1,16 @@
 /* D4.7 · Régua de cobrança — funções puras (sem DOM).
    P = parâmetros da carteira (dataset carteira, chave→valor), E = estágios da régua (dataset estagios),
-   S = controles {i1..i5 (intensidade 0–100), r0..r4 (roll rates base), mes, fee, cessao, fixo}. R$ mil, mês. */
+   S = controles {i1..i5 (intensidade 0–100), fee, cessao}. R$ mil, mês. */
 (function (root) {
   const M = {};
-  const RS = ['r0', 'r1', 'r2', 'r3', 'r4'];
   M.FAIXAS = 5;
   M.V = (P) => P.vendasPrazoAno / 12;
   M.emDia = (P) => M.V(P) * P.prazoContratual / 30;
   M.porDia = (P) => P.vendasPrazoAno / 360;
   M.int = (S) => [S.i1, S.i2, S.i3, S.i4, S.i5];
-  M.base = (P) => ({ r0: P.r0, r1: P.r1, r2: P.r2, r3: P.r3, r4: P.r4 });
   // roll rates e recuperação efetivas: base × multiplicadores de intensidade (Spec §3)
   M.efetivas = function (P, E, S) {
-    const R = { r0: S.r0, r1: S.r1, r2: S.r2, r3: S.r3, r4: S.r4, rec: P.recuperacao };
+    const R = { r0: P.r0, r1: P.r1, r2: P.r2, r3: P.r3, r4: P.r4, rec: P.recuperacao };
     const I = M.int(S);
     E.forEach((e, k) => {
       const x = I[k] / 100 - 0.5;
@@ -65,14 +63,13 @@
     for (let k = 0; k < 5; k++) { let p = 1 - R.rec; for (let j = k; j < 4; j++) p *= r[j]; out.push(p); }
     return out;
   };
-  M.perdaPorReal = (R) => R.r0 * M.probPerda(R)[0];
   // comparador por faixa (% do saldo): própria × especializada × cessão
   M.comparador = function (P, E, S, R, s) {
     const pp = M.probPerda(R), cu = M.custos(P, E, S, s), tot = d3sum(s);
     const varF = [0, 0, 0, 0, 0];
     E.forEach((e, k) => { if (e.origem !== 'titulos') varF[Number(e.origem.slice(1)) - 1] += cu[k]; });
     return s.map((v, k) => {
-      const fixo = tot > 0 ? S.fixo * 12 * v / tot : 0;
+      const fixo = tot > 0 ? P.fixoEquipe * 12 * v / tot : 0;
       const custo = varF[k] + fixo;
       const rec = 1 - pp[k];
       const propria = v > 0 ? rec - custo / v : rec;
@@ -94,18 +91,16 @@
     const cust = M.custos(P, E, S, reg.s), cust50 = M.custos(P, E, S50, reg50.s);
     const custo = d3sum(cust), custo50 = d3sum(cust50);
     const sim = M.simula(P, R, P.mesesSimulados);
-    const mes = Math.max(0, Math.min(P.mesesSimulados, Math.round(S.mes)));
+    const mes = P.mesesSimulados;
     const vendas = P.vendasPrazoAno;
     return {
-      R, reg, reg50, sim, mes, foto: sim[mes],
+      R, reg, reg50, sim, mes,
       perda: reg.perdaAno, perdaPct: reg.perdaAno / vendas, perda50: reg50.perdaAno, perda50Pct: reg50.perdaAno / vendas,
       custos: cust, custo, custo50, evitada: reg50.perdaAno - reg.perdaAno, custoAdic: custo - custo50,
       liquido: (reg50.perdaAno - reg.perdaAno) - (custo - custo50),
       recuperar: 1 - reg.perdaAno / vendas, dso: reg.dso, relacao: M.relacao(E, S),
-      perdaPorReal: M.perdaPorReal(R), probPerda: M.probPerda(R),
       comp: M.comparador(P, E, S, R, sim[mes].s),
     };
   };
-  M.RS = RS;
   root.M47 = M;
 })(typeof window !== 'undefined' ? window : globalThis);
