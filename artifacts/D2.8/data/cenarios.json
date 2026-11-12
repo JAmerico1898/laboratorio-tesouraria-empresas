@@ -3,5 +3,4 @@
 {"id":"sazforte","nome":"Sazonalidade forte","ampSem":300,"ampMes":1200,"beta":0.5,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":1,"p":5,"W":20,"saldoMin":1000},
 {"id":"quebra","nome":"Quebra","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":true,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":1,"p":5,"W":20,"saldoMin":1000},
 {"id":"retreino","nome":"Quebra + retreino","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":true,"tQuebra":380,"magQuebra":-1200,"inicio":385,"h":60,"grau":1,"p":5,"W":20,"saldoMin":1000},
-{"id":"over8","nome":"Overfitting · grau 8","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":8,"p":5,"W":20,"saldoMin":1000},
-{"id":"over12","nome":"Overfitting · grau 12","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":12,"p":5,"W":20,"saldoMin":1000}]
+{"id":"over8","nome":"Overfitting","ampSem":300,"ampMes":600,"beta":0.5,"sigma":120,"quebra":false,"tQuebra":380,"magQuebra":-1200,"inicio":0,"h":60,"grau":8,"p":5,"W":20,"saldoMin":1000}]

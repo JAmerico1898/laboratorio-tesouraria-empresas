@@ -4,7 +4,7 @@
   "slug": "e49d5c87-4b75-4f45-9c23-e81cfa3886e6",
   "datasets": {
     "calendario": { "file": "calendario.json", "sha256": "420560485ffebf961bd92654b3e18588e3ee224e958df59be4347f6176f6fd76" },
-    "cenarios": { "file": "cenarios.json", "sha256": "86a311531b9e29c1533403705e94c0e47a8225d2f37e64c80b0e204a8ec4692e" },
+    "cenarios": { "file": "cenarios.json", "sha256": "505b154c803b91a1221928e9bbff8ff5e692a74e0cbf7489e018d568433b8584" },
     "gerador": { "file": "gerador.json", "sha256": "bfe1979108cfa71f2c2b54458afef2a0f74e945c80468bf9ae838bf357f76bf8" }
   }
 }

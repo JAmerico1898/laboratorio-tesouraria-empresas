@@ -138,8 +138,7 @@
     });
     const ordTe = M.METODOS.slice().sort((p, q) => res[p].mapeTe - res[q].mapeTe);
     const ordTr = M.METODOS.slice().sort((p, q) => res[p].mapeTr - res[q].mapeTr);
-    M.METODOS.forEach((k) => { res[k].pos = ordTe.indexOf(k) + 1; });
-    const sel = res[S.metodo] || res.mm;
+    const sel = res[ordTe[0]]; // cone do método que vence no teste
     const lo = [], hi = [];
     for (let k = 1; k <= H; k++) { const w = G.z * sel.sigma * Math.sqrt(k); lo.push(sel.prev[k - 1] - w); hi.push(sel.prev[k - 1] + w); }
     let alerta = null; for (let k = 0; k < H; k++) if (lo[k] < S.saldoMin) { alerta = k + 1; break; }
